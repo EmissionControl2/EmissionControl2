@@ -185,8 +185,8 @@ Joystick {
 
 		// sliderX (w/o a ControlSpec,
 		// it outputs [0,1] linear w/ infinite precision)
-		sliderX = Slider.new(parent,Rect(0, 0, 200, 1)); //JKILG: this bound parameter forceablly changes
-		sliderX.canFocus_(sliderCanFocus); // the xslider to be horizontal **proof of concept**
+		sliderX = Slider.new(parent);
+		sliderX.canFocus_(sliderCanFocus);
 		sliderX.background_(sliderBackground);
 		sliderX.knobColor_(sliderKnobColor);
 		sliderX.value_(0); // always the default
@@ -405,8 +405,7 @@ Joystick {
 		slider2D.bounds_(Rect.new(xOff,
 				yOff, slider2DWidth, slider2DHeight));
 
-		 //JKilg: notice how this is being interpreted as a vertical slider.
-		   //So when the bounds are set, it becomes immovable
+
 
 		sliderX.bounds_(Rect.new(xOff,
 				yOff + slider2DHeight + gap, slider2DWidth, sliderWidth));
@@ -414,6 +413,20 @@ Joystick {
 				yOff, sliderWidth, slider2DHeight));
 		rangeSlider.bounds_(Rect.new(xOff,
 			0, slider2DWidth, (10*yOff)));
+
+
+		//Orientate the sliders correctly.
+
+		if((sliderXSide == \bottom) || (sliderXSide == \top), {
+			sliderX.orientation_(\horizontal)}, {
+			sliderX.orientation_(\vertical)
+		}
+		);
+
+		if(sliderYSide == \bottom || sliderYSide == \top, {
+			sliderY.orientation_(\horizontal)}, {
+			sliderY.orientation_(\vertical)}
+		);
 
 		if(elastic, {
 			slider2DLabel.resize_(5); 	// h-elastic, v-elastic
