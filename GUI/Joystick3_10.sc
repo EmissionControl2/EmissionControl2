@@ -155,6 +155,8 @@ Joystick {
 				action.value(slider2D); // evaluate
 			});
 		});
+
+		//JKilg: broken
 		if(hasGate, {
 			slider2D.mouseDownAction_({ arg slider2D, x, y, pressure;
 				slider2DMouseDownActionList.do({ arg action;
@@ -183,7 +185,7 @@ Joystick {
 
 		// sliderX (w/o a ControlSpec,
 		// it outputs [0,1] linear w/ infinite precision)
-		sliderX = Slider.new(parent,Rect(100, 140, 200, 20)); //JKILG: this bound parameter forceablly changes
+		sliderX = Slider.new(parent,Rect(0, 0, 200, 1)); //JKILG: this bound parameter forceablly changes
 		sliderX.canFocus_(sliderCanFocus); // the xslider to be horizontal **proof of concept**
 		sliderX.background_(sliderBackground);
 		sliderX.knobColor_(sliderKnobColor);
@@ -279,6 +281,7 @@ Joystick {
 			//		slider2D.x ++ ", " ++ slider2D.y ++ "]").postln;
 		};
 
+		//JKilg: broken.
 		if(hasGate, {
 			slider2DMouseDownAction = { arg slider2D, x, y, pressure;
 				slider2D.doAction;
@@ -314,12 +317,14 @@ Joystick {
 
 			// update the Joystick's 'x' and 'y' coordinates (positions)
 			// according to the rangeSlider's range
-			//slider2D.x_(rangeSlider.lo + 0.5 - (slider2D.y * 0.5));
-			//slider2D.y_(rangeSlider.hi - rangeSlider.lo - 1);
+			//JKilg: still not quite sure the intention of this
+			slider2D.x_(rangeSlider.lo + 0.5 - (slider2D.y * 0.5)); //rangeSlider.lo + 0.5 - (slider2D.y * 0.5)
+			slider2D.y_(rangeSlider.lo - rangeSlider.hi + 1);  //rangeSlider.lo - rangeSlider.hi + 1
 		};
 
 		// create new actionLists
 		slider2DActionList = List.new;
+		//JKilg: broken
 		if(hasGate, {
 			slider2DMouseDownActionList = List.new;
 			slider2DMouseUpActionList = List.new;
@@ -330,6 +335,7 @@ Joystick {
 
 		// add actions to actionLists
 		slider2DActionList.add(slider2DAction);
+		//JKilg: broken
 		if(hasGate, {
 			slider2DMouseDownActionList.add(slider2DMouseDownAction);
 			slider2DMouseUpActionList.add(slider2DMouseUpAction);
@@ -372,7 +378,7 @@ Joystick {
 	// of the parent SCWindow! (for resizing)
 	draw { arg xOff = 5, yOff = 5,
 			sliderWidth = 20, gap = 5,
-			sliderXSide = \bottoom, sliderYSide = \right, rangeSliderSide = \top,
+			sliderXSide = \bottom, sliderYSide = \right, rangeSliderSide = \top,
 			elastic = true;
 		var	parentWidth = nil;
 		var	parentHeight = nil;
@@ -388,8 +394,8 @@ Joystick {
 		("parentHeight -> " ++ parentHeight).postln;
 
 		// calculate the width & height for the 2DSlider
-		slider2DWidth = parentWidth - (yOff * 2) - sliderWidth - gap; //JKilg: switched xOff with yOff and
-		slider2DHeight = parentHeight - (xOff * 2) - sliderWidth - gap; //vice versa
+		slider2DWidth = parentWidth - (xOff * 2) - sliderWidth - gap;
+		slider2DHeight = parentHeight - (yOff * 2) - sliderWidth - gap;
 		("slider2DWidth -> " ++ slider2DWidth).postln;
 		("slider2DHeight -> " ++ slider2DHeight).postln;
 
@@ -407,7 +413,7 @@ Joystick {
 		sliderY.bounds_(Rect.new(xOff + slider2DWidth + gap,
 				yOff, sliderWidth, slider2DHeight));
 		rangeSlider.bounds_(Rect.new(xOff,
-				0, slider2DWidth, yOff));
+			0, slider2DWidth, (10*yOff)));
 
 		if(elastic, {
 			slider2DLabel.resize_(5); 	// h-elastic, v-elastic

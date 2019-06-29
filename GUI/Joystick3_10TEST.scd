@@ -6,7 +6,7 @@ Platform.systemExtensionDir;   // Extensions available only to your user account
 
 (
 var	window, joystick;
-window = Window.new("< Joystick 1 >", Rect.new(0, 1024, 100, 100), true, true);
+window = Window.new("< Joystick 1 >", Rect.new(0, 1024, 500, 500), true, true);
 
 joystick = Joystick.new(window, "", Color.new(0.6904,0.8398,0.9147), nil, nil, false);
 joystick.draw(5, 5, 20, 5, \bottom, \right, \top, true);
