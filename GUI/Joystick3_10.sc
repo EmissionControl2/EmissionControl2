@@ -27,18 +27,18 @@
 
 Joystick {
 	// state variables
-	var	<parent = nil;			// ref to a parent SCWindow
-	var	<name = nil;				// SCStaticText to display in Joystick
-	var	<color = nil;				// blended background color
+	var	parent = nil;			// ref to a parent SCWindow
+	var	name = nil;				// SCStaticText to display in Joystick
+	var	color = nil;				// blended background color
 	// SCView's
-	var	<slider2DLabel = nil;		// SCStaticText reference
-	var	<slider2D = nil;			// SC2DSlider/SC2DTabletSlider reference
-	var	<sliderX = nil;			// SCSlider reference
-	var	<sliderY = nil;			// SCSlider reference
-	var	<rangeSlider = nil;		// SCRangeSlider reference
+	var	slider2DLabel = nil;		// SCStaticText reference
+	var	slider2D = nil;			// SC2DSlider/SC2DTabletSlider reference
+	var	sliderX = nil;			// SCSlider reference
+	var	sliderY = nil;			// SCSlider reference
+	var	rangeSlider = nil;		// SCRangeSlider reference
 	// Joystick ControlSets X & Y (external references)
-	var	<joystickControlSetX = nil;	// Joystick ControlSet (x-axis)
-	var	<joystickControlSetY = nil;	// Joystick ControlSet (y-axis)
+	var	joystickControlSetX = nil;	// Joystick ControlSet (x-axis)
+	var	joystickControlSetY = nil;	// Joystick ControlSet (y-axis)
 	// .action function lists
 	var	slider2DActionList = nil;			// slider2D List of actions
 	var	slider2DMouseDownActionList = nil;	// slider2D List of actions
@@ -125,7 +125,7 @@ Joystick {
 		rangeSliderKnobColor = color;
 
 		// slider2DLabel
-		slider2DLabel = SCStaticText.new(parent);
+		slider2DLabel = StaticText.new(parent);
 		slider2DLabel.string_(name.asString);
 		slider2DLabel.font_(slider2DLabelFont);
 		slider2DLabel.align_(slider2DLabelAlign);
@@ -141,7 +141,7 @@ Joystick {
 		if(hasGate, {
 			slider2D = SC2DTabletSlider.new(parent);
 		}, {
-			slider2D = SC2DSlider.new(parent);
+			slider2D = Slider2D.new(parent);
 		});
 		slider2D.canFocus_(slider2DCanFocus);
 		slider2D.background_(slider2DBackground);
@@ -183,8 +183,8 @@ Joystick {
 
 		// sliderX (w/o a ControlSpec,
 		// it outputs [0,1] linear w/ infinite precision)
-		sliderX = SCSlider.new(parent);
-		sliderX.canFocus_(sliderCanFocus);
+		sliderX = Slider.new(parent,Rect(100, 140, 200, 20)); //JKILG: this bound parameter forceablly changes
+		sliderX.canFocus_(sliderCanFocus); // the xslider to be horizontal **proof of concept**
 		sliderX.background_(sliderBackground);
 		sliderX.knobColor_(sliderKnobColor);
 		sliderX.value_(0); // always the default
@@ -205,7 +205,7 @@ Joystick {
 
 		// sliderY (w/o a ControlSpec,
 		// it outputs [0,1] linear w/ infinite precision)
-		sliderY = SCSlider.new(parent);
+		sliderY = Slider.new(parent);
 		sliderY.canFocus_(sliderCanFocus);
 		sliderY.background_(sliderBackground);
 		sliderY.knobColor_(sliderKnobColor);
@@ -226,7 +226,7 @@ Joystick {
 		("sliderY.action -> " ++ sliderY.action).postln;
 
 		// rangeSlider
-		rangeSlider = SCRangeSlider.new(parent);
+		rangeSlider = RangeSlider.new(parent);
 		rangeSlider.canFocus_(rangeSliderCanFocus);
 		rangeSlider.background_(rangeSliderBackground);
 		rangeSlider.knobColor_(rangeSliderKnobColor);
@@ -372,7 +372,7 @@ Joystick {
 	// of the parent SCWindow! (for resizing)
 	draw { arg xOff = 5, yOff = 5,
 			sliderWidth = 20, gap = 5,
-			sliderXSide = \bottom, sliderYSide = \right, rangeSliderSide = \top,
+			sliderXSide = \bottoom, sliderYSide = \right, rangeSliderSide = \top,
 			elastic = true;
 		var	parentWidth = nil;
 		var	parentHeight = nil;
@@ -388,16 +388,20 @@ Joystick {
 		("parentHeight -> " ++ parentHeight).postln;
 
 		// calculate the width & height for the 2DSlider
-		slider2DWidth = parentWidth - (xOff * 2) - sliderWidth - gap;
-		slider2DHeight = parentHeight - (yOff * 2) - sliderWidth - gap;
-
+		slider2DWidth = parentWidth - (yOff * 2) - sliderWidth - gap; //JKilg: switched xOff with yOff and
+		slider2DHeight = parentHeight - (xOff * 2) - sliderWidth - gap; //vice versa
 		("slider2DWidth -> " ++ slider2DWidth).postln;
 		("slider2DHeight -> " ++ slider2DHeight).postln;
 
 		slider2DLabel.bounds_(Rect.new(xOff,
 				yOff, slider2DWidth, slider2DHeight));
+
 		slider2D.bounds_(Rect.new(xOff,
 				yOff, slider2DWidth, slider2DHeight));
+
+		 //JKilg: notice how this is being interpreted as a vertical slider.
+		   //So when the bounds are set, it becomes immovable
+
 		sliderX.bounds_(Rect.new(xOff,
 				yOff + slider2DHeight + gap, slider2DWidth, sliderWidth));
 		sliderY.bounds_(Rect.new(xOff + slider2DWidth + gap,
