@@ -159,10 +159,10 @@ ZoomSlider {
 		var	numBox2CanFocus = nil;
 		var	numBox2Font = nil;
 		var	numBox2Align = nil;
-		var	numBox2BoxColor = nil;
-		var	numBox2DefaultStringColor = nil;
-		var	numBox2EnterStringColor = nil;
-		var	numBox2ShiftKeyScaler = nil;
+		var	numBox2background = nil;
+		var	numBox2normalColor = nil;
+		var	numBox2typingColor = nil;
+		var	numBox2shift_scale = nil;
 
 		sliderLabelFont = Font.new("Helvetica", 12);
 		sliderLabelAlign = \center;
@@ -178,10 +178,10 @@ ZoomSlider {
 		numBox2CanFocus = true;
 		numBox2Font = Font.new("Helvetica", 12);
 		numBox2Align = \left;
-		numBox2BoxColor = Color.black;
-		numBox2DefaultStringColor = Color.white;
-		numBox2EnterStringColor = Color.green;
-		numBox2ShiftKeyScaler = 10;
+		numBox2background = Color.black;
+		numBox2normalColor = Color.white;
+		numBox2typingColor = Color.green;
+		numBox2shift_scale = 10;
 
 		// sliderLabel
 		sliderLabel = StaticText.new(parent);
@@ -198,6 +198,7 @@ ZoomSlider {
 
 		// slider
 		slider = Slider.new(parent);
+		//slider.orientation_(\horizontal);
 		slider.canFocus_(sliderCanFocus);
 		slider.background_(sliderBackground);
 		slider.knobColor_(sliderKnobColor);
@@ -231,14 +232,14 @@ ZoomSlider {
 		("leftBoxLabel.stringColor -> " ++ leftBoxLabel.stringColor).postln;
 
 		// leftBox
-		leftBox = SCNumberBox2.new(parent);
+		leftBox = NumberBox.new(parent);
 		leftBox.canFocus_(numBox2CanFocus);
 		leftBox.font_(numBox2Font);
 		leftBox.align_(numBox2Align);
-		leftBox.boxColor_(numBox2BoxColor);
-		leftBox.defaultStringColor_(numBox2DefaultStringColor);
-		leftBox.enterStringColor_(numBox2EnterStringColor);
-		leftBox.shiftKeyScaler_(numBox2ShiftKeyScaler);
+		leftBox.background_(numBox2background);
+		leftBox.normalColor_(numBox2normalColor);
+		leftBox.typingColor_(numBox2typingColor);
+		leftBox.shift_scale_(numBox2shift_scale);
 		leftBox.value_(left);
 		leftBox.step_(step);
 		leftBox.action_({ arg leftBox;
@@ -251,10 +252,10 @@ ZoomSlider {
 		("leftBox.canFocus -> " ++ leftBox.canFocus).postln;
 		("leftBox.font -> " ++ leftBox.font).postln;
 		//("leftBox.align -> " ++ leftBox.align).postln;
-		("leftBox.boxColor -> " ++ leftBox.boxColor).postln;
-		("leftBox.defaultStringColor -> " ++ leftBox.defaultStringColor).postln;
-		("leftBox.enterStringColor -> " ++ leftBox.enterStringColor).postln;
-		("leftBox.shiftKeyScaler -> " ++ leftBox.shiftKeyScaler).postln;
+		("leftBox.background -> " ++ leftBox.background).postln;
+		("leftBox.normalColor -> " ++ leftBox.normalColor).postln;
+		("leftBox.typingColor -> " ++ leftBox.typingColor).postln;
+		("leftBox.shift_scale -> " ++ leftBox.shift_scale).postln;
 		("leftBox.value -> " ++ leftBox.value).postln;
 		("leftBox.step -> " ++ leftBox.step).postln;
 		("leftBox.action -> " ++ leftBox.action).postln;
@@ -273,14 +274,14 @@ ZoomSlider {
 		("rightBoxLabel.stringColor -> " ++ rightBoxLabel.stringColor).postln;
 
 		// rightBox
-		rightBox = SCNumberBox2.new(parent);
+		rightBox = NumberBox.new(parent);
 		rightBox.canFocus_(numBox2CanFocus);
 		rightBox.font_(numBox2Font);
 		rightBox.align_(numBox2Align);
-		rightBox.boxColor_(numBox2BoxColor);
-		rightBox.defaultStringColor_(numBox2DefaultStringColor);
-		rightBox.enterStringColor_(numBox2EnterStringColor);
-		rightBox.shiftKeyScaler_(numBox2ShiftKeyScaler);
+		rightBox.background_(numBox2background);
+		rightBox.normalColor_(numBox2normalColor);
+		rightBox.typingColor_(numBox2typingColor);
+		rightBox.shift_scale_(numBox2shift_scale);
 		rightBox.value_(right);
 		rightBox.step_(step);
 		rightBox.action_({ arg rightBox;
@@ -293,10 +294,10 @@ ZoomSlider {
 		("rightBox.canFocus -> " ++ rightBox.canFocus).postln;
 		("rightBox.font -> " ++ rightBox.font).postln;
 		//("rightBox.align -> " ++ rightBox.align).postln;
-		("rightBox.boxColor -> " ++ rightBox.boxColor).postln;
-		("rightBox.defaultStringColor -> " ++ rightBox.defaultStringColor).postln;
-		("rightBox.enterStringColor -> " ++ rightBox.enterStringColor).postln;
-		("rightBox.shiftKeyScaler -> " ++ rightBox.shiftKeyScaler).postln;
+		("rightBox.background -> " ++ rightBox.background).postln;
+		("rightBox.normalColor -> " ++ rightBox.normalColor).postln;
+		("rightBox.typingColor -> " ++ rightBox.typingColor).postln;
+		("rightBox.shift_scale -> " ++ rightBox.shift_scale).postln;
 		("rightBox.value -> " ++ rightBox.value).postln;
 		("rightBox.step -> " ++ rightBox.step).postln;
 		("rightBox.action -> " ++ rightBox.action).postln;
@@ -315,14 +316,14 @@ ZoomSlider {
 		("currentBoxLabel.stringColor -> " ++ currentBoxLabel.stringColor).postln;
 
 		// currentBox
-		currentBox = SCNumberBox2.new(parent);
+		currentBox = NumberBox.new(parent);
 		currentBox.canFocus_(numBox2CanFocus);
 		currentBox.font_(numBox2Font);
 		currentBox.align_(numBox2Align);
-		currentBox.boxColor_(numBox2BoxColor);
-		currentBox.defaultStringColor_(numBox2DefaultStringColor);
-		currentBox.enterStringColor_(numBox2EnterStringColor);
-		currentBox.shiftKeyScaler_(numBox2ShiftKeyScaler);
+		currentBox.background_(numBox2background);
+		currentBox.normalColor_(numBox2normalColor);
+		currentBox.typingColor_(numBox2typingColor);
+		currentBox.shift_scale_(numBox2shift_scale);
 		currentBox.value_(default);
 		currentBox.step_(step);
 		currentBox.action_({ arg currentBox;
@@ -335,10 +336,10 @@ ZoomSlider {
 		("currentBox.canFocus -> " ++ currentBox.canFocus).postln;
 		("currentBox.font -> " ++ currentBox.font).postln;
 		//("currentBox.align -> " ++ currentBox.align).postln;
-		("currentBox.boxColor -> " ++ currentBox.boxColor).postln;
-		("currentBox.defaultStringColor -> " ++ currentBox.defaultStringColor).postln;
-		("currentBox.enterStringColor -> " ++ currentBox.enterStringColor).postln;
-		("currentBox.shiftKeyScaler -> " ++ currentBox.shiftKeyScaler).postln;
+		("currentBox.background -> " ++ currentBox.background).postln;
+		("currentBox.normalColor -> " ++ currentBox.normalColor).postln;
+		("currentBox.typingColor -> " ++ currentBox.typingColor).postln;
+		("currentBox.shift_scale -> " ++ currentBox.shift_scale).postln;
 		("currentBox.value -> " ++ currentBox.value).postln;
 		("currentBox.step -> " ++ currentBox.step).postln;
 		("currentBox.action -> " ++ currentBox.action).postln;
@@ -586,14 +587,17 @@ ZoomSlider {
 
 	// draw the widgets on the screen within a parent window
 	draw { arg xOff = 5, yOff = 5,
-			orientation = \h,
+			orientation = \horizontal,
 			width = 20, gap = 5,
 			sliderLength = 200, boxLength = 40,
 			currentBoxSide = \right;
 		var	offsets = nil; // an array of relative widget offsets
 
 		// most common case first...
-		if(orientation == \h, {
+		if(orientation == \horizontal, {
+			//set orientation of slider
+			slider.orientation_(\horizontal);
+
 			if(currentBoxSide == \right, {
 				offsets = [0, boxLength, boxLength + sliderLength,
 						(boxLength * 2) + sliderLength];
@@ -648,7 +652,10 @@ ZoomSlider {
 				});
 			});
 		}, {
-			if(orientation == \v, {
+			if(orientation == \vertical, {
+				//set orientation of slider
+				slider.orientation_(\vertical);
+
 				// most common case first...
 				if(currentBoxSide == \right, {
 					offsets = [0, boxLength, boxLength + sliderLength,
@@ -662,6 +669,7 @@ ZoomSlider {
 					// the leftBox and rightBox indices have been switched:
 					// leftBox  (offsets[0] -> offsets[2])
 					// rightBox ([offsets[2] -> offsets[0])
+
 
 					leftBoxLabel.bounds_(Rect.new(xOff,
 							yOff + offsets[2], width, boxLength));
