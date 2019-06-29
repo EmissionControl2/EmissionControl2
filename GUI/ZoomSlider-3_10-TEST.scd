@@ -5,7 +5,7 @@
 // array of ZoomSlider's
 (
 var	window, sliders;
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 405, 260), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 405, 260), true, true);
 sliders = Array.fill(10, {
 	ZoomSlider.new(window, "duration", 1, 10000, 1, 1000, \exp, 1, 100, "ms ");
 });
@@ -18,7 +18,7 @@ window.front;
 // array of ZoomSlider's (explicitly calls setZoomSpec)
 (
 var	window, sliders;
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 405, 260), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 405, 260), true, true);
 sliders = Array.fill(10, { ZoomSlider.new(window); });
 sliders.do({ arg each, i;
 	each.setZoomSpec("duration", 1, 10000, 1, 1000, \exp, 1, 100, "ms ");

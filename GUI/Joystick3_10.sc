@@ -27,18 +27,18 @@
 
 Joystick {
 	// state variables
-	var	parent = nil;			// ref to a parent SCWindow
-	var	name = nil;				// SCStaticText to display in Joystick
-	var	color = nil;				// blended background color
+	var	<parent = nil;			// ref to a parent SCWindow
+	var	<name = nil;				// SCStaticText to display in Joystick
+	var	<color = nil;				// blended background color
 	// SCView's
-	var	slider2DLabel = nil;		// SCStaticText reference
-	var	slider2D = nil;			// SC2DSlider/SC2DTabletSlider reference
-	var	sliderX = nil;			// SCSlider reference
-	var	sliderY = nil;			// SCSlider reference
-	var	rangeSlider = nil;		// SCRangeSlider reference
+	var	<slider2DLabel = nil;		// SCStaticText reference
+	var	<slider2D = nil;			// SC2DSlider/SC2DTabletSlider reference
+	var	<sliderX = nil;			// SCSlider reference
+	var	<sliderY = nil;			// SCSlider reference
+	var	<rangeSlider = nil;		// SCRangeSlider reference
 	// Joystick ControlSets X & Y (external references)
-	var	joystickControlSetX = nil;	// Joystick ControlSet (x-axis)
-	var	joystickControlSetY = nil;	// Joystick ControlSet (y-axis)
+	var	<joystickControlSetX = nil;	// Joystick ControlSet (x-axis)
+	var	<joystickControlSetY = nil;	// Joystick ControlSet (y-axis)
 	// .action function lists
 	var	slider2DActionList = nil;			// slider2D List of actions
 	var	slider2DMouseDownActionList = nil;	// slider2D List of actions
