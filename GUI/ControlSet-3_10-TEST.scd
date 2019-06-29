@@ -19,7 +19,7 @@ sliderWindow.front;
 
 joystickWindow = Window.new("< Joystick 1 >", Rect.new(460, 1024, 235, 160));
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
-		~joystickControlSetArray[0], ~joystickControlSetArray[1]);
+		~joystickControlSetArray[0], ~joystickControlSetArray[1],false);
 joystick.draw(5, 5, 20, 5, \bottom, \right, \top, true);
 joystickWindow.front;
 )
