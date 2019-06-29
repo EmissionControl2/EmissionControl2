@@ -147,7 +147,7 @@ MappableSlider : ZoomSlider {
 				axisButtonDataList[2][i%16]]; }).insert(0,
 						["off", Color.black, Color.clear]);
 		// lockButton
-		lockButton = SCButton.new(parent);
+		lockButton = Button.new(parent);
 		lockButton.canFocus_(buttonCanFocus);
 		lockButton.font_(buttonFont);
 		lockButton.states_(lockButtonStates);
@@ -166,7 +166,7 @@ MappableSlider : ZoomSlider {
 		("lockButton.action -> " ++ lockButton.action).postln;
 
 		// axisButton
-		axisButton = SCButton.new(parent);
+		axisButton = Button.new(parent);
 		axisButton.canFocus_(buttonCanFocus);
 		axisButton.font_(buttonFont);
 		axisButton.states_(axisButtonStates);
@@ -298,6 +298,8 @@ MappableSlider : ZoomSlider {
 			sliderLength = 200, boxLength = 40, buttonLength = 20,
 			currentBoxSide = \right, buttonSide = \left;
 		var	offsets = nil; // an array of relative widget offsets
+
+		slider.orientation_(\horizontal);
 
 		// most common case first...
 		if((currentBoxSide == \right) && (buttonSide == \left), {
