@@ -184,7 +184,7 @@ ZoomSlider {
 		numBox2ShiftKeyScaler = 10;
 
 		// sliderLabel
-		sliderLabel = SCStaticText.new(parent);
+		sliderLabel = StaticText.new(parent);
 		sliderLabel.string_(name.asString);
 		sliderLabel.font_(sliderLabelFont);
 		sliderLabel.align_(sliderLabelAlign);
@@ -197,7 +197,7 @@ ZoomSlider {
 		("sliderLabel.stringColor -> " ++ sliderLabel.stringColor).postln;
 
 		// slider
-		slider = SCSlider.new(parent);
+		slider = Slider.new(parent);
 		slider.canFocus_(sliderCanFocus);
 		slider.background_(sliderBackground);
 		slider.knobColor_(sliderKnobColor);
@@ -218,7 +218,7 @@ ZoomSlider {
 		("slider.action -> " ++ slider.action).postln;
 
 		// leftBoxLabel
-		leftBoxLabel = SCStaticText.new(parent);
+		leftBoxLabel = StaticText.new(parent);
 		leftBoxLabel.string_(units.asString);
 		leftBoxLabel.font_(numBox2LabelFont);
 		leftBoxLabel.align_(numBox2LabelAlign);
@@ -260,7 +260,7 @@ ZoomSlider {
 		("leftBox.action -> " ++ leftBox.action).postln;
 
 		// rightBoxLabel
-		rightBoxLabel = SCStaticText.new(parent);
+		rightBoxLabel = StaticText.new(parent);
 		rightBoxLabel.string_(units.asString);
 		rightBoxLabel.font_(numBox2LabelFont);
 		rightBoxLabel.align_(numBox2LabelAlign);
@@ -302,7 +302,7 @@ ZoomSlider {
 		("rightBox.action -> " ++ rightBox.action).postln;
 
 		// currentBoxLabel
-		currentBoxLabel = SCStaticText.new(parent);
+		currentBoxLabel = StaticText.new(parent);
 		currentBoxLabel.string_(units.asString);
 		currentBoxLabel.font_(numBox2LabelFont);
 		currentBoxLabel.align_(numBox2LabelAlign);
