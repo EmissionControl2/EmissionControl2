@@ -43,68 +43,68 @@ SliderOptions {
 		/* Declarations */
 
 		// densityTriggerPopUpMenu
-		densityTriggerPopUpMenu = SCPopUpMenu.new(parent);
+		densityTriggerPopUpMenu = PopUpMenu.new(parent);
 		densityTriggerPopUpMenu.canFocus = false;
 		densityTriggerPopUpMenu.font = Font.new("Helvetica", 10);
 		densityTriggerPopUpMenu.background = HiliteGradient.new(Color.gray, Color.black, \h, 256, 0);
 		densityTriggerPopUpMenu.stringColor = Color.white;
 
 		// densityBufferBox
-		densityBufferBox = SCNumberBox2.new(parent);
+		densityBufferBox = NumberBox.new(parent);
 		densityBufferBox.canFocus = true;
 		densityBufferBox.font = Font.new("Helvetica", 12);
-		densityBufferBox.boxColor = Color.white;
-		densityBufferBox.defaultStringColor = Color.black;
-		densityBufferBox.enterStringColor = Color.red;
+		densityBufferBox.background = Color.white;
+		densityBufferBox.normalColor = Color.black;
+		densityBufferBox.typingColor = Color.red;
 
 		// pitchSpecButton
-		pitchSpecButton = SCButton.new(parent);
+		pitchSpecButton = Button.new(parent);
 		pitchSpecButton.canFocus = false;
 		pitchSpecButton.font = Font.new("Helvetica", 10);
 
 		// pitchDirectionButton
-		pitchDirectionButton = SCButton.new(parent);
+		pitchDirectionButton = Button.new(parent);
 		pitchDirectionButton.canFocus = false;
 		pitchDirectionButton.font = Font.new("Helvetica", 10);
 
 		// pitchFormantButton
-		pitchFormantButton = SCButton.new(parent);
+		pitchFormantButton = Button.new(parent);
 		pitchFormantButton.canFocus = false;
 		pitchFormantButton.font = Font.new("Helvetica", 10);
 
 		// timeSpecButton
-		timeSpecButton = SCButton.new(parent);
+		timeSpecButton = Button.new(parent);
 		timeSpecButton.canFocus = false;
 		timeSpecButton.font = Font.new("Helvetica", 10);
 
 		// timeModePopUpMenu
-		timeModePopUpMenu = SCPopUpMenu.new(parent);
+		timeModePopUpMenu = PopUpMenu.new(parent);
 		timeModePopUpMenu.canFocus = false;
 		timeModePopUpMenu.font = Font.new("Helvetica", 10);
 		timeModePopUpMenu.background = HiliteGradient.new(Color.gray, Color.black, \h, 256, 0);
 		timeModePopUpMenu.stringColor = Color.white;
 
 		// phaseWindowRangeSliderLabel
-		phaseWindowRangeSliderLabel = SCStaticText.new(parent);
+		phaseWindowRangeSliderLabel = StaticText.new(parent);
 		phaseWindowRangeSliderLabel.string = "window";
 		phaseWindowRangeSliderLabel.font = Font.new("Helvetica", 10);
 		phaseWindowRangeSliderLabel.align = \center;
 		phaseWindowRangeSliderLabel.stringColor = Color.white;
 		// phaseWindowRangeSlider
-		phaseWindowRangeSlider = SCRangeSlider.new(parent);
+		phaseWindowRangeSlider = RangeSlider.new(parent);
 		phaseWindowRangeSlider.canFocus = false;
 		phaseWindowRangeSlider.background = Color.black;
 		phaseWindowRangeSlider.knobColor = Color.green.alpha_(0.3);
 
 		// amplitudeEnvelopePopUpMenu
-		amplitudeEnvelopePopUpMenu = SCPopUpMenu.new(parent);
+		amplitudeEnvelopePopUpMenu = PopUpMenu.new(parent);
 		amplitudeEnvelopePopUpMenu.canFocus = false;
 		amplitudeEnvelopePopUpMenu.font = Font.new("Helvetica", 10);
 		amplitudeEnvelopePopUpMenu.background = HiliteGradient.new(Color.gray, Color.black, \h, 256, 0);
 		amplitudeEnvelopePopUpMenu.stringColor = Color.white;
 
 		// amplitudeGainCompPopUpMenu
-		amplitudeGainCompPopUpMenu = SCPopUpMenu.new(parent);
+		amplitudeGainCompPopUpMenu = PopUpMenu.new(parent);
 		amplitudeGainCompPopUpMenu.canFocus = false;
 		amplitudeGainCompPopUpMenu.font = Font.new("Helvetica", 10);
 		amplitudeGainCompPopUpMenu.background = HiliteGradient.new(Color.gray, Color.black, \h, 256, 0);
