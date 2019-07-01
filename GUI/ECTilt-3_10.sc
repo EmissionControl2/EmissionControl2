@@ -1,7 +1,7 @@
 /*
  * David Thall
- * Tilt.sc (Bump???)
- * CG2 Project
+ * ECTilt.sc (Bump???) //JKilg: rename due to discrepancy with an ambisonics exttension
+* CG2 Project          //JKilg: To Do's change private variables to be homogenous w/ ECTilt
  */
 
 // A Tilt spawns tasks that update
@@ -27,7 +27,7 @@
 // 79 chars
 ///////////////////////////////////////////////////////////////////////////////
 
-TiltControl {
+ECTilt {
 	// state variables
 	var	<type = nil;				// tilt direction (left, center, right)
 	var	<maxAmount = nil;			// distance to travel
