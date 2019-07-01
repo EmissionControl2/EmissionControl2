@@ -172,7 +172,7 @@ ECWavetable {
 				freqButtonDataList[2]]; });
 
 		// multiSlider
-		multiSlider = SCMultiSliderView.new(parent);
+		multiSlider = MultiSliderView.new(parent);
 		multiSlider.canFocus_(multiSliderCanFocus);
 		multiSlider.background_(multiSliderBackground);
 		multiSlider.strokeColor_(multiSliderStrokeColor);
@@ -218,14 +218,14 @@ ECWavetable {
 		("multiSlider.action -> " ++ multiSlider.action).postln;
 
 		// centerLabel
-		centerLabel = SCStaticText.new(parent);
+		centerLabel = StaticText.new(parent);
 		centerLabel.background_(centerLabelBackground);
 
 		("centerLabel -> " ++ centerLabel).postln;
 		("centerLabel.background -> " ++ centerLabel.background).postln;
 
 		// rangeSlider
-		rangeSlider = SCRangeSlider.new(parent);
+		rangeSlider = RangeSlider.new(parent);
 		rangeSlider.canFocus_(rangeSliderCanFocus);
 		rangeSlider.background_(rangeSliderBackground);
 		rangeSlider.knobColor_(rangeSliderKnobColor);
@@ -268,7 +268,7 @@ ECWavetable {
 				0, 100, 0, 100, \lin, 0.01, 0, "% ");
 
 		// freqButton
-		freqButton = SCButton.new(parent);
+		freqButton = Button.new(parent);
 		freqButton.canFocus_(buttonCanFocus);
 		freqButton.font_(buttonFont);
 		freqButton.states_(freqButtonStates);
