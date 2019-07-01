@@ -27,7 +27,7 @@
 // 79 chars
 ///////////////////////////////////////////////////////////////////////////////
 
-Tilt {
+TiltControl {
 	// state variables
 	var	<type = nil;				// tilt direction (left, center, right)
 	var	<maxAmount = nil;			// distance to travel
