@@ -37,7 +37,7 @@ TiltButton {
 		/* Declarations */
 
 		// button
-		button = SCButton.new(parent);
+		button = Button.new(parent);
 		button.canFocus = false;
 		button.font = Font.new("Helvetica", 10);
 
