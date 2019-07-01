@@ -254,7 +254,8 @@ ModulationSlider : MappableSlider {
 						bypassButton.states[bypassButton.value][0]]).postln;
 
 				// store the currentBox.value into 'lastCurrentBoxValue'
-				lastCurrentBoxValue = currentBox.value; 				("lastCurrentBoxValue has been stored as " ++
+				lastCurrentBoxValue = currentBox.value;
+				val("lastCurrentBoxValue has been stored as " ++
 						lastCurrentBoxValue).postln;
 				// move slider to '0' position (relative)
 				// note: makes more sense visually to move to '0' when ==
@@ -344,11 +345,11 @@ ModulationSlider : MappableSlider {
 			bypassButton.value_(1);
 			bypassButton.enabled_(true);
 		});
-		//(name ++ " " ++ "bypassButton -> " ++
-		//		[bypassButton.value,
-		//		bypassButton.states[bypassButton.value][0]]).postln;
-		//("bypassButton.enabled -> " ++
-		//		bypassButton.enabled).postln;
+		(name ++ " " ++ "bypassButton -> " ++
+				[bypassButton.value,
+				bypassButton.states[bypassButton.value][0]]).postln;
+		("bypassButton.enabled -> " ++
+				bypassButton.enabled).postln;
 	}
 
 	/* PUBLIC INTERFACE */ // (override or extend these in subclasses...)

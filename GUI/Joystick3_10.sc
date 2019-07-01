@@ -53,7 +53,8 @@ Joystick {
 	// create and name a new Joystick
 	*new { arg argParent, argName, argColor,
 			argJoystickControlSetX, argJoystickControlSetY,
-			hasGate = true;
+			hasGate = false; //JKilg: made the hasGate default parameter false
+		                     //until a replacement for SC2DTabletSlider is found
 		if(argParent.isNil, {
 			(this.asString ++ ": " ++
 					"A parent window must be provided!").postln;

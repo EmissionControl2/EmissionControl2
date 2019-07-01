@@ -4,6 +4,7 @@
  * CG2 Project
  */
 
+
 // A Preset contains all of the values associated with the state of GUI widgets
 
 // I am storing a multi-dimensional Array to a dictionary,
@@ -157,6 +158,7 @@ Preset {
 					view.lockButton.valueAction_(dictionary.at(i).at(4));
 					view.axisButton.valueAction_(dictionary.at(i).at(5));
 					view.bypassButton.valueAction_(dictionary.at(i).at(6));
+					// ^^^^^^ JKilg: this causes post window error
 					view.posNegButton.valueAction_(dictionary.at(i).at(7));
 					view.modSrcPopUpMenu.valueAction_(dictionary.at(i).at(8));
 					view.gainViewButton.valueAction_(dictionary.at(i).at(9));
