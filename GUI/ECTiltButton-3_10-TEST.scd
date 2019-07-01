@@ -14,8 +14,8 @@ sliders.do({ arg each, i;
 	each.setZoomSpec("soundfile", 1, 128, 1, 128, \lin, 1, 1, "# ");
 	each.draw(5, 5 + ( 25 * i), 20, 5, 200, 60, 20, \right, \left); });
 window.front;
-~tilt = TiltControl.new(tiltControlSet, \center, 0.1, 0.1, 20);
-~tiltButton = TiltButton.new(window, "TILT", ~tilt).draw(5, 255, 40, 20);
+~tilt = ECTilt.new(tiltControlSet, \center, 0.1, 0.1, 20);
+~tiltButton = ECTiltButton.new(window, "TILT", ~tilt).draw(5, 255, 40, 20);
 )
 
 ~tilt.setParameters(\right, 1, 1, 20);
