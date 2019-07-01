@@ -5,7 +5,7 @@
 // SliderOptions Test
 (
 var window, parameterSlidersArraySpec, parameterSliders, sliderOptions;
-window = SCWindow.new("", Rect.new(256, 256, 615, 255));
+window = Window.new("", Rect.new(256, 256, 615, 255));
 parameterSlidersArraySpec = [
 	["soundfile (#)", 1, 128, 1, 128, \lin, 1, 1],
 	["density (g/s)", 0.1, 1000, 0.1, 1000, \exp, 0.1, 10],
@@ -20,7 +20,7 @@ parameterSlidersArraySpec = [
 ];
 
 parameterSliders = parameterSlidersArraySpec.collect({ arg e;
-	ParameterSlider.new(window, e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], [ControlSet.new, ControlSet.new], ControlSet.new);
+	ParameterSlider.new(window,[ControlSet.new, ControlSet.new],ControlSet.new, e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7]);
 });
 
 parameterSliders.do({ arg each, i;
