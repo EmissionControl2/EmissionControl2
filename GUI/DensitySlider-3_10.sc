@@ -18,8 +18,24 @@ DensitySlider : ParameterSlider {
 	var	trigPopUpMenuActionList, extKeyBoxActionList;
 
 	// create and name a new ParameterSlider
-	*new { arg argParent, argName, argMin = 0, argMax = 1, argLeft = 0, argRight = 1, argWarp = \lin, argStep = 0, argDefault = 0, argUnits, argJoystickControlSetArray, argTiltControlSet;
-		^super.new(argParent, argName, argMin, argMax, argLeft, argRight, argWarp, argStep, argDefault, argUnits, argJoystickControlSetArray, argTiltControlSet).initDensitySlider;	}
+	*new { arg argParent,
+		argJoystickControlSetArray, argTiltControlSet,
+		argName,
+		argMin = 0, argMax = 1,
+		argLeft = 0, argRight = 1,
+		argWarp = \lin, argStep = 0,
+		argDefault = 0, argUnits;
+
+		^super.new(argParent,
+			argJoystickControlSetArray, argTiltControlSet,
+			argName,
+			argMin, argMax,
+			argLeft, argRight,
+			argWarp, argStep,
+			argDefault, argUnits)
+		.initDensitySlider;
+
+	}
 
 	initDensitySlider {
 		var	leftBoxAction, sliderAction, rightBoxAction, currentBoxAction; // actions to append to action list
@@ -28,26 +44,26 @@ DensitySlider : ParameterSlider {
 		/* Declarations */
 
 		// trigPopUpMenu
-		trigPopUpMenu = SCPopUpMenu.new(parent);
+		trigPopUpMenu = PopUpMenu.new(parent);
 		trigPopUpMenu.canFocus = false;
 		trigPopUpMenu.font = Font.new("Helvetica", 10);
 		trigPopUpMenu.background = HiliteGradient.new(Color.gray, Color.black, \h, 256, 0);
 		trigPopUpMenu.stringColor = Color.white;
 
 		// extKeyBoxLabel
-		extKeyBoxLabel = SCStaticText.new(parent);
+		extKeyBoxLabel = StaticText.new(parent);
 		extKeyBoxLabel.string = units.asString;
 		extKeyBoxLabel.font = Font.new("Helvetica", 12);
 		extKeyBoxLabel.align = \right;
 		extKeyBoxLabel.stringColor = Color.white;
 		// extKeyBox
-		extKeyBox = SCNumberBox2.new(parent);
+		extKeyBox = NumberBox.new(parent);
 		extKeyBox.canFocus = true;
 		extKeyBox.font = Font.new("Helvetica", 12);
 		extKeyBox.align = \left;
-		extKeyBox.boxColor = Color.black;
-		extKeyBox.defaultStringColor = Color.white;
-		extKeyBox.enterStringColor = Color.green;
+		extKeyBox.background = Color.black;
+		extKeyBox.normalColor = Color.white;
+		extKeyBox.typingColor = Color.green;
 
 		/* Initializations */
 
@@ -176,13 +192,21 @@ DensitySlider : ParameterSlider {
 	}
 
 	// draw the widgets on the screen within a parent window
-	draw { arg xOff = 5, yOff = 5, height = 20, gap = 5, sliderLength = 200, boxLength = 40, buttonLength = 20, optionPopUpMenuLength = 85, optionBoxLength = 40;
+	draw { arg xOff = 5, yOff = 5,
+		height = 20, gap = 5,
+		sliderLength = 200, boxLength = 40, buttonLength = 20,
+		optionPopUpMenuLength = 85, optionBoxLength = 40;
 		var	offsets;
 
+		slider.orientation_(\horizontal);
+
 		// an array of default widget offsets (in relation to neighboring widgets)
-		offsets = [0, boxLength, boxLength * 2, (boxLength * 2) + sliderLength, (boxLength * 3) + sliderLength,
-				(boxLength * 3) + sliderLength + buttonLength, (boxLength * 3) + sliderLength + (buttonLength * 2),
-				(boxLength * 3) + sliderLength + (buttonLength * 3), (boxLength * 3) + sliderLength + (buttonLength * 3) + optionPopUpMenuLength];
+		offsets = [0, boxLength, boxLength * 2, (boxLength * 2) + sliderLength,
+			(boxLength * 3) + sliderLength,
+			(boxLength * 3) + sliderLength + buttonLength,
+			(boxLength * 3) + sliderLength + (buttonLength * 2),
+			(boxLength * 3) + sliderLength + (buttonLength * 3),
+			(boxLength * 3) + sliderLength + (buttonLength * 3) + optionPopUpMenuLength];
 		// shift all offsets according to gap width
 		offsets = offsets.collect({ arg each, i; each = each + (i * gap); });
 
