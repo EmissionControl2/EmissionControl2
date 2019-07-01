@@ -126,7 +126,7 @@ ModulationSlider : MappableSlider {
 				gainViewButtonDataList[2][i]]; });
 
 		// bypassButton
-		bypassButton = SCButton.new(parent);
+		bypassButton = Button.new(parent);
 		bypassButton.canFocus_(buttonCanFocus);
 		bypassButton.font_(bypassButtonFont);
 		bypassButton.states_(bypassButtonStates);
@@ -145,7 +145,7 @@ ModulationSlider : MappableSlider {
 		("bypassButton.action -> " ++ bypassButton.action).postln;
 
 		// posNegButton
-		posNegButton = SCButton.new(parent);
+		posNegButton = Button.new(parent);
 		posNegButton.canFocus_(buttonCanFocus);
 		posNegButton.font_(posNegButtonFont);
 		posNegButton.states_(posNegButtonStates);
@@ -164,7 +164,7 @@ ModulationSlider : MappableSlider {
 		("posNegButton.action -> " ++ posNegButton.action).postln;
 
 		// modSrcPopUpMenu
-		modSrcPopUpMenu = SCPopUpMenu.new(parent);
+		modSrcPopUpMenu = PopUpMenu.new(parent);
 		modSrcPopUpMenu.canFocus_(popUpMenuCanFocus);
 		modSrcPopUpMenu.font_(popUpMenuFont);
 		modSrcPopUpMenu.background_(popUpMenuBackground);
@@ -187,7 +187,7 @@ ModulationSlider : MappableSlider {
 		("modSrcPopUpMenu.action -> " ++ modSrcPopUpMenu.action).postln;
 
 		// gainViewButton
-		gainViewButton = SCButton.new(parent);
+		gainViewButton = Button.new(parent);
 		gainViewButton.canFocus_(buttonCanFocus);
 		gainViewButton.font_(gainViewButtonFont);
 		gainViewButton.states_(gainViewButtonStates);
@@ -392,6 +392,8 @@ ModulationSlider : MappableSlider {
 			sliderLength = 200, boxLength = 40,
 			buttonLength = 20, popUpMenuLength = 80;
 		var	offsets = nil; // an array of relative widget offsets
+
+		slider.orientation_(\horizontal);
 
 		offsets = [0, buttonLength, buttonLength * 2,
 				(buttonLength * 2) + popUpMenuLength,

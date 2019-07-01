@@ -7,7 +7,7 @@
 var	window, joystickControlSetArray, tiltControlSet, sliders;
 var	joystickWindow, joystick;
 
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 615, 260), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 260), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 sliders = Array.fill(10, {
@@ -18,7 +18,7 @@ sliders.do({ arg each, i;
 	each.draw(5, 5 + ( 25 * i), 20, 5, 200, 60, 20, 80); });
 window.front;
 
-joystickWindow = SCWindow.new("< Joystick 1 >",
+joystickWindow = Window.new("< Joystick 1 >",
 		Rect.new(620, 1024, 235, 160), true, true);
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
 		joystickControlSetArray[0], joystickControlSetArray[1], false);
@@ -31,7 +31,7 @@ joystickWindow.front;
 var	window, joystickControlSetArray, tiltControlSet, sliders;
 var	joystickWindow, joystick;
 
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 615, 260), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 260), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 sliders = Array.fill(10, {
@@ -42,7 +42,7 @@ sliders.do({ arg each, i;
 	each.draw(5, 5 + ( 25 * i), 20, 5, 200, 60, 20, 80); });
 window.front;
 
-joystickWindow = SCWindow.new("< Joystick 1 >",
+joystickWindow = Window.new("< Joystick 1 >",
 		Rect.new(620, 1024, 235, 160), true, true);
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
 		joystickControlSetArray[0], joystickControlSetArray[1], false);

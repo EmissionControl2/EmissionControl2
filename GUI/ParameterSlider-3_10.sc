@@ -84,7 +84,7 @@ ParameterSlider : MappableSlider {
 				buttonDataList[2][i]]; });
 
 		// rangeClipButton
-		rangeClipButton = SCButton.new(parent);
+		rangeClipButton = Button.new(parent);
 		rangeClipButton.canFocus_(buttonCanFocus);
 		rangeClipButton.font_(buttonFont);
 		rangeClipButton.states_(buttonStates);
@@ -138,6 +138,8 @@ ParameterSlider : MappableSlider {
 			width = 20, gap = 5,
 			sliderLength = 200, boxLength = 40, buttonLength = 20;
 		var	offsets = nil; // an array of relative widget offsets
+
+		slider.orientation_(\horizontal);
 
 		offsets = [0, boxLength, boxLength * 2,
 				(boxLength * 2) + sliderLength,
