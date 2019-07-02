@@ -9,7 +9,7 @@ var	joystickWindow, joystick;
 var	presetButtons1, presetButtons2, allPresetButtons;
 var	presetInterpolator, presetsController;
 
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 615, 345), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 345), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 zoomSliderControlSet = ControlSet.new; // initially empty
@@ -24,7 +24,7 @@ sliders.do({ arg each, i;
 
 window.front;
 
-joystickWindow = SCWindow.new("< Joystick 1 >",
+joystickWindow = Window.new("< Joystick 1 >",
 		Rect.new(620, 1024, 235, 160), true, true);
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
 		joystickControlSetArray[0], joystickControlSetArray[1], false);
@@ -48,7 +48,7 @@ presetsController.drawCtrlButtons(140, 255, 20, 0, 20);
 presetsController.drawModeButtons(40, 255, 20, 0, 30);
 presetsController.drawCurveButtons(210, 255, 20, 0, 30);
 presetsController.drawStatusLabel(5, 285, 60, 20);
-presetsController.drawTimeZoomSlider(40, 320, \h, 20, 5, 130, 60, \right);
+presetsController.drawTimeZoomSlider(40, 320, \horizontal, 20, 5, 130, 60, \right);
 presetsController.drawTimeRangeSlider(70, 295, 200, 5);
 
 presetsController.timeZoomSlider.currentBox.bounds_(Rect.new(275, 285, 60, 20));
@@ -64,7 +64,7 @@ var	joystickWindow, joystick;
 var	presetButtons1, presetButtons2, allPresetButtons;
 var	presetInterpolator, presetsController;
 
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 615, 345), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 345), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 zoomSliderControlSet = ControlSet.new; // initially empty
@@ -79,7 +79,7 @@ sliders.do({ arg each, i;
 
 window.front;
 
-joystickWindow = SCWindow.new("< Joystick 1 >",
+joystickWindow = Window.new("< Joystick 1 >",
 		Rect.new(620, 1024, 235, 160), true, true);
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
 		joystickControlSetArray[0], joystickControlSetArray[1], false);
