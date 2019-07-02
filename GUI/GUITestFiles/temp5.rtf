@@ -1,0 +1,148 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf2 (\
+\cf3 var\cf2 	controllerWindow;\
+\cf3 var\cf2 	joystickControlSetArray, tiltControlSet, zoomSliderControlSet;\
+\cf3 var\cf2 	horizontalDivider, verticalDivider;\
+\cf3 var\cf2 	labelsSpec, labels; \
+\cf3 var\cf2 	modulationSlidersSpec, modulationSliders; \
+\cf3 var\cf2 	parameterSlidersSpec, parameterSliders;\
+\cf3 var\cf2 	joystickWindows;\
+\cf3 var\cf2 	joysticksSpec, joysticks;\
+\cf3 var\cf2 	tiltButtonLeft, tiltButtonCenter, tiltButtonRight;\
+\cf3 var\cf2 	presetButtonArray, presetInterpolator, presetsController;\
+\
+controllerWindow = \cf3 SCWindow\cf2 .new(\cf4 "< Controller >"\cf2 , \cf3 Rect\cf2 .new(0, 0, 1245, 315), \cf3 false\cf2 , \cf3 true\cf2 );\
+controllerWindow.view.background = \cf3 HiliteGradient\cf2 .new(\cf3 Color\cf2 .new255(69, 166, 247), \cf3 Color\cf2 .new255(0, 82, 155), \cf5 \\h\cf2 , 2048, 0.5);\
+\
+joystickControlSetArray = \cf3 Array\cf2 .fill(16, \{ \cf3 ControlSet\cf2 .new; \}); \
+tiltControlSet = \cf3 ControlSet\cf2 .new;\
+zoomSliderControlSet = \cf3 ControlSet\cf2 .new; \cf6 // initially empty (for Preset)\cf2 \
+\
+horizontalDivider = \cf3 SCStaticText\cf2 .new(controllerWindow, \cf3 Rect\cf2 .new(5, 5 + (25 * 12), 1235, 5)); \
+horizontalDivider.background = \cf3 HiliteGradient\cf2 .new(\cf3 Color\cf2 .clear, \cf3 Color\cf2 .black, \cf5 \\h\cf2 , 2048, 0.5);\
+verticalDivider = \cf3 SCStaticText\cf2 .new(controllerWindow, \cf3 Rect\cf2 .new(620, 5 + (25 * 2), 5, 255)); \
+verticalDivider.background = \cf3 HiliteGradient\cf2 .new(\cf3 Color\cf2 .clear, \cf3 Color\cf2 .black, \cf5 \\v\cf2 , 1024, 1);\
+labelsSpec = [\
+	[\cf3 Rect\cf2 .new(5, 5 + (25 * 1), 130, 20), \cf4 "modulation source"\cf2 ],\
+	[\cf3 Rect\cf2 .new(190, 5 + (25 * 1), 20, 20), \cf4 "x/y"\cf2 ], \
+	[\cf3 Rect\cf2 .new(280, 5 + (25 * 1), 200, 20), \cf4 "modulation amount"\cf2 ], \
+	[\cf3 Rect\cf2 .new(550, 5 + (25 * 1), 145, 20), \cf4 "current"\cf2 ], \
+	[\cf3 Rect\cf2 .new(765, 5 + (25 * 1), 200, 20), \cf4 "parameters"\cf2 ],\
+	[\cf3 Rect\cf2 .new(1035, 5 + (25 * 1), 20, 20), \cf4 "x/y"\cf2 ],  \
+	[\cf3 Rect\cf2 .new(1110, 5 + (25 * 1), 130, 20), \cf4 "options"\cf2 ]\
+];\
+labels = labelsSpec.collect(\{ \cf3 arg\cf2  each; \
+	\cf3 SCStaticText\cf2 .new(controllerWindow, each[0])\
+	.string_(each[1])\
+	.font_(\cf3 Font\cf2 .new(\cf4 "Helvetica"\cf2 , 12))  					.align_(\cf5 \\center\cf2 )\
+	.stringColor_(\cf3 Color\cf2 .black.alpha_(0.7));\
+\});\
+\
+modulationSlidersSpec = [\cf4 "soundfile"\cf2 , \cf4 "density"\cf2 , \cf4 "duration"\cf2 , \cf4 "pitch"\cf2 , \cf4 "time"\cf2 , \cf4 "phase"\cf2 , \cf4 "space"\cf2 , \cf4 "filter"\cf2 , \cf4 "resonance"\cf2 , \cf4 "amplitude"\cf2 ];\
+\
+modulationSliders = \cf3 Array\cf2 .fill(10, \{ \cf3 ModulationSlider\cf2 .new(controllerWindow, joystickControlSetArray, tiltControlSet); \});\
+\
+modulationSliders.do(\{ \cf3 arg\cf2  each, i;\
+	each.setZoomSpec(modulationSlidersSpec[i], 0, 100, 0, 100, \cf5 \\lin\cf2 , 0.01, 0, \cf4 "% "\cf2 );\
+	each.addModSrc(\cf4 "barberpole"\cf2 ); \
+	each.draw(5, 5 + (25 * (i + 2)), 20, 5, 200, 60, 20, 80);\
+	each.leftBox.boxColor = \cf3 Color\cf2 .new255(0, 82, 155).alpha_(1);\
+	each.rightBox.boxColor = \cf3 Color\cf2 .new255(0, 82, 155).alpha_(1);\
+	zoomSliderControlSet.add(each); \
+\});\
+	\
+parameterSlidersSpec = [\
+	[\cf4 "soundfile"\cf2 , 1, 128, 1, 128, \cf5 \\lin\cf2 , 1, 1, \cf4 "# "\cf2 ],\
+	[\cf4 "density"\cf2 , 1, 1000, 1, 1000, \cf5 \\exp\cf2 , 1, 10, \cf4 "/s "\cf2 ],\
+	[\cf4 "duration"\cf2 , 1, 10000, 1, 10000, \cf5 \\exp\cf2 , 1, 100, \cf4 "ms "\cf2 ],\
+	[\cf4 "pitch"\cf2 , -48, 24, -48, 24, \cf5 \\sin\cf2 , 0.01, 0, \cf4 "ht "\cf2 ],\
+	[\cf4 "time"\cf2 , 0.1, 400, 0.1, 400, \cf5 \\exp\cf2 , 0.1, 100, \cf4 "% "\cf2 ],\
+	[\cf4 "phase"\cf2 , 0, 100, 0, 100, \cf5 \\lin\cf2 , 0.01, 0, \cf4 "% "\cf2 ],\
+	[\cf4 "space"\cf2 , -180, 180, -180, 180, \cf5 \\lin\cf2 , 0.1, 0, 161.asAscii.asString ++ \cf4 " "\cf2 ],\
+	[\cf4 "filter"\cf2 , 60, 18000, 60, 18000, \cf5 \\exp\cf2 , 1, 2000, \cf4 "Hz "\cf2 ],\
+	[\cf4 "resonance"\cf2 , 0.5, 1000, 0.5, 1000, \cf5 \\exp\cf2 , 0.1, 1, \cf4 "Q "\cf2 ],\
+	[\cf4 "amplitude"\cf2 , -120, 12, -120, 12, \cf5 \\sin\cf2 , 0.1, 0, \cf4 "dB "\cf2 ]\
+];\
+\
+parameterSliders = \cf3 Array\cf2 .fill(10, \{ \cf3 ParameterSlider\cf2 .new(controllerWindow, joystickControlSetArray, tiltControlSet); \});\
+\
+parameterSliders.do(\{ \cf3 arg\cf2  each, i;\
+	\cf3 var\cf2  j = 0;\
+	each.setZoomSpec(parameterSlidersSpec[i][j], parameterSlidersSpec[i][j+1], parameterSlidersSpec[i][j+2], \
+			parameterSlidersSpec[i][j+3], parameterSlidersSpec[i][j+4], parameterSlidersSpec[i][j+5], \
+			parameterSlidersSpec[i][j+6], parameterSlidersSpec[i][j+7], parameterSlidersSpec[i][j+8]); \
+	each.draw(635, 5 + (25 * (i + 2)), 20, 5, 200, 60, 20); \
+	each.leftBox.boxColor = \cf3 Color\cf2 .new255(0, 82, 155).alpha_(1);\
+	each.rightBox.boxColor = \cf3 Color\cf2 .new255(0, 82, 155).alpha_(1);\
+	zoomSliderControlSet.add(each);\
+\});\
+\
+joystickWindows = \cf3 Array\cf2 .fill(8, \{ \cf3 arg\cf2  i; \
+	if(i < 4, \{\
+		\cf3 SCWindow\cf2 .new(\cf4 "< Joystick "\cf2  ++ (i+1) ++ \cf4 " >"\cf2 , \cf3 Rect\cf2 .new(0 + (205 * i), \cf3 SCWindow\cf2 .screenBounds.height, 200, 150), \cf3 true\cf2 , \cf3 true\cf2 );\
+	\}, \{\
+		\cf3 SCWindow\cf2 .new(\cf4 "< Joystick "\cf2  ++ (i+1) ++ \cf4 " >"\cf2 , \cf3 Rect\cf2 .new(0 + (205 * (i-4)), \cf3 SCWindow\cf2 .screenBounds.height - 370, 200, 150), \cf3 true\cf2 , \cf3 true\cf2 );\
+	\});\
+\});\
+\
+joysticksSpec = [\
+	[\cf3 Color\cf2 .new255(255, 192, 203), joystickControlSetArray[0], joystickControlSetArray[1]], \cf6 // pink\cf2 \
+	[\cf3 Color\cf2 .red.alpha_(0.3), joystickControlSetArray[2], joystickControlSetArray[3]],       \cf6 // red\cf2 \
+	[\cf3 Color\cf2 .new255(255, 165, 0), joystickControlSetArray[4], joystickControlSetArray[5]],   \cf6 // orange\cf2 \
+	[\cf3 Color\cf2 .yellow.alpha_(0.3);, joystickControlSetArray[6], joystickControlSetArray[7]],   \cf6 // yellow\cf2 \
+	[\cf3 Color\cf2 .green.alpha_(0.3), joystickControlSetArray[8], joystickControlSetArray[9]],     \cf6 // green\cf2 \
+	[\cf3 Color\cf2 .blue.alpha_(0.3), joystickControlSetArray[10], joystickControlSetArray[11]],    \cf6 // blue\cf2 \
+	[\cf3 Color\cf2 .new255(160, 32, 240), joystickControlSetArray[12], joystickControlSetArray[13]],\cf6 // purple\cf2 \
+	[\cf3 Color\cf2 .gray.alpha_(0.3);, joystickControlSetArray[14], joystickControlSetArray[15]]    \cf6 // gray\cf2 \
+]; \
+\
+joysticks = \cf3 Array\cf2 .fill(8, \{ \cf3 arg\cf2  i; \cf3 Joystick\cf2 .new(joystickWindows[i], \cf4 ""\cf2 , joysticksSpec[i][0], joysticksSpec[i][1], joysticksSpec[i][2], \cf3 false\cf2 ); \});\
+\
+joysticks.do(\{ \cf3 arg\cf2  each; each.draw(5, 5, 20, 5, \cf5 \\bottom\cf2 , \cf5 \\right\cf2 , \cf5 \\top\cf2 , \cf3 true\cf2 ); \});\
+\
+tiltButtonLeft = \cf3 TiltButton\cf2 .new(controllerWindow, \cf4 "TILT"\cf2 , \cf3 Tilt\cf2 .new(tiltControlSet, \cf5 \\left\cf2 , 0.1, 0.1, 4));\
+tiltButtonCenter = \cf3 TiltButton\cf2 .new(controllerWindow, \cf4 "TILT"\cf2 , \cf3 Tilt\cf2 .new(tiltControlSet, \cf5 \\center\cf2 , 0.1, 0.1, 4));\
+tiltButtonRight = \cf3 TiltButton\cf2 .new(controllerWindow, \cf4 "TILT"\cf2 , \cf3 Tilt\cf2 .new(tiltControlSet, \cf5 \\right\cf2 , 0.1, 0.1, 4));  \
+\
+[tiltButtonLeft, tiltButtonCenter, tiltButtonRight].do(\{ \cf3 arg\cf2  each, i;\
+	each.draw([5, 600, 1195].at(i), 5, 40, 20);\
+\});\
+\
+tiltButtonCenter.button.visible = \cf3 false\cf2 ;\
+\cf6 /*\
+\
+tiltButtonLeft = TiltButton.new(window, "TILT", \\left, Tilt.new(tiltControlSet));\
+tiltButtonCenter = TiltButton.new(window, "TILT", \\center, Tilt.new(tiltControlSet));\
+tiltButtonRight = TiltButton.new(window, "TILT", \\right, Tilt.new(tiltControlSet));  \
+\
+[tiltButtonLeft, tiltButtonCenter, tiltButtonRight].do(\{ arg each, i;\
+	each.draw([5, 600, 1195].at(i), 5, 40, 20);\
+\});\
+\
+presetButtonArray = Array.fill(20, \{ arg i; PresetButton.new(window, (i + 1).asString, Preset.new(zoomSliderControlSet)) \});\
+presetButtonArray.do(\{ arg each, i; each.draw(422 + (20 * i), 5 + (25 * 1), 20, 20); \});\
+\
+presetInterpolator = PresetInterpolator.new(presetButtonArray);\
+\
+presetsController = PresetsController.new(window, "presetsController", presetButtonArray, presetInterpolator);\
+presetsController.drawCtrlButtons(145, 525, 20, 0, 20);\
+presetsController.drawModeButtons(45, 525, 20, 0, 30);\
+presetsController.drawCurveButtons(215, 525, 20, 0, 30);\
+presetsController.drawStatusLabel(30, 555, 40, 20);\
+presetsController.drawTimeZoomSlider(45, 590, \\h, 20, 5, 170, 40, \\right);\
+presetsController.drawTimeRangeSlider(75, 565, 200, 5);\
+*/\cf2 \
+controllerWindow.front;\
+joystickWindows.do(\{ \cf3 arg\cf2  each; each.front; \});\
+\
+controllerWindow.onClose = \{ \cf3 arg\cf2  controllerWindow;\
+	\cf3 SCWindow\cf2 .closeAll;\
+\};\
+)\
+\
+\cf6 ///////////////////////////////////////////////////////////////////////////////}
