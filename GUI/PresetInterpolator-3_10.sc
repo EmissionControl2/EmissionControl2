@@ -82,7 +82,7 @@ PresetInterpolator {
 		("runningTasks -> " ++ runningTasks).postln;
 	}
 
-	/*
+
 	// setup the runningTasks array (do this only at init time!)
 	setupRunningTasksArray {
 		var	somePreset = nil;
@@ -97,7 +97,7 @@ PresetInterpolator {
 		runningTasks = Array.new(numViewsToUpdate);
 		("runningTasks -> " ++ runningTasks).postln;
 	}
-	*/
+
 
 	/* PUBLIC INTERFACE */ // (override or extend these in subclasses...)
 
