@@ -10,7 +10,7 @@ var	joystickWindow, joystick;
 window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 260), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
-zoomSliderControlSet = ControlSet.new; // initially empty
+zoomSliderControlSet = ControlSet.new; // ini tially empty
 sliders = Array.fill(10, {
 	ModulationSlider.new(window, joystickControlSetArray, tiltControlSet,
 			"modulation amount", 0, 100, 0, 100, \lin, 0.01, 0, "% "); });

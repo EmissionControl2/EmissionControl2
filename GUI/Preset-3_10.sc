@@ -157,8 +157,8 @@ Preset {
 					view.currentBox.valueAction_(dictionary.at(i).at(3));
 					view.lockButton.valueAction_(dictionary.at(i).at(4));
 					view.axisButton.valueAction_(dictionary.at(i).at(5));
-					view.bypassButton.valueAction_(dictionary.at(i).at(6));
-					// ^^^^^^ JKilg: this causes post window error
+					view.bypassButton.value_(dictionary.at(i).at(6)); //Jkilg:ignore Bypass action for now
+					// ^^^^^^ JKilg: this causes post window error //Bypass action
 					view.posNegButton.valueAction_(dictionary.at(i).at(7));
 					view.modSrcPopUpMenu.valueAction_(dictionary.at(i).at(8));
 					view.gainViewButton.valueAction_(dictionary.at(i).at(9));
