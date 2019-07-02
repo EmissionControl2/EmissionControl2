@@ -88,7 +88,7 @@ PresetButton {
 				buttonDataList[2]]; });
 
 		// button
-		button = SCButton.new(parent);
+		button = Button.new(parent);
 		button.canFocus_(buttonCanFocus);
 		button.font_(buttonFont);
 		button.states_(buttonStates);

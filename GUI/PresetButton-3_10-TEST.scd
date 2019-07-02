@@ -8,7 +8,7 @@ var	window, joystickControlSetArray, tiltControlSet, zoomSliderControlSet, slide
 var	joystickWindow, joystick;
 var	presetButtons;
 
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 615, 280), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 280), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 zoomSliderControlSet = ControlSet.new; // initially empty
@@ -22,7 +22,7 @@ sliders.do({ arg each, i;
 });
 window.front;
 
-joystickWindow = SCWindow.new("< Joystick 1 >",
+joystickWindow = Window.new("< Joystick 1 >",
 		Rect.new(620, 1024, 235, 160), true, true);
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
 		joystickControlSetArray[0], joystickControlSetArray[1]);
@@ -41,7 +41,7 @@ var	window, joystickControlSetArray, tiltControlSet, zoomSliderControlSet, slide
 var	joystickWindow, joystick;
 var	presetButtons;
 
-window = SCWindow.new("< Test Area >", Rect.new(0, 1024, 615, 280), true, true);
+window = Window.new("< Test Area >", Rect.new(0, 1024, 615, 280), true, true);
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 zoomSliderControlSet = ControlSet.new; // initially empty
@@ -55,7 +55,7 @@ sliders.do({ arg each, i;
 });
 window.front;
 
-joystickWindow = SCWindow.new("< Joystick 1 >",
+joystickWindow = Window.new("< Joystick 1 >",
 		Rect.new(620, 1024, 235, 160), true, true);
 joystick = Joystick.new(joystickWindow, "", Color.new255(255, 192, 203),
 		joystickControlSetArray[0], joystickControlSetArray[1]);
