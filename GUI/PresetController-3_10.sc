@@ -232,7 +232,7 @@ PresetsController {
 		timeRangeSliderKnobColor = Color.blue;
 
 		// pauseButton
-		pauseButton = SCButton.new(parent);
+		pauseButton = Button.new(parent);
 		pauseButton.canFocus_(buttonCanFocus);
 		pauseButton.font_(buttonFont);
 		pauseButton.states_(pauseButtonStates);
@@ -251,7 +251,7 @@ PresetsController {
 		("pauseButton.action -> " ++ pauseButton.action).postln;
 
 		// stopButton
-		stopButton = SCButton.new(parent);
+		stopButton = Button.new(parent);
 		stopButton.canFocus_(buttonCanFocus);
 		stopButton.font_(buttonFont);
 		stopButton.states_(stopButtonStates);
@@ -270,7 +270,7 @@ PresetsController {
 		("stopButton.action -> " ++ stopButton.action).postln;
 
 		// refreshButton
-		refreshButton = SCButton.new(parent);
+		refreshButton = Button.new(parent);
 		refreshButton.canFocus_(buttonCanFocus);
 		refreshButton.font_(buttonFont);
 		refreshButton.states_(refreshButtonStates);
@@ -289,7 +289,7 @@ PresetsController {
 		("refreshButton.action -> " ++ refreshButton.action).postln;
 
 		// resetButton
-		resetButton = SCButton.new(parent);
+		resetButton = Button.new(parent);
 		resetButton.canFocus_(buttonCanFocus);
 		resetButton.font_(buttonFont);
 		resetButton.states_(resetButtonStates);
@@ -308,7 +308,7 @@ PresetsController {
 		("resetButton.action -> " ++ resetButton.action).postln;
 
 		// loadButton
-		loadButton = SCButton.new(parent);
+		loadButton = Button.new(parent);
 		loadButton.canFocus_(buttonCanFocus);
 		loadButton.font_(buttonFont);
 		loadButton.states_(loadButtonStates);
@@ -327,7 +327,7 @@ PresetsController {
 		("loadButton.action -> " ++ loadButton.action).postln;
 
 		// storeButton
-		storeButton = SCButton.new(parent);
+		storeButton = Button.new(parent);
 		storeButton.canFocus_(buttonCanFocus);
 		storeButton.font_(buttonFont);
 		storeButton.states_(storeButtonStates);
@@ -346,7 +346,7 @@ PresetsController {
 		("storeButton.action -> " ++ storeButton.action).postln;
 
 		// linButton
-		linButton = SCButton.new(parent);
+		linButton = Button.new(parent);
 		linButton.canFocus_(buttonCanFocus);
 		linButton.font_(buttonFont);
 		linButton.states_(linButtonStates);
@@ -365,7 +365,7 @@ PresetsController {
 		("linButton.action -> " ++ linButton.action).postln;
 
 		// expButton
-		expButton = SCButton.new(parent);
+		expButton = Button.new(parent);
 		expButton.canFocus_(buttonCanFocus);
 		expButton.font_(buttonFont);
 		expButton.states_(expButtonStates);
@@ -384,7 +384,7 @@ PresetsController {
 		("expButton.action -> " ++ expButton.action).postln;
 
 		// logButton
-		logButton = SCButton.new(parent);
+		logButton = Button.new(parent);
 		logButton.canFocus_(buttonCanFocus);
 		logButton.font_(buttonFont);
 		logButton.states_(logButtonStates);
@@ -403,7 +403,7 @@ PresetsController {
 		("logButton.action -> " ++ logButton.action).postln;
 
 		// statusLabel
-		statusLabel = SCStaticText.new(parent);
+		statusLabel = StaticText.new(parent);
 		statusLabel.string_("");
 		statusLabel.font_(statusLabelFont);
 		statusLabel.align_(statusLabelAlign);
@@ -417,7 +417,7 @@ PresetsController {
 		("statusLabel.stringColor -> " ++ statusLabel.stringColor).postln;
 
 		// timeRangeSliderLabel
-		timeRangeSliderLabel = SCStaticText.new(parent);
+		timeRangeSliderLabel = StaticText.new(parent);
 		timeRangeSliderLabel.string_("");
 		timeRangeSliderLabel.font_(timeRangeSliderLabelFont);
 		timeRangeSliderLabel.align_(timeRangeSliderLabelAlign);
@@ -430,7 +430,7 @@ PresetsController {
 		("timeRangeSliderLabel.stringColor -> " ++ timeRangeSliderLabel.stringColor).postln;
 
 		// timeRangeSlider
-		timeRangeSlider = SCRangeSlider.new(parent);
+		timeRangeSlider = RangeSlider.new(parent);
 		timeRangeSlider.canFocus_(timeRangeSliderCanFocus);
 		timeRangeSlider.background_(timeRangeSliderBackground);
 		timeRangeSlider.knobColor_(timeRangeSliderKnobColor);
@@ -892,7 +892,7 @@ PresetsController {
 
 	// draw the timeZoomSlider widget on the screen within a parent window
 	drawTimeZoomSlider { arg xOff = 5, yOff = 5,
-			orientation = \h,
+			orientation = \horizontal,
 			width = 20, gap = 5,
 			sliderLength = 200, boxLength = 40,
 			currentBoxSide = \right;
