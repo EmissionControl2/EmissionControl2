@@ -249,13 +249,14 @@ ModulationSlider : MappableSlider {
 		// define actions
 		bypassButtonAction = { arg bypassButton;
 			if(bypassButton.value == 0, { // off
+
 				(name ++ " " ++ "bypassButton -> " ++
 						[bypassButton.value,
 						bypassButton.states[bypassButton.value][0]]).postln;
 
 				// store the currentBox.value into 'lastCurrentBoxValue'
 				lastCurrentBoxValue = currentBox.value;
-				val("lastCurrentBoxValue has been stored as " ++
+				("lastCurrentBoxValue has been stored as " ++
 						lastCurrentBoxValue).postln;
 				// move slider to '0' position (relative)
 				// note: makes more sense visually to move to '0' when ==
@@ -280,12 +281,13 @@ ModulationSlider : MappableSlider {
 				slider.value = if(leftBox.value == rightBox.value, {
 					0;
 				}, {
-					spec.unmap(lastCurrentBoxValue + offset)
-				});
+					spec.unmap(lastCurrentBoxValue + offset); //JKilg:
+				});                                           //lastCurrentBoxValue is nil; resulting in error
 				("lastCurrentBoxValue has been set back to " ++
 						(spec.map(slider.value) - offset)).postln;
 				// set the currentBox to 'lastCurrentBoxValue'
-				currentBox.value = lastCurrentBoxValue;
+
+				currentBox.value = lastCurrentBoxValue; //the nil causes an error here as well
 				("currentBox.value -> " ++
 						currentBox.value).postln;
 			});
@@ -345,11 +347,11 @@ ModulationSlider : MappableSlider {
 			bypassButton.value_(1);
 			bypassButton.enabled_(true);
 		});
-		(name ++ " " ++ "bypassButton -> " ++
+		/*(name ++ " " ++ "bypassButton -> " ++
 				[bypassButton.value,
 				bypassButton.states[bypassButton.value][0]]).postln;
 		("bypassButton.enabled -> " ++
-				bypassButton.enabled).postln;
+				bypassButton.enabled).postln;*/
 	}
 
 	/* PUBLIC INTERFACE */ // (override or extend these in subclasses...)
