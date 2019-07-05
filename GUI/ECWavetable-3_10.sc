@@ -404,6 +404,7 @@ ECWavetable {
 		increment = range / timesToMove;
 		delta = duration / timesToMove;
 
+
 		("currentFreq -> " ++ currentFreq).postln;
 		("duration -> " ++ duration).postln;
 		("maxStepsPerCycle -> " ++ maxStepsPerCycle).postln;
@@ -415,15 +416,17 @@ ECWavetable {
 		rangeSliderTask = Task.new({ // JKilg: this is causing runtime error when closing GUI window
 			var	pos = 0;
 			inf.do({
+
 				timesToMove.do({
 					{
-					rangeSlider.lo_(rangeSlider.hi - rangeSlider.step);
-					rangeSlider.hi_(pos.round(rangeSlider.step) * range.reciprocal);
-					}.defer;
+						rangeSlider.lo_(rangeSlider.hi - rangeSlider.step);
+						rangeSlider.hi_(pos.round(rangeSlider.step) * range.reciprocal);
+					}.defer; // JKilg: this seems to cause an error
 					//("pos -> " ++ pos).postln;
 					pos = (pos + increment) % tableSize;
 					delta.wait;
-				});
+
+			});
 			});
 		}, AppClock); //JKilg: changed to AppClock, since calling GUI primitives
 		rangeSliderTask.start;

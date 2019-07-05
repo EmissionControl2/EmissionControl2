@@ -13,7 +13,7 @@ var	window, modulationSlidersArraySpec, modulationSliders, parameterSlidersArray
 var	synthDef, synth;
 var	path, buffer, sfInfo, sfDur;
 
-s = Server.internal;
+//s = Server.internal;
 Server.default = s;
 s.boot;
 
@@ -60,14 +60,14 @@ synthDef = SynthDef.new("CloudTest1", {
 	//amp = 1.0 * rq.reciprocal.min(10); // old compensation
 	//amp = 1.0 + (rq.reciprocal * 0.1); // see SC1 SweepingGranQ p.2
 	amp = ((amplitude.dbamp) * (2 ** (modSrc * (amplitudeModAmt * 0.1)))).min(4.0) * rq.reciprocal ** 0.7; // see SC2 CVox_ConstQ
-	Out.ar(outBusNum, Cloud.ar(numChannels, trigger, bufnum, rate, centerPos, dur, pan, amp, interp, freq, rq, gainComp));
+	Out.ar(outBusNum, RCloud.ar(numChannels, trigger, bufnum, rate, centerPos, dur, pan, amp, interp, freq, rq, gainComp));
 }).load(s);
 
 //s.sendMsg("\s_new", "CloudTest1", -1, 1, 0, \outBus, 0);
 synth = Synth.new("CloudTest1", [\outBus, 0, \soundfile, 1, \density, 10, \duration, 100, \pitch, 0, \time, 100, \phase, 0, \space, 0, \filter, 2000, \resonance, 1, \amplitude, 0], nil, \addToHead);
 //synth.nodeID = 1000;
 
-window = SCWindow.new("< CloudTest1 >", Rect.new(0, 1024, 1245, 255), false, true);
+window = Window.new("< CloudTest1 >", Rect.new(0, 1024, 1245, 255), false, true);
 
 modulationSlidersArraySpec = [
 	["soundfile", 0, 100, 0, 100, \exp, 0.01, 0, "% "],
