@@ -140,7 +140,7 @@ Joystick {
 
 		// slider2D
 		if(hasGate, {
-			slider2D = SC2DTabletSlider.new(parent);
+			slider2D = Slider2D.new(parent); //JKilg: just made this a 2D slider for now
 		}, {
 			slider2D = Slider2D.new(parent);
 		});
