@@ -10,7 +10,7 @@ sliders = Array.fill(10, {
 	ZoomSlider.new(window, "duration", 1, 10000, 1, 1000, \exp, 1, 100, "ms ");
 });
 sliders.do({ arg each, i;
-	each.draw(5, 5 + (25 * i), \horizontal, 20, 5, 200, 60, \right);
+	each.draw(5 + (45 * i), 5, \vertical, 40, 10, 100, 40, \left);
 });
 window.front;
 )
