@@ -319,8 +319,14 @@ Joystick {
 			// update the Joystick's 'x' and 'y' coordinates (positions)
 			// according to the rangeSlider's range
 			//JKilg: still not quite sure the intention of this
-			slider2D.x_(rangeSlider.lo + 0.5 - (slider2D.y * 0.5)); //rangeSlider.lo + 0.5 - (slider2D.y * 0.5)
-			slider2D.y_(rangeSlider.lo - rangeSlider.hi + 1);  //rangeSlider.lo - rangeSlider.hi + 1
+
+			slider2D.x_(rangeSlider.lo + 0.5 - (slider2D.y * 0.5));
+			slider2D.y_(1 - rangeSlider.hi + rangeSlider.lo );
+
+			//Original
+
+			//slider2D.x_(rangeSlider.lo + 0.5 - (slider2D.y * 0.5));
+			//slider2D.y_(rangeSlider.hi - rangeSlider.lo - 1);
 		};
 
 		// create new actionLists
@@ -395,8 +401,8 @@ Joystick {
 		("parentHeight -> " ++ parentHeight).postln;
 
 		// calculate the width & height for the 2DSlider
-		slider2DWidth = parentWidth - (xOff * 2) - sliderWidth - gap;
-		slider2DHeight = parentHeight - (yOff * 2) - sliderWidth - gap;
+		slider2DWidth = parentWidth - (yOff * 2) - sliderWidth - gap;
+		slider2DHeight = parentHeight - (xOff * 2) - sliderWidth - gap;
 		("slider2DWidth -> " ++ slider2DWidth).postln;
 		("slider2DHeight -> " ++ slider2DHeight).postln;
 
@@ -413,7 +419,7 @@ Joystick {
 		sliderY.bounds_(Rect.new(xOff + slider2DWidth + gap,
 				yOff, sliderWidth, slider2DHeight));
 		rangeSlider.bounds_(Rect.new(xOff,
-			0, slider2DWidth, (10*yOff)));
+			0, slider2DWidth, (yOff)));
 
 
 		//Orientate the sliders correctly.
