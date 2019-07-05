@@ -14,16 +14,16 @@ var	path, buffer, sfInfo, sfDur;
 var	synthDef, synth;
 var	lfoWindow, lfoSlidersSpec, lfoSliders;
 
-controllerWindow = SCWindow.new("< Controller >", Rect.new(0, 0, 1245, 315), false, true);
+controllerWindow = Window.new("< Controller >", Rect.new(0, 0, 1245, 315), false, true);
 controllerWindow.view.background = HiliteGradient.new(Color.new255(69, 166, 247), Color.new255(0, 82, 155), \h, 2048, 0.5);
 
 joystickControlSetArray = Array.fill(16, { ControlSet.new; });
 tiltControlSet = ControlSet.new;
 zoomSliderControlSet = ControlSet.new; // initially empty (for Preset)
 
-horizontalDivider = SCStaticText.new(controllerWindow, Rect.new(5, 5 + (25 * 12), 1235, 5));
+horizontalDivider = StaticText.new(controllerWindow, Rect.new(5, 5 + (25 * 12), 1235, 5));
 horizontalDivider.background = HiliteGradient.new(Color.clear, Color.black, \h, 2048, 0.5);
-verticalDivider = SCStaticText.new(controllerWindow, Rect.new(620, 5 + (25 * 2), 5, 255));
+verticalDivider = StaticText.new(controllerWindow, Rect.new(620, 5 + (25 * 2), 5, 255));
 verticalDivider.background = HiliteGradient.new(Color.clear, Color.black, \v, 1024, 1);
 labelsSpec = [
 	[Rect.new(5, 5 + (25 * 1), 130, 20), "modulation source"],
@@ -35,7 +35,7 @@ labelsSpec = [
 	[Rect.new(1110, 5 + (25 * 1), 130, 20), "options"]
 ];
 labels = labelsSpec.collect({ arg each;
-	SCStaticText.new(controllerWindow, each[0])
+	StaticText.new(controllerWindow, each[0])
 	.string_(each[1])
 	.font_(Font.new("Helvetica", 12))  					.align_(\center)
 	.stringColor_(Color.black.alpha_(0.7));
@@ -50,8 +50,8 @@ modulationSliders.do({ arg each, i;
 	each.addModSrc(["random", "sine wave", "random", "random", "sine wave", "sine wave", "random", "random", "random", "random"][i%10]);
 	each.modSrcPopUpMenu.value_(10);
 	each.draw(5, 5 + (25 * (i + 2)), 20, 5, 200, 60, 20, 80);
-	each.leftBox.boxColor = Color.new255(0, 82, 155).alpha_(1);
-	each.rightBox.boxColor = Color.new255(0, 82, 155).alpha_(1);
+	each.leftBox.background = Color.new255(0, 82, 155).alpha_(1);
+	each.rightBox.background = Color.new255(0, 82, 155).alpha_(1);
 	zoomSliderControlSet.add(each);
 });
 
@@ -76,16 +76,16 @@ parameterSliders.do({ arg each, i;
 			parameterSlidersSpec[i][j+3], parameterSlidersSpec[i][j+4], parameterSlidersSpec[i][j+5],
 			parameterSlidersSpec[i][j+6], parameterSlidersSpec[i][j+7], parameterSlidersSpec[i][j+8]);
 	each.draw(635, 5 + (25 * (i + 2)), 20, 5, 200, 60, 20);
-	each.leftBox.boxColor = Color.new255(0, 82, 155).alpha_(1);
-	each.rightBox.boxColor = Color.new255(0, 82, 155).alpha_(1);
+	each.leftBox.background = Color.new255(0, 82, 155).alpha_(1);
+	each.rightBox.background = Color.new255(0, 82, 155).alpha_(1);
 	zoomSliderControlSet.add(each);
 });
 
 joystickWindows = Array.fill(8, { arg i;
 	if(i < 4, {
-		SCWindow.new("< Joystick " ++ (i+1) ++ " >", Rect.new(0 + (205 * i), SCWindow.screenBounds.height, 200, 150), true, true);
+		Window.new("< Joystick " ++ (i+1) ++ " >", Rect.new(0 + (205 * i), Window.screenBounds.height, 200, 150), true, true);
 	}, {
-		SCWindow.new("< Joystick " ++ (i+1) ++ " >", Rect.new(0 + (205 * (i-4)), SCWindow.screenBounds.height - 370, 200, 150), true, true);
+		Window.new("< Joystick " ++ (i+1) ++ " >", Rect.new(0 + (205 * (i-4)), Window.screenBounds.height - 370, 200, 150), true, true);
 	});
 });
 
@@ -104,9 +104,9 @@ joysticks = Array.fill(8, { arg i; Joystick.new(joystickWindows[i], "", joystick
 
 joysticks.do({ arg each; each.draw(5, 5, 20, 5, \bottom, \right, \top, true); });
 
-tiltButtonLeft = TiltButton.new(controllerWindow, "TILT", Tilt.new(tiltControlSet, \left, 0.1, 0.1, 4));
-tiltButtonCenter = TiltButton.new(controllerWindow, "TILT", Tilt.new(tiltControlSet, \center, 0.1, 0.1, 4));
-tiltButtonRight = TiltButton.new(controllerWindow, "TILT", Tilt.new(tiltControlSet, \right, 0.1, 0.1, 4));
+tiltButtonLeft = ECTiltButton.new(controllerWindow, "TILT", ECTilt.new(tiltControlSet, \left, 0.1, 0.1, 4));
+tiltButtonCenter = ECTiltButton.new(controllerWindow, "TILT", ECTilt.new(tiltControlSet, \center, 0.1, 0.1, 4));
+tiltButtonRight = ECTiltButton.new(controllerWindow, "TILT", ECTilt.new(tiltControlSet, \right, 0.1, 0.1, 4));
 
 [tiltButtonLeft, tiltButtonCenter, tiltButtonRight].do({ arg each, i;
 	each.draw([5, 600, 1195].at(i), 5, 40, 20);
@@ -190,7 +190,7 @@ synthDef = SynthDef.new("CloudTest1", {
 	//amp = 1.0 * rq.reciprocal.min(10); // old compensation
 	//amp = 1.0 + (rq.reciprocal * 0.1); // see SC1 SweepingGranQ p.2
 	amp = ((amplitude.dbamp) * (2 ** (modSrc1 * (amplitudeModAmt * 0.1)))).min(4.0) * rq.reciprocal ** 0.7; // see SC2 CVox_ConstQ
-	Out.ar(outBusNum, Cloud.ar(numChannels, trigger, bufnum, rate, centerPos, dur, pan, amp, interp, freq, rq, gainComp));
+	Out.ar(outBusNum, RCloud.ar(numChannels, trigger, bufnum, rate, centerPos, dur, pan, amp, interp, freq, rq, gainComp));
 }).load(s);
 
 //s.sendMsg("\s_new", "CloudTest1", -1, 1, 0, \outBus, 0);
@@ -198,7 +198,7 @@ synth = Synth.new("CloudTest1", [\outBus, 0, \soundfile, 1, \density, 10, \durat
 //synth.nodeID = 1000;
 //("synth.nodeID -> " ++ synth.nodeID).postln;
 
-lfoWindow = SCWindow.new("< Sine LFO >", Rect.new(0, 405, 455, 55), false, true);
+lfoWindow = Window.new("< Sine LFO >", Rect.new(0, 405, 455, 55), false, true);
 lfoWindow.view.background = HiliteGradient.new(Color.new255(69, 166, 247), Color.new255(0, 82, 155), \h, 2048, 0.5);
 
 lfoSlidersSpec = [
@@ -214,8 +214,8 @@ lfoSliders.do({ arg each, i;
 			lfoSlidersSpec[i][j+3], lfoSlidersSpec[i][j+4], lfoSlidersSpec[i][j+5],
 			lfoSlidersSpec[i][j+6], lfoSlidersSpec[i][j+7], lfoSlidersSpec[i][j+8]);
 	each.draw(5, 5 + (25 * i), 20, 5, 200, 60, 20, \right, \left);
-	each.leftBox.boxColor = Color.new255(0, 82, 155).alpha_(1);
-	each.rightBox.boxColor = Color.new255(0, 82, 155).alpha_(1);
+	each.leftBox.background = Color.new255(0, 82, 155).alpha_(1);
+	each.rightBox.background = Color.new255(0, 82, 155).alpha_(1);
 	zoomSliderControlSet.add(each);
 });
 

@@ -412,7 +412,7 @@ ECWavetable {
 		("increment -> " ++ increment).postln;
 		("delta -> " ++ delta).postln;
 
-		rangeSliderTask = Task.new({
+		rangeSliderTask = Task.new({ // JKilg: this is causing runtime error when closing GUI window
 			var	pos = 0;
 			inf.do({
 				timesToMove.do({
@@ -425,7 +425,7 @@ ECWavetable {
 					delta.wait;
 				});
 			});
-		}, SystemClock);
+		}, AppClock); //JKilg: changed to AppClock, since calling GUI primitives
 		rangeSliderTask.start;
 		("rangeSliderTask -> " ++ rangeSliderTask).postln;
 	}
