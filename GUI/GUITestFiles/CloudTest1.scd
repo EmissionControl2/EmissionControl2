@@ -12,7 +12,7 @@ var	window, zoomSlidersArraySpec, zoomSliders;
 var	synthDef, synth;
 var	path, buffer, sfInfo, sfDur;
 
-s = Server.internal;
+//s = Server.internal;
 Server.default = s;
 s.boot;
 
