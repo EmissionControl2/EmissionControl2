@@ -1,4 +1,3 @@
-
 /*
  * David Thall
  * CloudTest1.rtf (20040728)
@@ -16,12 +15,13 @@ var	path, buffer, sfInfo, sfDur;
 Server.default = s;
 s.boot;
 
-path = "sounds/a11wlk01.wav";
+path = Platform.resourceDir +/+ "sounds/a11wlk01.wav";
 buffer = Buffer.read(s, path);
 sfInfo = SoundFile.new;
 sfInfo.openRead(path);
 sfDur = sfInfo.duration;
 
+/*
 s.sendMsg(\b_allocRead, 1, "sounds/a11wlk01.wav");
 s.sendMsg(\b_allocRead, 2, "sounds/Anne&Sophoclis.aiff");
 s.sendMsg(\b_allocRead, 3, "sounds/Aram.aiff");
@@ -32,6 +32,7 @@ s.sendMsg(\b_allocRead, 7, "sounds/english_daisy.wav");
 s.sendMsg(\b_allocRead, 8, "sounds/RudyGuitar.aiff");
 s.sendMsg(\b_allocRead, 9, "sounds/Traviata.aiff");
 s.sendMsg(\b_allocRead, 10, "sounds/welcome.man.wav");
+*/
 
 synthDef = SynthDef.new("CloudTest1", {
 	arg	outBusNum = 0,
