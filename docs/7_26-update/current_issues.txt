@@ -1,0 +1,16 @@
+-----------GUI ISSUES-------------
+
+1. Must implement slider labels. 
+
+2. Unsure of the use of the RangeSlider found in the Joystick class. 
+
+3. CloudTest2.scd and CloudTest3.scd can't run. Parameter/Modulation slider's methods are not understood. I think it's because no control set is given.
+	- Yes, this was the issue. An in depth explanation of Control Sets would be quite helpful.  
+---------- UGEN ISSUE ------------
+
+2. RCloud cannot be succesfully compiled (need source code??)
+	- Terminal output of all scd files using RCloud found in current folder as a png. 
+
+3. Unsure if modulation sliders work on not. I see no pattern based implementation for different types. I think all modulation is done on the server side. 
+
+

@@ -12,6 +12,7 @@
 var	window, modulationSlidersArraySpec, modulationSliders, parameterSlidersArraySpec, parameterSliders;
 var	synthDef, synth;
 var	path, buffer, sfInfo, sfDur;
+var	joystickControlSetArray, tiltControlSet; //JKilg
 
 //s = Server.internal;
 Server.default = s;
@@ -23,7 +24,7 @@ sfInfo = SoundFile.new;
 sfInfo.openRead(path);
 sfDur = sfInfo.duration;
 
-/*
+/* JKilg comment
 s.sendMsg(\b_allocRead, 1, "sounds/a11wlk01.wav");
 s.sendMsg(\b_allocRead, 2, "sounds/Anne&Sophoclis.aiff");
 s.sendMsg(\b_allocRead, 3, "sounds/Aram.aiff");
@@ -36,7 +37,7 @@ s.sendMsg(\b_allocRead, 9, "sounds/Traviata.aiff");
 s.sendMsg(\b_allocRead, 10, "sounds/welcome.man.wav");
 */
 
-synthDef = SynthDef.new("CloudTest1", {
+synthDef = SynthDef.new("CloudTest2", {
 	arg	outBusNum = 0,
 		soundfile = 1, density = 10, duration = 100, pitch = 0, time = 100, // specified in gui param units (converted within)
 		phase = 0, space = 0, filter = 2000, resonance = 1, amplitude = 0,
@@ -66,10 +67,10 @@ synthDef = SynthDef.new("CloudTest1", {
 }).load(s);
 
 //s.sendMsg("\s_new", "CloudTest1", -1, 1, 0, \outBus, 0);
-synth = Synth.new("CloudTest1", [\outBus, 0, \soundfile, 1, \density, 10, \duration, 100, \pitch, 0, \time, 100, \phase, 0, \space, 0, \filter, 2000, \resonance, 1, \amplitude, 0], nil, \addToHead);
+synth = Synth.new("CloudTest2", [\outBus, 0, \soundfile, 1, \density, 10, \duration, 100, \pitch, 0, \time, 100, \phase, 0, \space, 0, \filter, 2000, \resonance, 1, \amplitude, 0], nil, \addToHead);
 //synth.nodeID = 1000;
 
-window = Window.new("< CloudTest1 >", Rect.new(0, 1024, 1245, 255), false, true);
+window = Window.new("< CloudTest2 >", Rect.new(0, 1024, 1245, 255), false, true);
 
 modulationSlidersArraySpec = [
 	["soundfile", 0, 100, 0, 100, \exp, 0.01, 0, "% "],
@@ -84,8 +85,12 @@ modulationSlidersArraySpec = [
 	["amplitude", 0, 100, 0, 100, \exp, 0.01, 0, "% "],
 ];
 
+joystickControlSetArray = Array.fill(16, { ControlSet.new; }); //JKilg: added these standins to allow for execution
+tiltControlSet = ControlSet.new; // Still dont quite understand what a ControlSet does
+
+
 modulationSliders = modulationSlidersArraySpec.collect({ arg each;
-	ModulationSlider.new(window, argName:each[0], argMin:each[1], argMax:each[2], argLeft:each[3], argRight:each[4], argWarp:each[5], argStep:each[6], argDefault:each[7], argUnits:each[8]);
+	ModulationSlider.new(window, joystickControlSetArray,tiltControlSet, each[0], each[1], each[2], each[3],each[4], each[5], each[6], each[7], each[8]);
 });
 
 modulationSliders.do({ arg each, i;
@@ -105,8 +110,9 @@ parameterSlidersArraySpec = [
 	["amplitude", -120, 12, -120, 12, \sin, 0.1, 0, "dB "]
 ];
 
+
 parameterSliders = parameterSlidersArraySpec.collect({ arg each;
-	ParameterSlider.new(window, argName:each[0], argMin:each[1], argMax:each[2], argLeft:each[3], argRight:each[4], argWarp:each[5], argStep:each[6], argDefault:each[7], argUnits:each[8]);
+	ParameterSlider.new(window, joystickControlSetArray,tiltControlSet, each[0], each[1], each[2], each[3],each[4], each[5], each[6], each[7], each[8]);
 });
 
 parameterSliders.do({ arg each, i;

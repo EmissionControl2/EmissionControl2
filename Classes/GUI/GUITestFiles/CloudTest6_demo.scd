@@ -37,7 +37,7 @@ labelsSpec = [
 labels = labelsSpec.collect({ arg each;
 	StaticText.new(controllerWindow, each[0])
 	.string_(each[1])
-	.font_(Font.new("Helvetica", 12))  					.align_(\center)
+	.font_(Font.new("Helvetica", 12)).align_(\center)
 	.stringColor_(Color.black.alpha_(0.7));
 });
 
