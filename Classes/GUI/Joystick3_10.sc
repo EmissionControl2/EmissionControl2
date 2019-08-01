@@ -407,7 +407,7 @@ Joystick {
 		("slider2DHeight -> " ++ slider2DHeight).postln;
 
 		slider2DLabel.bounds_(Rect.new(xOff,
-				yOff, slider2DWidth, slider2DHeight));
+				yOff, slider2DWidth, slider2DHeight)).front.acceptsMouse_(false);
 
 		slider2D.bounds_(Rect.new(xOff,
 				yOff, slider2DWidth, slider2DHeight));

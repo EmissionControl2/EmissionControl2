@@ -14,7 +14,7 @@ sliders = Array.fill(10, {
 	MappableSlider.new(window, joystickControlSetArray, tiltControlSet,
 			"soundfile", 1, 128, 1, 128, \lin, 1, 1, "# "); });
 sliders.do({ arg each, i;
-	each.draw(5, 5 + ( 25 * i), 20, 5, 200, 60, 20, \right, \left);
+	each.draw(5, 5 + ( 25 * i), 20, 5, 200, 60, 20, \left, \right);
 });
 window.front;
 

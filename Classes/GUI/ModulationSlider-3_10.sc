@@ -423,19 +423,19 @@ ModulationSlider : MappableSlider {
 		axisButton.bounds_(Rect.new(xOff + offsets[5],
 				yOff, buttonLength, width));
 		leftBoxLabel.bounds_(Rect.new(xOff + offsets[6],
-				yOff, boxLength, width));
+				yOff, boxLength, width)).front.acceptsMouse_(false);
 		leftBox.bounds_(Rect.new(xOff + offsets[6],
 				yOff, boxLength, width));
 		sliderLabel.bounds_(Rect.new(xOff + offsets[7],
-				yOff, sliderLength, width));
+				yOff, sliderLength, width)).front.acceptsMouse_(false);
 		slider.bounds_(Rect.new(xOff + offsets[7],
 				yOff, sliderLength, width));
 		rightBoxLabel.bounds_(Rect.new(xOff + offsets[8],
-				yOff, boxLength, width));
+				yOff, boxLength, width)).front.acceptsMouse_(false);
 		rightBox.bounds_(Rect.new(xOff + offsets[8],
 				yOff, boxLength, width));
 		currentBoxLabel.bounds_(Rect.new(xOff + offsets[9],
-				yOff, boxLength, width));
+				yOff, boxLength, width)).front.acceptsMouse_(false);
 		currentBox.bounds_(Rect.new(xOff + offsets[9],
 				yOff, boxLength, width));
 		(name ++ " " ++ "slider was drawn at [" ++

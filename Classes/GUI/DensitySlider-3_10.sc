@@ -210,20 +210,20 @@ DensitySlider : ParameterSlider {
 		// shift all offsets according to gap width
 		offsets = offsets.collect({ arg each, i; each = each + (i * gap); });
 
-		currentBoxLabel.bounds = Rect.new(xOff + offsets[0], yOff, boxLength, height);
-		currentBox.bounds = Rect.new(xOff + offsets[0], yOff, boxLength, height);
-		leftBoxLabel.bounds = Rect.new(xOff + offsets[1], yOff, boxLength, height);
-		leftBox.bounds = Rect.new(xOff + offsets[1], yOff, boxLength, height);
-		sliderLabel.bounds = Rect.new(xOff + offsets[2], yOff, sliderLength, height);
-		slider.bounds = Rect.new(xOff + offsets[2], yOff, sliderLength, height);
-		rightBoxLabel.bounds = Rect.new(xOff + offsets[3], yOff, boxLength, height);
-		rightBox.bounds = Rect.new(xOff + offsets[3], yOff, boxLength, height);
-		axisButton.bounds = Rect.new(xOff + offsets[4], yOff, buttonLength, height);
-		lockButton.bounds = Rect.new(xOff + offsets[5], yOff, buttonLength, height);
-		rangeClipButton.bounds = Rect.new(xOff + offsets[6], yOff, buttonLength, height);
-		trigPopUpMenu.bounds = Rect.new(xOff + offsets[7], yOff, optionPopUpMenuLength, height);
-		extKeyBoxLabel.bounds = Rect.new(xOff + offsets[8], yOff, optionBoxLength, height);
-		extKeyBox.bounds = Rect.new(xOff + offsets[8], yOff, optionBoxLength, height);
+		currentBoxLabel.bounds_(Rect.new(xOff + offsets[0], yOff, boxLength, height)).front.acceptsMouse_(false);
+		currentBox.bounds_(Rect.new(xOff + offsets[0], yOff, boxLength, height));
+		leftBoxLabel.bounds_(Rect.new(xOff + offsets[1], yOff, boxLength, height)).front.acceptsMouse_(false);
+		leftBox.bounds_(Rect.new(xOff + offsets[1], yOff, boxLength, height));
+		sliderLabel.bounds_(Rect.new(xOff + offsets[2], yOff, sliderLength, height)).front.acceptsMouse_(false);
+		slider.bounds_(Rect.new(xOff + offsets[2], yOff, sliderLength, height));
+		rightBoxLabel.bounds_(Rect.new(xOff + offsets[3], yOff, boxLength, height)).front.acceptsMouse_(false);
+		rightBox.bounds_(Rect.new(xOff + offsets[3], yOff, boxLength, height));
+		axisButton.bounds_(Rect.new(xOff + offsets[4], yOff, buttonLength, height));
+		lockButton.bounds_(Rect.new(xOff + offsets[5], yOff, buttonLength, height));
+		rangeClipButton.bounds_(Rect.new(xOff + offsets[6], yOff, buttonLength, height));
+		trigPopUpMenu.bounds_(Rect.new(xOff + offsets[7], yOff, optionPopUpMenuLength, height));
+		extKeyBoxLabel.bounds_(Rect.new(xOff + offsets[8], yOff, optionBoxLength, height));
+		extKeyBox.bounds_(Rect.new(xOff + offsets[8], yOff, optionBoxLength, height));
 		(name ++ " " ++ "slider was drawn at [" ++ xOff ++ ", " ++ yOff ++ "]").postln;
 	}
 }
