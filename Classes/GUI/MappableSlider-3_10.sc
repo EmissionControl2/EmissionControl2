@@ -316,19 +316,19 @@ MappableSlider : ZoomSlider {
 			axisButton.bounds_(Rect.new(xOff + offsets[1],
 					yOff, buttonLength, width));
 			leftBoxLabel.bounds_(Rect.new(xOff + offsets[2],
-					yOff, boxLength, width));
+					yOff, boxLength, width)).front.acceptsMouse_(false);
 			leftBox.bounds_(Rect.new(xOff + offsets[2],
 					yOff, boxLength, width));
 			sliderLabel.bounds_(Rect.new(xOff + offsets[3],
-					yOff, sliderLength, width));
+					yOff, sliderLength, width)).front.acceptsMouse_(false);
 			slider.bounds_(Rect.new(xOff + offsets[3],
 					yOff, sliderLength, width));
 			rightBoxLabel.bounds_(Rect.new(xOff + offsets[4],
-					yOff, boxLength, width));
+					yOff, boxLength, width)).front.acceptsMouse_(false);
 			rightBox.bounds_(Rect.new(xOff + offsets[4],
 					yOff, boxLength, width));
 			currentBoxLabel.bounds_(Rect.new(xOff + offsets[5],
-					yOff, boxLength, width));
+					yOff, boxLength, width)).front.acceptsMouse_(false);
 			currentBox.bounds_(Rect.new(xOff + offsets[5],
 					yOff, boxLength, width));
 			(name ++ " " ++ "slider was drawn at [" ++
@@ -344,19 +344,19 @@ MappableSlider : ZoomSlider {
 					each = each + (i * gap); });
 
 				leftBoxLabel.bounds_(Rect.new(xOff + offsets[0],
-						yOff, boxLength, width));
+						yOff, boxLength, width)).front.acceptsMouse_(false);
 				leftBox.bounds_(Rect.new(xOff + offsets[0],
 						yOff, boxLength, width));
 				sliderLabel.bounds_(Rect.new(xOff + offsets[1],
-						yOff, sliderLength, width));
+						yOff, sliderLength, width)).front.acceptsMouse_(false);
 				slider.bounds_(Rect.new(xOff + offsets[1],
 						yOff, sliderLength, width));
 				rightBoxLabel.bounds_(Rect.new(xOff + offsets[2],
-						yOff, boxLength, width));
+						yOff, boxLength, width)).front.acceptsMouse_(false);
 				rightBox.bounds_(Rect.new(xOff + offsets[2],
 						yOff, boxLength, width));
 				currentBoxLabel.bounds_(Rect.new(xOff + offsets[3],
-						yOff, boxLength, width));
+						yOff, boxLength, width)).front.acceptsMouse_(false);
 				currentBox.bounds_(Rect.new(xOff + offsets[3],
 						yOff, boxLength, width));
 				axisButton.bounds_(Rect.new(xOff + offsets[4],
@@ -380,19 +380,19 @@ MappableSlider : ZoomSlider {
 					axisButton.bounds_(Rect.new(xOff + offsets[1],
 							yOff, buttonLength, width));
 					currentBoxLabel.bounds_(Rect.new(xOff + offsets[2],
-							yOff, boxLength, width));
+							yOff, boxLength, width)).front.acceptsMouse_(false);
 					currentBox.bounds_(Rect.new(xOff + offsets[2],
 							yOff, boxLength, width));
 					leftBoxLabel.bounds_(Rect.new(xOff + offsets[3],
-							yOff, boxLength, width));
+							yOff, boxLength, width)).front.acceptsMouse_(false);
 					leftBox.bounds_(Rect.new(xOff + offsets[3],
 							yOff, boxLength, width));
 					sliderLabel.bounds_(Rect.new(xOff + offsets[4],
-							yOff, sliderLength, width));
+							yOff, sliderLength, width)).front.acceptsMouse_(false);
 					slider.bounds_(Rect.new(xOff + offsets[4],
 							yOff, sliderLength, width));
 					rightBoxLabel.bounds_(Rect.new(xOff + offsets[5],
-							yOff, boxLength, width));
+							yOff, boxLength, width)).front.acceptsMouse_(false);
 					rightBox.bounds_(Rect.new(xOff + offsets[5],
 							yOff, boxLength, width));
 					(name ++ " " ++ "slider was drawn at [" ++
@@ -408,19 +408,19 @@ MappableSlider : ZoomSlider {
 							each = each + (i * gap); });
 
 						currentBoxLabel.bounds_(Rect.new(xOff + offsets[0],
-								yOff, boxLength, width));
+								yOff, boxLength, width)).front.acceptsMouse_(false);
 						currentBox.bounds_(Rect.new(xOff + offsets[0],
 								yOff, boxLength, width));
 						leftBoxLabel.bounds_(Rect.new(xOff + offsets[1],
-								yOff, boxLength, width));
+								yOff, boxLength, width)).front.acceptsMouse_(false);
 						leftBox.bounds_(Rect.new(xOff + offsets[1],
 								yOff, boxLength, width));
 						sliderLabel.bounds_(Rect.new(xOff + offsets[2],
-								yOff, sliderLength, width));
+								yOff, sliderLength, width)).front.acceptsMouse_(false);
 						slider.bounds_(Rect.new(xOff + offsets[2],
 								yOff, sliderLength, width));
 						rightBoxLabel.bounds_(Rect.new(xOff + offsets[3],
-								yOff, boxLength, width));
+								yOff, boxLength, width)).front.acceptsMouse_(false);
 						rightBox.bounds_(Rect.new(xOff + offsets[3],
 								yOff, boxLength, width));
 						axisButton.bounds_(Rect.new(xOff + offsets[4],
