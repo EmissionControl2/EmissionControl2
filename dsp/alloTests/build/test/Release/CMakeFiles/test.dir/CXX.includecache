@@ -11,6 +11,8 @@ al/core.hpp
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/al/core.hpp
 Gamma/Oscillator.h
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/Gamma/Oscillator.h
+math.h
+-
 
 /Users/jkilgore/Applications/allo/allolib/external/Gamma/Gamma/Access.h
 
