@@ -1,0 +1,15 @@
+-- ==== Configuring Gamma.
+-- Checking for module 'libsndfile'
+--   No package 'libsndfile' found
+-- Found SNDFILE 
+-- libsndfile: /usr/local/lib/libsndfile.dylib
+-- threading: 
+-- Could NOT find Vulkan (missing: VULKAN_LIBRARY VULKAN_INCLUDE_DIR) 
+-- Using Cocoa for window creation
+-- Checking for module 'libassimp'
+--   No package 'libassimp' found
+-- Using libsndfile: /usr/local/lib/libsndfile.dylib
+-- Using fftw3: /usr/local/lib/libfftw3f.dylib
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/build/test/Release

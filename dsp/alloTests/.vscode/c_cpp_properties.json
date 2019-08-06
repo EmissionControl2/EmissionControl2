@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Users/jkilgore/Applications/allo/allolib/include",
+                "/Users/jkilgore/Applications/allo/allolib/external",
+                "/Users/jkilgore/Applications/allo/allolib/external/glfw/include",
+                "/Users/jkilgore/Applications/allo/allolib/external/glew/include",
+                "/Users/jkilgore/Applications/allo/allolib/external/Gamma"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "compilerPath": "/usr/local/bin/gcc-8",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
