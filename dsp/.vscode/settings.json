@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.cxx": "cpp",
+        "*.tidal": "haskell",
+        "iostream": "cpp"
+    }
+}
