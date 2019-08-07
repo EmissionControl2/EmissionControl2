@@ -80,7 +80,65 @@ private:
 };
 
 class asrEnvelope {
+public:
+  asrEnvelope(float attack = 0.25, float sustain = 0.5, float release = 0.25) : attack(attack), sustain(sustain), release(release){};
+  //mutable
+  void setAttack(float attack) {this->attack = attack;} 
+  void setSustain(float sustain) {this->sustain = sustain;} 
+  void setRelease(float release) {this->release = release;} 
 
+  float operator ()() {
+    if (counter == 1000) {
+      std::cout << amplitude << std::endl;
+      counter = 0;
+    }
+    counter++;
+
+    if(amplitude < 0) {
+      amplitude = 0; 
+      currentSample = 0;
+    }
+
+    if(currentSample >  getAttackIncrement() + getSustainIncrement()) {
+      amplitude -= 1/getReleaseIncrement();
+      currentSample++;
+      return amplitude;
+    }
+
+    if(currentSample < getAttackIncrement()) {
+      amplitude += 1/getAttackIncrement();
+      currentSample++;
+      return amplitude;
+    }
+    if( getAttackIncrement() < currentSample < (getAttackIncrement() + getSustainIncrement())) {
+      currentSample++;
+      return amplitude;
+    }
+    
+  }
+
+  //immutable
+  float getAttack() const { return attack;}
+  float getSustain() const {return sustain;}
+  float getRelease() const {return release;}
+
+private: 
+  float attack;
+  float sustain; 
+  float release; 
+  float amplitude = 0;
+  float currentSample = 0;
+  int counter = 0;
+
+  float getAttackIncrement() {
+    return attack * SAMPLE_RATE;
+  }
+  float getSustainIncrement() {
+    return sustain * SAMPLE_RATE;
+  }
+  float getReleaseIncrement() {
+    return release * SAMPLE_RATE;
+  }
 };
 
 struct test_app : App
@@ -93,13 +151,21 @@ struct test_app : App
   linearInterpSine osc1;
   linearInterpSine osc2;
   linearInterpSine osc3;
+  asrEnvelope testASR;
 
 
   void onCreate() override {
+    printf("Audio devices found:\n");
+	  AudioDevice::printAll();
+	  printf("\n");
     osc.frequency(40);
     osc1.frequency(60);
-    osc2.frequency(120);
+    osc2.frequency(432);
     osc3.frequency(9000);
+    testASR.setAttack(0.009);
+    testASR.setSustain(0.2);
+    testASR.setRelease(5);
+
 
   }
 
@@ -114,7 +180,8 @@ struct test_app : App
       float s1 = osc1();
       float s2 = osc2();
       float s3 = osc3();
-      out = ((s * 0.4) + (s1 * 0.35) + (s2*0.15) + (s3*0.002)) * 0.5;
+      float env = testASR();
+      out = ((s * 0.5) + (s1 * 0.45) + (s2*0.04) + (s3*0.002)) * 0.5 * env;
       io.out(0) = out;
       io.out(1) = out;
     }
@@ -123,6 +190,6 @@ struct test_app : App
 int main()
 {
   test_app app;
-  app.initAudio(48000, 512, 2, 0);
+  app.initAudio(48000, 512, 2, 3);
   app.start();
 }
