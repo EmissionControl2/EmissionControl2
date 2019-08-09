@@ -11,6 +11,24 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "buildDynamic",
+            "type": "shell",
+            "command": "../../../allolib/run.sh dynamicSceneTest.cpp",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "granular",
+            "type": "shell",
+            "command": "../../../allolib/run.sh granular.cpp",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

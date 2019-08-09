@@ -8,7 +8,10 @@
                 "/Users/jkilgore/Applications/allo/allolib/external",
                 "/Users/jkilgore/Applications/allo/allolib/external/glfw/include",
                 "/Users/jkilgore/Applications/allo/allolib/external/glew/include",
-                "/Users/jkilgore/Applications/allo/allolib/external/Gamma"
+                "/Users/jkilgore/Applications/allo/allolib/external/Gamma",
+                "/Users/jkilgore/Applications/allo/allolib/external/rtmidi",
+                "/Users/jkilgore/Applications/allo/allolib/external/imgui",
+                "/Users/jkilgore/Applications/allo/allolib/extensions"
             ],
             "defines": [],
             "macFrameworkPath": [],

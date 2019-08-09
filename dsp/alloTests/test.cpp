@@ -8,20 +8,20 @@
 
 using namespace al;
 
-class grain {
-public:
+// class grain {
+// public:
 
-private:
-  float duration;
-  float amplitude;
-  float space;
-};
+// private:
+//   float duration;
+//   float amplitude;
+//   float space;
+// };
 
-class grainContainer{
-public: 
+// class grainContainer{
+// public: 
 
-private: 
-};
+// private: 
+// };
 
 
 
@@ -190,6 +190,6 @@ struct test_app : App
 int main()
 {
   test_app app;
-  app.initAudio(48000, 512, 2, 3);
+  app.initAudio(48000, 64, 2, 3);
   app.start();
 }
