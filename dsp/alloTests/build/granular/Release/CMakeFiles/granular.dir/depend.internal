@@ -3,7 +3,9 @@
 
 CMakeFiles/granular.dir/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/granular.cpp.o
  /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/granular.cpp
+ /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/utility.h
  /Users/jkilgore/Applications/allo/allolib/extensions/al_ext/soundfile/al_OutputRecorder.hpp
+ /Users/jkilgore/Applications/allo/allolib/extensions/al_ext/soundfile/al_SoundfileBuffered.hpp
  /Users/jkilgore/Applications/allo/allolib/extensions/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
  /Users/jkilgore/Applications/allo/allolib/extensions/al_ext/soundfile/al_SoundfileRecordGUI.hpp
  /Users/jkilgore/Applications/allo/allolib/external/Gamma/Gamma/Access.h
@@ -30,6 +32,7 @@ CMakeFiles/granular.dir/Users/jkilgore/Applications/allo/EmissionControlPort/dsp
  /Users/jkilgore/Applications/allo/allolib/external/imgui/imconfig.h
  /Users/jkilgore/Applications/allo/allolib/external/imgui/imgui.h
  /Users/jkilgore/Applications/allo/allolib/external/rtmidi/RtMidi.h
+ /Users/jkilgore/Applications/allo/allolib/include/al/core.hpp
  /Users/jkilgore/Applications/allo/allolib/include/al/core/app/al_App.hpp
  /Users/jkilgore/Applications/allo/allolib/include/al/core/app/al_AudioApp.hpp
  /Users/jkilgore/Applications/allo/allolib/include/al/core/app/al_FPS.hpp

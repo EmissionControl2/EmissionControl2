@@ -50,6 +50,13 @@
         "string_view": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "complex": "cpp",
+        "cstdarg": "cpp",
+        "map": "cpp",
+        "memory_resource": "cpp",
+        "string": "cpp",
+        "typeindex": "cpp"
+    },
+    "C_Cpp.dimInactiveRegions": true
 }

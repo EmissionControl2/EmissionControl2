@@ -5,10 +5,17 @@
     Description:
 */
 
+#include <math.h>
+
+#include "al_ext/soundfile/al_SoundfileBuffered.hpp"
+#include "al_ext/soundfile/al_OutputRecorder.hpp"
+#include "al_ext/soundfile/al_SoundfileRecordGUI.hpp"
+
 #include "Gamma/Oscillator.h"
 #include "Gamma/Types.h"
 #include "Gamma/Envelope.h"
 
+#include "al/core.hpp"
 #include "al/core/app/al_App.hpp"
 #include "al/core/graphics/al_Shapes.hpp"
 #include "al/util/ui/al_Parameter.hpp"
@@ -17,11 +24,11 @@
 #include "al/util/ui/al_ControlGUI.hpp"
 #include "al/core/math/al_Random.hpp"
 
-
-#include "al_ext/soundfile/al_OutputRecorder.hpp"
-#include "al_ext/soundfile/al_SoundfileRecordGUI.hpp"
+#include "utility.h"
 
 using namespace al;
+
+#define SAMPLE_RATE 48000;
 
 class StochasticCannon
 {
@@ -74,8 +81,11 @@ private:
 class Grain : public SynthVoice {
 public:
   // Unit generators
+  // JKilg: generalize this so you can use it with buffers
   gam::Sine<> mOsc;
+  Array *source = nullptr;
   gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
+  Line index;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
@@ -88,7 +98,11 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      io.out(0) += mOsc() * mGrainEnv();
+      io.out(0) = source->get(index()) * mGrainEnv(); // JKilg: hard coded number as a placeholder 
+      io.out(1) = source->get(index()) * mGrainEnv();
+      //std::cout << source->get(index)  << std::endl;
+      //io.out(0) += mOsc() * mGrainEnv(); 
+      //io.out(1) += mOsc() * mGrainEnv(); 
       if (mGrainEnv.done()) {
         free();
         break;
@@ -102,23 +116,32 @@ public:
   }
 };
 
+
+
 class Granular : public SynthVoice {
 public:
 
-  StochasticCannon mCannon{44100};
-  Parameter grainTriggerFreq {"grainTriggerFreq", "", 10.0, "", 20.0, 4000.0};
+  StochasticCannon mCannon{48000};
+  Parameter grainTriggerFreq {"grainTriggerFreq", "", 10.0, "", 1.0, 4000.0};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
-  Parameter grainDurationMs {"grainDurationMs", "", 10.0, "", 0.01, 50.0};
+  Parameter grainDurationMs {"grainDurationMs", "", 10.0, "", 0.01, 1000};
   Parameter grainInternalFreq {"grainInternalFreq", "", 440.0, "", 5, 2000.0};
   Parameter attackTime {"attackTime", "", 0.3, "", 0.01, 10.0};
   Parameter sustain {"sustain", "", 0.8, "", 0.01, 10.0};
   Parameter releaseTime {"releaseTime", "", 2.0, "", 0.01, 10.0};
   Parameter amplitude {"amplitude", "", 0.4, "", 0.01, 2.0};
+  Parameter position{"position", "", 0.4, "", 0, 1};
+  Parameter playbackRate {"playbackRate", "", 1, "", 0.1, 2};
 
   gam::ADSR<> mEnv{0.3, 0.3, 0.8, 2.0};
 
   virtual void init() {
-    *this << amplitude <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv << grainDurationMs << grainInternalFreq;
+    
+
+    load("1.voice.wav");
+
+    *this << amplitude <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
+    << grainDurationMs << grainInternalFreq << position << playbackRate;
     mCannon.configure(grainTriggerFreq, 0.0);
     grainTriggerFreq.registerChangeCallback([&](float value) {
       mCannon.setFrequency(value);
@@ -140,8 +163,9 @@ public:
 
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
-  }
 
+  }
+    int count = 0;
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
@@ -150,9 +174,14 @@ public:
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
-          voice->mOsc.freq(grainInternalFreq.get());
-          voice->mOsc.phase(0);
-          voice->mOsc.amp(1.0);
+          //voice->mOsc.freq(grainInternalFreq.get());
+          //voice->mOsc.phase(0);
+          //voice->mOsc.amp(1.0);
+          rnd::Random<> rng;
+          voice->source = soundClip[0];
+          float startTime = voice->source->size * position.get();
+          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get()) * SAMPLE_RATE;
+          voice->index.set(startTime,endTime, grainDurationMs.get());
           grainSynth.triggerOn(voice, io.frame());
         } else {
           std::cout << "out of voices!" <<std::endl;
@@ -166,18 +195,20 @@ public:
     float amp = amplitude.get();
     while (io()) {
       io.out(0) *= mEnv() * amp;
+      //io.out(1) = mEnv() * amp;
+      
     }
     if (mEnv.done()) {free();}
   }
 
   virtual void onTriggerOn() override {
-//    mCannon.setFrequency(grainTriggerFreq);
-//    mCannon.setDivergence(grainTriggerDiv);
-//    mEnv.attack(attackTime);
-//    mEnv.decay(attackTime);
-//    mEnv.sustain(sustain);
-//    mEnv.release(releaseTime);
-    std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
+   mCannon.setFrequency(grainTriggerFreq);
+   mCannon.setDivergence(grainTriggerDiv);
+   mEnv.attack(attackTime);
+   mEnv.decay(attackTime);
+   mEnv.sustain(sustain);
+   mEnv.release(releaseTime);
+   std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
     mEnv.reset();
 
   }
@@ -186,9 +217,44 @@ public:
     mEnv.triggerRelease();
   }
 
+  //JKilg
+  void load(std::string fileName) {
+      SearchPaths searchPaths;
+      searchPaths.addSearchPath("../../../samples");
+      searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples");
+      //searchPaths.print();
+  
+      std::string filePath = searchPaths.find(fileName).filepath(); //JKilg currently debugging.
+      // std::cout << "filePATH: " <<  searchPaths.find(fileName).filepath() << std::endl;
+      gam::SoundFile soundFile;
+      soundFile.path(filePath);
+
+      if (!soundFile.openRead()) {
+        std::cout << "We could not read " << fileName << "!" << std::endl;
+        exit(1);
+      }
+      if (soundFile.channels() != 1) {
+        std::cout << fileName << " is not a mono file" << std::endl;
+        exit(1);
+      }
+
+
+      size_t test;
+      Array* a = new Array();
+      a->size = soundFile.frames();
+      a->data = new float[a->size];
+      test = soundFile.read(a->data, a->size);
+      soundClip.push_back(a);
+
+      std::cout << "SUCCESFUL FRAMES: " << test << std::endl;
+
+      soundFile.close();
+  }
+
+
 private:
   PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
-
+  std::vector<Array*> soundClip;
 };
 
 
@@ -224,6 +290,7 @@ public:
     //        synthManager.synthSequencer().playSequence("synth2.synthSequence");
     synthManager.synthRecorder().verbose(true);
     //        std::cout << " ----- " << std::endl;
+
   }
 
   virtual void onSound(AudioIOData &io) override {
