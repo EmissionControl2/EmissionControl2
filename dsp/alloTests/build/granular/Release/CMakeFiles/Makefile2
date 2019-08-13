@@ -129,10 +129,10 @@ CMakeFiles/granular_run_debug.dir/clean:
 # Target rules for target CMakeFiles/granular.dir
 
 # All Build rule for target.
-CMakeFiles/granular.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
-CMakeFiles/granular.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 CMakeFiles/granular.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al.dir/all
 CMakeFiles/granular.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/Gamma/CMakeFiles/Gamma.dir/all
+CMakeFiles/granular.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
+CMakeFiles/granular.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f CMakeFiles/granular.dir/build.make CMakeFiles/granular.dir/depend
 	$(MAKE) -f CMakeFiles/granular.dir/build.make CMakeFiles/granular.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/build/granular/Release/CMakeFiles --progress-num=98 "Built target granular"
@@ -224,10 +224,10 @@ al: /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al.dir/ru
 # Target rules for target /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir
 
 # All Build rule for target.
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/Gamma/CMakeFiles/Gamma.dir/all
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/depend
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/decorrelationTests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/build/granular/Release/CMakeFiles --progress-num=85 "Built target decorrelationTests"
@@ -254,10 +254,10 @@ decorrelationTests: /Users/jkilgore/Applications/allo/allolib/build/Release/CMak
 # Target rules for target /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir
 
 # All Build rule for target.
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/Gamma/CMakeFiles/Gamma.dir/all
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/depend
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/convolverTests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/build/granular/Release/CMakeFiles --progress-num=83,84 "Built target convolverTests"
@@ -338,10 +338,10 @@ al_soundfile: /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles
 # Target rules for target /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir
 
 # All Build rule for target.
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/Gamma/CMakeFiles/Gamma.dir/all
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/depend
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/soundfileBufferedRecordTests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/build/granular/Release/CMakeFiles --progress-num=99,100 "Built target soundfileBufferedRecordTests"
@@ -368,9 +368,9 @@ soundfileBufferedRecordTests: /Users/jkilgore/Applications/allo/allolib/build/Re
 # Target rules for target /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir
 
 # All Build rule for target.
+/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/Gamma/CMakeFiles/Gamma.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glfw/src/CMakeFiles/glfw.dir/all
 /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/glew/CMakeFiles/glew_s.dir/all
-/Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/all: /Users/jkilgore/Applications/allo/allolib/build/Release/Gamma/CMakeFiles/Gamma.dir/all
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/depend
 	$(MAKE) -f /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/build.make /Users/jkilgore/Applications/allo/allolib/build/Release/CMakeFiles/al_distributed.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/build/granular/Release/CMakeFiles --progress-num=72,73,74,75,76,77 "Built target al_distributed"

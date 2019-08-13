@@ -81,7 +81,6 @@ private:
 class Grain : public SynthVoice {
 public:
   // Unit generators
-  // JKilg: generalize this so you can use it with buffers
   gam::Sine<> mOsc;
   Array *source = nullptr;
   gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
@@ -100,7 +99,7 @@ public:
     while (io()) {
       io.out(0) = source->get(index()) * mGrainEnv(); // JKilg: hard coded number as a placeholder 
       io.out(1) = source->get(index()) * mGrainEnv();
-      //std::cout << source->get(index)  << std::endl;
+      //io.out(1) = source->get(index()) * mGrainEnv();
       //io.out(0) += mOsc() * mGrainEnv(); 
       //io.out(1) += mOsc() * mGrainEnv(); 
       if (mGrainEnv.done()) {
@@ -135,10 +134,14 @@ public:
 
   gam::ADSR<> mEnv{0.3, 0.3, 0.8, 2.0};
 
+  gam::LFO<> testLFO;
+
   virtual void init() {
     
+    testLFO.set(1000,0.2,0.9);
+    //testLFO.mod(1);
 
-    load("1.voice.wav");
+    load("pluck.aiff");
 
     *this << amplitude <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
     << grainDurationMs << grainInternalFreq << position << playbackRate;
@@ -179,8 +182,10 @@ public:
           //voice->mOsc.amp(1.0);
           rnd::Random<> rng;
           voice->source = soundClip[0];
-          float startTime = voice->source->size * position.get();
-          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get()) * SAMPLE_RATE;
+          float modTEST = testLFO.cos();
+          //std::cout << "modTEST: " << modTEST << std::endl;
+          float startTime = (voice->source->size * (position.get() * modTEST));
+          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get() * modTEST) *  SAMPLE_RATE;
           voice->index.set(startTime,endTime, grainDurationMs.get());
           grainSynth.triggerOn(voice, io.frame());
         } else {
@@ -191,11 +196,11 @@ public:
 
     grainSynth.render(io);
 
-    io.frame(0);
+    io.frame(0); 
     float amp = amplitude.get();
     while (io()) {
-      io.out(0) *= mEnv() * amp;
-      //io.out(1) = mEnv() * amp;
+      //io.out(0) *= mEnv() * amp;
+      //io.out(1) *= mEnv() * amp;
       
     }
     if (mEnv.done()) {free();}
@@ -220,12 +225,11 @@ public:
   //JKilg
   void load(std::string fileName) {
       SearchPaths searchPaths;
-      searchPaths.addSearchPath("../../../samples");
+      // searchPaths.addSearchPath("../../samples");
       searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples");
       //searchPaths.print();
   
       std::string filePath = searchPaths.find(fileName).filepath(); //JKilg currently debugging.
-      // std::cout << "filePATH: " <<  searchPaths.find(fileName).filepath() << std::endl;
       gam::SoundFile soundFile;
       soundFile.path(filePath);
 
@@ -238,15 +242,12 @@ public:
         exit(1);
       }
 
-
       size_t test;
       Array* a = new Array();
       a->size = soundFile.frames();
       a->data = new float[a->size];
       test = soundFile.read(a->data, a->size);
       soundClip.push_back(a);
-
-      std::cout << "SUCCESFUL FRAMES: " << test << std::endl;
 
       soundFile.close();
   }
