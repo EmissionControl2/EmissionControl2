@@ -115,6 +115,16 @@ public:
   }
 };
 
+class ecModulator {
+  public:
+    ecModulator(std::string waveform = "SINE", float frequency = 1, float width = 1); 
+  private: 
+    enum class Wave {SINE, SAW, TRIANGLE};
+    Wave waveform;
+    float frequency;
+    float width;
+  
+}
 
 
 class Granular : public SynthVoice {
@@ -138,7 +148,7 @@ public:
 
   virtual void init() {
     
-    testLFO.set(1000,0.2,0.9);
+    testLFO.set(1,0,0.9);
     //testLFO.mod(1);
 
     load("pluck.aiff");
@@ -172,7 +182,10 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
+      //audio rate
+      float modTEST = testLFO.cos();
       if (mCannon.tick()) {
+      //
 //        std::cout << "trigger " << io.frame() << std::endl;
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
@@ -182,10 +195,9 @@ public:
           //voice->mOsc.amp(1.0);
           rnd::Random<> rng;
           voice->source = soundClip[0];
-          float modTEST = testLFO.cos();
-          //std::cout << "modTEST: " << modTEST << std::endl;
-          float startTime = (voice->source->size * (position.get() * modTEST));
-          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get() * modTEST) *  SAMPLE_RATE;
+          std::cout << "modTEST: " << modTEST << std::endl;
+          float startTime = (voice->source->size * (position.get() ));
+          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get()* modTEST) *  SAMPLE_RATE;
           voice->index.set(startTime,endTime, grainDurationMs.get());
           grainSynth.triggerOn(voice, io.frame());
         } else {
