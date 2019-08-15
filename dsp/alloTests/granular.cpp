@@ -25,58 +25,12 @@
 #include "al/core/math/al_Random.hpp"
 
 #include "utility.h"
+#include "emissionControl.h"
 
 using namespace al;
 
 #define SAMPLE_RATE 48000;
 
-class StochasticCannon
-{
-public:
-
-  StochasticCannon(double samplingRate) {
-    mSamplingRate = samplingRate;
-  }
-
-  void setFrequency(double frequency) {
-    configure(frequency, mDivergence);
-  }
-
-  void setDivergence(double divergence) {
-    configure(mFrequency, divergence);
-  }
-
-  void configure(double frequency, double divergence) {
-    if (divergence > 1.0) {
-      divergence = 1.0;
-    } else if (divergence < 0.0) {
-      divergence = 0.0;
-    }
-    mDivergence = divergence;
-    mFrequency = frequency;
-    mIncrement = mFrequency/mSamplingRate;
-  }
-
-  bool tick() {
-    if (mCounter >= 1.0) {
-      mCounter -= 1.0;
-      mCounter += rand.uniform(-mDivergence, mDivergence);
-      mCounter += mIncrement;
-      return true;
-    }
-    mCounter += mIncrement;
-    return false;
-  }
-private:
-  gam::LFO<> mPulse;
-  rnd::Random<> rand;
-
-  double mCounter {1.0};
-  double mSamplingRate;
-  double mDivergence {0.0};
-  double mFrequency {1.0};
-  double mIncrement {0.0};
-};
 
 class Grain : public SynthVoice {
 public:
@@ -115,18 +69,6 @@ public:
   }
 };
 
-class ecModulator {
-  public:
-    ecModulator(std::string waveform = "SINE", float frequency = 1, float width = 1); 
-  private: 
-    enum class Wave {SINE, SAW, TRIANGLE};
-    Wave waveform;
-    float frequency;
-    float width;
-  
-}
-
-
 class Granular : public SynthVoice {
 public:
 
@@ -141,20 +83,26 @@ public:
   Parameter amplitude {"amplitude", "", 0.4, "", 0.01, 2.0};
   Parameter position{"position", "", 0.4, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", 0.1, 2};
+  Parameter positionModFreq {"positionModFreq", "", 1,"", 0.01, 30};
 
   gam::ADSR<> mEnv{0.3, 0.3, 0.8, 2.0};
 
-  gam::LFO<> testLFO;
+  //gam::LFO<> testLFO;
+  //ecModulator test1{"SINE", 1,1};
+  ecModulator positionMod {};
+
 
   virtual void init() {
-    
-    testLFO.set(1,0,0.9);
+    //testLFO.set(1,0,0.5);
     //testLFO.mod(1);
+
+    /// TESTING 
+    ///////
 
     load("pluck.aiff");
 
     *this << amplitude <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
-    << grainDurationMs << grainInternalFreq << position << playbackRate;
+    << grainDurationMs << grainInternalFreq << position << playbackRate << positionModFreq;
     mCannon.configure(grainTriggerFreq, 0.0);
     grainTriggerFreq.registerChangeCallback([&](float value) {
       mCannon.setFrequency(value);
@@ -174,6 +122,10 @@ public:
       mEnv.release(value);
     });
 
+    positionModFreq.registerChangeCallback([&](float value) {
+      positionMod.setFrequency(value);
+    });
+
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
 
@@ -183,10 +135,8 @@ public:
     //        updateFromParameters();
     while (io()) {
       //audio rate
-      float modTEST = testLFO.cos();
+      float posMod = positionMod();
       if (mCannon.tick()) {
-      //
-//        std::cout << "trigger " << io.frame() << std::endl;
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
@@ -195,9 +145,8 @@ public:
           //voice->mOsc.amp(1.0);
           rnd::Random<> rng;
           voice->source = soundClip[0];
-          std::cout << "modTEST: " << modTEST << std::endl;
-          float startTime = (voice->source->size * (position.get() ));
-          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get()* modTEST) *  SAMPLE_RATE;
+          float startTime = (voice->source->size * (position.get() * posMod ));
+          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get()) *  SAMPLE_RATE;
           voice->index.set(startTime,endTime, grainDurationMs.get());
           grainSynth.triggerOn(voice, io.frame());
         } else {
