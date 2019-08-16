@@ -56,7 +56,9 @@
         "map": "cpp",
         "memory_resource": "cpp",
         "string": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "set": "cpp",
+        "iomanip": "cpp"
     },
     "C_Cpp.dimInactiveRegions": true
 }

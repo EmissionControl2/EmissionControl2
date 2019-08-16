@@ -26,7 +26,7 @@ class ecModulator {
     float getWidth() {return width;}
 
     void setWaveform(std::string waveform) {
-      if(waveform != "SINE" || waveform != "TRI" || waveform != "SQUARE") {
+      if(waveform != "SINE" && waveform != "TRI" && waveform != "SQUARE") {
             std::cerr << "invalid waveform" << std::endl;
             return;
         }

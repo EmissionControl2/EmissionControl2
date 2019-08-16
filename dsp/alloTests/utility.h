@@ -2,7 +2,7 @@
 #include <cmath>
 #include <cstdio>
 
-const int SAMPLE_RATE = 48000;
+const int SAMPLE_RATE = 41000;
 
 struct Line {
   float value = 0, target = 0, seconds = 1 / SAMPLE_RATE, increment = 0;
@@ -95,6 +95,8 @@ struct Array {
     data[j] += value * t;
   }
 };
+
+
 
 
 

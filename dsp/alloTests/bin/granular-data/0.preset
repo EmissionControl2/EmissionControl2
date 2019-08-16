@@ -1,12 +1,12 @@
 ::0
-/amplitude f 0.229000 
-/attackTime f 0.300000 
-/grainDurationMs f 122.079002 
-/grainInternalFreq f 440.000000 
+/amplitude f 1.204000 
+/attackTime f 0.010000 
+/grainDurationMs f 39.729000 
 /grainTriggerDiv f 0.000000 
-/grainTriggerFreq f 41.354000 
-/playbackRate f 1.016000 
-/position f 0.917000 
-/releaseTime f 2.000000 
-/sustain f 0.800000 
+/grainTriggerFreq f 942.645020 
+/playbackRate f 0.100000 
+/position f 0.848000 
+/positionModFreq f 1.385000 
+/releaseTime f 0.883000 
+/sustain f 0.901000 
 ::

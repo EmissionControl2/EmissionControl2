@@ -29,33 +29,25 @@
 
 using namespace al;
 
-#define SAMPLE_RATE 48000;
-
 
 class Grain : public SynthVoice {
 public:
   // Unit generators
-  gam::Sine<> mOsc;
   Array *source = nullptr;
   gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
+  gam::ADSR<> env{0.01,0,1,0.01,1,1};
   Line index;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
     gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
     mGrainEnv.freq(10);
-    mOsc.freq(440);
-    mOsc.amp(1.0);
-//    std::cout << " init grain" <<std::endl;
   }
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      io.out(0) = source->get(index()) * mGrainEnv(); // JKilg: hard coded number as a placeholder 
-      io.out(1) = source->get(index()) * mGrainEnv();
-      //io.out(1) = source->get(index()) * mGrainEnv();
-      //io.out(0) += mOsc() * mGrainEnv(); 
-      //io.out(1) += mOsc() * mGrainEnv(); 
+      io.out(0) += source->get(index())  * mGrainEnv(); 
+      io.out(1) += source->get(index())  * mGrainEnv();
       if (mGrainEnv.done()) {
         free();
         break;
@@ -72,14 +64,13 @@ public:
 class Granular : public SynthVoice {
 public:
 
-  StochasticCannon mCannon{48000};
-  Parameter grainTriggerFreq {"grainTriggerFreq", "", 10.0, "", 1.0, 4000.0};
+  StochasticCannon mCannon{SAMPLE_RATE};
+  Parameter grainTriggerFreq {"grainTriggerFreq", "", 10.0, "", 0.2, 4000.0};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
-  Parameter grainDurationMs {"grainDurationMs", "", 10.0, "", 0.01, 1000};
-  Parameter grainInternalFreq {"grainInternalFreq", "", 440.0, "", 5, 2000.0};
-  Parameter attackTime {"attackTime", "", 0.3, "", 0.01, 10.0};
+  Parameter grainDurationMs {"grainDurationMs", "", 10.0, "", 0.01, 10000};
+  Parameter attackTime {"attackTime", "", 0.3, "", 0, 1};
   Parameter sustain {"sustain", "", 0.8, "", 0.01, 10.0};
-  Parameter releaseTime {"releaseTime", "", 2.0, "", 0.01, 10.0};
+  Parameter releaseTime {"releaseTime", "", 2.0, "", 0.001, 10.0};
   Parameter amplitude {"amplitude", "", 0.4, "", 0.01, 2.0};
   Parameter position{"position", "", 0.4, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", 0.1, 2};
@@ -89,7 +80,7 @@ public:
 
   //gam::LFO<> testLFO;
   //ecModulator test1{"SINE", 1,1};
-  ecModulator positionMod {};
+  ecModulator positionMod {"TRI"};
 
 
   virtual void init() {
@@ -102,7 +93,7 @@ public:
     load("pluck.aiff");
 
     *this << amplitude <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
-    << grainDurationMs << grainInternalFreq << position << playbackRate << positionModFreq;
+    << grainDurationMs << position << playbackRate << positionModFreq;
     mCannon.configure(grainTriggerFreq, 0.0);
     grainTriggerFreq.registerChangeCallback([&](float value) {
       mCannon.setFrequency(value);
@@ -112,8 +103,8 @@ public:
     });
 
     attackTime.registerChangeCallback([&](float value) {
-      mEnv.attack(value);
-      mEnv.decay(value);
+      mEnv.attack(value*grainDurationMs.get());
+      mEnv.decay(value*grainDurationMs.get());
     });
     sustain.registerChangeCallback([&](float value) {
       mEnv.sustain(value);
@@ -140,14 +131,16 @@ public:
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
-          //voice->mOsc.freq(grainInternalFreq.get());
-          //voice->mOsc.phase(0);
-          //voice->mOsc.amp(1.0);
           rnd::Random<> rng;
           voice->source = soundClip[0];
-          float startTime = (voice->source->size * (position.get() * posMod ));
-          float endTime = startTime + (grainDurationMs.get()) * powf(2.0,playbackRate.get()) *  SAMPLE_RATE;
-          voice->index.set(startTime,endTime, grainDurationMs.get());
+          float startSample = (voice->source->size * (position.get() * posMod)); //* posMod
+          float endSample = startSample + 24000; // why is half the sampling rate the move? 
+            //((grainDurationMs.get()/1000) * SAMPLE_RATE / powf(2,playbackRate.get()));
+          std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " << grainDurationMs.get() <<  std::endl;
+          voice->env.attack(attackTime);
+          voice->env.release(releaseTime);
+
+          voice->index.set(startSample,endSample, 1); 
           grainSynth.triggerOn(voice, io.frame());
         } else {
           std::cout << "out of voices!" <<std::endl;
@@ -160,8 +153,8 @@ public:
     io.frame(0); 
     float amp = amplitude.get();
     while (io()) {
-      //io.out(0) *= mEnv() * amp;
-      //io.out(1) *= mEnv() * amp;
+      io.out(0) *=  amp * mEnv();
+      io.out(1) *=  amp * mEnv();
       
     }
     if (mEnv.done()) {free();}
@@ -314,10 +307,9 @@ int main(){    // Create app instance
 
   //    app.navControl().active(false); // Disable navigation via keyboard, since we will be using keyboard for note triggering
 
-//  std::cout << " ---***-- " << std::endl;
   MyApp app;
   // Set up audio
-  app.initAudio(48000, 128, 2, 0);
+  app.initAudio(SAMPLE_RATE, 128, 2, 0);
   // Set sampling rate for Gamma objects from app's audio
   gam::sampleRate(app.audioIO().framesPerSecond());
   app.audioIO().print();
