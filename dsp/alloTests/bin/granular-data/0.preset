@@ -1,5 +1,4 @@
 ::0
-/amplitude f 1.204000 
 /attackTime f 0.010000 
 /grainDurationMs f 39.729000 
 /grainTriggerDiv f 0.000000 
@@ -9,4 +8,5 @@
 /positionModFreq f 1.385000 
 /releaseTime f 0.883000 
 /sustain f 0.901000 
+/volumedB f -28.353001 
 ::

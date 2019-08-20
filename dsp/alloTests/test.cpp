@@ -1,9 +1,7 @@
 #include "al/core.hpp"
 #include "Gamma/Oscillator.h"
 #include <math.h>
-
-#define SAMPLE_RATE (48000);
-#define BLOCK_SIZE (512);
+#include "const.h"
 
 
 using namespace al;
@@ -190,6 +188,6 @@ struct test_app : App
 int main()
 {
   test_app app;
-  app.initAudio(48000, 64, 2, 3);
+  app.initAudio(SAMPLE_RATE, BLOCK_SIZE, AUDIO_OUTS, DEVICE_NUM);
   app.start();
 }

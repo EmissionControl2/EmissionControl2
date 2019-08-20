@@ -1,4 +1,8 @@
+#ifndef EMISSIONCONTROL_H 
+#define EMISSIONCONTROL_H 
+
 #include "Gamma/Oscillator.h"
+#include "const.h"
 #include <iostream>
 
 class ecModulator {
@@ -99,3 +103,5 @@ private:
   double mFrequency {1.0};
   double mIncrement {0.0};
 };
+
+#endif

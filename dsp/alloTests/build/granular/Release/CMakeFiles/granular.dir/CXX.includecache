@@ -6,9 +6,13 @@
 
 #IncludeRegexTransform: 
 
+/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/const.h
+
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/emissionControl.h
 Gamma/Oscillator.h
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/Gamma/Oscillator.h
+const.h
+/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/const.h
 iostream
 -
 
@@ -45,6 +49,8 @@ al/core/math/al_Random.hpp
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/al/core/math/al_Random.hpp
 utility.h
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/utility.h
+const.h
+/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/const.h
 emissionControl.h
 /Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/emissionControl.h
 
@@ -55,6 +61,8 @@ cmath
 -
 cstdio
 -
+const.h
+/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/alloTests/const.h
 
 /Users/jkilgore/Applications/allo/allolib/extensions/al_ext/soundfile/al_OutputRecorder.hpp
 al/core/io/al_AudioIOData.hpp

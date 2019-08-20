@@ -25,6 +25,7 @@
 #include "al/core/math/al_Random.hpp"
 
 #include "utility.h"
+#include "const.h"
 #include "emissionControl.h"
 
 using namespace al;
@@ -46,7 +47,7 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      io.out(0) += source->get(index())  * mGrainEnv(); 
+      io.out(0) += source->get(index())  * mGrainEnv(); //this manipulates on grain level
       io.out(1) += source->get(index())  * mGrainEnv();
       if (mGrainEnv.done()) {
         free();
@@ -71,10 +72,10 @@ public:
   Parameter attackTime {"attackTime", "", 0.3, "", 0, 1};
   Parameter sustain {"sustain", "", 0.8, "", 0.01, 10.0};
   Parameter releaseTime {"releaseTime", "", 2.0, "", 0.001, 10.0};
-  Parameter amplitude {"amplitude", "", 0.4, "", 0.01, 2.0};
+  Parameter volumedB {"volumedB", "", -6, "", -60, 6};
   Parameter position{"position", "", 0.4, "", 0, 1};
-  Parameter playbackRate {"playbackRate", "", 1, "", 0.1, 2};
-  Parameter positionModFreq {"positionModFreq", "", 1,"", 0.01, 30};
+  Parameter playbackRate {"playbackRate", "", 0, "", -1, 1};
+  Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
 
   gam::ADSR<> mEnv{0.3, 0.3, 0.8, 2.0};
 
@@ -92,8 +93,10 @@ public:
 
     load("pluck.aiff");
 
-    *this << amplitude <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
-    << grainDurationMs << position << playbackRate << positionModFreq;
+    *this << volumedB <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
+    << grainDurationMs << position << playbackRate;
+    
+
     mCannon.configure(grainTriggerFreq, 0.0);
     grainTriggerFreq.registerChangeCallback([&](float value) {
       mCannon.setFrequency(value);
@@ -134,13 +137,13 @@ public:
           rnd::Random<> rng;
           voice->source = soundClip[0];
           float startSample = (voice->source->size * (position.get() * posMod)); //* posMod
-          float endSample = startSample + 24000; // why is half the sampling rate the move? 
-            //((grainDurationMs.get()/1000) * SAMPLE_RATE / powf(2,playbackRate.get()));
-          std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " << grainDurationMs.get() <<  std::endl;
+          float endSample = startSample  // + 24000; why is half the sampling rate the move? 
+            + (grainDurationMs.get()/1000) * SAMPLE_RATE * powf(2,playbackRate.get()); //
+          // std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " << grainDurationMs.get() <<  std::endl;
           voice->env.attack(attackTime);
           voice->env.release(releaseTime);
 
-          voice->index.set(startSample,endSample, 1); 
+          voice->index.set(startSample,endSample, grainDurationMs.get()/1000); 
           grainSynth.triggerOn(voice, io.frame());
         } else {
           std::cout << "out of voices!" <<std::endl;
@@ -151,10 +154,10 @@ public:
     grainSynth.render(io);
 
     io.frame(0); 
-    float amp = amplitude.get();
+    float amp = powf(10,volumedB.get()/20);
     while (io()) {
-      io.out(0) *=  amp * mEnv();
-      io.out(1) *=  amp * mEnv();
+      io.out(0) *=  amp ; // this manipulates the entire stream on the channel level 
+      io.out(1) *=  amp ; //* mEnv() 
       
     }
     if (mEnv.done()) {free();}
@@ -211,6 +214,23 @@ private:
   PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
   std::vector<Array*> soundClip;
 };
+
+
+//NEED to figure out how to have multiple GUI Windows
+class Modulator : public SynthVoice {
+public:
+  Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
+  ecModulator positionMod {"TRI"};
+
+  virtual void init() {
+    *this << positionModFreq;
+  }
+
+
+private:
+  PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
+};
+//
 
 
 // We make an app.
@@ -309,7 +329,7 @@ int main(){    // Create app instance
 
   MyApp app;
   // Set up audio
-  app.initAudio(SAMPLE_RATE, 128, 2, 0);
+  app.initAudio(SAMPLE_RATE, BLOCK_SIZE, AUDIO_OUTS, DEVICE_NUM);
   // Set sampling rate for Gamma objects from app's audio
   gam::sampleRate(app.audioIO().framesPerSecond());
   app.audioIO().print();
