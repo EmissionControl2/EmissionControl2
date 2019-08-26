@@ -7,7 +7,12 @@
             "compilerPath": "/usr/local/bin/gcc-8",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "intelliSenseMode": "clang-x64",
+            "includePath": [
+                "/Users/jkilgore/Applications/allo/allolib/external/Gamma",
+                "/Users/jkilgore/Applications/allo/allolib/extensions",
+                "/Users/jkilgore/Applications/allo/allolib/include"
+            ]
         }
     ],
     "version": 4

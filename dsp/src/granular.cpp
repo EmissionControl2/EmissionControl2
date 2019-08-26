@@ -1,12 +1,7 @@
-/*    Gamma - Generic processing library
-    See COPYRIGHT file for authors and license information
-
-    Example:
-    Description:
-*/
-
+//C STD Includes
 #include <math.h>
 
+//AlloLib Includes 
 #include "al_ext/soundfile/al_SoundfileBuffered.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
 #include "al_ext/soundfile/al_SoundfileRecordGUI.hpp"
@@ -24,12 +19,13 @@
 #include "al/util/ui/al_ControlGUI.hpp"
 #include "al/core/math/al_Random.hpp"
 
-#include "utility.h"
-#include "const.h"
-#include "emissionControl.h"
+
+//Local Includes
+#include "../include/utility.h"
+#include "../include/const.h"
+#include "../include/emissionControl.h"
 
 //Externals
-
 #include "../external/r8brain-free-src/CDSPResampler.h"
 
 using namespace al;
@@ -87,10 +83,10 @@ public:
   //ecModulator test1{"SINE", 1,1};
   ecModulator positionMod {"TRI"};
 
-  ~Granular() {
-    for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
-      delete[] *i;
-  }
+  // ~Granular() {
+  //   for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
+  //     delete[] *i;
+  // }
 
 
   virtual void init() {
@@ -218,12 +214,12 @@ public:
       
       // STILL NEED TO TEST IF THIS WORKS AND NEED TO LINK IT
       if(soundFile.frameRate() != SAMPLE_RATE) {
-        Buffer<double>* b = new Buffer<double>();
-        b->data = new double[a->size/soundFile.frameRate() * SAMPLE_RATE];
-        r8b::CDSPResampler convertSampleRate(soundFile.frameRate(),double(SAMPLE_RATE), a->size);
-        convertSampleRate.process(a->data,a->size,b->data);
-        soundClip.push_back(b);
-        delete[] a->data;
+        // Buffer<double>* b = new Buffer<double>();
+        // b->data = new double[a->size/soundFile.frameRate() * SAMPLE_RATE];
+        // r8b::CDSPResampler convertSampleRate(soundFile.frameRate(),double(SAMPLE_RATE), a->size);
+        // convertSampleRate.process(a->data,a->size,b->data);
+        // soundClip.push_back(b);
+        // delete[] a->data;
 
       } else soundClip.push_back(a);
 
@@ -336,7 +332,7 @@ public:
   }
 
   void onExit() override {
-//    mRecorder.stop();
+    // mRecorder.stop();
     ParameterGUI::cleanup();
     
 

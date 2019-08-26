@@ -1,0 +1,2 @@
+/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/build/CMakeFiles/rebuild_cache.dir
+/Users/jkilgore/Applications/allo/EmissionControlPort/dsp/build/CMakeFiles/edit_cache.dir
