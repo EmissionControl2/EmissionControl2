@@ -5,6 +5,9 @@
 #include <cmath>
 #include <cstdio>
 #include "const.h"
+#include "al_ext/soundfile/al_SoundfileBuffered.hpp"
+
+namespace util {
 
 
 struct Line {
@@ -99,6 +102,44 @@ struct Buffer {
   }
 };
 
+void load(std::string fileName, std::vector<Buffer<double>*>& buf) {
+  al::SearchPaths searchPaths;
+  // searchPaths.addSearchPath("../../samples");
+  searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples");
+  //searchPaths.print();
 
+  std::string filePath = searchPaths.find(fileName).filepath(); //JKilg currently debugging.
+  gam::SoundFile soundFile;
+  soundFile.path(filePath);
+
+  if (!soundFile.openRead()) {
+    std::cout << "We could not read " << fileName << "!" << std::endl;
+    exit(1);
+  }
+  if (soundFile.channels() != 1) {
+    std::cout << fileName << " is not a mono file" << std::endl;
+    exit(1);
+  }
+
+  Buffer<double>* a = new Buffer<double>();
+  a->size = soundFile.frames();
+  a->data = new double[a->size];
+  soundFile.read(a->data, a->size);
+  
+  // STILL NEED TO TEST IF THIS WORKS AND NEED TO LINK IT
+  if(soundFile.frameRate() != SAMPLE_RATE) {
+    // Buffer<double>* b = new Buffer<double>();
+    // b->data = new double[a->size/soundFile.frameRate() * SAMPLE_RATE];
+    // r8b::CDSPResampler convertSampleRate(soundFile.frameRate(),double(SAMPLE_RATE), a->size);
+    // convertSampleRate.process(a->data,a->size,b->data);
+    // soundClip.push_back(b);
+    // delete[] a->data;
+
+  } else buf.push_back(a);
+
+  soundFile.close();
+}
+
+}
 
 #endif

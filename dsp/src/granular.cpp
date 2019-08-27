@@ -34,10 +34,10 @@ using namespace al;
 class Grain : public SynthVoice {
 public:
   // Unit generators
-  Buffer<double> *source = nullptr;
+  util::Buffer<double> *source = nullptr;
   gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
   gam::ADSR<> env{0.01,0,1,0.01,1,1};
-  Line index;
+  util::Line index;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
@@ -96,7 +96,7 @@ public:
     /// TESTING 
     ///////
 
-    load("pluck.aiff");
+    load("pluck.aiff", soundClip);
 
     *this << volumedB <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
     << grainDurationMs << position << playbackRate;
@@ -187,49 +187,13 @@ public:
     mEnv.triggerRelease();
   }
 
-  //JKilg
-  void load(std::string fileName) {
-      SearchPaths searchPaths;
-      // searchPaths.addSearchPath("../../samples");
-      searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples");
-      //searchPaths.print();
-  
-      std::string filePath = searchPaths.find(fileName).filepath(); //JKilg currently debugging.
-      gam::SoundFile soundFile;
-      soundFile.path(filePath);
-
-      if (!soundFile.openRead()) {
-        std::cout << "We could not read " << fileName << "!" << std::endl;
-        exit(1);
-      }
-      if (soundFile.channels() != 1) {
-        std::cout << fileName << " is not a mono file" << std::endl;
-        exit(1);
-      }
-
-      Buffer<double>* a = new Buffer<double>();
-      a->size = soundFile.frames();
-      a->data = new double[a->size];
-      soundFile.read(a->data, a->size);
-      
-      // STILL NEED TO TEST IF THIS WORKS AND NEED TO LINK IT
-      if(soundFile.frameRate() != SAMPLE_RATE) {
-        // Buffer<double>* b = new Buffer<double>();
-        // b->data = new double[a->size/soundFile.frameRate() * SAMPLE_RATE];
-        // r8b::CDSPResampler convertSampleRate(soundFile.frameRate(),double(SAMPLE_RATE), a->size);
-        // convertSampleRate.process(a->data,a->size,b->data);
-        // soundClip.push_back(b);
-        // delete[] a->data;
-
-      } else soundClip.push_back(a);
-
-    soundFile.close();
+  void loadSoundFile(std::string fileName) {
+    util::load(fileName, soundClip);
   }
-
 
 private:
   PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
-  std::vector<Buffer<double>*> soundClip;
+  std::vector<util::Buffer<double>*> soundClip;
 };
 
 

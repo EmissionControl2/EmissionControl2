@@ -11,7 +11,11 @@
             "includePath": [
                 "/Users/jkilgore/Applications/allo/allolib/external/Gamma",
                 "/Users/jkilgore/Applications/allo/allolib/extensions",
-                "/Users/jkilgore/Applications/allo/allolib/include"
+                "/Users/jkilgore/Applications/allo/allolib/include",
+                "/Users/jkilgore/Applications/allo/allolib/external/rtmidi",
+                "/Users/jkilgore/Applications/allo/allolib/external/glew/include",
+                "/Users/jkilgore/Applications/allo/allolib/external/imgui",
+                "/Users/jkilgore/Applications/allo/allolib/external/glfw/include"
             ]
         }
     ],
