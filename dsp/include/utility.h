@@ -6,6 +6,7 @@
 #include <cstdio>
 #include "const.h"
 #include "al_ext/soundfile/al_SoundfileBuffered.hpp"
+#include "../external/libsamplerate/src/samplerate.h"
 
 namespace util {
 
@@ -102,13 +103,13 @@ struct Buffer {
   }
 };
 
-void load(std::string fileName, std::vector<Buffer<double>*>& buf) {
+void load(std::string fileName, std::vector<Buffer<float>*>& buf) { //only works on mono files for now
   al::SearchPaths searchPaths;
   // searchPaths.addSearchPath("../../samples");
   searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples");
   //searchPaths.print();
 
-  std::string filePath = searchPaths.find(fileName).filepath(); //JKilg currently debugging.
+  std::string filePath = searchPaths.find(fileName).filepath(); 
   gam::SoundFile soundFile;
   soundFile.path(filePath);
 
@@ -121,25 +122,46 @@ void load(std::string fileName, std::vector<Buffer<double>*>& buf) {
     exit(1);
   }
 
-  Buffer<double>* a = new Buffer<double>();
-  a->size = soundFile.frames();
-  a->data = new double[a->size];
+  Buffer<float>* a = new Buffer<float>();
+  a->size = soundFile.samples();
+  a->data = new float[a->size];
   soundFile.read(a->data, a->size);
   
   // STILL NEED TO TEST IF THIS WORKS AND NEED TO LINK IT
   if(soundFile.frameRate() != SAMPLE_RATE) {
-    // Buffer<double>* b = new Buffer<double>();
-    // b->data = new double[a->size/soundFile.frameRate() * SAMPLE_RATE];
-    // r8b::CDSPResampler convertSampleRate(soundFile.frameRate(),double(SAMPLE_RATE), a->size);
+    Buffer<float>* b = new Buffer<float>();
+    b->size = a->size/soundFile.frameRate() * SAMPLE_RATE;
+    b->data = new float[b->size];
+    SRC_DATA *conversion = new SRC_DATA{a->data, b->data, a->size/soundFile.channels(), b->size/soundFile.channels()};
+    conversion->src_ratio = soundFile.frameRate()/SAMPLE_RATE;
+    int test = 0;
+    src_simple(conversion, 0, soundFile.channels());
     // convertSampleRate.process(a->data,a->size,b->data);
-    // soundClip.push_back(b);
-    // delete[] a->data;
+    buf.push_back(b);
+    std::cout<< "b->size: " << b->size << " a->size: " << a->size << std::endl; 
+    delete[] a->data;
+    delete conversion;
 
   } else buf.push_back(a);
 
   soundFile.close();
 }
 
-}
+
+
+
+} //util:: 
+
+// typedef struct
+// {   
+//   float  *data_in, *data_out ;
+
+//   long   input_frames, output_frames ;
+//   long   input_frames_used, output_frames_gen ;
+
+//   int    end_of_input ;
+
+//   double src_ratio ;
+// } SRC_DATA ;
 
 #endif

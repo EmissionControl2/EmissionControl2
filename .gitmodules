@@ -1,0 +1,6 @@
+[submodule "dsp/external/allolib"]
+	path = dsp/external/allolib
+	url = https://github.com/AlloSphere-Research-Group/allolib.git
+[submodule "dsp/external/libsamplerate"]
+	path = dsp/external/libsamplerate
+	url = https://github.com/erikd/libsamplerate.git

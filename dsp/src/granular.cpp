@@ -3,6 +3,7 @@
 
 //AlloLib Includes 
 #include "al_ext/soundfile/al_SoundfileBuffered.hpp"
+#include "al_ext/soundfile/al_SoundfileBufferedRecord.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
 #include "al_ext/soundfile/al_SoundfileRecordGUI.hpp"
 
@@ -26,7 +27,6 @@
 #include "../include/emissionControl.h"
 
 //Externals
-#include "../external/r8brain-free-src/CDSPResampler.h"
 
 using namespace al;
 
@@ -34,7 +34,7 @@ using namespace al;
 class Grain : public SynthVoice {
 public:
   // Unit generators
-  util::Buffer<double> *source = nullptr;
+  util::Buffer<float> *source = nullptr;
   gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
   gam::ADSR<> env{0.01,0,1,0.01,1,1};
   util::Line index;
@@ -66,15 +66,15 @@ class Granular : public SynthVoice {
 public:
 
   StochasticCannon mCannon{SAMPLE_RATE};
-  Parameter grainTriggerFreq {"grainTriggerFreq", "", 10.0, "", 0.2, 4000.0};
+  Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.2, 4000.0};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
-  Parameter grainDurationMs {"grainDurationMs", "", 10.0, "", 0.01, 10000};
+  Parameter grainDurationMs {"grainDurationMs", "", 1000.0, "", 0.01, 10000};
   Parameter attackTime {"attackTime", "", 0.3, "", 0, 1};
   Parameter sustain {"sustain", "", 0.8, "", 0.01, 10.0};
   Parameter releaseTime {"releaseTime", "", 2.0, "", 0.001, 10.0};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
-  Parameter position{"position", "", 0.4, "", 0, 1};
-  Parameter playbackRate {"playbackRate", "", 0, "", -1, 1};
+  Parameter position{"position", "", 0, "", 0, 1};
+  Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
   Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
 
   gam::ADSR<> mEnv{0.3, 0.3, 0.8, 2.0};
@@ -95,7 +95,7 @@ public:
 
     /// TESTING 
     ///////
-
+    std::cout << "why\n";
     load("pluck.aiff", soundClip);
 
     *this << volumedB <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
@@ -127,19 +127,18 @@ public:
 
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
-
   }
-    int count = 0;
+
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
       //audio rate
       float posMod = positionMod();
+
       if (mCannon.tick()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
-          rnd::Random<> rng;
           voice->source = soundClip[0];
           float startSample = (voice->source->size * (position.get() * posMod)); //* posMod
           float endSample = startSample  // + 24000; why is half the sampling rate the move? 
@@ -193,7 +192,7 @@ public:
 
 private:
   PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
-  std::vector<util::Buffer<double>*> soundClip;
+  std::vector<util::Buffer<float>*> soundClip;
 };
 
 
@@ -209,7 +208,6 @@ public:
 
 
 private:
-  PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
 };
 //
 
@@ -223,7 +221,9 @@ public:
   // GUI manager for OscEnv voices
   // The name provided determines the name of the directory
   // where the presets and sequences are stored
-  SynthGUIManager<Granular> synthManager {"granular"};
+  SynthGUIManager<Granular> synthManager {"GranularVoices"};
+  SynthGUIManager<Modulator> synthManagerMod {"mods"};
+
 
 
   OutputRecorder mRecorder;
@@ -235,8 +235,10 @@ public:
     // after running the onSound() function below
     audioIO().append(mRecorder);
     synthManager.setCurrentTab(2); // Run constant synth note.
+    synthManagerMod.setCurrentTab(2); // Run constant synth note
 
     synthManager.triggerOn();
+    synthManagerMod.triggerOn();
   }
 
   virtual void onCreate() override {
@@ -256,17 +258,31 @@ public:
   virtual void onDraw(Graphics &g) override {
     g.clear();
     synthManager.render(g);
+    synthManagerMod.render(g);
 
     // Draw GUI
     ParameterGUI::beginDraw();
-    ParameterGUI::beginPanel(synthManager.name());
-
-    synthManager.drawSynthWidgets();
+    ParameterGUI::beginPanel(synthManager.name(),600,-1);
+    synthManager.drawFields();
     ParameterGUI::endPanel();
+
+    ParameterGUI::beginPanel("Presets",400,200);
+    synthManager.drawPresets();
+    ParameterGUI::endPanel();
+
     ParameterGUI::beginPanel("recorder");
     SoundFileRecordGUI::drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut());
     ParameterGUI::endPanel();
+
+
+
+
+    
+    ParameterGUI::beginPanel(synthManagerMod.name(),-1,-1);
+    synthManagerMod.drawSynthWidgets();
+    ParameterGUI::endPanel();
     ParameterGUI::endDraw();
+
   }
 
   virtual void onKeyDown(Keyboard const& k) override {
@@ -303,19 +319,3 @@ public:
   }
 
 };
-
-
-int main(){    // Create app instance
-
-  //    app.navControl().active(false); // Disable navigation via keyboard, since we will be using keyboard for note triggering
-
-  MyApp app;
-  // Set up audio
-  app.initAudio(SAMPLE_RATE, BLOCK_SIZE, AUDIO_OUTS, DEVICE_NUM);
-  // Set sampling rate for Gamma objects from app's audio
-  gam::sampleRate(app.audioIO().framesPerSecond());
-  app.audioIO().print();
-
-  app.start();
-  return 0;
-}
