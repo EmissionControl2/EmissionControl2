@@ -4,9 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "granular",
+            "label": "emissionControl",
             "type": "shell",
-            "command": "../../allolib/run.sh ./src/granular.cpp",
+            "command": "./run.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true

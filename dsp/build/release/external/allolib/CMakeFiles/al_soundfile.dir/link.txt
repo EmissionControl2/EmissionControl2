@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libal_soundfile.a  CMakeFiles/al_soundfile.dir/extensions/al_ext/soundfile/src/al_SoundfileBuffered.cpp.o CMakeFiles/al_soundfile.dir/extensions/al_ext/soundfile/src/al_SoundfileBufferedRecord.cpp.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libal_soundfile.a
