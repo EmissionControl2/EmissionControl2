@@ -6,6 +6,7 @@
         "deque": "cpp",
         "string": "cpp",
         "vector": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "memory": "cpp"
     }
 }

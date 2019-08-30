@@ -5,35 +5,58 @@
 #include "const.h"
 #include <iostream>
 
+
 class Grain : public al::SynthVoice {
 public:
   // Unit generators
+  //Grain();
+  //gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
   util::Buffer<float> *source = nullptr;
-  gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
-  gam::ADSR<> env{0.01,0,1,0.01,1,1};
   util::Line index;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
-    gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
-    mGrainEnv.freq(10);
+    //gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
+    //mGrainEnv.freq(10);
   }
   virtual void onProcess(al::AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
+      // std::cout << env() << std::endl;
       io.out(0) += source->get(index())  * env(); //this manipulates on grain level
       io.out(1) += source->get(index())  * env();
-      if (mGrainEnv.done()) {
+      if (env.done()) {
+        std::cout << "Made it\n";
         free();
         break;
       }
     }
   }
-
   virtual void onTriggerOn() override {
-    mGrainEnv.reset();
+    //mGrainEnv.reset();
+    std::cout << env.attack() << std::endl;
+    env.reset();
     //      mOsc.reset();
   }
+
+  //value between 0 and 1 
+  void setSkew(float value) {
+    if(value < 0) value++;
+    if(value > 1) value--;
+    
+    env.sustain(durationMs/1000 * 0.5);
+    env.attack(value * durationMs/1000 * 0.5);
+    env.release(durationMs/1000 - env.sustain() - env.attack());
+  }
+
+  float getDurationMs() const {return durationMs;}
+
+  void setDurationMs(float dur) {durationMs = dur;}
+
+private:
+  gam::ADSR<> env{0.001,0,1,0.01,1,-4};
+  float durationMs;
+  float startPosition;
 };
 
 class ecModulator {
