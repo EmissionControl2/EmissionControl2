@@ -36,19 +36,17 @@ class Granular : public SynthVoice {
 public:
 
   StochasticCannon mCannon{SAMPLE_RATE};
-  Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.2, 4000.0};
+  Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.5, 40};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 1000.0, "", 0.01, 10000};
+  Parameter skew {"skew", "", 0.5, "", 0, 1};
   Parameter attackTime {"attackTime", "", 0.3, "", 0, 1};
-  Parameter sustain {"sustain", "", 0.8, "", 0.01, 10.0};
+  Parameter decayTime {"decayTime", "", 0.8, "", 0.01, 1};
   Parameter releaseTime {"releaseTime", "", 2.0, "", 0.001, 10.0};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
   Parameter position{"position", "", 0, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
   Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
-
-  gam::ADSR<> mEnv{0.3, 0.3, 0.8, 2.0};
-
   //gam::LFO<> testLFO;
   //ecModulator test1{"SINE", 1,1};
   ecModulator positionMod {"TRI"};
@@ -65,9 +63,9 @@ public:
 
     /// TESTING 
     ///////
-    load("costco-list.wav", soundClip);
+    load("pluck.aiff", soundClip);
 
-    *this << volumedB <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
+    *this << volumedB << skew <<  attackTime << decayTime << releaseTime << grainTriggerFreq << grainTriggerDiv 
     << grainDurationMs << position << playbackRate;
     
 
@@ -79,18 +77,11 @@ public:
       mCannon.setDivergence(value);
     });
 
-    attackTime.registerChangeCallback([&](float value) {
-      mEnv.attack(value*grainDurationMs.get());
-      mEnv.decay(value*grainDurationMs.get());
-    });
-    sustain.registerChangeCallback([&](float value) {
-      mEnv.sustain(value);
-    });
-    releaseTime.registerChangeCallback([&](float value) {
-      mEnv.release(value);
+    positionModFreq.registerChangeCallback([&](float value) {
+      positionMod.setFrequency(value);
     });
 
-    positionModFreq.registerChangeCallback([&](float value) {
+    grainDurationMs.registerChangeCallback([&](float value) {
       positionMod.setFrequency(value);
     });
 
@@ -105,21 +96,23 @@ public:
       if (mCannon.tick()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
-          voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
+          //voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
+          voice->setDurationMs(grainDurationMs);
           voice->source = soundClip[0];
+          voice->setSkew(skew.get());
           float startSample = voice->source->size * (position.get()); 
-          float endSample = startSample  
-            + (grainDurationMs.get()/1000) * SAMPLE_RATE * 1/powf(2.0, 1); //
-          std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " 
-          << grainDurationMs.get()/1000 * 1/abs(playbackRate.get()) <<  std::endl;
-          voice->env.attack(attackTime);
-          voice->env.release(releaseTime);
+          float endSample = startSample  + (grainDurationMs.get()/1000) * SAMPLE_RATE * abs(playbackRate.get())/2;
+          // std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " 
+          // << grainDurationMs.get()/1000 * 1/abs(playbackRate.get()) <<  std::endl;
+          //voice->env.attack(attackTime);
+          //voice->env.release(releaseTime);
           if(playbackRate.get() < 0) 
             voice->index.set(endSample,startSample, grainDurationMs.get()/1000); 
           else 
-            voice->index.set(startSample,endSample, 1); 
+            voice->index.set(startSample,endSample, grainDurationMs.get()/1000); 
     
           grainSynth.triggerOn(voice, io.frame());
+
         } else {
           std::cout << "out of voices!" <<std::endl;
         }
@@ -135,23 +128,16 @@ public:
       io.out(1) *=  amp ; //* mEnv() 
       
     }
-    if (mEnv.done()) {free();}
+    //if (mEnv.done()) {free();}
   }
 
   virtual void onTriggerOn() override {
    mCannon.setFrequency(grainTriggerFreq);
    mCannon.setDivergence(grainTriggerDiv);
-   mEnv.attack(attackTime);
-   mEnv.decay(attackTime);
-   mEnv.sustain(sustain);
-   mEnv.release(releaseTime);
-   std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
-    mEnv.reset();
-
+   // std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
   }
 
   virtual void onTriggerOff() override {
-    mEnv.triggerRelease();
   }
 
   void loadSoundFile(std::string fileName) {
