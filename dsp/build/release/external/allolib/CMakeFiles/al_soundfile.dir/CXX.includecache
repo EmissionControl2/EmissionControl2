@@ -6,24 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBuffered.hpp
-mutex
--
-thread
--
-condition_variable
--
-memory
--
-atomic
--
-functional
--
-Gamma/SoundFile.h
-../../external/allolib/extensions/al_ext/soundfile/Gamma/SoundFile.h
-al/core/types/al_SingleRWRingBuffer.hpp
-../../external/allolib/extensions/al_ext/soundfile/al/core/types/al_SingleRWRingBuffer.hpp
-
 ../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 mutex
 -
@@ -77,10 +59,6 @@ cstring
 -
 inttypes.h
 -
-
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/soundfile/src/al_SoundfileBuffered.cpp
-al_ext/soundfile/al_SoundfileBuffered.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/soundfile/src/al_ext/soundfile/al_SoundfileBuffered.hpp
 
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/soundfile/src/al_SoundfileBufferedRecord.cpp
 cassert

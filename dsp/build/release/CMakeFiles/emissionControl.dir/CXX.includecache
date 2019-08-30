@@ -1089,6 +1089,8 @@ const.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h
 al_ext/soundfile/al_SoundfileBuffered.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/al_ext/soundfile/al_SoundfileBuffered.hpp
+al_ext/soundfile/al_SoundfileBufferedRecord.hpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/include/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 ../external/libsamplerate/src/samplerate.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/src/samplerate.h
 

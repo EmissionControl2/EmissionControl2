@@ -31,36 +31,6 @@
 using namespace al;
 
 
-class Grain : public SynthVoice {
-public:
-  // Unit generators
-  util::Buffer<float> *source = nullptr;
-  gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
-  gam::ADSR<> env{0.01,0,1,0.01,1,1};
-  util::Line index;
-
-  // Initialize voice. This function will nly be called once per voice
-  virtual void init() {
-    gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
-    mGrainEnv.freq(10);
-  }
-  virtual void onProcess(AudioIOData& io) override {
-    //        updateFromParameters();
-    while (io()) {
-      io.out(0) += source->get(index())  * mGrainEnv(); //this manipulates on grain level
-      io.out(1) += source->get(index())  * mGrainEnv();
-      if (mGrainEnv.done()) {
-        free();
-        break;
-      }
-    }
-  }
-
-  virtual void onTriggerOn() override {
-    mGrainEnv.reset();
-    //      mOsc.reset();
-  }
-};
 
 class Granular : public SynthVoice {
 public:
@@ -95,8 +65,7 @@ public:
 
     /// TESTING 
     ///////
-    std::cout << "why\n";
-    load("pluck.aiff", soundClip);
+    load("costco-list.wav", soundClip);
 
     *this << volumedB <<  attackTime << sustain << releaseTime << grainTriggerFreq << grainTriggerDiv 
     << grainDurationMs << position << playbackRate;
@@ -133,23 +102,22 @@ public:
     //        updateFromParameters();
     while (io()) {
       //audio rate
-      float posMod = positionMod();
-
       if (mCannon.tick()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
           voice->source = soundClip[0];
-          float startSample = (voice->source->size * (position.get() * posMod)); //* posMod
-          float endSample = startSample  // + 24000; why is half the sampling rate the move? 
-            + (grainDurationMs.get()/1000) * SAMPLE_RATE * abs(playbackRate.get())/2; //
-          //std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " << grainDurationMs.get() <<  std::endl;
+          float startSample = voice->source->size * (position.get()); 
+          float endSample = startSample  
+            + (grainDurationMs.get()/1000) * SAMPLE_RATE * 1/powf(2.0, 1); //
+          std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " 
+          << grainDurationMs.get()/1000 * 1/abs(playbackRate.get()) <<  std::endl;
           voice->env.attack(attackTime);
           voice->env.release(releaseTime);
           if(playbackRate.get() < 0) 
             voice->index.set(endSample,startSample, grainDurationMs.get()/1000); 
           else 
-            voice->index.set(startSample,endSample, grainDurationMs.get()/1000); 
+            voice->index.set(startSample,endSample, 1); 
     
           grainSynth.triggerOn(voice, io.frame());
         } else {
@@ -205,8 +173,6 @@ public:
   virtual void init() {
     *this << positionModFreq;
   }
-
-
 private:
 };
 //

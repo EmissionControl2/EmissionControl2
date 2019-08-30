@@ -8,7 +8,6 @@ int main(){    // Create app instance
   app.initAudio(SAMPLE_RATE, BLOCK_SIZE, AUDIO_OUTS, DEVICE_NUM);
   // Set sampling rate for Gamma objects from app's audio
   gam::sampleRate(app.audioIO().framesPerSecond());
-
   app.dimensions(1200, 800);
 
   app.audioIO().print();
