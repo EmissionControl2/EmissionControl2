@@ -6,6 +6,7 @@
 #include <cstdio>
 #include "const.h"
 #include "al_ext/soundfile/al_SoundfileBuffered.hpp"
+#include "al_ext/soundfile/al_SoundfileBufferedRecord.hpp"
 #include "../external/libsamplerate/src/samplerate.h"
 
 namespace util {
@@ -127,22 +128,22 @@ void load(std::string fileName, std::vector<Buffer<float>*>& buf) { //only works
   a->data = new float[a->size];
   soundFile.read(a->data, a->size);
   
-  // STILL NEED TO TEST IF THIS WORKS AND NEED TO LINK IT
-  if(soundFile.frameRate() != SAMPLE_RATE) {
-    Buffer<float>* b = new Buffer<float>();
-    b->size = a->size/soundFile.frameRate() * SAMPLE_RATE;
-    b->data = new float[b->size];
-    SRC_DATA *conversion = new SRC_DATA{a->data, b->data, a->size/soundFile.channels(), b->size/soundFile.channels()};
-    conversion->src_ratio = soundFile.frameRate()/SAMPLE_RATE;
-    int test = 0;
-    src_simple(conversion, 0, soundFile.channels());
-    // convertSampleRate.process(a->data,a->size,b->data);
-    buf.push_back(b);
-    std::cout<< "b->size: " << b->size << " a->size: " << a->size << std::endl; 
-    delete[] a->data;
-    delete conversion;
+  // Not working correctly :( 
+  // if(soundFile.frameRate() != SAMPLE_RATE) {
+  //   Buffer<float>* b = new Buffer<float>();
+  //   b->size = a->size/soundFile.frameRate() * SAMPLE_RATE;
+  //   b->data = new float[b->size];
+  //   SRC_DATA *conversion = new SRC_DATA{a->data, b->data, a->size, b->size};
+  //   conversion->src_ratio = soundFile.frameRate()/SAMPLE_RATE;
+  //   src_simple(conversion, 0, soundFile.channels());
+  //   buf.push_back(b);
+  //   std::cout<< "b->size: " << b->size << " a->size: " << a->size << std::endl; 
+  //   delete[] a->data;
+  //   delete conversion;
 
-  } else buf.push_back(a);
+  // } else buf.push_back(a);
+
+  buf.push_back(a);
 
   soundFile.close();
 }

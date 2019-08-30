@@ -5,6 +5,37 @@
 #include "const.h"
 #include <iostream>
 
+class Grain : public al::SynthVoice {
+public:
+  // Unit generators
+  util::Buffer<float> *source = nullptr;
+  gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
+  gam::ADSR<> env{0.01,0,1,0.01,1,1};
+  util::Line index;
+
+  // Initialize voice. This function will nly be called once per voice
+  virtual void init() {
+    gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
+    mGrainEnv.freq(10);
+  }
+  virtual void onProcess(al::AudioIOData& io) override {
+    //        updateFromParameters();
+    while (io()) {
+      io.out(0) += source->get(index())  * env(); //this manipulates on grain level
+      io.out(1) += source->get(index())  * env();
+      if (mGrainEnv.done()) {
+        free();
+        break;
+      }
+    }
+  }
+
+  virtual void onTriggerOn() override {
+    mGrainEnv.reset();
+    //      mOsc.reset();
+  }
+};
+
 class ecModulator {
   public:
    ecModulator(std::string waveform = "SINE", float frequency = 1, float width = 1) : frequency(frequency), width(width) {
