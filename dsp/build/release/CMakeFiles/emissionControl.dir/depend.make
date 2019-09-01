@@ -105,6 +105,7 @@ CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/libsamplerate/src/
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../include/const.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../include/emissionControl.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../include/utility.h
+CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../src/ecInterface.cpp
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../src/granular.cpp
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../src/main.cpp
 CMakeFiles/emissionControl.dir/src/main.cpp.o: /usr/local/include/GL/glew.h

@@ -1,4 +1,4 @@
-#include "granular.cpp"
+#include "ecInterface.cpp"
 
 int main(){    // Create app instance
 
@@ -11,7 +11,8 @@ int main(){    // Create app instance
   app.dimensions(1200, 800);
 
   app.audioIO().print();
-
+  al::rnd::Random<> rand;
+  std::cout << "RANDOM number: " << rand.uniform() << std::endl;
 
   app.start();
   return 0;

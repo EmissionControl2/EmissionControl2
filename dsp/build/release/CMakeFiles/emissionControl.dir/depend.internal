@@ -106,6 +106,7 @@ CMakeFiles/emissionControl.dir/src/main.cpp.o
  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h
  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/emissionControl.h
  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/utility.h
+ /Users/jkilgore/Projects/EmissionControlPort/dsp/src/ecInterface.cpp
  /Users/jkilgore/Projects/EmissionControlPort/dsp/src/granular.cpp
  /Users/jkilgore/Projects/EmissionControlPort/dsp/src/main.cpp
  /usr/local/include/GL/glew.h

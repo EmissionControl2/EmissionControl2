@@ -1094,6 +1094,10 @@ al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 ../external/libsamplerate/src/samplerate.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/src/samplerate.h
 
+/Users/jkilgore/Projects/EmissionControlPort/dsp/src/ecInterface.cpp
+granular.cpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/src/granular.cpp
+
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/granular.cpp
 math.h
 -
@@ -1135,8 +1139,8 @@ al/core/math/al_Random.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/emissionControl.h
 
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/main.cpp
-granular.cpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/src/granular.cpp
+ecInterface.cpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/src/ecInterface.cpp
 
 /usr/local/include/GL/glew.h
 stddef.h

@@ -125,33 +125,54 @@ public:
   }
 
   void setFrequency(double frequency) {
-    configure(frequency, mDivergence);
+    configure(frequency, mAsync, mIntermittence);
   }
 
-  void setDivergence(double divergence) {
-    configure(mFrequency, divergence);
+  void setAsynchronicity(double async) {
+    configure(mFrequency, async, mIntermittence);
   }
 
-  void configure(double frequency, double divergence) {
-    if (divergence > 1.0) {
-      divergence = 1.0;
-    } else if (divergence < 0.0) {
-      divergence = 0.0;
+  void setIntermittence(double intermittence) {
+    configure(mFrequency, mAsync, intermittence);
+  }
+
+  void configure(double frequency, double async, double intermittence) {
+    if (async > 1.0) {
+      async = 1.0;
+    } else if (async < 0.0) {
+      async = 0.0;
     }
-    mDivergence = divergence;
+    if (intermittence > 1.0) {
+      intermittence = 1.0;
+    } else if (intermittence < 0.0) {
+      intermittence = 0.0;
+    }
+    mAsync = async;
     mFrequency = frequency;
+    mIntermittence = intermittence;
     mIncrement = mFrequency/mSamplingRate;
   }
 
   bool tick() {
-    if (mCounter >= 1.0) {
+    if(mCounter >= 1.0) {
+      //std::cout << "made it\n";
       mCounter -= 1.0;
-      mCounter += rand.uniform(-mDivergence, mDivergence);
+      if(!intermittence()) return false;
+      mCounter += rand.uniform(-mAsync, mAsync);
       mCounter += mIncrement;
       return true;
-    }
+    } 
     mCounter += mIncrement;
     return false;
+  }
+
+  /*
+  @brief Returns true if random number generator is withing bounds 
+  @param lower bound coundition
+  */
+  bool intermittence() {
+    if(rand.uniform() > mIntermittence) return true; 
+    else return false;
   }
 private:
   gam::LFO<> mPulse;
@@ -159,9 +180,10 @@ private:
 
   double mCounter {1.0};
   double mSamplingRate;
-  double mDivergence {0.0};
+  double mAsync {0.0};
   double mFrequency {1.0};
   double mIncrement {0.0};
+  double mIntermittence {0.0};
 };
 
 #endif
