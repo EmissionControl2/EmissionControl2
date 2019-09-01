@@ -2,7 +2,7 @@
 
 int main(){    // Create app instance
 
-  MyApp app; //why does this make extraneous calls? Synth GUI manager causes it
+  ecInterface app; //why does this make extraneous calls? Synth GUI manager causes it
   std::cout << "HEREEEEmade it\n";
   // Set up audio
   app.initAudio(SAMPLE_RATE, BLOCK_SIZE, AUDIO_OUTS, DEVICE_NUM);
