@@ -5,14 +5,16 @@
 #include "const.h"
 #include <iostream>
 
+using namespace al;
 
 class Grain : public al::SynthVoice {
 public:
   // Unit generators
   //Grain();
-  //gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
+  gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
   util::Buffer<float> *source = nullptr;
   util::Line index;
+  int counter = 0;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
@@ -22,19 +24,20 @@ public:
   virtual void onProcess(al::AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      // std::cout << env() << std::endl;
-      io.out(0) += source->get(index())  * env(); //this manipulates on grain level
+      counter++;
+      io.out(0) += source->get(index())  * env(); 
       io.out(1) += source->get(index())  * env();
-      if (env.done()) {
-        std::cout << "Made it\n";
+      if (counter == SAMPLE_RATE * durationMs/1000) {
+        // std::cout << "Made it\n";
         free();
+        counter = 0;
         break;
       }
     }
   }
   virtual void onTriggerOn() override {
     //mGrainEnv.reset();
-    std::cout << env.attack() << std::endl;
+    env.sustainDisable();
     env.reset();
     //      mOsc.reset();
   }
@@ -44,8 +47,9 @@ public:
     if(value < 0) value++;
     if(value > 1) value--;
     
-    env.sustain(durationMs/1000 * 0.5);
-    env.attack(value * durationMs/1000 * 0.5);
+    env.sustain(1);
+    env.decay(durationMs/1000 * 0.4);
+    env.attack(value * durationMs/1000 * 0.6);
     env.release(durationMs/1000 - env.sustain() - env.attack());
   }
 
@@ -58,6 +62,8 @@ private:
   float durationMs;
   float startPosition;
 };
+
+
 
 class ecModulator {
   public:
@@ -110,11 +116,11 @@ class ecModulator {
 
 
 
-class StochasticCannon
+class voiceScheduler
 {
 public:
 
-  StochasticCannon(double samplingRate) {
+  voiceScheduler(double samplingRate) {
     mSamplingRate = samplingRate;
   }
 

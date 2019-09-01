@@ -29,13 +29,10 @@
 //Externals
 
 using namespace al;
-
-
-
-class Granular : public SynthVoice {
+class Granular : public al::SynthVoice {
 public:
 
-  StochasticCannon mCannon{SAMPLE_RATE};
+  voiceScheduler grainScheduler{SAMPLE_RATE};
   Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.5, 40};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 1000.0, "", 0.01, 10000};
@@ -69,12 +66,12 @@ public:
     << grainDurationMs << position << playbackRate;
     
 
-    mCannon.configure(grainTriggerFreq, 0.0);
+    grainScheduler.configure(grainTriggerFreq, 0.0);
     grainTriggerFreq.registerChangeCallback([&](float value) {
-      mCannon.setFrequency(value);
+      grainScheduler.setFrequency(value);
     });
     grainTriggerDiv.registerChangeCallback([&](float value) {
-      mCannon.setDivergence(value);
+      grainScheduler.setDivergence(value);
     });
 
     positionModFreq.registerChangeCallback([&](float value) {
@@ -93,7 +90,7 @@ public:
     //        updateFromParameters();
     while (io()) {
       //audio rate
-      if (mCannon.tick()) {
+      if (grainScheduler.tick()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           //voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
@@ -132,8 +129,8 @@ public:
   }
 
   virtual void onTriggerOn() override {
-   mCannon.setFrequency(grainTriggerFreq);
-   mCannon.setDivergence(grainTriggerDiv);
+   grainScheduler.setFrequency(grainTriggerFreq);
+   grainScheduler.setDivergence(grainTriggerDiv);
    // std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
   }
 
@@ -165,7 +162,7 @@ private:
 
 
 // We make an app.
-class MyApp : public App
+class ecInterface : public App
 {
 public:
 
