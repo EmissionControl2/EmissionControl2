@@ -35,14 +35,14 @@ public:
   voiceScheduler grainScheduler{SAMPLE_RATE};
   Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.5, 40};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
-  Parameter grainDurationMs {"grainDurationMs", "", 1000.0, "", 0.01, 10000};
+  Parameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
   Parameter skew {"skew", "", 0.5, "", 0, 1};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
   Parameter position{"position", "", 0, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
   Parameter intermittency {"intermittency", "", 0,"", 0, 1};
   ParameterInt streams {"streams", "", 1,"", 1, 12};
-  Parameter modTest {"modTest", "",1, "", 1/10, 40};
+  Parameter modTest {"modTest", "",1, "", 0.01, 40};
   //test
   ecModulator mod {SINE, 1,1};
   //test
@@ -51,6 +51,9 @@ public:
   ecModulator modSquare {SQUARE};
   ecModulator modSaw {SAW};
   ecModulator modNoise {NOISE};
+
+  grainParameters list;
+  float modValue;
 
   // ~Granular() {
   //   for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
@@ -82,17 +85,15 @@ public:
       grainScheduler.setIntermittence(value);
     });
 
+    streams.registerChangeCallback([&](float value) {
+      grainScheduler.polyStream(synchronous, value);
+    });
+
     modTest.registerChangeCallback([&](float value) {
       mod.setFrequency(value);
     });
 
-    grainDurationMs.registerChangeCallback([&](float value) {
-      mod.setFrequency(value);
-    });
-
-    streams.registerChangeCallback([&](float value) {
-      grainScheduler.polyStream(synchronous, value);
-    });
+   
 
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
@@ -101,11 +102,11 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      float modValue = mod();
+      modValue = mod();
       if (grainScheduler.trigger()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
-          grainParameters list = {
+          list = {
             grainDurationMs.get(),
             skew.get(),
             position.get(),
@@ -132,12 +133,12 @@ public:
       io.out(1) *=  amp ; //* mEnv() 
       
     }
-    //if (mEnv.done()) {free();}
+    // (mEnv.done()) {free();}
   }
 
   virtual void onTriggerOn() override {
-   grainScheduler.setFrequency(grainTriggerFreq);
-   grainScheduler.setAsynchronicity(grainTriggerDiv);
+   //grainScheduler.setFrequency(grainTriggerFreq);
+   //grainScheduler.setAsynchronicity(grainTriggerDiv);
    // std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
   }
 
