@@ -37,14 +37,12 @@ public:
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 1000.0, "", 0.01, 10000};
   Parameter skew {"skew", "", 0.5, "", 0, 1};
-  Parameter attackTime {"attackTime", "", 0.3, "", 0, 1};
-  Parameter decayTime {"decayTime", "", 0.8, "", 0.01, 1};
-  Parameter releaseTime {"releaseTime", "", 2.0, "", 0.001, 10.0};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
   Parameter position{"position", "", 0, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
   Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
   Parameter intermittency {"intermittency", "", 0,"", 0, 1};
+  ParameterInt streams {"streams", "", 1,"", 1, 12};
   //gam::LFO<> testLFO;
   //ecModulator test1{"SINE", 1,1};
   ecModulator positionMod {"TRI"};
@@ -63,7 +61,7 @@ public:
     ///////
     load("pluck.aiff", soundClip);
 
-    *this << volumedB << skew <<  attackTime << decayTime << releaseTime << grainTriggerFreq << grainTriggerDiv << intermittency
+    *this << volumedB << skew << streams << grainTriggerFreq << grainTriggerDiv << intermittency
     << grainDurationMs << position << playbackRate;
     
 
@@ -87,6 +85,10 @@ public:
       positionMod.setFrequency(value);
     });
 
+    streams.registerChangeCallback([&](float value) {
+      grainScheduler.polyStream(synchronous, value);
+    });
+
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
   }
@@ -94,25 +96,19 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      //audio rate
-      if (grainScheduler.tick()) {
+      
+      if (grainScheduler.trigger()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
-          //voice->mGrainEnv.freq(1000.0/grainDurationMs.get());
-          voice->setDurationMs(grainDurationMs);
-          voice->source = soundClip[0];
-          voice->setSkew(skew.get());
-          float startSample = voice->source->size * (position.get()); 
-          float endSample = startSample  + (grainDurationMs.get()/1000) * SAMPLE_RATE * abs(playbackRate.get())/2;
-          // std::cout << "Start Sample: " << startSample << "...End Sample: " << endSample << "...grainTIME: " 
-          // << grainDurationMs.get()/1000 * 1/abs(playbackRate.get()) <<  std::endl;
-          //voice->env.attack(attackTime);
-          //voice->env.release(releaseTime);
-          if(playbackRate.get() < 0) 
-            voice->index.set(endSample,startSample, grainDurationMs.get()/1000); 
-          else 
-            voice->index.set(startSample,endSample, grainDurationMs.get()/1000); 
-    
+          grainParameters list = {
+            grainDurationMs.get(),
+            skew.get(),
+            position.get(),
+            playbackRate.get(),
+            soundClip[0], 
+          };
+
+          voice->configureGrain(list);
           grainSynth.triggerOn(voice, io.frame());
 
         } else {

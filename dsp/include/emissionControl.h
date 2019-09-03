@@ -7,6 +7,14 @@
 
 using namespace al;
 
+struct grainParameters{
+  float grainDurationMs;
+  float skew;
+  float position;
+  float playbackRate;
+  util::Buffer<float>* source;
+};
+
 class Grain : public al::SynthVoice {
 public:
   // Unit generators
@@ -57,11 +65,27 @@ public:
 
   void setDurationMs(float dur) {durationMs = dur;}
 
+  void configureGrain(grainParameters& list) {
+    setDurationMs(list.grainDurationMs);
+    setSkew(list.skew);
+    this->source = list.source;
+    
+    float startSample = list.source->size * (list.position); 
+    float endSample = startSample  + (list.grainDurationMs/1000) * SAMPLE_RATE * abs(list.playbackRate)/2;
+    if(list.playbackRate < 0) 
+      index.set(endSample,startSample, list.grainDurationMs/1000); 
+    else 
+      index.set(startSample,endSample, list.grainDurationMs/1000); 
+    
+  }
+
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};
   float durationMs;
   float startPosition;
 };
+
+
 
 
 
@@ -153,7 +177,7 @@ public:
     mIncrement = mFrequency/mSamplingRate;
   }
 
-  bool tick() {
+  bool trigger() {
     if(mCounter >= 1.0) {
       //std::cout << "made it\n";
       mCounter -= 1.0;
@@ -174,6 +198,15 @@ public:
     if(rand.uniform() > mIntermittence) return true; 
     else return false;
   }
+
+  void polyStream(streamType type, int numStreams) {
+    if(type == synchronous) {
+      setFrequency(mFrequency * numStreams);
+    } else {
+      std::cerr << "Not implemented yet, please try again later.\n";
+    }
+  }
+
 private:
   gam::LFO<> mPulse;
   al::rnd::Random<> rand;
