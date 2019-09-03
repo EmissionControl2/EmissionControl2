@@ -10,7 +10,7 @@ public:
   // The name provided determines the name of the directory
   // where the presets and sequences are stored
   SynthGUIManager<Granular> synthManager {"GranularVoices"};
-  SynthGUIManager<Modulator> synthManagerMod {"mods"};
+  SynthGUIManager<Modulator> synthManagerMod {"Modulation"};
 
 
 
@@ -50,11 +50,11 @@ public:
 
     // Draw GUI
     ParameterGUI::beginDraw();
-    ParameterGUI::beginPanel(synthManager.name(),600,-1);
+    ParameterGUI::beginPanel(synthManager.name(),600,-1,-1,300);
     synthManager.drawFields();
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Presets",400,200);
+    ParameterGUI::beginPanel("Presets",600,300);
     synthManager.drawPresets();
     ParameterGUI::endPanel();
 
@@ -66,8 +66,8 @@ public:
 
 
     
-    ParameterGUI::beginPanel(synthManagerMod.name(),-1,-1);
-    synthManagerMod.drawSynthWidgets();
+    ParameterGUI::beginPanel(synthManagerMod.name(),250,-1);
+    synthManagerMod.drawFields();
     ParameterGUI::endPanel();
     ParameterGUI::endDraw();
 
