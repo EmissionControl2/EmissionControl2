@@ -27,8 +27,8 @@ public:
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
-    //gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
-    //mGrainEnv.freq(10);
+    gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
+    mGrainEnv.freq(10);
   }
   virtual void onProcess(al::AudioIOData& io) override {
     //        updateFromParameters();
@@ -36,8 +36,8 @@ public:
       counter++;
       io.out(0) += source->get(index())  * env(); 
       io.out(1) += source->get(index())  * env();
-      if (counter == SAMPLE_RATE * durationMs/1000) {
-        // std::cout << "Made it\n";
+      //std::cout << counter << std::endl;
+      if (counter == static_cast<int>(SAMPLE_RATE * durationMs/1000) ) {
         free();
         counter = 0;
         break;
@@ -59,7 +59,7 @@ public:
     env.sustain(1);
     env.decay(durationMs/1000 * 0.4);
     env.attack(value * durationMs/1000 * 0.6);
-    env.release(durationMs/1000 - env.sustain() - env.attack());
+    env.release(durationMs/1000 - env.decay() - env.attack());
   }
 
   float getDurationMs() const {return durationMs;}
@@ -67,12 +67,11 @@ public:
   void setDurationMs(float dur) {durationMs = dur;}
 
   void configureGrain(grainParameters& list) {
-    std::cout << list.modValue + 1 << std::endl;
     setDurationMs(list.grainDurationMs);
     setSkew(list.skew);
     this->source = list.source;
 
-    float startSample = list.source->size * (list.position * list.modValue + 1); 
+    float startSample = list.source->size * (list.position * (list.modValue + 1)/2); 
     float endSample = startSample  + (list.grainDurationMs/1000) * SAMPLE_RATE * abs(list.playbackRate)/2;
     if(list.playbackRate < 0) 
       index.set(endSample,startSample, list.grainDurationMs/1000 ); 
@@ -133,12 +132,6 @@ class ecModulator {
 
     void setWidth(float width) {
       this->width = width;
-    }
-
-    void uniPolar(bool yes) {
-      if(yes) {
-
-      }
     }
 
     private: 
