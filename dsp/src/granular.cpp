@@ -40,12 +40,17 @@ public:
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
   Parameter position{"position", "", 0, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
-  Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
   Parameter intermittency {"intermittency", "", 0,"", 0, 1};
   ParameterInt streams {"streams", "", 1,"", 1, 12};
-  //gam::LFO<> testLFO;
-  //ecModulator test1{"SINE", 1,1};
-  ecModulator positionMod {"TRI"};
+  Parameter modTest {"modTest", "",1, "", 1/10, 40};
+  //test
+  ecModulator mod {SINE, 1,1};
+  //test
+
+  ecModulator modSine {SINE};
+  ecModulator modSquare {SQUARE};
+  ecModulator modSaw {SAW};
+  ecModulator modNoise {NOISE};
 
   // ~Granular() {
   //   for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
@@ -61,8 +66,8 @@ public:
     ///////
     load("pluck.aiff", soundClip);
 
-    *this << volumedB << skew << streams << grainTriggerFreq << grainTriggerDiv << intermittency
-    << grainDurationMs << position << playbackRate;
+    *this << volumedB << streams << grainTriggerFreq << grainTriggerDiv << intermittency
+    << skew << grainDurationMs << position << playbackRate << modTest;
     
 
     grainScheduler.configure(grainTriggerFreq, 0.0, 0.0);
@@ -77,12 +82,12 @@ public:
       grainScheduler.setIntermittence(value);
     });
 
-    positionModFreq.registerChangeCallback([&](float value) {
-      positionMod.setFrequency(value);
+    modTest.registerChangeCallback([&](float value) {
+      mod.setFrequency(value);
     });
 
     grainDurationMs.registerChangeCallback([&](float value) {
-      positionMod.setFrequency(value);
+      mod.setFrequency(value);
     });
 
     streams.registerChangeCallback([&](float value) {
@@ -96,7 +101,7 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      
+      float modValue = mod();
       if (grainScheduler.trigger()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
@@ -106,6 +111,7 @@ public:
             position.get(),
             playbackRate.get(),
             soundClip[0], 
+            modValue,
           };
 
           voice->configureGrain(list);
@@ -152,7 +158,7 @@ private:
 class Modulator : public SynthVoice {
 public:
   Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
-  ecModulator positionMod {"TRI"};
+  ecModulator positionMod {SAW};
 
   virtual void init() {
     *this << positionModFreq;

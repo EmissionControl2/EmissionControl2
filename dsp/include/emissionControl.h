@@ -13,6 +13,7 @@ struct grainParameters{
   float position;
   float playbackRate;
   util::Buffer<float>* source;
+  float modValue;
 };
 
 class Grain : public al::SynthVoice {
@@ -66,14 +67,15 @@ public:
   void setDurationMs(float dur) {durationMs = dur;}
 
   void configureGrain(grainParameters& list) {
+    std::cout << list.modValue + 1 << std::endl;
     setDurationMs(list.grainDurationMs);
     setSkew(list.skew);
     this->source = list.source;
-    
-    float startSample = list.source->size * (list.position); 
+
+    float startSample = list.source->size * (list.position * list.modValue + 1); 
     float endSample = startSample  + (list.grainDurationMs/1000) * SAMPLE_RATE * abs(list.playbackRate)/2;
     if(list.playbackRate < 0) 
-      index.set(endSample,startSample, list.grainDurationMs/1000); 
+      index.set(endSample,startSample, list.grainDurationMs/1000 ); 
     else 
       index.set(startSample,endSample, list.grainDurationMs/1000); 
     
@@ -91,34 +93,37 @@ private:
 
 class ecModulator {
   public:
-   ecModulator(std::string waveform = "SINE", float frequency = 1, float width = 1) : frequency(frequency), width(width) {
+   ecModulator(waveform modWaveform = SINE, float frequency = 1, float width = 1) : frequency(frequency), width(width) {
         std::cout << "ecModulator Constructor\n";
-        this->setWaveform(waveform);
+        this->setWaveform(modWaveform);
         LFO.set(frequency, 0, 0.5); 
     }
 
     float operator()() {
-        if(waveform == "SINE") {
+        if(modWaveform == SINE) {
             return LFO.cos() * width;
-        } else if(waveform == "TRI") {
+        } else if(modWaveform == SAW) {
             return LFO.tri() * width; 
-        } else if (waveform == "SQUARE") {
+        } else if (modWaveform == SQUARE) {
             return LFO.sqr() * width;
-        } else {
+        } else if (modWaveform == NOISE) {
+            return -1020020209200;
+        }
+        else {
             return LFO.cos() * width;
         }
     }
 
-    std::string getWaveform() {return waveform;}
+    waveform getWaveform() {return modWaveform;}
     float getFrequency() {return frequency;}
     float getWidth() {return width;}
 
-    void setWaveform(std::string waveform) {
-      if(waveform != "SINE" && waveform != "TRI" && waveform != "SQUARE") {
+    void setWaveform(waveform modWaveform) {
+      if(modWaveform != SINE && modWaveform != SAW && modWaveform != SQUARE && modWaveform != NOISE) {
             std::cerr << "invalid waveform" << std::endl;
             return;
         }
-      this->waveform = waveform;
+      this->modWaveform = modWaveform;
     }
 
     void setFrequency(float frequency) {
@@ -130,9 +135,15 @@ class ecModulator {
       this->width = width;
     }
 
+    void uniPolar(bool yes) {
+      if(yes) {
+
+      }
+    }
+
     private: 
-    gam::LFO<> LFO;;
-    std::string waveform;
+    gam::LFO<> LFO;
+    waveform modWaveform;
     float frequency;
     float width;
   
