@@ -36,9 +36,9 @@ public:
   Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.5, 40};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
-  Parameter skew {"skew", "", 0.5, "", 0, 1};
+  Parameter envelope {"envelope", "", 0.5, "", 0, 1};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
-  Parameter position{"position", "", 0, "", 0, 1};
+  Parameter tapeHead{"tapeHead", "", 0, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
   Parameter intermittency {"intermittency", "", 0,"", 0, 1};
   ParameterInt streams {"streams", "", 1,"", 1, 12};
@@ -70,7 +70,7 @@ public:
     load("pluck.aiff", soundClip);
 
     *this << volumedB << streams << grainTriggerFreq << grainTriggerDiv << intermittency
-    << skew << grainDurationMs << position << playbackRate << modTest;
+    << envelope << grainDurationMs << tapeHead << playbackRate << modTest;
     
 
     grainScheduler.configure(grainTriggerFreq, 0.0, 0.0);
@@ -108,8 +108,8 @@ public:
         if (voice) {
           list = {
             grainDurationMs.get(),
-            skew.get(),
-            position.get(),
+            envelope.get(),
+            tapeHead.get(),
             playbackRate.get(),
             soundClip[0], 
             modValue,
@@ -158,11 +158,11 @@ private:
 //NEED to figure out how to have multiple GUI Windows
 class Modulator : public SynthVoice {
 public:
-  Parameter positionModFreq {"positionModFreq", "mod", 1,"", 0.01, 30};
-  ecModulator positionMod {SAW};
+  Parameter tapeHeadFreq {"tapeHeadFreq", "mod", 1,"", 0.01, 30};
+  ecModulator tapeHead {SAW};
 
   virtual void init() {
-    *this << positionModFreq;
+    *this << tapeHeadFreq;
   }
 private:
 };

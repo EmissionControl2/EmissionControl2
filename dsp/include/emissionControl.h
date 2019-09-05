@@ -9,8 +9,8 @@ using namespace al;
 
 struct grainParameters{
   float grainDurationMs;
-  float skew;
-  float position;
+  float envelope;
+  float tapeHead;
   float playbackRate;
   util::Buffer<float>* source;
   float modValue;
@@ -20,24 +20,20 @@ class Grain : public al::SynthVoice {
 public:
   // Unit generators
   //Grain();
-  gam::Osc<gam::real, gam::ipl::Linear, gam::phsInc::OneShot> mGrainEnv{1.0, 0.0, 512};
   util::Buffer<float> *source = nullptr;
   util::Line index;
   int counter = 0;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
-    gam::tbl::hann(mGrainEnv.elems(), mGrainEnv.size());
-    mGrainEnv.freq(10);
   }
   virtual void onProcess(al::AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
       counter++;
-      io.out(0) += source->get(index())  * env(); 
-      io.out(1) += source->get(index())  * env();
-      //std::cout << counter << std::endl;
-      if (counter == static_cast<int>(SAMPLE_RATE * durationMs/1000) ) {
+      io.out(0) += source->get(index())  * testEnv(); // * env();
+      io.out(1) += source->get(index())  * testEnv(); // * env();
+      if (testEnv.done()) { //counter == static_cast<int>(SAMPLE_RATE * durationMs/1000)
         free();
         counter = 0;
         break;
@@ -52,7 +48,7 @@ public:
   }
 
   //value between 0 and 1 
-  void setSkew(float value) {
+  void setEnvelope(float value) {
     if(value < 0) value++;
     if(value > 1) value--;
     
@@ -68,23 +64,26 @@ public:
 
   void configureGrain(grainParameters& list) {
     setDurationMs(list.grainDurationMs);
-    setSkew(list.skew);
+    setEnvelope(list.envelope);
     this->source = list.source;
 
-    float startSample = list.source->size * (list.position * (list.modValue + 1)/2); 
+    float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
     float endSample = startSample  + (list.grainDurationMs/1000) * SAMPLE_RATE * abs(list.playbackRate)/2;
     if(list.playbackRate < 0) 
       index.set(endSample,startSample, list.grainDurationMs/1000 ); 
     else 
       index.set(startSample,endSample, list.grainDurationMs/1000); 
-    
+
+    testEnv.set(list.grainDurationMs/1000,list.envelope);
   }
 
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};
+  util::turkey testEnv;
   float durationMs;
-  float startPosition;
+  float tapeHead;
 };
+
 
 
 

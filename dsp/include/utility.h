@@ -47,6 +47,85 @@ struct Line {
   }
 };
 
+struct expo {
+  float value = 0, target = 0, seconds = 1 / SAMPLE_RATE, increment = 0, counter = 0;
+
+  void set() {
+    if(target <= 0 || isnan(target)) target = 1;
+    if(value <= 0 || isnan(value)) value = 1;
+    if (seconds <= 0) seconds = 1 / SAMPLE_RATE;
+    // slope per sample
+    //increment = (target - value) / (seconds * SAMPLE_RATE);
+    increment = 1.0 + (log(target) - log(value)/(seconds * SAMPLE_RATE));
+  }
+  void set(float v, float t, float s) {
+    value = v;
+    target = t;
+    seconds = s;
+    set();
+  }
+  void set(float t, float s) {
+    target = t;
+    seconds = s;
+    set();
+  }
+  void set(float t) {
+    target = t;
+    set();
+  }
+
+  bool done() { return value == target; }
+
+  float operator()() {
+    if (value != target) {
+      //increment = powf(target/value,counter/seconds);
+      value *= increment;
+      counter++;
+      if ((increment < 0) ? (value < target) : (value > target)) value = target;
+    }
+    std::cout << increment - 0.2 << std::endl;
+    return value;
+  }
+};
+
+struct turkey {
+  float value = 0, increment = 0, alpha = 0.5;
+  int currentS = 0, totalS = 1;
+
+  void set() {
+    if (totalS <= 0) totalS = 1 ;
+    // slope per sample
+    //increment = (currentS - value) / (seconds * SAMPLE_RATE);
+    //increment = 1.0 + (log(currentS) - log(value)/(totalS));
+  }
+  void set(float seconds,float alpha) {
+    this->alpha = alpha;
+    totalS = seconds * SAMPLE_RATE;
+    set();
+  }
+  void set(float seconds) {
+    totalS = seconds * SAMPLE_RATE;
+    set();
+  }
+
+  bool done() { return totalS == currentS; }
+
+  float operator()() {
+    if(currentS < (alpha * totalS)/2) {
+        value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
+        currentS++;
+    } else if (currentS  <= totalS * (1 - alpha/2)) {
+        value = 1;
+        currentS++;
+    } else if ( currentS <= totalS) {
+        value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - (2/alpha) + 1)));
+        currentS++;
+    } else currentS = 0;
+    // std::cout << increment - 0.2 << std::endl;
+    return value;
+  }
+};
+
 
 template<typename T>
 struct Buffer {
