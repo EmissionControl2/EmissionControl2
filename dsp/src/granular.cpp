@@ -32,7 +32,7 @@ using namespace al;
 class Granular : public al::SynthVoice {
 public:
 
-  voiceScheduler grainScheduler{SAMPLE_RATE};
+  voiceScheduler grainScheduler{consts::SAMPLE_RATE};
   Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.5, 40};
   Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
@@ -44,13 +44,13 @@ public:
   ParameterInt streams {"streams", "", 1,"", 1, 12};
   Parameter modTest {"modTest", "",1, "", 0.01, 40};
   //test
-  ecModulator mod {SINE, 1,1};
+  ecModulator mod {consts::SINE, 1,1};
   //test
 
-  ecModulator modSine {SINE};
-  ecModulator modSquare {SQUARE};
-  ecModulator modSaw {SAW};
-  ecModulator modNoise {NOISE};
+  ecModulator modSine {consts::SINE};
+  ecModulator modSquare {consts::SQUARE};
+  ecModulator modSaw {consts::SAW};
+  ecModulator modNoise {consts::NOISE};
 
   grainParameters list;
   float modValue;
@@ -86,7 +86,7 @@ public:
     });
 
     streams.registerChangeCallback([&](float value) {
-      grainScheduler.polyStream(synchronous, value);
+      grainScheduler.polyStream(consts::synchronous, value);
     });
 
     modTest.registerChangeCallback([&](float value) {
@@ -159,7 +159,7 @@ private:
 class Modulator : public SynthVoice {
 public:
   Parameter tapeHeadFreq {"tapeHeadFreq", "mod", 1,"", 0.01, 30};
-  ecModulator tapeHead {SAW};
+  ecModulator tapeHead {consts::SAW};
 
   virtual void init() {
     *this << tapeHeadFreq;

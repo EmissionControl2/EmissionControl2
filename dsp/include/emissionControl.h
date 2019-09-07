@@ -23,6 +23,7 @@ public:
   util::Buffer<float> *source = nullptr;
   util::Line index;
   int counter = 0;
+  float envVal;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
@@ -31,9 +32,13 @@ public:
     //        updateFromParameters();
     while (io()) {
       counter++;
-      io.out(0) += source->get(index())  * testEnv(); // * env();
-      io.out(1) += source->get(index())  * testEnv(); // * env();
-      if (testEnv.done()) { //counter == static_cast<int>(SAMPLE_RATE * durationMs/1000)
+      envVal = testExp();
+      // if(counter%12 == 1)
+        // std::cout << envVal << std::endl;
+      io.out(0) += source->get(index())  * envVal; // * env();
+      io.out(1) += source->get(index())  * envVal; // * env();
+      if (testExp.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
+        std::cout<< "madeit\n";
         free();
         counter = 0;
         break;
@@ -68,18 +73,20 @@ public:
     this->source = list.source;
 
     float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
-    float endSample = startSample  + (list.grainDurationMs/1000) * SAMPLE_RATE * abs(list.playbackRate)/2;
+    float endSample = startSample  + (list.grainDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate)/2;
     if(list.playbackRate < 0) 
       index.set(endSample,startSample, list.grainDurationMs/1000 ); 
     else 
       index.set(startSample,endSample, list.grainDurationMs/1000); 
 
     testEnv.set(list.grainDurationMs/1000,list.envelope);
+    testExp.set(list.grainDurationMs/1000, list.envelope,1);
   }
 
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};
   util::turkey testEnv;
+  util::expo testExp;
   float durationMs;
   float tapeHead;
 };
@@ -91,20 +98,20 @@ private:
 
 class ecModulator {
   public:
-   ecModulator(waveform modWaveform = SINE, float frequency = 1, float width = 1) : frequency(frequency), width(width) {
+   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1, float width = 1) : frequency(frequency), width(width) {
         std::cout << "ecModulator Constructor\n";
         this->setWaveform(modWaveform);
         LFO.set(frequency, 0, 0.5); 
     }
 
     float operator()() {
-        if(modWaveform == SINE) {
+        if(modWaveform == consts::SINE) {
             return LFO.cos() * width;
-        } else if(modWaveform == SAW) {
+        } else if(modWaveform == consts::SAW) {
             return LFO.tri() * width; 
-        } else if (modWaveform == SQUARE) {
+        } else if (modWaveform == consts::SQUARE) {
             return LFO.sqr() * width;
-        } else if (modWaveform == NOISE) {
+        } else if (modWaveform == consts::SQUARE) {
             return -1020020209200;
         }
         else {
@@ -112,12 +119,12 @@ class ecModulator {
         }
     }
 
-    waveform getWaveform() {return modWaveform;}
+    consts::waveform getWaveform() {return modWaveform;}
     float getFrequency() {return frequency;}
     float getWidth() {return width;}
 
-    void setWaveform(waveform modWaveform) {
-      if(modWaveform != SINE && modWaveform != SAW && modWaveform != SQUARE && modWaveform != NOISE) {
+    void setWaveform(consts::waveform modWaveform) {
+      if(modWaveform != consts::SINE && modWaveform != consts::SAW && modWaveform != consts::SQUARE && modWaveform != consts::SQUARE) {
             std::cerr << "invalid waveform" << std::endl;
             return;
         }
@@ -135,7 +142,7 @@ class ecModulator {
 
     private: 
     gam::LFO<> LFO;
-    waveform modWaveform;
+    consts::waveform modWaveform;
     float frequency;
     float width;
   
@@ -202,8 +209,8 @@ public:
     else return false;
   }
 
-  void polyStream(streamType type, int numStreams) {
-    if(type == synchronous) {
+  void polyStream(consts::streamType type, int numStreams) {
+    if(type == consts::synchronous) {
       setFrequency(mFrequency * numStreams);
     } else {
       std::cerr << "Not implemented yet, please try again later.\n";

@@ -13,12 +13,12 @@ namespace util {
 
 
 struct Line {
-  float value = 0, target = 0, seconds = 1 / SAMPLE_RATE, increment = 0;
+  float value = 0, target = 0, seconds = 1 / consts::SAMPLE_RATE, increment = 0;
 
   void set() {
-    if (seconds <= 0) seconds = 1 / SAMPLE_RATE;
+    if (seconds <= 0) seconds = 1 / consts::SAMPLE_RATE;
     // slope per sample
-    increment = (target - value) / (seconds * SAMPLE_RATE);
+    increment = (target - value) / (seconds * consts::SAMPLE_RATE);
   }
   void set(float v, float t, float s) {
     value = v;
@@ -48,63 +48,79 @@ struct Line {
 };
 
 struct expo {
-  float value = 0, target = 0, seconds = 1 / SAMPLE_RATE, increment = 0, counter = 0;
-
-  void set() {
-    if(target <= 0 || isnan(target)) target = 1;
-    if(value <= 0 || isnan(value)) value = 1;
-    if (seconds <= 0) seconds = 1 / SAMPLE_RATE;
-    // slope per sample
-    //increment = (target - value) / (seconds * SAMPLE_RATE);
-    increment = 1.0 + (log(target) - log(value)/(seconds * SAMPLE_RATE));
-  }
-  void set(float v, float t, float s) {
-    value = v;
-    target = t;
-    seconds = s;
-    set();
-  }
-  void set(float t, float s) {
-    target = t;
-    seconds = s;
-    set();
-  }
-  void set(float t) {
-    target = t;
-    set();
-  }
-
-  bool done() { return value == target; }
-
-  float operator()() {
-    if (value != target) {
-      //increment = powf(target/value,counter/seconds);
-      value *= increment;
-      counter++;
-      if ((increment < 0) ? (value < target) : (value > target)) value = target;
-    }
-    std::cout << increment - 0.2 << std::endl;
-    return value;
-  }
-};
-
-struct turkey {
-  float value = 0, increment = 0, alpha = 0.5;
+  float value = 1, alpha = 0.5, increment , x=0;
+  bool mReverse = 0;
   int currentS = 0, totalS = 1;
 
   void set() {
     if (totalS <= 0) totalS = 1 ;
     // slope per sample
-    //increment = (currentS - value) / (seconds * SAMPLE_RATE);
+    increment = (6.90775527898 / totalS); //-ln(0.001)
     //increment = 1.0 + (log(currentS) - log(value)/(totalS));
+    //6.90775527898
+  }
+  void set(float seconds,float alpha, bool reverse) {
+    this->alpha = alpha;
+    totalS = seconds * consts::SAMPLE_RATE;
+    mReverse = reverse;
+    if(mReverse) value = 0.001;
+    set();
+  }
+
+  void set(float seconds, bool reverse) {
+    totalS = seconds * consts::SAMPLE_RATE;
+    mReverse = reverse;
+    if(mReverse) value = 0.001;
+    set();
+  }
+
+  void set(float seconds) {
+    totalS = seconds * consts::SAMPLE_RATE;
+    set();
+  }
+
+  bool done() { 
+    if(!mReverse) return value <= 0.001;
+    return value > 1;
+  }
+
+  float operator()() {
+  if(!mReverse) {
+    if(value >= 0.001) {
+        value = powf(M_E, -1 * x * alpha);
+        x += increment;
+    } else  {
+      value = 1; 
+      x = 0;
+    }
+  } else {
+    if(value < 1) {
+      value = powf(M_E, x - 6.90775527898 );
+      x += increment;
+      //std::cout << "MAde it here\n";
+    } else {
+      value = 0.001;
+      x = 0;
+    }
+  }
+    return value;
+  }
+};
+
+struct turkey {
+  float value = 0, alpha = 0.5;
+  int currentS = 0, totalS = 1;
+
+  void set() {
+    if (totalS <= 0) totalS = 1 ;
   }
   void set(float seconds,float alpha) {
     this->alpha = alpha;
-    totalS = seconds * SAMPLE_RATE;
+    totalS = seconds * consts::SAMPLE_RATE;
     set();
   }
   void set(float seconds) {
-    totalS = seconds * SAMPLE_RATE;
+    totalS = seconds * consts::SAMPLE_RATE;
     set();
   }
 
@@ -208,12 +224,12 @@ void load(std::string fileName, std::vector<Buffer<float>*>& buf) { //only works
   soundFile.read(a->data, a->size);
   
   // Not working correctly :( 
-  // if(soundFile.frameRate() != SAMPLE_RATE) {
+  // if(soundFile.frameRate() != consts::SAMPLE_RATE) {
   //   Buffer<float>* b = new Buffer<float>();
-  //   b->size = a->size/soundFile.frameRate() * SAMPLE_RATE;
+  //   b->size = a->size/soundFile.frameRate() * consts::SAMPLE_RATE;
   //   b->data = new float[b->size];
   //   SRC_DATA *conversion = new SRC_DATA{a->data, b->data, a->size, b->size};
-  //   conversion->src_ratio = soundFile.frameRate()/SAMPLE_RATE;
+  //   conversion->src_ratio = soundFile.frameRate()/consts::SAMPLE_RATE;
   //   src_simple(conversion, 0, soundFile.channels());
   //   buf.push_back(b);
   //   std::cout<< "b->size: " << b->size << " a->size: " << a->size << std::endl; 
