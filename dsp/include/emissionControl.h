@@ -80,7 +80,7 @@ public:
       index.set(startSample,endSample, list.grainDurationMs/1000); 
 
     testEnv.set(list.grainDurationMs/1000,list.envelope);
-    testExp.set(list.grainDurationMs/1000,0);
+    testExp.set(list.grainDurationMs/1000,1);
   }
 
 private:

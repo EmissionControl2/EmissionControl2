@@ -93,9 +93,9 @@ struct expo {
     return mX == 0;
   }
 
-  float operator()() { //something wrong w/ operator block on 5th grain trigger w/ reverse expodec 
+  float operator()() { //next up: implement a quick exp decay towards zero for reversed 
   if(!mReverse) {
-    if(mY >= mThresholdY) {
+    if(mX < mThresholdX) {
         mY = powf(M_E, -1 * mX * mAlpha);
         mX += mIncrementX;
     } else  {
@@ -103,11 +103,16 @@ struct expo {
       mX = 0;
     }
   } else {
-    //
-    if(mY < 1.0) { 
-      mY = powf(M_E, mX - mThresholdX);
+    if(mX < mThresholdX * 0.99 ) { 
+      mY = powf(M_E, 0.7 * (mX - mThresholdX)); // need a bias to makeup for percieved volume loss
       mX += mIncrementX;
+    } else if(mX < mThresholdX ) { //quickly bring envelope down to zero before marking as done.
+      std::cout << mX << std::endl;
+      mY = powf(M_E, -90 * ( (mX) - (mThresholdX * 0.99) )); // need to have new increment rate 
+      mX += mIncrementX;
+      //std::cout << mY << std::endl;
     } else { 
+      //std::cout << mY << std::endl;
       mY = mThresholdY;
       mX = 0;
     } 
