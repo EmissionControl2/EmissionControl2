@@ -67,7 +67,7 @@ public:
 
     /// TESTING 
     ///////
-    load("pluck.aiff", soundClip);
+    load("noise.aiff", soundClip);
 
     *this << volumedB << streams << grainTriggerFreq << grainTriggerDiv << intermittency
     << envelope << grainDurationMs << tapeHead << playbackRate << modTest;

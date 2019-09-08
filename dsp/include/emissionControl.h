@@ -33,12 +33,11 @@ public:
     while (io()) {
       counter++;
       envVal = testExp();
-      // if(counter%12 == 1)
-        // std::cout << envVal << std::endl;
+      //if(counter%12 == 1)
+      //  std::cout << envVal << std::endl;
       io.out(0) += source->get(index())  * envVal; // * env();
       io.out(1) += source->get(index())  * envVal; // * env();
       if (testExp.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
-        std::cout<< "madeit\n";
         free();
         counter = 0;
         break;
@@ -49,6 +48,7 @@ public:
     //mGrainEnv.reset();
     env.sustainDisable();
     env.reset();
+    testExp.set();
     //      mOsc.reset();
   }
 
@@ -80,7 +80,7 @@ public:
       index.set(startSample,endSample, list.grainDurationMs/1000); 
 
     testEnv.set(list.grainDurationMs/1000,list.envelope);
-    testExp.set(list.grainDurationMs/1000, list.envelope,1);
+    testExp.set(list.grainDurationMs/1000,0);
   }
 
 private:
