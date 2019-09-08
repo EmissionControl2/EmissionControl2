@@ -48,62 +48,71 @@ struct Line {
 };
 
 struct expo {
-  float value = 1, alpha = 0.5, increment , x=0;
+  float mAlpha = 0.5, mIncrementX, mX= 0, mY = 1, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
   bool mReverse = 0;
-  int currentS = 0, totalS = 1;
+  int mTotalS = 1;
+  int tempCounter = 0;
 
   void set() {
-    if (totalS <= 0) totalS = 1 ;
-    // slope per sample
-    increment = (6.90775527898 / totalS); //-ln(0.001)
-    //increment = 1.0 + (log(currentS) - log(value)/(totalS));
-    //6.90775527898
-  }
-  void set(float seconds,float alpha, bool reverse) {
-    this->alpha = alpha;
-    totalS = seconds * consts::SAMPLE_RATE;
+    if (mTotalS <= 0) mTotalS = 1;
+    if (mThresholdY <= 0) mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
+    mX = 0;
+    if(mReverse) mY = mThresholdY;
+    else mY =1;
+    mIncrementX = (mThresholdX / mTotalS); // -ln(0.001) 
+  }                                         // where 0.001 is our threshold for when we release envelope
+  void set(float seconds, bool reverse,float threshold, float alpha) {
+    mTotalS = seconds * consts::SAMPLE_RATE;
     mReverse = reverse;
-    if(mReverse) value = 0.001;
+    mThresholdY = threshold;
+    mThresholdX = -1 * std::log(threshold);
+    mAlpha = alpha;
+    set();
+  }
+
+  void set(float seconds, bool reverse, float threshold) {
+    mTotalS = seconds * consts::SAMPLE_RATE;
+    mReverse = reverse;
+    mThresholdY = threshold;
+    mThresholdX = -1 * std::log(threshold);
     set();
   }
 
   void set(float seconds, bool reverse) {
-    totalS = seconds * consts::SAMPLE_RATE;
+    mTotalS = seconds * consts::SAMPLE_RATE;
     mReverse = reverse;
-    if(mReverse) value = 0.001;
     set();
   }
 
   void set(float seconds) {
-    totalS = seconds * consts::SAMPLE_RATE;
+    mTotalS = seconds * consts::SAMPLE_RATE;
     set();
   }
 
   bool done() { 
-    if(!mReverse) return value <= 0.001;
-    return value > 1;
+    return mX == 0;
   }
 
-  float operator()() {
+  float operator()() { //something wrong w/ operator block on 5th grain trigger w/ reverse expodec 
   if(!mReverse) {
-    if(value >= 0.001) {
-        value = powf(M_E, -1 * x * alpha);
-        x += increment;
+    if(mY >= mThresholdY) {
+        mY = powf(M_E, -1 * mX * mAlpha);
+        mX += mIncrementX;
     } else  {
-      value = 1; 
-      x = 0;
+      mY = 1; 
+      mX = 0;
     }
   } else {
-    if(value < 1) {
-      value = powf(M_E, x - 6.90775527898 );
-      x += increment;
-      //std::cout << "MAde it here\n";
-    } else {
-      value = 0.001;
-      x = 0;
-    }
+    //
+    if(mY < 1.0) { 
+      mY = powf(M_E, mX - mThresholdX);
+      mX += mIncrementX;
+    } else { 
+      mY = mThresholdY;
+      mX = 0;
+    } 
   }
-    return value;
+  return mY;
   }
 };
 
