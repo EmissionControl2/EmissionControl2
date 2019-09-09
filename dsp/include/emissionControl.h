@@ -16,6 +16,10 @@ struct grainParameters{
   float modValue;
 };
 
+struct modParameters{
+  
+};
+
 class Grain : public al::SynthVoice {
 public:
   // Unit generators
@@ -23,7 +27,7 @@ public:
   util::Buffer<float> *source = nullptr;
   util::Line index;
   int counter = 0;
-  float envVal;
+  float envVal, sourceIndex;
 
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
@@ -33,10 +37,14 @@ public:
     while (io()) {
       counter++;
       envVal = testExp();
-      //if(counter%12 == 1)
-      //  std::cout << envVal << std::endl;
-      io.out(0) += source->get(index())  * envVal; // * env();
-      io.out(1) += source->get(index())  * envVal; // * env();
+      //envVal = turkeyEnv();
+      sourceIndex = index();
+      if(sourceIndex > source->size) 
+        sourceIndex -= source->size;
+      // if(counter%12 == 0)
+      //    std::cout << envVal << std::endl;
+      io.out(0) += source->get(sourceIndex)  * envVal; // * env();
+      io.out(1) += source->get(sourceIndex)  * envVal; // * env();
       if (testExp.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
         free();
         counter = 0;
@@ -74,18 +82,19 @@ public:
 
     float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
     float endSample = startSample  + (list.grainDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate)/2;
+    //if(endSample > list.source->size) endSample -= list.source->size; //this will wrap the end sample to the beginning of the source buffer.
     if(list.playbackRate < 0) 
       index.set(endSample,startSample, list.grainDurationMs/1000 ); 
     else 
       index.set(startSample,endSample, list.grainDurationMs/1000); 
 
-    testEnv.set(list.grainDurationMs/1000,list.envelope);
+    turkeyEnv.set(list.grainDurationMs/1000,list.envelope);
     testExp.set(list.grainDurationMs/1000,1);
   }
 
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};
-  util::turkey testEnv;
+  util::turkey turkeyEnv;
   util::expo testExp;
   float durationMs;
   float tapeHead;
@@ -133,11 +142,15 @@ class ecModulator {
 
     void setFrequency(float frequency) {
       this->frequency= frequency;
-      LFO.set(frequency,0,0.5);
+      LFO.freq(frequency);
     }
 
     void setWidth(float width) {
       this->width = width;
+    }
+
+    void setPhase(float phase) {
+      LFO.phase(phase);
     }
 
     private: 

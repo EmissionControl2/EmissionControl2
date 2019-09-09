@@ -50,11 +50,11 @@ public:
 
     // Draw GUI
     ParameterGUI::beginDraw();
-    ParameterGUI::beginPanel(synthManager.name(),600,-1,-1,300);
+    ParameterGUI::beginPanel(synthManager.name(),600,-1,-1,600);
     synthManager.drawFields();
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Presets",600,300);
+    ParameterGUI::beginPanel("Presets",600,600);
     synthManager.drawPresets();
     ParameterGUI::endPanel();
 
@@ -85,7 +85,7 @@ public:
       // Otherwise trigger note for polyphonic synth
       int midiNote = asciiToMIDI(k.key());
 
-      synthManager.voice()->grainTriggerFreq.set( ::powf (2.0f, (midiNote - 69.f)/12.f) * 432.f);
+      synthManager.voice()->grainRate.set( ::powf (2.0f, (midiNote - 69.f)/12.f) * 432.f);
       if (midiNote > 0) {
         synthManager.triggerOn(midiNote);
       }

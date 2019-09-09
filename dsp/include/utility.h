@@ -95,24 +95,29 @@ struct expo {
 
   float operator()() { //next up: implement a quick exp decay towards zero for reversed 
   if(!mReverse) {
-    if(mX < mThresholdX) {
-        mY = powf(M_E, -1 * mX * mAlpha);
+    if(mX < mThresholdX * 0.01) {
+      mY = powf(M_E, 690.7755278982137 * mX - mThresholdX);
+      mX += mIncrementX;
+    }
+    else if(mX < mThresholdX) {
+        mY = powf(M_E, -1 * mX * mAlpha + 0.01);
         mX += mIncrementX;
     } else  {
       mY = 1; 
       mX = 0;
     }
-  } else {
-    if(mX < mThresholdX * 0.99 ) { 
-      mY = powf(M_E, 0.7 * (mX - mThresholdX)); // need a bias to makeup for percieved volume loss
+  } else { //reversed Logic
+    if(mX < mThresholdX * 0.92761758634 ) { 
+      mY = powf(M_E, 0.9 * (mX - mThresholdX + 0.5)); // this reaches 1 at about 92% into envelope
       mX += mIncrementX;
-    } else if(mX < mThresholdX ) { //quickly bring envelope down to zero before marking as done.
-      std::cout << mX << std::endl;
-      mY = powf(M_E, -90 * ( (mX) - (mThresholdX * 0.99) )); // need to have new increment rate 
+    } else if(mX < mThresholdX * 0.95) {  //small sustain to makeup for percieved volume loss (in relation to expodec)
+         mY = 1;      
+         mX += mIncrementX;
+    }else if(mX < mThresholdX ) { //quickly bring envelope down to zero before marking as done.
+      mY = powf(M_E, -20 * ( (mX) - (mThresholdX * 0.95) )); 
       mX += mIncrementX;
       //std::cout << mY << std::endl;
     } else { 
-      //std::cout << mY << std::endl;
       mY = mThresholdY;
       mX = 0;
     } 
@@ -151,7 +156,6 @@ struct turkey {
         value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - (2/alpha) + 1)));
         currentS++;
     } else currentS = 0;
-    // std::cout << increment - 0.2 << std::endl;
     return value;
   }
 };
