@@ -33,8 +33,8 @@ class Granular : public al::SynthVoice {
 public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
-  Parameter grainTriggerFreq {"grainTriggerFreq", "", 1, "", 0.5, 40};
-  Parameter grainTriggerDiv {"grainTriggerDiv", "", 0.0, "", 0.0, 1.0};
+  Parameter grainRate {"grainRate", "", 1, "", 0.5, 100};
+  Parameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
   Parameter envelope {"envelope", "", 0.5, "", 0, 1};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
@@ -42,7 +42,11 @@ public:
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
   Parameter intermittency {"intermittency", "", 0,"", 0, 1};
   ParameterInt streams {"streams", "", 1,"", 1, 12};
-  Parameter modTest {"modTest", "",1, "", 0.01, 40};
+  Parameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40};
+  Parameter modSinePhase {"modSinePhase", "", 0, "", 0, 1};
+  Parameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
+  Parameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
+  Parameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1};
   //test
   ecModulator mod {consts::SINE, 1,1};
   //test
@@ -53,7 +57,7 @@ public:
   ecModulator modNoise {consts::NOISE};
 
   grainParameters list;
-  float modValue;
+  float sineModValue;
 
   // ~Granular() {
   //   for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
@@ -67,17 +71,18 @@ public:
 
     /// TESTING 
     ///////
-    load("noise.aiff", soundClip);
+    load("pluck.aiff", soundClip);
 
-    *this << volumedB << streams << grainTriggerFreq << grainTriggerDiv << intermittency
-    << envelope << grainDurationMs << tapeHead << playbackRate << modTest;
+    *this << volumedB << streams << grainRate << asynchronicity << intermittency
+    << envelope << grainDurationMs << tapeHead << playbackRate << modSineFrequency << modSinePhase 
+    << modGrainRateWidth << modAsynchronicityWidth << modIntermittencyWidth;
     
 
-    grainScheduler.configure(grainTriggerFreq, 0.0, 0.0);
-    grainTriggerFreq.registerChangeCallback([&](float value) {
+    grainScheduler.configure(grainRate, 0.0, 0.0);
+    grainRate.registerChangeCallback([&](float value) {
       grainScheduler.setFrequency(value);
     });
-    grainTriggerDiv.registerChangeCallback([&](float value) {
+    asynchronicity.registerChangeCallback([&](float value) {
       grainScheduler.setAsynchronicity(value);
     });
 
@@ -89,8 +94,12 @@ public:
       grainScheduler.polyStream(consts::synchronous, value);
     });
 
-    modTest.registerChangeCallback([&](float value) {
-      mod.setFrequency(value);
+    modSineFrequency.registerChangeCallback([&](float value) {
+      modSine.setFrequency(value);
+    });
+
+    modSinePhase.registerChangeCallback([&](float value) {
+      modSine.setPhase(value);
     });
 
    
@@ -102,8 +111,22 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      modValue = mod();
+      sineModValue = mod(); // construct sine modulation value
+
+      // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
+      if(modGrainRateWidth.get() > 0)  // modulate the grain rate
+        grainScheduler.setFrequency(grainRate.get() * (sineModValue + 1) * modGrainRateWidth.get()); 
+
+      if(modAsynchronicityWidth.get() > 0) //modulate the asynchronicity 
+        grainScheduler.setAsynchronicity(asynchronicity.get() * (sineModValue + 1) * modAsynchronicityWidth.get());
+
+      if(modIntermittencyWidth.get() > 0)  //modulate the intermittency 
+        grainScheduler.setIntermittence(intermittency.get() * ((sineModValue + 1) * (1 - modIntermittencyWidth.get())) ); //still figuring out math 
+      else grainScheduler.setIntermittence(intermittency.get());
+    
+
       if (grainScheduler.trigger()) {
+        std::cout << intermittency.get() * ( (sineModValue + 1) * (modIntermittencyWidth.get()) )  << std::endl; //still figuring out math test
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           list = {
@@ -112,7 +135,7 @@ public:
             tapeHead.get(),
             playbackRate.get(),
             soundClip[0], 
-            modValue,
+            sineModValue,
           };
 
           voice->configureGrain(list);
@@ -137,9 +160,9 @@ public:
   }
 
   virtual void onTriggerOn() override {
-   //grainScheduler.setFrequency(grainTriggerFreq);
-   //grainScheduler.setAsynchronicity(grainTriggerDiv);
-   // std::cout << grainTriggerFreq.get() << " --- " << sustain.get() <<std::endl;
+   //grainScheduler.setFrequency(grainRate);
+   //grainScheduler.setAsynchronicity(asynchronicity);
+   // std::cout << grainRate.get() << " --- " << sustain.get() <<std::endl;
   }
 
   virtual void onTriggerOff() override {

@@ -1,12 +1,16 @@
 ::0
-/envelope f 0.476000 
-/grainDurationMs f 321.093994 
-/grainTriggerDiv f 0.522000 
-/grainTriggerFreq f 40.000000 
-/intermittency f 0.117000 
-/modTest f 0.010000 
-/playbackRate f 0.133000 
+/asynchronicity f 1.000000 
+/envelope f 0.500000 
+/grainDurationMs f 675.258972 
+/grainRate f 35.688999 
+/intermittency f 0.269000 
+/modAsynchronicityWidth f 0.927000 
+/modGrainRateWidth f 0.869000 
+/modIntermittencyWidth f 0.692000 
+/modSineFrequency f 0.052000 
+/modSinePhase f 0.558000 
+/playbackRate f 1.000000 
 /streams f 1.000000 
-/tapeHead f 0.299000 
-/volumedB f -9.612000 
+/tapeHead f 0.000000 
+/volumedB f -6.000000 
 ::
