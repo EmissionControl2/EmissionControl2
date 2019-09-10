@@ -102,8 +102,6 @@ public:
       modSine.setPhase(value);
     });
 
-   
-
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
   }
@@ -115,18 +113,19 @@ public:
 
       // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
       if(modGrainRateWidth.get() > 0)  // modulate the grain rate
-        grainScheduler.setFrequency(grainRate.get() * (sineModValue + 1) * modGrainRateWidth.get()); 
+        grainScheduler.setFrequency(grainRate.get() * ((sineModValue * modGrainRateWidth.get()) + 1) ); 
+      else grainScheduler.setFrequency(grainRate.get());
 
       if(modAsynchronicityWidth.get() > 0) //modulate the asynchronicity 
-        grainScheduler.setAsynchronicity(asynchronicity.get() * (sineModValue + 1) * modAsynchronicityWidth.get());
+        grainScheduler.setAsynchronicity(asynchronicity.get() * ((sineModValue * modAsynchronicityWidth.get()) + 1) );
+      else grainScheduler.setAsynchronicity(asynchronicity.get());
 
       if(modIntermittencyWidth.get() > 0)  //modulate the intermittency 
-        grainScheduler.setIntermittence(intermittency.get() * ((sineModValue + 1) * (1 - modIntermittencyWidth.get())) ); //still figuring out math 
+        grainScheduler.setIntermittence(intermittency.get() * ((sineModValue * modIntermittencyWidth.get())  + 1 ) ); //still figuring out math 
       else grainScheduler.setIntermittence(intermittency.get());
     
 
       if (grainScheduler.trigger()) {
-        std::cout << intermittency.get() * ( (sineModValue + 1) * (modIntermittencyWidth.get()) )  << std::endl; //still figuring out math test
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
           list = {
