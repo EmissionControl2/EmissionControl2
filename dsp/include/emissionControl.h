@@ -7,6 +7,79 @@
 
 using namespace al;
 
+class grainEnvelope {
+public:
+  
+  grainEnvelope(float duration = 1, float envelope = 0) {
+    this->setDuration(duration);
+    this->setEnvelope(envelope);
+  }
+
+  float operator()() {
+    if(mEnvelope == 0) { //exponential envelope case 
+      return mExpoEnv();
+    } else if (mEnvelope < 0.5) { //exponetial and turkey envelope interpolation
+      return ((mExpoEnv() * (1 - mEnvelope*2)) + (mTurkeyEnv() * mEnvelope*2) );
+    } else if (mEnvelope == 0.5) { //turkey envelope case 
+      return mTurkeyEnv();
+    } else if (mEnvelope < 1) { // turkey and reverse exponential envelope interpolation
+      return ((mTurkeyEnv() * (1 - (mEnvelope-0.5) * 2)) + (mRExpoEnv() * (mEnvelope - 0.5) * 2) );
+    } else if (mEnvelope == 1) { //reverse exponential envelope case
+      return mRExpoEnv();
+    }
+  }
+
+  void set(float duration, float envelope) {
+    this->setDuration(duration);
+    this->setEnvelope(envelope);
+  }
+
+  void setEnvelope(float envelope) {
+    if(envelope > 1 ) 
+      mEnvelope = 1;
+    else if (envelope < 0) 
+      mEnvelope = 0;
+    else mEnvelope = envelope;
+  }
+
+  //  in seconds
+  void setDuration(float duration) {
+    if(duration <= 0 ) {
+      mDuration = 1;
+    } else mDuration = duration;
+    mTurkeyEnv.set(duration);
+    mExpoEnv.set(duration, 0);
+    mRExpoEnv.set(duration, 1);
+  }
+
+  // mark envelope as done
+  bool done() {
+  
+  }
+
+  //used to reset values of envelopes
+  void reset() { 
+    mExpoEnv.set();
+    mRExpoEnv.set();
+    mTurkeyEnv.set();
+  }
+
+  float getEnvelope() const {
+    return mEnvelope;
+  }
+
+  float getDuration() const {
+    return mDuration;
+  }
+
+private: 
+  util::expo mExpoEnv;
+  util::turkey mTurkeyEnv;
+  util::expo mRExpoEnv;
+  float mEnvelope; //assumes between 0 and 1
+  float mDuration; //in seconds
+};
+
 struct grainParameters{
   float grainDurationMs;
   float envelope;
@@ -36,17 +109,18 @@ public:
     //        updateFromParameters();
     while (io()) {
       counter++;
+      //envVal = gEnv();
       envVal = testExp();
-      //envVal = turkeyEnv();
       sourceIndex = index();
       if(sourceIndex > source->size) 
         sourceIndex -= source->size;
-      // if(counter%12 == 0)
-      //    std::cout << envVal << std::endl;
+      if(counter%12 == 0)
+         std::cout << envVal << std::endl;
       io.out(0) += source->get(sourceIndex)  * envVal; // * env();
       io.out(1) += source->get(sourceIndex)  * envVal; // * env();
       if (testExp.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
         free();
+        std::cout << gEnv.getEnvelope() << std::endl;
         counter = 0;
         break;
       }
@@ -57,6 +131,7 @@ public:
     env.sustainDisable();
     env.reset();
     testExp.set();
+    gEnv.reset();
     //      mOsc.reset();
   }
 
@@ -88,21 +163,22 @@ public:
     else 
       index.set(startSample,endSample, list.grainDurationMs/1000); 
 
-    turkeyEnv.set(list.grainDurationMs/1000,list.envelope);
-    testExp.set(list.grainDurationMs/1000,1);
+    turkeyEnv.set(list.grainDurationMs/1000);
+    testExp.set(list.grainDurationMs/1000,0); //note: still causes small click
+    //gEnv.set(list.grainDurationMs/1000, list.envelope);
   }
 
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};
   util::turkey turkeyEnv;
   util::expo testExp;
+  grainEnvelope gEnv;
   float durationMs;
   float tapeHead;
 };
 
-
-
-
+//Wrapper class of all envelopes needed for a grain.
+// designed to use one parameter to interpolate between each envelope. 
 
 
 class ecModulator {
