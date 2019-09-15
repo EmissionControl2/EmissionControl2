@@ -12,9 +12,8 @@
 namespace util {
 
 
-struct Line {
-  float value = 0, target = 0, seconds = 1 / consts::SAMPLE_RATE, increment = 0;
-
+struct line {
+public:
   void set() {
     if (seconds <= 0) seconds = 1 / consts::SAMPLE_RATE;
     // slope per sample
@@ -45,14 +44,14 @@ struct Line {
     }
     return value;
   }
+private:
+  float value = 0, target = 0, seconds = 1 / consts::SAMPLE_RATE, increment = 0;
 };
 
-struct expo {
-  float mAlpha = 1, mIncrementX, mX= 0, mY = 1, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
-  bool mReverse = 0;
-  int mTotalS = 1;
-  int tempCounter = 0;
 
+//envelope generator for creating exponetial decay and exponential growth.
+class expo {
+public:
   void set() {
     if (mTotalS <= 0) mTotalS = 1;
     if (mThresholdY <= 0) mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
@@ -127,12 +126,16 @@ struct expo {
   }
   return mY;
   }
+private:
+  float mAlpha = 1, mIncrementX, mX= 0, mY = 1, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
+  bool mReverse = 0;
+  int mTotalS = 1;
+  int tempCounter = 0;
 };
 
-struct turkey {
-  float value = 0, alpha = 0.5;
-  int currentS = 0, totalS = 1;
-
+// envelope GENERATOR for creating a tukey window
+class tukey {
+public: 
   void set() {
     if (totalS <= 0) totalS = 1 ;
   }
@@ -163,6 +166,9 @@ struct turkey {
     } else currentS = 0;
     return value;
   }
+private:
+  float value = 0, alpha = 0.6;
+  int currentS = 0, totalS = 1;
 };
 
 

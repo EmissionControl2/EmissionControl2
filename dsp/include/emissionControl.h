@@ -7,29 +7,44 @@
 
 using namespace al;
 
+
+/**
+ * Wrapper class of three envelopes:
+ *  expo,  
+ *  reverese expo, 
+ *  and tukey.
+ * 
+ * Allows for a single value [0,1] to interpolate between all three envelopes. 
+ */
 class grainEnvelope {
 public:
   
+  /**
+   * set grainEnvelope parameters. 
+   *  
+   * @param[in] sets the duration of the envelope in SECONDS, usually equal to duration of grain.
+   * @param[in] FROM 0 to 1, where 0 to 0.5 interplates between expo and tukey and 0.5 to 1 interpolated between tukey and reverse expo.
+   */ 
   grainEnvelope(float duration = 1, float envelope = 0) {
     this->setDuration(duration);
     this->setEnvelope(envelope);
   }
 
   float operator()() {
-    if(mEnvelope < 0) { //exponential envelope case 
-      mEnvelope = 0;
-    } else if (mEnvelope < 0.5) { //exponetial and turkey envelope interpolation
-      mRExpoEnv.increment();
-      return ((mExpoEnv() * (1 - mEnvelope*2)) + (mTurkeyEnv() * mEnvelope*2) );
-    } else if (mEnvelope == 0.5) { //turkey envelope case 
-      mRExpoEnv.increment();
-      mExpoEnv.increment();
-      return mTurkeyEnv();
-    } else if (mEnvelope <= 1) { // turkey and reverse exponential envelope interpolation
-      mExpoEnv.increment();
-      return ((mTurkeyEnv() * (1 - (mEnvelope-0.5) * 2)) + (mRExpoEnv() * (mEnvelope - 0.5) * 2) );
-    } 
-  }
+  if(mEnvelope < 0) { //exponential envelope case 
+  mEnvelope = 0;
+  } else if (mEnvelope < 0.5) { //exponetial and turkey envelope interpolation
+  mRExpoEnv.increment();
+  return ((mExpoEnv() * (1 - mEnvelope*2)) + (mTurkeyEnv() * mEnvelope*2) );
+  } else if (mEnvelope == 0.5) { //turkey envelope case 
+  mRExpoEnv.increment();
+  mExpoEnv.increment();
+  return mTurkeyEnv();
+  } else if (mEnvelope <= 1) { // turkey and reverse exponential envelope interpolation
+  mExpoEnv.increment();
+  return ((mTurkeyEnv() * (1 - (mEnvelope-0.5) * 2)) + (mRExpoEnv() * (mEnvelope - 0.5) * 2) );
+  } 
+} 
 
   void set(float duration, float envelope) {
     this->setDuration(duration);
@@ -76,7 +91,7 @@ public:
 
 private: 
   util::expo mExpoEnv;
-  util::turkey mTurkeyEnv;
+  util::tukey mTurkeyEnv;
   util::expo mRExpoEnv;
   float mEnvelope; //assumes between 0 and 1
   float mDuration; //in seconds
@@ -100,7 +115,7 @@ public:
   // Unit generators
   //Grain();
   util::Buffer<float> *source = nullptr;
-  util::Line index;
+  util::line index;
   int counter = 0;
   float envVal, sourceIndex;
 
@@ -120,9 +135,8 @@ public:
         //std::cout << envVal << std::endl;
       io.out(0) += source->get(sourceIndex)  * envVal; // * env();
       io.out(1) += source->get(sourceIndex)  * envVal; // * env();
-      if (gEnv.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
+      if (gEnv.done()) { 
         free();
-        // std::cout << gEnv.getEnvelope() << std::endl;
         counter = 0;
         break;
       }
@@ -130,13 +144,10 @@ public:
   }
 
    virtual void onTriggerOn() override {
-    //mGrainEnv.reset();
-    env.sustainDisable();
-    env.reset();
-    //testExp.set();
+    //env.sustainDisable();
+    //env.reset();
+    testExp.set();
     gEnv.reset();
-    //turkeyEnv.set();
-    //      mOsc.reset();
   }
 
   void configureGrain(grainParameters& list) {
@@ -178,7 +189,7 @@ public:
 
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};
-  util::turkey turkeyEnv;
+  util::tukey turkeyEnv;
   util::expo testExp;
   grainEnvelope gEnv;
   float durationMs;
