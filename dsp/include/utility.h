@@ -48,7 +48,7 @@ struct Line {
 };
 
 struct expo {
-  float mAlpha = 0.5, mIncrementX, mX= 0, mY = 1, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
+  float mAlpha = 1, mIncrementX, mX= 0, mY = 1, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
   bool mReverse = 0;
   int mTotalS = 1;
   int tempCounter = 0;
@@ -93,22 +93,25 @@ struct expo {
     return mX == 0;
   }
 
-  float operator()() { //next up: implement a quick exp decay towards zero for reversed 
+  void increment() {mX += mIncrementX;}
+
+  float operator()() { 
   if(!mReverse) {
-    if(mX < mThresholdX * 0.01) {
-      mY = powf(M_E, 690.7755278982137 * mX - mThresholdX);
+    if(mX < mThresholdX * 0.01) { // ratio of initial ramp up to 1
+      mY = powf(M_E, 100 * mX - mThresholdX); //bias needed to reach that value in time (SEE DESMOS)
       mX += mIncrementX;
     }
     else if(mX < mThresholdX) {
-        mY = powf(M_E, -1 * mX * mAlpha + 0.01);
+        mY = powf(M_E, -1 * mX * mAlpha + (mThresholdX * 0.01) ); // this compensates for initial ramp up 
         mX += mIncrementX;
     } else  {
+      std::cout << mY << std::endl;
       mY = 1; 
       mX = 0;
     }
   } else { //reversed Logic
     if(mX < mThresholdX * 0.92761758634 ) { 
-      mY = powf(M_E, 0.9 * (mX - mThresholdX + 0.5)); // this reaches 1 at about 92% into envelope
+      mY = powf(M_E, 0.9 * (mX - mThresholdX + 0.5)); // (mx - thresh + bias ) where bias determines the ratio of envelope (mThresholdX * ratio)
       mX += mIncrementX;
     } else if(mX < mThresholdX * 0.95) {  //small sustain to makeup for percieved volume loss (in relation to expodec)
          mY = 1;      
@@ -144,6 +147,8 @@ struct turkey {
   }
 
   bool done() { return totalS == currentS; }
+
+  void increment() {currentS++;}
 
   float operator()() {
     if(currentS < (alpha * totalS)/2) {

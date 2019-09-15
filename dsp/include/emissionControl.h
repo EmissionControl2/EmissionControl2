@@ -16,17 +16,19 @@ public:
   }
 
   float operator()() {
-    if(mEnvelope == 0) { //exponential envelope case 
-      return mExpoEnv();
+    if(mEnvelope < 0) { //exponential envelope case 
+      mEnvelope = 0;
     } else if (mEnvelope < 0.5) { //exponetial and turkey envelope interpolation
+      mRExpoEnv.increment();
       return ((mExpoEnv() * (1 - mEnvelope*2)) + (mTurkeyEnv() * mEnvelope*2) );
     } else if (mEnvelope == 0.5) { //turkey envelope case 
+      mRExpoEnv.increment();
+      mExpoEnv.increment();
       return mTurkeyEnv();
-    } else if (mEnvelope < 1) { // turkey and reverse exponential envelope interpolation
+    } else if (mEnvelope <= 1) { // turkey and reverse exponential envelope interpolation
+      mExpoEnv.increment();
       return ((mTurkeyEnv() * (1 - (mEnvelope-0.5) * 2)) + (mRExpoEnv() * (mEnvelope - 0.5) * 2) );
-    } else if (mEnvelope == 1) { //reverse exponential envelope case
-      return mRExpoEnv();
-    }
+    } 
   }
 
   void set(float duration, float envelope) {
@@ -54,7 +56,7 @@ public:
 
   // mark envelope as done
   bool done() {
-  
+    return mTurkeyEnv.done();
   }
 
   //used to reset values of envelopes
@@ -109,31 +111,53 @@ public:
     //        updateFromParameters();
     while (io()) {
       counter++;
-      //envVal = gEnv();
-      envVal = testExp();
+      envVal = gEnv();
+      //envVal = testExp();
       sourceIndex = index();
       if(sourceIndex > source->size) 
         sourceIndex -= source->size;
-      if(counter%12 == 0)
-         std::cout << envVal << std::endl;
+      //if(counter%12 == 0)
+        //std::cout << envVal << std::endl;
       io.out(0) += source->get(sourceIndex)  * envVal; // * env();
       io.out(1) += source->get(sourceIndex)  * envVal; // * env();
-      if (testExp.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
+      if (gEnv.done()) { //counter == static_cast<int>(consts::SAMPLE_RATE * durationMs/1000)
         free();
-        std::cout << gEnv.getEnvelope() << std::endl;
+        // std::cout << gEnv.getEnvelope() << std::endl;
         counter = 0;
         break;
       }
     }
   }
-  virtual void onTriggerOn() override {
+
+   virtual void onTriggerOn() override {
     //mGrainEnv.reset();
     env.sustainDisable();
     env.reset();
-    testExp.set();
+    //testExp.set();
     gEnv.reset();
+    //turkeyEnv.set();
     //      mOsc.reset();
   }
+
+  void configureGrain(grainParameters& list) {
+    setDurationMs(list.grainDurationMs);
+    setEnvelope(list.envelope);
+    this->source = list.source;
+
+    float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
+    float endSample = startSample  + (list.grainDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate)/2;
+    //if(endSample > list.source->size) endSample -= list.source->size; //this will wrap the end sample to the beginning of the source buffer.
+    if(list.playbackRate < 0) 
+      index.set(endSample,startSample, list.grainDurationMs/1000 ); 
+    else 
+      index.set(startSample,endSample, list.grainDurationMs/1000); 
+
+    //turkeyEnv.set(list.grainDurationMs/1000,0.5);
+    //testExp.set(list.grainDurationMs/1000,0); //note: still causes small click
+    gEnv.set(list.grainDurationMs/1000, list.envelope);
+  }
+
+ 
 
   //value between 0 and 1 
   void setEnvelope(float value) {
@@ -150,23 +174,7 @@ public:
 
   void setDurationMs(float dur) {durationMs = dur;}
 
-  void configureGrain(grainParameters& list) {
-    setDurationMs(list.grainDurationMs);
-    setEnvelope(list.envelope);
-    this->source = list.source;
-
-    float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
-    float endSample = startSample  + (list.grainDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate)/2;
-    //if(endSample > list.source->size) endSample -= list.source->size; //this will wrap the end sample to the beginning of the source buffer.
-    if(list.playbackRate < 0) 
-      index.set(endSample,startSample, list.grainDurationMs/1000 ); 
-    else 
-      index.set(startSample,endSample, list.grainDurationMs/1000); 
-
-    turkeyEnv.set(list.grainDurationMs/1000);
-    testExp.set(list.grainDurationMs/1000,0); //note: still causes small click
-    //gEnv.set(list.grainDurationMs/1000, list.envelope);
-  }
+  
 
 private:
   gam::ADSR<> env{0.001,0,1,0.01,1,-4};

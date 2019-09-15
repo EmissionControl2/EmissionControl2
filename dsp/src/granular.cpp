@@ -36,7 +36,7 @@ public:
   Parameter grainRate {"grainRate", "", 1, "", 0.5, 100};
   Parameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0};
   Parameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
-  Parameter envelope {"envelope", "", 0.5, "", 0, 1};
+  Parameter envelope {"envelope", "", 0, "", 0, 1};
   Parameter volumedB {"volumedB", "", -6, "", -60, 6};
   Parameter tapeHead{"tapeHead", "", 0, "", 0, 1};
   Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
@@ -71,7 +71,7 @@ public:
 
     /// TESTING 
     ///////
-    load("pluck.aiff", soundClip);
+    load("noise.aiff", soundClip);
 
     *this << volumedB << streams << grainRate << asynchronicity << intermittency
     << envelope << grainDurationMs << tapeHead << playbackRate << modSineFrequency << modSinePhase 
