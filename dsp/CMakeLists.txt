@@ -14,10 +14,13 @@ add_subdirectory(external/allolib)
 
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
+target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/allolib/external/Gamma/Gamma/)
 
 # link allolib to project
 target_link_libraries(${APP_NAME} PRIVATE  al)
 target_link_libraries(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a)
+#target_link_libraries(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/emissionControl.cpp)
+
 
 #include_directories(external/libsamplerate/src)
 

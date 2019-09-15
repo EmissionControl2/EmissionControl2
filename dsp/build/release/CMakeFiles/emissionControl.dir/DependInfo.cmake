@@ -19,6 +19,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../../external/libsamplerate/src"
+  "../../external/allolib/external/Gamma/Gamma"
   "../../include"
   "../../external/allolib/include"
   "../../external/allolib/modules"
