@@ -20,7 +20,7 @@ class grainEnvelope {
 public:
   
   /**
-   * set grainEnvelope parameters. 
+   * Set grainEnvelope parameters. 
    *  
    * @param[in] sets the duration of the envelope in SECONDS, usually equal to duration of grain.
    * @param[in] FROM 0 to 1, where 0 to 0.5 interplates between expo and tukey and 0.5 to 1 interpolated between tukey and reverse expo.
@@ -30,6 +30,9 @@ public:
     this->setEnvelope(envelope);
   }
 
+  /**
+   * Run in audio callback loop.
+   */
   float operator()() {
   if(mEnvelope < 0) { //exponential envelope case 
   mEnvelope = 0;
@@ -69,12 +72,16 @@ public:
     mRExpoEnv.set(duration, 1);
   }
 
-  // mark envelope as done
+  /**
+   * Mark envelope as done.
+   */
   bool done() {
     return mTurkeyEnv.done();
   }
 
-  //used to reset values of envelopes
+  /**
+   * Call to reset envelope parameters to original starting position. 
+   */
   void reset() { 
     mExpoEnv.set();
     mRExpoEnv.set();
@@ -110,31 +117,31 @@ struct modParameters{
   
 };
 
+/**
+ * Grain class containing an audio buffer and an envelope. Used as the voice for the voiceScheduler class
+ */
 class Grain : public al::SynthVoice {
 public:
-  // Unit generators
   //Grain();
-  util::Buffer<float> *source = nullptr;
-  util::line index;
-  int counter = 0;
-  float envVal, sourceIndex;
-
+  int counter = 0; //USED for debugging
+  
   // Initialize voice. This function will nly be called once per voice
   virtual void init() {
   }
+
+  /**
+   * Processing done at the audio rate. 
+   */
   virtual void onProcess(al::AudioIOData& io) override {
-    //        updateFromParameters();
     while (io()) {
-      counter++;
       envVal = gEnv();
-      //envVal = testExp();
       sourceIndex = index();
       if(sourceIndex > source->size) 
         sourceIndex -= source->size;
       //if(counter%12 == 0)
         //std::cout << envVal << std::endl;
-      io.out(0) += source->get(sourceIndex)  * envVal; // * env();
-      io.out(1) += source->get(sourceIndex)  * envVal; // * env();
+      io.out(0) += source->get(sourceIndex)  * envVal; 
+      io.out(1) += source->get(sourceIndex)  * envVal;
       if (gEnv.done()) { 
         free();
         counter = 0;
@@ -142,43 +149,29 @@ public:
       }
     }
   }
-
+  
    virtual void onTriggerOn() override {
-    //env.sustainDisable();
-    //env.reset();
-    testExp.set();
     gEnv.reset();
   }
 
+  /**
+   * Configure grain parameters before being sent to scheduler. 
+   * param[in] A struct containing a list of all grain parameters that need to be set. 
+   *  - Note: see struct grainParameters for details.
+   */
+
   void configureGrain(grainParameters& list) {
     setDurationMs(list.grainDurationMs);
-    setEnvelope(list.envelope);
     gEnv.set(list.grainDurationMs/1000, list.envelope);
     this->source = list.source;
 
     float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
     float endSample = startSample  + (list.grainDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate)/2;
-    //if(endSample > list.source->size) endSample -= list.source->size; //this will wrap the end sample to the beginning of the source buffer.
     if(list.playbackRate < 0) 
       index.set(endSample,startSample, list.grainDurationMs/1000 ); 
     else 
       index.set(startSample,endSample, list.grainDurationMs/1000); 
 
-    //turkeyEnv.set(list.grainDurationMs/1000,0.5);
-    //testExp.set(list.grainDurationMs/1000,0); //note: still causes small click
-  }
-
- 
-
-  //value between 0 and 1 
-  void setEnvelope(float value) {
-    if(value < 0) value++;
-    if(value > 1) value--;
-    
-    env.sustain(1);
-    env.decay(durationMs/1000 * 0.4);
-    env.attack(value * durationMs/1000 * 0.6);
-    env.release(durationMs/1000 - env.decay() - env.attack());
   }
 
   float getDurationMs() const {return durationMs;}
@@ -188,26 +181,35 @@ public:
   
 
 private:
-  gam::ADSR<> env{0.001,0,1,0.01,1,-4};
-  util::tukey turkeyEnv;
-  util::expo testExp;
+  util::Buffer<float> *source = nullptr;
+  util::line index;
   grainEnvelope gEnv;
-  float durationMs;
-  float tapeHead;
+  float envVal, sourceIndex, tapeHead, durationMs;
 };
 
-//Wrapper class of all envelopes needed for a grain.
-// designed to use one parameter to interpolate between each envelope. 
 
-
+/**
+ * Wrapper class containing all unit generators needed to modulate the grain/voiceScheduler parameters/
+ */
 class ecModulator {
   public:
+
+  /**
+   * Constructor for ecModulator. 
+   * 
+   * param[in] An enum type denoting the modulator source. 
+   * param[in] The frequency of the modulator. 
+   * param[in] The width of the modulator.
+   */
    ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1, float width = 1) : frequency(frequency), width(width) {
         std::cout << "ecModulator Constructor\n";
         this->setWaveform(modWaveform);
         LFO.set(frequency, 0, 0.5); 
     }
 
+    /**
+     * Processing done at the audio rate. 
+     */
     float operator()() {
         if(modWaveform == consts::SINE) {
             return LFO.cos() * width;
@@ -257,27 +259,29 @@ class ecModulator {
 };
 
 
-
+/**
+ * Class used to schedule the emission of an arbitrary voice. 
+ */
 class voiceScheduler
 {
 public:
 
+  /**
+   * Constructor of the voice scheduler. 
+   * 
+   * param[in] The audio samplingRate. 
+   */
   voiceScheduler(double samplingRate) {
     mSamplingRate = samplingRate;
   }
 
-  void setFrequency(double frequency) {
-    configure(frequency, mAsync, mIntermittence);
-  }
-
-  void setAsynchronicity(double async) {
-    configure(mFrequency, async, mIntermittence);
-  }
-
-  void setIntermittence(double intermittence) {
-    configure(mFrequency, mAsync, intermittence);
-  }
-
+  /** 
+   * Used to configure all parameters necessary for voiceScheduler. 
+   * 
+   * param[in] The frequency in which voices are emitted. 
+   * param[in] FROM 0 to 1; The value of the asynchronicity parameter. 
+   * param[in] FROM 0 to 1; The value of the intermittence parameter.
+   */
   void configure(double frequency, double async, double intermittence) {
     if (async > 1.0) {
       async = 1.0;
@@ -295,11 +299,14 @@ public:
     mIncrement = mFrequency/mSamplingRate;
   }
 
+  /**
+   * When return true, trigger a voice.
+   */
   bool trigger() {
     if(mCounter >= 1.0) {
       //std::cout << "made it\n";
       mCounter -= 1.0;
-      if(!intermittence()) return false;
+      if(rand.uniform() < mIntermittence) return false;
       mCounter += rand.uniform(-mAsync, mAsync);
       mCounter += mIncrement;
       return true;
@@ -308,15 +315,44 @@ public:
     return false;
   }
 
-  /*
-  @brief Returns true if random number generator is withing bounds 
-  @param lower bound coundition
-  */
-  bool intermittence() {
-    if(rand.uniform() > mIntermittence) return true; 
-    else return false;
+  /** 
+   * Sets frequency in which voices are emitted.
+   */
+  void setFrequency(double frequency) {
+    configure(frequency, mAsync, mIntermittence);
   }
 
+  /**
+   * Sets the asynchronicity parameter.
+   * This randomly triggers a voice between its scheduled trigger point and a percentage of one period of the scheduler.
+   * 
+   * param[in] FROM 0 to 1. This determines the width of the random trigger. 
+   *  0 being completely synchronous and 1 being completely asynchronous.
+   * 
+   * DOES NOT AFFECT DENSITY OF EMISSION.
+   */
+  void setAsynchronicity(double async) {
+    configure(mFrequency, async, mIntermittence);
+  }
+
+  /**
+   * Set the intermittence parameter. 
+   * This randomly drops a voice from being triggered. 
+   * 
+   * param[in] FROM 0 to 1. Probability of dropping voice is determined by this value.
+   *  0 being a 0% chance of dropping the voice and 1 being a 100% chance of dropping the voice. 
+   * 
+   * AFFECTS DENSITY OF EMISSION.
+   */
+  void setIntermittence(double intermittence) {
+    configure(mFrequency, mAsync, intermittence);
+  }
+
+  /**
+   * Set the amount of voices running in parallel.
+   * 
+   * IN PROGRESS
+   */
   void polyStream(consts::streamType type, int numStreams) {
     if(type == consts::synchronous) {
       setFrequency(mFrequency * numStreams);
@@ -324,6 +360,7 @@ public:
       std::cerr << "Not implemented yet, please try again later.\n";
     }
   }
+
 
 private:
   gam::LFO<> mPulse;
