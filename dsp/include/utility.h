@@ -56,8 +56,7 @@ public:
     if (mTotalS <= 0) mTotalS = 1;
     if (mThresholdY <= 0) mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
     mX = 0;
-    if(mReverse) mY = mThresholdY;
-    else mY =1;
+    mY = mThresholdY;
     mIncrementX = (mThresholdX / mTotalS); // -ln(0.001) 
   }                                         // where 0.001 is our threshold for when we release envelope
   void set(float seconds, bool reverse,float threshold, float alpha) {
@@ -104,8 +103,7 @@ public:
         mY = powf(M_E, -1 * mX * mAlpha + (mThresholdX * 0.01) ); // this compensates for initial ramp up 
         mX += mIncrementX;
     } else  {
-      std::cout << mY << std::endl;
-      mY = 1; 
+      mY = mThresholdY; 
       mX = 0;
     }
   } else { //reversed Logic
@@ -118,7 +116,6 @@ public:
     }else if(mX < mThresholdX ) { //quickly bring envelope down to zero before marking as done.
       mY = powf(M_E, -20 * ( (mX) - (mThresholdX * 0.95) )); 
       mX += mIncrementX;
-      //std::cout << mY << std::endl;
     } else { 
       mY = mThresholdY;
       mX = 0;
@@ -127,7 +124,7 @@ public:
   return mY;
   }
 private:
-  float mAlpha = 1, mIncrementX, mX= 0, mY = 1, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
+  float mAlpha = 1, mIncrementX, mX= 0, mY = 0.001, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001;
   bool mReverse = 0;
   int mTotalS = 1;
   int tempCounter = 0;
