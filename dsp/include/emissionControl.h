@@ -153,6 +153,7 @@ public:
   void configureGrain(grainParameters& list) {
     setDurationMs(list.grainDurationMs);
     setEnvelope(list.envelope);
+    gEnv.set(list.grainDurationMs/1000, list.envelope);
     this->source = list.source;
 
     float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
@@ -165,7 +166,6 @@ public:
 
     //turkeyEnv.set(list.grainDurationMs/1000,0.5);
     //testExp.set(list.grainDurationMs/1000,0); //note: still causes small click
-    gEnv.set(list.grainDurationMs/1000, list.envelope);
   }
 
  
