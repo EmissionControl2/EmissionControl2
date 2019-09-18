@@ -51,7 +51,7 @@ public:
   ecModulator mod {consts::SINE, 1,1};
   //test
 
-  ecModulator modSine {consts::SINE};
+  ecModulator modSine {consts::SINE,2};
   ecModulator modSquare {consts::SQUARE};
   ecModulator modSaw {consts::SAW};
   ecModulator modNoise {consts::NOISE};
@@ -59,6 +59,7 @@ public:
   grainParameters list;
   float sineModValue;
 
+  //testLFO.set(2,0,0.5);
   // ~Granular() {
   //   for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
   //     delete[] *i;
@@ -66,8 +67,6 @@ public:
 
 
   virtual void init() {
-    //testLFO.set(1,0,0.5);
-    //testLFO.mod(1);
 
     /// TESTING 
     ///////
@@ -109,9 +108,10 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      sineModValue = mod(); // construct sine modulation value
+      sineModValue = modSine(); // construct sine modulation value
 
       // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
+
       if(modGrainRateWidth.get() > 0)  // modulate the grain rate
         grainScheduler.setFrequency(grainRate.get() * ((sineModValue * modGrainRateWidth.get()) + 1) ); 
       else grainScheduler.setFrequency(grainRate.get());
@@ -188,6 +188,6 @@ public:
   }
 private:
 };
-//
+
 
 
