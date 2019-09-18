@@ -178,8 +178,6 @@ public:
 
   void setDurationMs(float dur) {durationMs = dur;}
 
-  
-
 private:
   util::Buffer<float> *source = nullptr;
   util::line index;
@@ -201,60 +199,59 @@ class ecModulator {
    * param[in] The frequency of the modulator. 
    * param[in] The width of the modulator.
    */
-   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1, float width = 1) : frequency(frequency), width(width) {
+   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 2, float width = 1) : mFrequency(frequency), mWidth(width) {
         std::cout << "ecModulator Constructor\n";
         this->setWaveform(modWaveform);
-        LFO.set(frequency, 0, 0.5); 
+        mLFO.set(frequency, 0, 0.5); 
     }
 
     /**
      * Processing done at the audio rate. 
      */
     float operator()() {
-        if(modWaveform == consts::SINE) {
-            return LFO.cos() * width;
-        } else if(modWaveform == consts::SAW) {
-            return LFO.tri() * width; 
-        } else if (modWaveform == consts::SQUARE) {
-            return LFO.sqr() * width;
-        } else if (modWaveform == consts::SQUARE) {
+        if(mModWaveform == consts::SINE) {
+            return mLFO.cos() * mWidth;
+        } else if(mModWaveform == consts::SAW) {
+            return mLFO.tri() * mWidth; 
+        } else if (mModWaveform == consts::SQUARE) {
+            return mLFO.sqr() * mWidth;
+        } else if (mModWaveform == consts::NOISE) {
             return -1020020209200;
-        }
-        else {
-            return LFO.cos() * width;
+        } else {
+            return mLFO.cos() * mWidth;
         }
     }
 
-    consts::waveform getWaveform() {return modWaveform;}
-    float getFrequency() {return frequency;}
-    float getWidth() {return width;}
+    consts::waveform getWaveform() {return mModWaveform;}
+    float getFrequency() {return mFrequency;}
+    float getWidth() {return mWidth;}
 
     void setWaveform(consts::waveform modWaveform) {
-      if(modWaveform != consts::SINE && modWaveform != consts::SAW && modWaveform != consts::SQUARE && modWaveform != consts::SQUARE) {
+      if(modWaveform != consts::SINE && modWaveform != consts::SAW && modWaveform != consts::SQUARE && modWaveform != consts::NOISE) {
             std::cerr << "invalid waveform" << std::endl;
             return;
         }
-      this->modWaveform = modWaveform;
+      mModWaveform = modWaveform;
     }
 
     void setFrequency(float frequency) {
-      this->frequency= frequency;
-      LFO.freq(frequency);
+      mFrequency = frequency;
+      mLFO.set(frequency, 0, 0.5);
     }
 
     void setWidth(float width) {
-      this->width = width;
+      mWidth = width;
     }
 
     void setPhase(float phase) {
-      LFO.phase(phase);
+      mLFO.phase(phase);
     }
 
     private: 
-    gam::LFO<> LFO;
-    consts::waveform modWaveform;
-    float frequency;
-    float width;
+    gam::LFO<> mLFO{};
+    consts::waveform mModWaveform;
+    float mFrequency;
+    float mWidth;
   
 };
 
