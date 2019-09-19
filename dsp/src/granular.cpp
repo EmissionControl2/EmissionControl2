@@ -51,13 +51,13 @@ public:
   ecModulator mod {consts::SINE, 1,1};
   //test
 
-  ecModulator modSine {consts::SINE,2};
+  ecModulator modSine {consts::SINE};
   ecModulator modSquare {consts::SQUARE};
   ecModulator modSaw {consts::SAW};
   ecModulator modNoise {consts::NOISE};
 
   grainParameters list;
-  float sineModValue;
+  float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 
   //testLFO.set(2,0,0.5);
   // ~Granular() {
@@ -108,20 +108,23 @@ public:
   virtual void onProcess(AudioIOData& io) override {
     //        updateFromParameters();
     while (io()) {
-      sineModValue = modSine(); // construct sine modulation value
+      modSineValue = modSine(); // construct modulation value
+      modSquareValue = modSquare();
+      modSawValue = modSaw();
+      modNoiseValue = modNoise();
 
       // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
       if(modGrainRateWidth.get() > 0)  // modulate the grain rate
-        grainScheduler.setFrequency(grainRate.get() * ((sineModValue * modGrainRateWidth.get()) + 1) ); 
+        grainScheduler.setFrequency(grainRate.get() * ((modSineValue * modGrainRateWidth.get()) + 1) ); 
       else grainScheduler.setFrequency(grainRate.get());
 
       if(modAsynchronicityWidth.get() > 0) //modulate the asynchronicity 
-        grainScheduler.setAsynchronicity(asynchronicity.get() * ((sineModValue * modAsynchronicityWidth.get()) + 1) );
+        grainScheduler.setAsynchronicity(asynchronicity.get() * ((modSineValue * modAsynchronicityWidth.get()) + 1) );
       else grainScheduler.setAsynchronicity(asynchronicity.get());
 
       if(modIntermittencyWidth.get() > 0)  //modulate the intermittency 
-        grainScheduler.setIntermittence(intermittency.get() * ((sineModValue * modIntermittencyWidth.get())  + 1 ) ); //still figuring out math 
+        grainScheduler.setIntermittence(intermittency.get() * ((modSineValue * modIntermittencyWidth.get())  + 1 ) ); //still figuring out math 
       else grainScheduler.setIntermittence(intermittency.get());
     
 
@@ -134,7 +137,7 @@ public:
             tapeHead.get(),
             playbackRate.get(),
             soundClip[0], 
-            sineModValue,
+            modSineValue,
           };
 
           voice->configureGrain(list);

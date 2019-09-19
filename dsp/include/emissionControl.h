@@ -216,7 +216,7 @@ class ecModulator {
         } else if (mModWaveform == consts::SQUARE) {
             return mLFO.sqr() * mWidth;
         } else if (mModWaveform == consts::NOISE) {
-            return -1020020209200;
+            return rand.uniform(-1.0,1.0);
         } else {
             return mLFO.cos() * mWidth;
         }
@@ -249,6 +249,7 @@ class ecModulator {
 
     private: 
     gam::LFO<> mLFO{};
+    al::rnd::Random<> rand;
     consts::waveform mModWaveform;
     float mFrequency;
     float mWidth;
