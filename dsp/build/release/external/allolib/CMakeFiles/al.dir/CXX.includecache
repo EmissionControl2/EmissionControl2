@@ -532,34 +532,6 @@ al/util/ui/al_Parameter.hpp
 al/util/scene/al_PolySynth.hpp
 ../../external/allolib/include/al/util/scene/al/util/scene/al_PolySynth.hpp
 
-../../external/allolib/include/al/util/ui/al_ControlGUI.hpp
-string
--
-map
--
-al/core/io/al_ControlNav.hpp
-../../external/allolib/include/al/util/ui/al/core/io/al_ControlNav.hpp
-al/util/ui/al_ParameterGUI.hpp
-../../external/allolib/include/al/util/ui/al/util/ui/al_ParameterGUI.hpp
-al/util/ui/al_ParameterMIDI.hpp
-../../external/allolib/include/al/util/ui/al/util/ui/al_ParameterMIDI.hpp
-al/util/ui/al_Parameter.hpp
-../../external/allolib/include/al/util/ui/al/util/ui/al_Parameter.hpp
-al/util/ui/al_ParameterBundle.hpp
-../../external/allolib/include/al/util/ui/al/util/ui/al_ParameterBundle.hpp
-al/util/ui/al_Preset.hpp
-../../external/allolib/include/al/util/ui/al/util/ui/al_Preset.hpp
-al/util/ui/al_PresetSequencer.hpp
-../../external/allolib/include/al/util/ui/al/util/ui/al_PresetSequencer.hpp
-al/util/scene/al_SynthSequencer.hpp
-../../external/allolib/include/al/util/ui/al/util/scene/al_SynthSequencer.hpp
-al/util/scene/al_SynthRecorder.hpp
-../../external/allolib/include/al/util/ui/al/util/scene/al_SynthRecorder.hpp
-al/util/scene/al_DynamicScene.hpp
-../../external/allolib/include/al/util/ui/al/util/scene/al_DynamicScene.hpp
-al/util/imgui/al_Imgui.hpp
-../../external/allolib/include/al/util/ui/al/util/imgui/al_Imgui.hpp
-
 ../../external/allolib/include/al/util/ui/al_Parameter.hpp
 string
 -
@@ -727,12 +699,6 @@ al/util/ui/al_PresetSequencer.hpp
 ../../external/allolib/include/al/util/ui/al/util/ui/al_PresetSequencer.hpp
 al/util/ui/al_Preset.hpp
 ../../external/allolib/include/al/util/ui/al/util/ui/al_Preset.hpp
-
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/util/ui/al_ControlGUI.cpp
-al/util/ui/al_ControlGUI.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/util/ui/al/util/ui/al_ControlGUI.hpp
-al/util/ui/al_SequenceRecorder.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/util/ui/al/util/ui/al_SequenceRecorder.hpp
 
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/util/ui/al_ParameterGUI.cpp
 string
