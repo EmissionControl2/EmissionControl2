@@ -33,25 +33,30 @@ class Granular : public al::SynthVoice {
 public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
-  Parameter grainRate {"grainRate", "", 1, "", 0.5, 100};
-  Parameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0};
-  Parameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
-  Parameter envelope {"envelope", "", 0, "", 0, 1};
-  Parameter volumedB {"volumedB", "", -6, "", -60, 6};
-  Parameter tapeHead{"tapeHead", "", 0, "", 0, 1};
-  Parameter playbackRate {"playbackRate", "", 1, "", -1, 1};
-  Parameter intermittency {"intermittency", "", 0,"", 0, 1};
+  //Parameter grainRate {"grainRate", "", 1, "", 0.5, 100};
+  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 100, consts::NOISE, 0};
+  ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0};
+  ecParameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
+  ecParameter envelope {"envelope", "", 0, "", 0, 1};
+  ecParameter volumedB {"volumedB", "", -6, "", -60, 6};
+  ecParameter tapeHead{"tapeHead", "", 0, "", 0, 1};
+  ecParameter playbackRate {"playbackRate", "", 1, "", -1, 1};
+  ecParameter intermittency {"intermittency", "", 0,"", 0, 1};
   ParameterInt streams {"streams", "", 1,"", 1, 12};
-  Parameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40};
-  Parameter modSinePhase {"modSinePhase", "", 0, "", 0, 1};
-  Parameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
-  Parameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
-  Parameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1};
+  ecParameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40};
+  ecParameter modSinePhase {"modSinePhase", "", 0, "", 0, 1};
+  ecParameter modSquareFrequency {"modSquareFrequency", "",1,"", 0.01, 40};
+  ecParameter modSquareWidth {"modSquareWidth", "",1,"", 0, 1};
+  ecParameter modSawFrequency {"modSawFrequency", "",1,"", 0.01, 40};
+  ecParameter modSawWidth {"modSawWidth", "",1,"", 0, 1};
+  ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
+  ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
+  ecParameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1};
   //test
   ecModulator mod {consts::SINE, 1,1};
   //test
 
-  ecModulator modSine {consts::SINE};
+  ecModulator modSine {consts::SINE, 1, 1};
   ecModulator modSquare {consts::SQUARE};
   ecModulator modSaw {consts::SAW};
   ecModulator modNoise {consts::NOISE};
@@ -59,23 +64,9 @@ public:
   grainParameters list;
   float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 
-  //testLFO.set(2,0,0.5);
-  // ~Granular() {
-  //   for(auto i = soundClip.begin(); i != soundClip.end(); i++) 
-  //     delete[] *i;
-  // }
 
+  virtual void init() override {
 
-  virtual void init() {
-
-    /// TESTING 
-    ///////
-    load("noise.aiff", soundClip);
-
-    *this << volumedB << streams << grainRate << asynchronicity << intermittency
-    << envelope << grainDurationMs << tapeHead << playbackRate << modSineFrequency << modSinePhase 
-    << modGrainRateWidth << modAsynchronicityWidth << modIntermittencyWidth;
-    
 
     grainScheduler.configure(grainRate, 0.0, 0.0);
     grainRate.registerChangeCallback([&](float value) {
@@ -101,6 +92,21 @@ public:
       modSine.setPhase(value);
     });
 
+    modSquareFrequency.registerChangeCallback([&](float value) {
+      modSquare.setFrequency(value);
+    });
+
+    modSquareWidth.registerChangeCallback([&](float value) {
+      modSquare.setWidth(value);
+    });
+
+    modSawFrequency.registerChangeCallback([&](float value) {
+      modSaw.setFrequency(value);
+    });
+    modSawWidth.registerChangeCallback([&](float value) {
+      modSaw.setWidth(value);
+    });
+
     grainSynth.allocatePolyphony<Grain>(1024);
     grainSynth.setDefaultUserData(this);
   }
@@ -114,9 +120,10 @@ public:
       modNoiseValue = modNoise();
 
       // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
-
+      
+      
       if(modGrainRateWidth.get() > 0)  // modulate the grain rate
-        grainScheduler.setFrequency(grainRate.get() * ((modSineValue * modGrainRateWidth.get()) + 1) ); 
+        grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, modGrainRateWidth.get())); 
       else grainScheduler.setFrequency(grainRate.get());
 
       if(modAsynchronicityWidth.get() > 0) //modulate the asynchronicity 
@@ -179,18 +186,6 @@ private:
   std::vector<util::Buffer<float>*> soundClip;
 };
 
-
-//NEED to figure out how to have multiple GUI Windows
-class Modulator : public SynthVoice {
-public:
-  Parameter tapeHeadFreq {"tapeHeadFreq", "mod", 1,"", 0.01, 30};
-  ecModulator tapeHead {consts::SAW};
-
-  virtual void init() {
-    *this << tapeHeadFreq;
-  }
-private:
-};
 
 
 
