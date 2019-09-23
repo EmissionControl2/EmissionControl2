@@ -34,9 +34,10 @@ public:
    * Run in audio callback loop.
    */
   float operator()() {
-  if(mEnvelope < 0) { //exponential envelope case 
-  mEnvelope = 0;
-  } else if (mEnvelope < 0.5) { //exponetial and turkey envelope interpolation
+  if(mEnvelope < 0 || mEnvelope > 1)  //exponential envelope case 
+    mEnvelope = 0; 
+  
+  if (mEnvelope < 0.5) { //exponetial and turkey envelope interpolation
   mRExpoEnv.increment();
   return ((mExpoEnv() * (1 - mEnvelope*2)) + (mTurkeyEnv() * mEnvelope*2) );
   } else if (mEnvelope == 0.5) { //turkey envelope case 
@@ -46,7 +47,11 @@ public:
   } else if (mEnvelope <= 1) { // turkey and reverse exponential envelope interpolation
   mExpoEnv.increment();
   return ((mTurkeyEnv() * (1 - (mEnvelope-0.5) * 2)) + (mRExpoEnv() * (mEnvelope - 0.5) * 2) );
-  } 
+  } else { //fails silently but gracefully
+    mRExpoEnv.increment();
+    mExpoEnv.increment();
+    return mTurkeyEnv();
+  }
 } 
 
   void set(float duration, float envelope) {
@@ -113,8 +118,141 @@ struct grainParameters{
   float modValue;
 };
 
-struct modParameters{
+/**
+ * Wrapper class containing all unit generators needed to modulate the grain/voiceScheduler parameters/
+ */
+class ecModulator {
+  public:
+
+  /**
+   * Constructor for ecModulator. 
+   * 
+   * param[in] An enum type denoting the modulator source. 
+   * param[in] The frequency of the modulator. 
+   * param[in] The width of the modulator.
+   */
+   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1, float width = 1) : mFrequency(frequency), mWidth(width) {
+        std::cout << "ecModulator Constructor\n";
+        this->setWaveform(modWaveform);
+        mLFO.set(frequency, 0, width); 
+    }
+
+    /**
+     * Processing done at the audio rate. 
+     */
+    float operator()() {
+        if(mModWaveform == consts::SINE) {
+            return mLFO.cos();
+        } else if(mModWaveform == consts::SAW) {
+            return mLFO.up2(); 
+        } else if (mModWaveform == consts::SQUARE) {
+            return mLFO.stair();
+        } else if (mModWaveform == consts::NOISE) {
+            return rand.uniform(-1.0,1.0);
+        } else {
+            return mLFO.cos();
+        }
+    }
+
+    consts::waveform getWaveform() {return mModWaveform;}
+    float getFrequency() {return mFrequency;}
+    float getWidth() {return mWidth;}
+
+    void setWaveform(consts::waveform modWaveform) {
+      if(modWaveform != consts::SINE && modWaveform != consts::SAW && modWaveform != consts::SQUARE && modWaveform != consts::NOISE) {
+            std::cerr << "invalid waveform" << std::endl;
+            return;
+        }
+      mModWaveform = modWaveform;
+    }
+
+    void setFrequency(float frequency) {
+      mFrequency = frequency;
+      mLFO.freq(frequency);
+    }
+
+    void setWidth(float width) {
+      mWidth = width;
+      mLFO.mod(width);
+    }
+
+    void setPhase(float phase) {
+      mLFO.phase(phase);
+    }
+
+    private: 
+    gam::LFO<> mLFO{};
+    al::rnd::Random<> rand;
+    consts::waveform mModWaveform;
+    float mFrequency;
+    float mWidth;
   
+};
+
+class ecParameter : public Parameter{
+public:
+  ecParameter(std::string parameterName, float defaultValue = 0, float min = -99999.0,float max = 99999.0, 
+  consts::waveform modWaveform = consts::SINE, bool independent = 0) : Parameter(parameterName , defaultValue, min, max) {
+    //mParam  = new Parameter{parameterName, defaultValue, min, max}; 
+    mModWaveform = modWaveform; 
+    mIndependent = independent;
+    if(mIndependent)  // if true, this parameter will have its own modulator
+      mModulator = new ecModulator{mModWaveform, 1, 1};
+  }
+
+  ecParameter(std::string parameterName, std::string Group,float defaultValue = 0,
+	std::string prefix = "",float min = -99999.0,float max = 99999.0,
+  consts::waveform modWaveform = consts::SINE, bool independent = 0) 
+  : Parameter(parameterName, Group, defaultValue, prefix, min, max) {
+    mModWaveform = modWaveform; 
+    mIndependent = independent;
+    if(mIndependent)  // if true, this parameter will have its own modulator
+      mModulator = new ecModulator{mModWaveform, 1, 1};
+
+  }
+  ~ecParameter() {
+    //delete mParam;
+    if(mIndependent) delete mModulator;
+  }
+
+  void setIndependence(bool independent) {
+    mIndependent = independent;
+    if(mIndependent && mModulator == nullptr) 
+      mModulator = new ecModulator{mModWaveform, 1, 1};
+    else delete mModulator;    
+  }
+
+  /**
+   * Function that returns the ecParameter value transformed by AN EXTERNAL modulation source. 
+   *  (ie independence set to false)  
+   * This function assumes that there are four external modulation sources.
+   * Runs at the audio rate. 
+   * 
+   * param[in] The current value of the SINE modulator. 
+   * param[in] The current value of the SQUARE modulator.
+   * param[in] The current value of the SAW modulator.
+   * param[in] The current value of the NOISE modulator.
+   * param[in] FROM 0 to 1; The width of the modulation source. 
+   */
+  float getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
+    switch(mModWaveform) {
+      case consts::SINE:
+        return this->get() * ((modSineValue * modWidth) + 1);
+      case consts::SQUARE:
+        return this->get() * ((modSquareValue * modWidth) + 1);
+      case consts::SAW:
+        return this->get() * ((modSawValue * modWidth) + 1);
+      case consts::NOISE:
+        return this->get() * ((modNoiseValue * modWidth) + 1);
+      default: 
+        return this->get() * ((modSineValue * modWidth) + 1);
+    }
+  }
+
+
+  consts::waveform mModWaveform;
+  ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
+  bool mIndependent;
 };
 
 /**
@@ -126,7 +264,7 @@ public:
   int counter = 0; //USED for debugging
   
   // Initialize voice. This function will nly be called once per voice
-  virtual void init() {
+  virtual void init() override {
   }
 
   /**
@@ -186,75 +324,7 @@ private:
 };
 
 
-/**
- * Wrapper class containing all unit generators needed to modulate the grain/voiceScheduler parameters/
- */
-class ecModulator {
-  public:
 
-  /**
-   * Constructor for ecModulator. 
-   * 
-   * param[in] An enum type denoting the modulator source. 
-   * param[in] The frequency of the modulator. 
-   * param[in] The width of the modulator.
-   */
-   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 2, float width = 1) : mFrequency(frequency), mWidth(width) {
-        std::cout << "ecModulator Constructor\n";
-        this->setWaveform(modWaveform);
-        mLFO.set(frequency, 0, 0.5); 
-    }
-
-    /**
-     * Processing done at the audio rate. 
-     */
-    float operator()() {
-        if(mModWaveform == consts::SINE) {
-            return mLFO.cos() * mWidth;
-        } else if(mModWaveform == consts::SAW) {
-            return mLFO.tri() * mWidth; 
-        } else if (mModWaveform == consts::SQUARE) {
-            return mLFO.sqr() * mWidth;
-        } else if (mModWaveform == consts::NOISE) {
-            return rand.uniform(-1.0,1.0);
-        } else {
-            return mLFO.cos() * mWidth;
-        }
-    }
-
-    consts::waveform getWaveform() {return mModWaveform;}
-    float getFrequency() {return mFrequency;}
-    float getWidth() {return mWidth;}
-
-    void setWaveform(consts::waveform modWaveform) {
-      if(modWaveform != consts::SINE && modWaveform != consts::SAW && modWaveform != consts::SQUARE && modWaveform != consts::NOISE) {
-            std::cerr << "invalid waveform" << std::endl;
-            return;
-        }
-      mModWaveform = modWaveform;
-    }
-
-    void setFrequency(float frequency) {
-      mFrequency = frequency;
-      mLFO.set(frequency, 0, 0.5);
-    }
-
-    void setWidth(float width) {
-      mWidth = width;
-    }
-
-    void setPhase(float phase) {
-      mLFO.phase(phase);
-    }
-
-    private: 
-    gam::LFO<> mLFO{};
-    al::rnd::Random<> rand;
-    consts::waveform mModWaveform;
-    float mFrequency;
-    float mWidth;
-  
-};
 
 
 /**

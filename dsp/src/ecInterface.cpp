@@ -29,6 +29,7 @@ public:
     //synthManager.triggerOn();
 
     granulator.init();
+    granulator.loadSoundFile("noise.aiff");
   }
 
   virtual void onCreate() override {
@@ -37,6 +38,8 @@ public:
     mPresets << granulator.volumedB << granulator.streams << granulator.grainRate << granulator.asynchronicity << granulator.intermittency
     << granulator.envelope << granulator.grainDurationMs << granulator.tapeHead << granulator.playbackRate
     << granulator.modSineFrequency << granulator.modSinePhase
+    << granulator.modSquareFrequency << granulator.modSquareWidth
+    << granulator.modSawFrequency << granulator.modSawWidth
     << granulator.modGrainRateWidth << granulator.modAsynchronicityWidth << granulator.modIntermittencyWidth;
 
     // Play example sequence. Comment this line to start from scratch
@@ -73,6 +76,10 @@ public:
     ParameterGUI::beginPanel("LFO Controls", 500, 50,500);
     ParameterGUI::drawParameter(&granulator.modSineFrequency);
     ParameterGUI::drawParameter(&granulator.modSinePhase);
+    ParameterGUI::drawParameter(&granulator.modSquareFrequency);
+    ParameterGUI::drawParameter(&granulator.modSquareWidth);
+    ParameterGUI::drawParameter(&granulator.modSawFrequency);
+    ParameterGUI::drawParameter(&granulator.modSawWidth);
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Granulator Controls", 600, 200,500,-1);
