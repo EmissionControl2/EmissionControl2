@@ -634,13 +634,41 @@ al/util/ui/al_ParameterBundle.hpp
 al_App.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_App.hpp
 
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_AudioDomain.cpp
+al_AudioDomain.hpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_AudioDomain.hpp
+
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_ComputationDomain.cpp
+iostream
+-
+cstring
+-
+al_ext/distributed/al_ComputationDomain.hpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_ext/distributed/al_ComputationDomain.hpp
+
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_OSCDomain.cpp
 al_OSCDomain.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_OSCDomain.hpp
 
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_OpenGLGraphicsDomain.cpp
+iostream
+-
+cstring
+-
+al_OpenGLGraphicsDomain.hpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_OpenGLGraphicsDomain.hpp
+
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_OpenVRDomain.cpp
 al_OpenVRDomain.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_OpenVRDomain.hpp
+
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_SimulationDomain.cpp
+al_SimulationDomain.hpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_SimulationDomain.hpp
+
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_StateDistributionDomain.cpp
+al_StateDistributionDomain.hpp
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/extensions/al_ext/distributed/src/al_StateDistributionDomain.hpp
 
 /usr/local/include/GL/glew.h
 stddef.h

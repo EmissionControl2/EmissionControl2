@@ -109,14 +109,7 @@ private:
   float mDuration; //in seconds
 };
 
-struct grainParameters{
-  float grainDurationMs;
-  float envelope;
-  float tapeHead;
-  float playbackRate;
-  util::Buffer<float>* source;
-  float modValue;
-};
+
 
 /**
  * Wrapper class containing all unit generators needed to modulate the grain/voiceScheduler parameters/
@@ -226,7 +219,7 @@ public:
    * Function that returns the ecParameter value transformed by AN EXTERNAL modulation source. 
    *  (ie independence set to false)  
    * This function assumes that there are four external modulation sources.
-   * Runs at the audio rate. 
+   * Runs at the Audio/Control rate. 
    * 
    * param[in] The current value of the SINE modulator. 
    * param[in] The current value of the SQUARE modulator.
@@ -237,6 +230,7 @@ public:
   float getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
     switch(mModWaveform) {
       case consts::SINE:
+        //std::cout << "here\n";
         return this->get() * ((modSineValue * modWidth) + 1);
       case consts::SQUARE:
         return this->get() * ((modSquareValue * modWidth) + 1);
@@ -249,10 +243,42 @@ public:
     }
   }
 
+/**
+ * Function that returns the ecParameter value transformed by its INTERNAL modulation source. 
+ *  (ie independence set to true)
+ * Runs at Audio/Control Rate. 
+ * 
+ * param[in] FROM 0 to 1; The width of the modulation source.
+ */
+  float getModParam(float modWidth) {
+    if(!mIndependent) {
+      std::cerr << "PARAMETER must have independence set to true if you want to use this getModParam function\n";
+      return -9999999999;
+    }
+    return this->get() * (( (*mModulator)() * modWidth) + 1);
+  }
+
 
   consts::waveform mModWaveform;
   ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
   bool mIndependent;
+};
+
+
+struct grainParameters{
+  ecParameter grainDurationMs;
+  float modGrainDurationWidth;
+  ecParameter envelope;
+  float modEnvelopeWidth;
+  ecParameter tapeHead;
+  float modTapeHeadWidth;
+  ecParameter playbackRate;
+  float modPlaybackRateWidth;
+  util::Buffer<float>* source;
+  float modSineVal;
+  float modSquareVal;
+  float modSawVal;
+  float modNoiseVal;
 };
 
 /**
@@ -299,16 +325,22 @@ public:
    */
 
   void configureGrain(grainParameters& list) {
-    setDurationMs(list.grainDurationMs);
-    gEnv.set(list.grainDurationMs/1000, list.envelope);
+    float startSample, endSample;
+
+    setDurationMs(list.grainDurationMs.get());
+    gEnv.set(list.grainDurationMs.get()/1000, list.envelope.get());
     this->source = list.source;
 
-    float startSample = list.source->size * (list.tapeHead * (list.modValue + 1)/2); 
-    float endSample = startSample  + (list.grainDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate)/2;
-    if(list.playbackRate < 0) 
-      index.set(endSample,startSample, list.grainDurationMs/1000 ); 
+    if(list.modTapeHeadWidth > 0)
+      startSample = list.source->size * 
+        (list.tapeHead.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modTapeHeadWidth)); 
+    else startSample = list.source->size * list.tapeHead.get();
+
+    endSample = startSample  + (list.grainDurationMs.get()/1000) * consts::SAMPLE_RATE * abs(list.playbackRate.get())/2;
+    if(list.playbackRate.get() < 0) 
+      index.set(endSample,startSample, list.grainDurationMs.get()/1000 ); 
     else 
-      index.set(startSample,endSample, list.grainDurationMs/1000); 
+      index.set(startSample,endSample, list.grainDurationMs.get()/1000); 
 
   }
 

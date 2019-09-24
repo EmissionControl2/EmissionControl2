@@ -73,10 +73,10 @@ preinstall: external/allolib/preinstall
 # Target rules for target CMakeFiles/emissionControl.dir
 
 # All Build rule for target.
-CMakeFiles/emissionControl.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
-CMakeFiles/emissionControl.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 CMakeFiles/emissionControl.dir/all: external/allolib/CMakeFiles/al.dir/all
 CMakeFiles/emissionControl.dir/all: external/allolib/Gamma/CMakeFiles/Gamma.dir/all
+CMakeFiles/emissionControl.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
+CMakeFiles/emissionControl.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f CMakeFiles/emissionControl.dir/build.make CMakeFiles/emissionControl.dir/depend
 	$(MAKE) -f CMakeFiles/emissionControl.dir/build.make CMakeFiles/emissionControl.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/CMakeFiles --progress-num=86,87 "Built target emissionControl"
@@ -168,10 +168,10 @@ external/allolib/CMakeFiles/al.dir/clean:
 # Target rules for target external/allolib/CMakeFiles/decorrelationTests.dir
 
 # All Build rule for target.
-external/allolib/CMakeFiles/decorrelationTests.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
-external/allolib/CMakeFiles/decorrelationTests.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 external/allolib/CMakeFiles/decorrelationTests.dir/all: external/allolib/CMakeFiles/al.dir/all
 external/allolib/CMakeFiles/decorrelationTests.dir/all: external/allolib/Gamma/CMakeFiles/Gamma.dir/all
+external/allolib/CMakeFiles/decorrelationTests.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
+external/allolib/CMakeFiles/decorrelationTests.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f external/allolib/CMakeFiles/decorrelationTests.dir/build.make external/allolib/CMakeFiles/decorrelationTests.dir/depend
 	$(MAKE) -f external/allolib/CMakeFiles/decorrelationTests.dir/build.make external/allolib/CMakeFiles/decorrelationTests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/CMakeFiles --progress-num=85 "Built target decorrelationTests"
@@ -198,10 +198,10 @@ external/allolib/CMakeFiles/decorrelationTests.dir/clean:
 # Target rules for target external/allolib/CMakeFiles/convolverTests.dir
 
 # All Build rule for target.
-external/allolib/CMakeFiles/convolverTests.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
-external/allolib/CMakeFiles/convolverTests.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 external/allolib/CMakeFiles/convolverTests.dir/all: external/allolib/CMakeFiles/al.dir/all
 external/allolib/CMakeFiles/convolverTests.dir/all: external/allolib/Gamma/CMakeFiles/Gamma.dir/all
+external/allolib/CMakeFiles/convolverTests.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
+external/allolib/CMakeFiles/convolverTests.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f external/allolib/CMakeFiles/convolverTests.dir/build.make external/allolib/CMakeFiles/convolverTests.dir/depend
 	$(MAKE) -f external/allolib/CMakeFiles/convolverTests.dir/build.make external/allolib/CMakeFiles/convolverTests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/CMakeFiles --progress-num=83,84 "Built target convolverTests"
@@ -282,10 +282,10 @@ external/allolib/CMakeFiles/al_soundfile.dir/clean:
 # Target rules for target external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir
 
 # All Build rule for target.
-external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
-external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/all: external/allolib/CMakeFiles/al.dir/all
 external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/all: external/allolib/Gamma/CMakeFiles/Gamma.dir/all
+external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
+external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
 	$(MAKE) -f external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/build.make external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/depend
 	$(MAKE) -f external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/build.make external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/CMakeFiles --progress-num=99,100 "Built target soundfileBufferedRecordTests"
@@ -312,9 +312,9 @@ external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/clean:
 # Target rules for target external/allolib/CMakeFiles/al_distributed.dir
 
 # All Build rule for target.
+external/allolib/CMakeFiles/al_distributed.dir/all: external/allolib/Gamma/CMakeFiles/Gamma.dir/all
 external/allolib/CMakeFiles/al_distributed.dir/all: external/allolib/glfw/src/CMakeFiles/glfw.dir/all
 external/allolib/CMakeFiles/al_distributed.dir/all: external/allolib/glew/CMakeFiles/glew_s.dir/all
-external/allolib/CMakeFiles/al_distributed.dir/all: external/allolib/Gamma/CMakeFiles/Gamma.dir/all
 	$(MAKE) -f external/allolib/CMakeFiles/al_distributed.dir/build.make external/allolib/CMakeFiles/al_distributed.dir/depend
 	$(MAKE) -f external/allolib/CMakeFiles/al_distributed.dir/build.make external/allolib/CMakeFiles/al_distributed.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/CMakeFiles --progress-num=72,73,74,75,76,77 "Built target al_distributed"

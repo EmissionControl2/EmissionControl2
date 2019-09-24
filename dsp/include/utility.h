@@ -272,7 +272,9 @@ struct Buffer {
 void load(std::string fileName, std::vector<Buffer<float>*>& buf) { //only works on mono files for now
   al::SearchPaths searchPaths;
   // searchPaths.addSearchPath("../../samples");
-  searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples");
+  searchPaths.addSearchPath("/Users/jkilgore/Projects/EmissionControlPort/samples");
+  //searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples/voicePop.wav");
+  //searchPaths.addSearchPath("../../samples");
   //searchPaths.print();
 
   std::string filePath = searchPaths.find(fileName).filepath(); 
