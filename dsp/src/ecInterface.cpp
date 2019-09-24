@@ -35,6 +35,8 @@ public:
   virtual void onCreate() override {
     ParameterGUI::initialize();
 
+    //Parameter temp = static_cast<Parameter>(granulator.grainRate);
+    //mPresets.registerParameter(temp);
     mPresets 
       << granulator.grainRate << granulator.modGrainRateWidth
       << granulator.asynchronicity << granulator.modAsynchronicityWidth

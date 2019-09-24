@@ -33,7 +33,7 @@ class Granular : public al::SynthVoice {
 public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
-  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 100, consts::SINE, 0};
+  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 1000, consts::SINE, 0};
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
   ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, consts::SINE};
   ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
@@ -44,11 +44,11 @@ public:
 
   ecParameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
   ecParameter modGrainDurationWidth {"modGrainDurationWidth", "", 0, "", 0, 1};
-  ecParameter envelope {"envelope", "", 0, "", 0, 1};
+  ecParameter envelope {"envelope", "", 0.5, "", 0, 1};
   ecParameter modEnvelopeWidth {"modEnvelopeWidth", "", 0, "", 0, 1};
   ecParameter tapeHead{"tapeHead", "", 0, "", 0, 1};
   ecParameter modTapeHeadWidth {"modTapeHeadWidth", "", 0, "", 0, 1};
-  ecParameter playbackRate {"playbackRate", "", 1, "", -1, 1};
+  ecParameter playbackRate {"playbackRate", "", 1, "", -2, 2};
   ecParameter modPlaybackRateWidth {"modPlaybackRateWidth", "", 0, "", 0, 1};
 
   ecParameter volumedB {"volumedB", "", -6, "", -60, 6};

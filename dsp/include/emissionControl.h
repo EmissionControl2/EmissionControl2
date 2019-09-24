@@ -327,8 +327,16 @@ public:
   void configureGrain(grainParameters& list) {
     float startSample, endSample;
 
-    setDurationMs(list.grainDurationMs.get());
-    gEnv.set(list.grainDurationMs.get()/1000, list.envelope.get());
+    if(list.modGrainDurationWidth > 0) 
+      setDurationMs(list.grainDurationMs.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modGrainDurationWidth));
+    else setDurationMs(list.grainDurationMs.get());
+
+    if(list.modEnvelopeWidth > 0)
+      gEnv.set(mDurationMs/1000, 
+        list.envelope.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modEnvelopeWidth));
+    else gEnv.set(mDurationMs/1000, list.envelope.get());
+
+
     this->source = list.source;
 
     if(list.modTapeHeadWidth > 0)
@@ -336,23 +344,26 @@ public:
         (list.tapeHead.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modTapeHeadWidth)); 
     else startSample = list.source->size * list.tapeHead.get();
 
-    endSample = startSample  + (list.grainDurationMs.get()/1000) * consts::SAMPLE_RATE * abs(list.playbackRate.get())/2;
+    if(list.modPlaybackRateWidth > 0)
+      endSample = startSample  + (mDurationMs/1000) * consts::SAMPLE_RATE 
+        * abs(list.playbackRate.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modPlaybackRateWidth));
+    else endSample = startSample  + (mDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate.get());
     if(list.playbackRate.get() < 0) 
-      index.set(endSample,startSample, list.grainDurationMs.get()/1000 ); 
+      index.set(endSample,startSample, mDurationMs/1000 ); 
     else 
-      index.set(startSample,endSample, list.grainDurationMs.get()/1000); 
+      index.set(startSample,endSample, mDurationMs/1000); 
 
   }
 
-  float getDurationMs() const {return durationMs;}
+  float getDurationMs() const {return mDurationMs;}
 
-  void setDurationMs(float dur) {durationMs = dur;}
+  void setDurationMs(float dur) {mDurationMs = dur;}
 
 private:
   util::Buffer<float> *source = nullptr;
   util::line index;
   grainEnvelope gEnv;
-  float envVal, sourceIndex, tapeHead, durationMs;
+  float envVal, sourceIndex, tapeHead, mDurationMs;
 };
 
 

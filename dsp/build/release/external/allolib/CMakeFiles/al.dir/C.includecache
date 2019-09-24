@@ -6,17 +6,3 @@
 
 #IncludeRegexTransform: 
 
-../../external/allolib/include/al/util/al_Array.h
-stdint.h
--
-limits.h
--
-
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/util/al_Array_C.c
-string.h
--
-stdlib.h
--
-al/util/al_Array.h
-/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/util/al/util/al_Array.h
-
