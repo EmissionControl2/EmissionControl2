@@ -33,25 +33,36 @@ class Granular : public al::SynthVoice {
 public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
-  //Parameter grainRate {"grainRate", "", 1, "", 0.5, 100};
-  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 100, consts::NOISE, 0};
-  ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0};
-  ecParameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
-  ecParameter envelope {"envelope", "", 0, "", 0, 1};
-  ecParameter volumedB {"volumedB", "", -6, "", -60, 6};
-  ecParameter tapeHead{"tapeHead", "", 0, "", 0, 1};
-  ecParameter playbackRate {"playbackRate", "", 1, "", -1, 1};
+  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 100, consts::SINE, 0};
+  ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
+  ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, consts::SINE};
+  ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
   ecParameter intermittency {"intermittency", "", 0,"", 0, 1};
+  ecParameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1};
   ParameterInt streams {"streams", "", 1,"", 1, 12};
+  ecParameter modStreamsWidth {"modStreamsWidth", "", 0, "", 0, 1};
+
+  ecParameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
+  ecParameter modGrainDurationWidth {"modGrainDurationWidth", "", 0, "", 0, 1};
+  ecParameter envelope {"envelope", "", 0, "", 0, 1};
+  ecParameter modEnvelopeWidth {"modEnvelopeWidth", "", 0, "", 0, 1};
+  ecParameter tapeHead{"tapeHead", "", 0, "", 0, 1};
+  ecParameter modTapeHeadWidth {"modTapeHeadWidth", "", 0, "", 0, 1};
+  ecParameter playbackRate {"playbackRate", "", 1, "", -1, 1};
+  ecParameter modPlaybackRateWidth {"modPlaybackRateWidth", "", 0, "", 0, 1};
+
+  ecParameter volumedB {"volumedB", "", -6, "", -60, 6};
+  ecParameter modVolumeWidth {"modVolumeWidth", "", 0, "", 0, 1};
+  
+
+
   ecParameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40};
   ecParameter modSinePhase {"modSinePhase", "", 0, "", 0, 1};
   ecParameter modSquareFrequency {"modSquareFrequency", "",1,"", 0.01, 40};
   ecParameter modSquareWidth {"modSquareWidth", "",1,"", 0, 1};
   ecParameter modSawFrequency {"modSawFrequency", "",1,"", 0.01, 40};
   ecParameter modSawWidth {"modSawWidth", "",1,"", 0, 1};
-  ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
-  ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
-  ecParameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1};
+  
   //test
   ecModulator mod {consts::SINE, 1,1};
   //test
@@ -61,7 +72,7 @@ public:
   ecModulator modSaw {consts::SAW};
   ecModulator modNoise {consts::NOISE};
 
-  grainParameters list;
+  //grainParameters list;
   float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 
 
@@ -123,28 +134,38 @@ public:
       
       
       if(modGrainRateWidth.get() > 0)  // modulate the grain rate
-        grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, modGrainRateWidth.get())); 
+        grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+        modGrainRateWidth.get())); 
       else grainScheduler.setFrequency(grainRate.get());
 
       if(modAsynchronicityWidth.get() > 0) //modulate the asynchronicity 
-        grainScheduler.setAsynchronicity(asynchronicity.get() * ((modSineValue * modAsynchronicityWidth.get()) + 1) );
+        grainScheduler.setAsynchronicity(asynchronicity.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+        modAsynchronicityWidth.get()));
       else grainScheduler.setAsynchronicity(asynchronicity.get());
 
       if(modIntermittencyWidth.get() > 0)  //modulate the intermittency 
-        grainScheduler.setIntermittence(intermittency.get() * ((modSineValue * modIntermittencyWidth.get())  + 1 ) ); //still figuring out math 
+        grainScheduler.setIntermittence(intermittency.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+        modIntermittencyWidth.get())); 
       else grainScheduler.setIntermittence(intermittency.get());
     
 
       if (grainScheduler.trigger()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
-          list = {
-            grainDurationMs.get(),
-            envelope.get(),
-            tapeHead.get(),
-            playbackRate.get(),
+          grainParameters list = {
+            grainDurationMs,
+            modGrainDurationWidth.get(),
+            envelope,
+            modEnvelopeWidth.get(),
+            tapeHead,
+            modTapeHeadWidth.get(),
+            playbackRate,
+            modPlaybackRateWidth.get(),
             soundClip[0], 
             modSineValue,
+            modSquareValue,
+            modSawValue,
+            modNoiseValue
           };
 
           voice->configureGrain(list);

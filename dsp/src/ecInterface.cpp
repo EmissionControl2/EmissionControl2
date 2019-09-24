@@ -29,18 +29,25 @@ public:
     //synthManager.triggerOn();
 
     granulator.init();
-    granulator.loadSoundFile("noise.aiff");
+    granulator.loadSoundFile("voicePop.wav");
   }
 
   virtual void onCreate() override {
     ParameterGUI::initialize();
 
-    mPresets << granulator.volumedB << granulator.streams << granulator.grainRate << granulator.asynchronicity << granulator.intermittency
-    << granulator.envelope << granulator.grainDurationMs << granulator.tapeHead << granulator.playbackRate
-    << granulator.modSineFrequency << granulator.modSinePhase
-    << granulator.modSquareFrequency << granulator.modSquareWidth
-    << granulator.modSawFrequency << granulator.modSawWidth
-    << granulator.modGrainRateWidth << granulator.modAsynchronicityWidth << granulator.modIntermittencyWidth;
+    mPresets 
+      << granulator.grainRate << granulator.modGrainRateWidth
+      << granulator.asynchronicity << granulator.modAsynchronicityWidth
+      << granulator.intermittency << granulator.modIntermittencyWidth
+      << granulator.streams << granulator.modStreamsWidth 
+      << granulator.grainDurationMs << granulator.modGrainDurationWidth
+      << granulator.envelope << granulator.modEnvelopeWidth
+      << granulator.tapeHead << granulator.modTapeHeadWidth
+      << granulator.playbackRate << granulator.modPlaybackRateWidth
+      << granulator.volumedB << granulator.modVolumeWidth
+      << granulator.modSineFrequency << granulator.modSinePhase
+      << granulator.modSquareFrequency << granulator.modSquareWidth
+      << granulator.modSawFrequency << granulator.modSawWidth;
 
     // Play example sequence. Comment this line to start from scratch
     //        synthManager.synthSequencer().playSequence("synth2.synthSequence");
@@ -69,11 +76,11 @@ public:
     // synthManager.drawPresets();
     // ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Recorder",50,50);
+    ParameterGUI::beginPanel("Recorder",50,25);
     SoundFileRecordGUI::drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut());
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("LFO Controls", 500, 50,500);
+    ParameterGUI::beginPanel("LFO Controls", 400, 25,500);
     ParameterGUI::drawParameter(&granulator.modSineFrequency);
     ParameterGUI::drawParameter(&granulator.modSinePhase);
     ParameterGUI::drawParameter(&granulator.modSquareFrequency);
@@ -83,21 +90,29 @@ public:
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Granulator Controls", 600, 200,500,-1);
-    ParameterGUI::drawParameter(&granulator.volumedB);
-    ParameterGUI::drawParameter(&granulator.envelope);
     ParameterGUI::drawParameter(&granulator.grainRate);
-    ParameterGUI::drawParameter(&granulator.grainDurationMs);
-    ParameterGUI::drawParameter(&granulator.tapeHead);
-    ParameterGUI::drawParameter(&granulator.playbackRate);
     ParameterGUI::drawParameter(&granulator.asynchronicity);
     ParameterGUI::drawParameter(&granulator.intermittency);
     ParameterGUI::drawParameterInt(&granulator.streams,"");
+    ParameterGUI::drawParameter(&granulator.grainDurationMs);
+    ParameterGUI::drawParameter(&granulator.envelope);
+    ParameterGUI::drawParameter(&granulator.tapeHead);
+    ParameterGUI::drawParameter(&granulator.playbackRate);
+    ParameterGUI::drawParameter(&granulator.volumedB);
+    
+    
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Modulation Width", 50, 200, 500, -1);
     ParameterGUI::drawParameter(&granulator.modGrainRateWidth);
     ParameterGUI::drawParameter(&granulator.modAsynchronicityWidth);
     ParameterGUI::drawParameter(&granulator.modIntermittencyWidth);
+    ParameterGUI::drawParameter(&granulator.modStreamsWidth);
+    ParameterGUI::drawParameter(&granulator.modGrainDurationWidth);
+    ParameterGUI::drawParameter(&granulator.modEnvelopeWidth);
+    ParameterGUI::drawParameter(&granulator.modTapeHeadWidth);
+    ParameterGUI::drawParameter(&granulator.modPlaybackRateWidth);
+    ParameterGUI::drawParameter(&granulator.modVolumeWidth);
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Presets", 400, 500);
