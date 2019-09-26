@@ -182,6 +182,11 @@ class ecModulator {
   
 };
 
+/** 
+ * Derived from Parameter class.
+ * Allows for dynamically allocating an internal modulator, 
+ * as well as using an external modulation source (choose from four different sources).
+ */
 class ecParameter : public Parameter{
 public:
   ecParameter(std::string parameterName, float defaultValue = 0, float min = -99999.0,float max = 99999.0, 
@@ -230,7 +235,6 @@ public:
   float getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
     switch(mModWaveform) {
       case consts::SINE:
-        //std::cout << "here\n";
         return this->get() * ((modSineValue * modWidth) + 1);
       case consts::SQUARE:
         return this->get() * ((modSquareValue * modWidth) + 1);
@@ -254,6 +258,84 @@ public:
     if(!mIndependent) {
       std::cerr << "PARAMETER must have independence set to true if you want to use this getModParam function\n";
       return -9999999999;
+    }
+    return this->get() * (( (*mModulator)() * modWidth) + 1);
+  }
+
+
+  consts::waveform mModWaveform;
+  ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
+  bool mIndependent;
+};
+
+/** 
+ * Derived from ParameterInt class.
+ * Allows for dynamically allocating an internal modulator, 
+ * as well as using an external modulation source (choose from four different sources).
+ */
+class ecParameterInt : public ParameterInt{
+public:
+
+  ecParameterInt(std::string parameterName, std::string Group, int defaultValue = 0,
+	std::string prefix = "",int min = 0,int max = 127,
+  consts::waveform modWaveform = consts::SINE, bool independent = 0) 
+  : ParameterInt(parameterName, Group, defaultValue, prefix, min, max) {
+    mModWaveform = modWaveform; 
+    mIndependent = independent;
+    if(mIndependent)  // if true, this parameter will have its own modulator
+      mModulator = new ecModulator{mModWaveform, 1, 1};
+
+  }
+  ~ecParameterInt() {
+    //delete mParam;
+    if(mIndependent) delete mModulator;
+  }
+
+  void setIndependence(bool independent) {
+    mIndependent = independent;
+    if(mIndependent && mModulator == nullptr) 
+      mModulator = new ecModulator{mModWaveform, 1, 1};
+    else delete mModulator;    
+  }
+
+  /**
+   * Function that returns the ecParameterInt value transformed by AN EXTERNAL modulation source. 
+   *  (ie independence set to false)  
+   * This function assumes that there are four external modulation sources.
+   * Runs at the Audio/Control rate. 
+   * 
+   * param[in] The current value of the SINE modulator. 
+   * param[in] The current value of the SQUARE modulator.
+   * param[in] The current value of the SAW modulator.
+   * param[in] The current value of the NOISE modulator.
+   * param[in] FROM 0 to 1; The width of the modulation source. 
+   */
+  int getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
+    switch(mModWaveform) {
+      case consts::SINE:
+        return this->get() * ((modSineValue * modWidth) + 1);
+      case consts::SQUARE:
+        return this->get() * ((modSquareValue * modWidth) + 1);
+      case consts::SAW:
+        return this->get() * ((modSawValue * modWidth) + 1);
+      case consts::NOISE:
+        return this->get() * ((modNoiseValue * modWidth) + 1);
+      default: 
+        return this->get() * ((modSineValue * modWidth) + 1);
+    }
+  }
+
+/**
+ * Function that returns the ecParameterInt value transformed by its INTERNAL modulation source. 
+ *  (ie independence set to true)
+ * Runs at Audio/Control Rate. 
+ * 
+ * param[in] FROM 0 to 1; The width of the modulation source.
+ */
+  int getModParam(float modWidth) {
+    if(!mIndependent) {
+      std::cerr << "PARAMETER must have independence set to true if you want to use this getModParam function\n";
+      return -99999;
     }
     return this->get() * (( (*mModulator)() * modWidth) + 1);
   }
@@ -412,10 +494,11 @@ public:
 
   /**
    * When return true, trigger a voice.
+   * Run at the audio rate.
    */
   bool trigger() {
     if(mCounter >= 1.0) {
-      //std::cout << "made it\n";
+      //std::cout << mIncrement * mSamplingRate << std::endl;
       mCounter -= 1.0;
       if(rand.uniform() < mIntermittence) return false;
       mCounter += rand.uniform(-mAsync, mAsync);
@@ -464,9 +547,10 @@ public:
    * 
    * IN PROGRESS
    */
-  void polyStream(consts::streamType type, int numStreams) {
+  void setPolyStream(consts::streamType type, int numStreams) {
     if(type == consts::synchronous) {
-      setFrequency(mFrequency * numStreams);
+      //std::cout << numStreams << std::endl;
+      setFrequency(static_cast<double>(mFrequency * numStreams));
     } else {
       std::cerr << "Not implemented yet, please try again later.\n";
     }

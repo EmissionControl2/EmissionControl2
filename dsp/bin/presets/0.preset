@@ -2,6 +2,7 @@
 /asynchronicity  
 /envelope  
 /grainDurationMs  
+/grainRate  
 /intermittency  
 /modAsynchronicityWidth  
 /modEnvelopeWidth  

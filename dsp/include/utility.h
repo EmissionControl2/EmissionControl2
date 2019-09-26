@@ -239,7 +239,7 @@ struct Buffer {
   T get(float index) const {
     // allow for sloppy indexing (e.g., negative, huge) by fixing the index to
     // within the bounds of the array
-    if (index < 0) index += size;  // -21221488559881683402437427200.000000
+    if (index < 0) index += size;  
     if (index > size) index -= size;
 
     // defer to our method without bounds checking
@@ -272,10 +272,12 @@ struct Buffer {
 void load(std::string fileName, std::vector<Buffer<float>*>& buf) { //only works on mono files for now
   al::SearchPaths searchPaths;
   // searchPaths.addSearchPath("../../samples");
+  //searchPaths.addSearchPath("..");
   searchPaths.addSearchPath("/Users/jkilgore/Projects/EmissionControlPort/samples");
+  //searchPaths.addSearchPath("",true);
   //searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples/voicePop.wav");
   //searchPaths.addSearchPath("../../samples");
-  //searchPaths.print();
+  searchPaths.print();
 
   std::string filePath = searchPaths.find(fileName).filepath(); 
   gam::SoundFile soundFile;
