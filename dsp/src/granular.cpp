@@ -33,13 +33,13 @@ class Granular : public al::SynthVoice {
 public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
-  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 1000, consts::SINE, 0};
+  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 100, consts::SINE, 0};
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
   ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, consts::SINE};
   ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1};
   ecParameter intermittency {"intermittency", "", 0,"", 0, 1};
   ecParameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1};
-  ParameterInt streams {"streams", "", 1,"", 1, 12};
+  ecParameterInt streams {"streams", "", 1,"", 1, 12};
   ecParameter modStreamsWidth {"modStreamsWidth", "", 0, "", 0, 1};
 
   ecParameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000};
@@ -75,24 +75,16 @@ public:
   //grainParameters list;
   float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 
+  int controlRateCounter = 0;
+
 
   virtual void init() override {
 
 
     grainScheduler.configure(grainRate, 0.0, 0.0);
-    grainRate.registerChangeCallback([&](float value) {
-      grainScheduler.setFrequency(value);
-    });
-    asynchronicity.registerChangeCallback([&](float value) {
-      grainScheduler.setAsynchronicity(value);
-    });
 
-    intermittency.registerChangeCallback([&](float value) {
-      grainScheduler.setIntermittence(value);
-    });
-
-    streams.registerChangeCallback([&](float value) {
-      grainScheduler.polyStream(consts::synchronous, value);
+    streams.registerChangeCallback([&](int value) {
+      grainScheduler.setPolyStream(consts::synchronous, value);
     });
 
     modSineFrequency.registerChangeCallback([&](float value) {
@@ -131,8 +123,8 @@ public:
       modNoiseValue = modNoise();
 
       // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
-      
-      
+
+
       if(modGrainRateWidth.get() > 0)  // modulate the grain rate
         grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
         modGrainRateWidth.get())); 
@@ -147,8 +139,20 @@ public:
         grainScheduler.setIntermittence(intermittency.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
         modIntermittencyWidth.get())); 
       else grainScheduler.setIntermittence(intermittency.get());
-    
 
+      if(modStreamsWidth.get() > 0) //Modulate the amount of streams playing.
+        grainScheduler.setPolyStream(consts::synchronous, streams.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue,
+        modStreamsWidth.get()));
+      else grainScheduler.setPolyStream(consts::synchronous, streams.get());
+
+      // CONTROL RATE LOOP (Executes every 4th sample)
+      if(controlRateCounter == 4) {
+        controlRateCounter = 0;
+      }
+      controlRateCounter++;
+      /////
+      
+      //Grain by Grain Initilization o
       if (grainScheduler.trigger()) {
         auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
         if (voice) {
@@ -190,9 +194,7 @@ public:
   }
 
   virtual void onTriggerOn() override {
-   //grainScheduler.setFrequency(grainRate);
-   //grainScheduler.setAsynchronicity(asynchronicity);
-   // std::cout << grainRate.get() << " --- " << sustain.get() <<std::endl;
+   
   }
 
   virtual void onTriggerOff() override {
