@@ -221,6 +221,34 @@ public:
   }
 
   /**
+  * Function to set the waveform using an integer value rather than the mModWaveform type. 
+  * param[in]
+  *  0 = SINE
+  *  1 = SQUARE 
+  *  2 = SAW
+  *  3 = NOISE
+  *   
+  */ 
+  void setWaveformIndex(int index) {
+  switch(index) {
+    case 0: 
+      mModWaveform = consts::SINE;
+      break;
+    case 1: 
+      mModWaveform = consts::SQUARE;
+      break;
+    case 2: 
+      mModWaveform = consts::SAW;
+      break; 
+    case 3:
+      mModWaveform = consts::NOISE;
+      break;
+    default:
+      mModWaveform = consts::SINE;
+    }
+  }
+
+  /**
    * Function that returns the ecParameter value transformed by AN EXTERNAL modulation source. 
    *  (ie independence set to false)  
    * This function assumes that there are four external modulation sources.
@@ -232,6 +260,7 @@ public:
    * param[in] The current value of the NOISE modulator.
    * param[in] FROM 0 to 1; The width of the modulation source. 
    */
+  int counter = 0;
   float getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
     switch(mModWaveform) {
       case consts::SINE:
@@ -241,6 +270,11 @@ public:
       case consts::SAW:
         return this->get() * ((modSawValue * modWidth) + 1);
       case consts::NOISE:
+        counter ++;
+        if(counter % 100 == 0) {
+          //std::cout << this->get() * ((modNoiseValue * modWidth) + 1) << std::endl;
+          counter = 0;
+        }
         return this->get() * ((modNoiseValue * modWidth) + 1);
       default: 
         return this->get() * ((modSineValue * modWidth) + 1);
@@ -296,6 +330,34 @@ public:
     if(mIndependent && mModulator == nullptr) 
       mModulator = new ecModulator{mModWaveform, 1, 1};
     else delete mModulator;    
+  }
+
+  /**
+   * Function to set the waveform using an integer value rather than the mModWaveform type. 
+   * param[in]
+   *  0 = SINE
+   *  1 = SQUARE 
+   *  2 = SAW
+   *  3 = NOISE
+   *   
+   */ 
+  void setWaveformIndex(int index) {
+    switch(index) {
+      case 0: 
+        mModWaveform = consts::SINE;
+        break;
+      case 1: 
+        mModWaveform = consts::SQUARE;
+        break;
+      case 2: 
+        mModWaveform = consts::SAW;
+        break; 
+      case 3:
+        mModWaveform = consts::NOISE;
+        break;
+      default:
+        mModWaveform = consts::SINE;
+      }
   }
 
   /**

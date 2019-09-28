@@ -38,15 +38,15 @@ public:
     //Parameter temp = static_cast<Parameter>(granulator.grainRate);
     //mPresets.registerParameter(temp);
     mPresets 
-      << granulator.grainRate << granulator.modGrainRateWidth
-      << granulator.asynchronicity << granulator.modAsynchronicityWidth
-      << granulator.intermittency << granulator.modIntermittencyWidth
-      << granulator.streams << granulator.modStreamsWidth 
-      << granulator.grainDurationMs << granulator.modGrainDurationWidth
-      << granulator.envelope << granulator.modEnvelopeWidth
-      << granulator.tapeHead << granulator.modTapeHeadWidth
-      << granulator.playbackRate << granulator.modPlaybackRateWidth
-      << granulator.volumedB << granulator.modVolumeWidth
+      << granulator.grainRate << granulator.grainRateLFO << granulator.modGrainRateWidth
+      << granulator.asynchronicity << granulator.asyncLFO << granulator.modAsynchronicityWidth
+      << granulator.intermittency << granulator.intermittencyLFO << granulator.modIntermittencyWidth
+      << granulator.streams << granulator.streamsLFO << granulator.modStreamsWidth 
+      << granulator.grainDurationMs << granulator.grainDurationLFO << granulator.modGrainDurationWidth
+      << granulator.envelope << granulator.envelopeLFO << granulator.modEnvelopeWidth
+      << granulator.tapeHead << granulator.tapeHeadLFO << granulator.modTapeHeadWidth
+      << granulator.playbackRate << granulator.playbackRateLFO << granulator.modPlaybackRateWidth
+      << granulator.volumeDB << granulator.volumeLFO << granulator.modVolumeWidth
       << granulator.modSineFrequency << granulator.modSinePhase
       << granulator.modSquareFrequency << granulator.modSquareWidth
       << granulator.modSawFrequency << granulator.modSawWidth;
@@ -78,11 +78,11 @@ public:
     // synthManager.drawPresets();
     // ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Recorder",50,25);
+    ParameterGUI::beginPanel("Recorder",950,25);
     SoundFileRecordGUI::drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut());
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("LFO Controls", 400, 25,500);
+    ParameterGUI::beginPanel("LFO Controls", 25, 25,500);
     ParameterGUI::drawParameter(&granulator.modSineFrequency);
     ParameterGUI::drawParameter(&granulator.modSinePhase);
     ParameterGUI::drawParameter(&granulator.modSquareFrequency);
@@ -91,7 +91,7 @@ public:
     ParameterGUI::drawParameter(&granulator.modSawWidth);
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Granulator Controls", 600, 200,500,-1);
+    ParameterGUI::beginPanel("Granulator Controls", 675, 250,500,-1);
     ParameterGUI::drawParameter(&granulator.grainRate);
     ParameterGUI::drawParameter(&granulator.asynchronicity);
     ParameterGUI::drawParameter(&granulator.intermittency);
@@ -100,12 +100,25 @@ public:
     ParameterGUI::drawParameter(&granulator.envelope);
     ParameterGUI::drawParameter(&granulator.tapeHead);
     ParameterGUI::drawParameter(&granulator.playbackRate);
-    ParameterGUI::drawParameter(&granulator.volumedB);
+    ParameterGUI::drawParameter(&granulator.volumeDB);
     
     
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Modulation Width", 50, 200, 500, -1);
+    ParameterGUI::beginPanel("Modulation Wave", 525, 250, 150, -1);
+    ParameterGUI::drawMenu(&granulator.grainRateLFO);
+    ParameterGUI::drawMenu(&granulator.asyncLFO);
+    ParameterGUI::drawMenu(&granulator.intermittencyLFO);
+    ParameterGUI::drawMenu(&granulator.streamsLFO);
+    ParameterGUI::drawMenu(&granulator.grainDurationLFO);
+    ParameterGUI::drawMenu(&granulator.envelopeLFO);
+    ParameterGUI::drawMenu(&granulator.tapeHeadLFO);
+    ParameterGUI::drawMenu(&granulator.playbackRateLFO);
+    ParameterGUI::drawMenu(&granulator.volumeLFO);
+    ParameterGUI::endPanel();
+
+    ParameterGUI::beginPanel("Modulation Width", 25, 250, 500, -1);
+    
     ParameterGUI::drawParameter(&granulator.modGrainRateWidth);
     ParameterGUI::drawParameter(&granulator.modAsynchronicityWidth);
     ParameterGUI::drawParameter(&granulator.modIntermittencyWidth);
@@ -117,7 +130,7 @@ public:
     ParameterGUI::drawParameter(&granulator.modVolumeWidth);
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Presets", 400, 500);
+    ParameterGUI::beginPanel("Presets", 525, 25);
     ParameterGUI::drawPresetHandler(&mPresets,12,4);
     ParameterGUI::endPanel();
 
