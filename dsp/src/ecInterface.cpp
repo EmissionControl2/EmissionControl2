@@ -13,6 +13,7 @@ public:
   ControlGUI test;
   Granular granulator;
   PresetHandler mPresets{"bin/presets"};
+  float background = 0.21;
 
 
 
@@ -30,6 +31,7 @@ public:
 
     granulator.init();
     granulator.loadSoundFile("voicePop.wav");
+    //granulator.verbose(true);
   }
 
   virtual void onCreate() override {
@@ -64,7 +66,7 @@ public:
   }
 
   virtual void onDraw(Graphics &g) override {
-    g.clear();
+    g.clear(background);
     ParameterGUI::beginDraw();
     // synthManager.render(g);
 
@@ -134,7 +136,8 @@ public:
     ParameterGUI::drawPresetHandler(&mPresets,12,4);
     ParameterGUI::endPanel();
 
-
+    ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );
+    
     ParameterGUI::endDraw();
 
   }

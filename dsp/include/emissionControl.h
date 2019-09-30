@@ -423,6 +423,7 @@ struct grainParameters{
   float modSquareVal;
   float modSawVal;
   float modNoiseVal;
+  int *activeVoices;
 };
 
 /**
@@ -451,6 +452,7 @@ public:
       io.out(0) += source->get(sourceIndex)  * envVal; 
       io.out(1) += source->get(sourceIndex)  * envVal;
       if (gEnv.done()) { 
+        *mPActiveVoices -= 1; //This will remove a grain from the active list in the Granulator. 
         free();
         counter = 0;
         break;
@@ -469,7 +471,10 @@ public:
    */
 
   void configureGrain(grainParameters& list) {
+
     float startSample, endSample;
+
+    mPActiveVoices = list.activeVoices;
 
     if(list.modGrainDurationWidth > 0) 
       setDurationMs(list.grainDurationMs.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modGrainDurationWidth));
@@ -507,6 +512,7 @@ private:
   util::Buffer<float> *source = nullptr;
   util::line index;
   grainEnvelope gEnv;
+  int* mPActiveVoices;
   float envVal, sourceIndex, tapeHead, mDurationMs;
 };
 
@@ -630,5 +636,6 @@ private:
   double mIncrement {0.0};
   double mIntermittence {0.0};
 };
+
 
 #endif
