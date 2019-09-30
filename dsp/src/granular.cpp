@@ -89,6 +89,8 @@ public:
 
   virtual void init() override {
 
+    mPActiveVoices = &mActiveVoices;
+
     //MUST USE THIS ORDER
     grainRateLFO.setElements({"Sine", "Square", "Saw", "Noise"});
     grainRateLFO.registerChangeCallback([&](int value) {
@@ -210,10 +212,13 @@ public:
             modSineValue,
             modSquareValue,
             modSawValue,
-            modNoiseValue
+            modNoiseValue,
+            mPActiveVoices
           };
 
           voice->configureGrain(list);
+          
+          mActiveVoices++; 
           grainSynth.triggerOn(voice, io.frame());
 
         } else {
@@ -231,11 +236,9 @@ public:
       io.out(1) *=  amp ; //* mEnv() 
       
     }
-    // (mEnv.done()) {free();}
   }
 
   virtual void onTriggerOn() override {
-   
   }
 
   virtual void onTriggerOff() override {
@@ -245,7 +248,17 @@ public:
     util::load(fileName, soundClip);
   }
 
+  void verbose(bool toggle) {
+    grainSynth.verbose(toggle);
+  }
+
+  int getActiveVoices() {
+    return mActiveVoices;
+  }
+
 private:
+  int mActiveVoices = 0;
+  int *mPActiveVoices = nullptr;
   PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
   std::vector<util::Buffer<float>*> soundClip;
 };
