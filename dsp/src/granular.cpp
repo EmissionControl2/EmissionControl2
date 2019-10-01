@@ -256,8 +256,39 @@ public:
     return mActiveVoices;
   }
 
+  void throttle(float time, float ratio) {
+    if(mCounter < time * consts::SAMPLE_RATE) {
+      mCounter++;
+      mAvgActiveVoices += mActiveVoices;
+      return ;
+    } else {
+      mCounter++;
+      mAvgActiveVoices /= mCounter;
+      mCounter = 0; 
+    }
+
+    float adaptThresh;
+
+    if(mPeakCPU > adaptThresh) {
+      
+    } 
+    if(mAvgCPU > adaptThresh) {
+      
+    } else {
+      
+    }
+  }
+
+  float getAvgActiveVoices(float time, int currentActiveVoices) {
+
+  }
+
 private:
   int mActiveVoices = 0;
+  int mCounter = 0;
+  float mAvgActiveVoices = 0;
+  float mPeakCPU;
+  float mAvgCPU;
   int *mPActiveVoices = nullptr;
   PolySynth grainSynth {PolySynth::TIME_MASTER_AUDIO};
   std::vector<util::Buffer<float>*> soundClip;

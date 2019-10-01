@@ -12,7 +12,7 @@ public:
   //SynthGUIManager<Granular> synthManager {"bin/Granulator"};
   ControlGUI test;
   Granular granulator;
-  PresetHandler mPresets{"bin/presets"};
+  PresetHandler mPresets{"presets"};
   float background = 0.21;
 
 
