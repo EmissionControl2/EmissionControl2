@@ -187,11 +187,12 @@ class ecModulator {
  * Allows for dynamically allocating an internal modulator, 
  * as well as using an external modulation source (choose from four different sources).
  */
-class ecParameter : public Parameter{
+class ecParameter {
 public:
   ecParameter(std::string parameterName, float defaultValue = 0, float min = -99999.0,float max = 99999.0, 
-  consts::waveform modWaveform = consts::SINE, bool independent = 0) : Parameter(parameterName , defaultValue, min, max) {
+  consts::waveform modWaveform = consts::SINE, bool independent = 0) {
     //mParam  = new Parameter{parameterName, defaultValue, min, max}; 
+    mParameter = new Parameter{parameterName , defaultValue, min, max};
     mModWaveform = modWaveform; 
     mIndependent = independent;
     if(mIndependent)  // if true, this parameter will have its own modulator
@@ -200,8 +201,8 @@ public:
 
   ecParameter(std::string parameterName, std::string Group,float defaultValue = 0,
 	std::string prefix = "",float min = -99999.0,float max = 99999.0,
-  consts::waveform modWaveform = consts::SINE, bool independent = 0) 
-  : Parameter(parameterName, Group, defaultValue, prefix, min, max) {
+  consts::waveform modWaveform = consts::SINE, bool independent = 0) {
+    mParameter = new Parameter{parameterName, Group, defaultValue, prefix, min, max};
     mModWaveform = modWaveform; 
     mIndependent = independent;
     if(mIndependent)  // if true, this parameter will have its own modulator
@@ -209,7 +210,7 @@ public:
 
   }
   ~ecParameter() {
-    //delete mParam;
+    delete mParameter;
     if(mIndependent) delete mModulator;
   }
 
@@ -248,6 +249,10 @@ public:
     }
   }
 
+  float getParam() {
+    return mParameter->get();
+  }
+
   /**
    * Function that returns the ecParameter value transformed by AN EXTERNAL modulation source. 
    *  (ie independence set to false)  
@@ -264,20 +269,15 @@ public:
   float getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
     switch(mModWaveform) {
       case consts::SINE:
-        return this->get() * ((modSineValue * modWidth) + 1);
+        return mParameter->get() * ((modSineValue * modWidth) + 1);
       case consts::SQUARE:
-        return this->get() * ((modSquareValue * modWidth) + 1);
+        return mParameter->get() * ((modSquareValue * modWidth) + 1);
       case consts::SAW:
-        return this->get() * ((modSawValue * modWidth) + 1);
+        return mParameter->get() * ((modSawValue * modWidth) + 1);
       case consts::NOISE:
-        counter ++;
-        if(counter % 100 == 0) {
-          //std::cout << this->get() * ((modNoiseValue * modWidth) + 1) << std::endl;
-          counter = 0;
-        }
-        return this->get() * ((modNoiseValue * modWidth) + 1);
+        return mParameter->get() * ((modNoiseValue * modWidth) + 1);
       default: 
-        return this->get() * ((modSineValue * modWidth) + 1);
+        return mParameter->get() * ((modSineValue * modWidth) + 1);
     }
   }
 
@@ -293,12 +293,14 @@ public:
       std::cerr << "PARAMETER must have independence set to true if you want to use this getModParam function\n";
       return -9999999999;
     }
-    return this->get() * (( (*mModulator)() * modWidth) + 1);
+    return mParameter->get() * (( (*mModulator)() * modWidth) + 1);
   }
 
 
   consts::waveform mModWaveform;
   ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
+  Parameter* mParameter = nullptr;
+private: 
   bool mIndependent;
 };
 
@@ -307,21 +309,21 @@ public:
  * Allows for dynamically allocating an internal modulator, 
  * as well as using an external modulation source (choose from four different sources).
  */
-class ecParameterInt : public ParameterInt{
+class ecParameterInt {
 public:
 
   ecParameterInt(std::string parameterName, std::string Group, int defaultValue = 0,
 	std::string prefix = "",int min = 0,int max = 127,
-  consts::waveform modWaveform = consts::SINE, bool independent = 0) 
-  : ParameterInt(parameterName, Group, defaultValue, prefix, min, max) {
+  consts::waveform modWaveform = consts::SINE, bool independent = 0) {
+    mParameterInt = new ParameterInt{parameterName, Group, defaultValue, prefix, min, max};
     mModWaveform = modWaveform; 
     mIndependent = independent;
     if(mIndependent)  // if true, this parameter will have its own modulator
       mModulator = new ecModulator{mModWaveform, 1, 1};
-
   }
+
   ~ecParameterInt() {
-    //delete mParam;
+    delete mParameterInt;
     if(mIndependent) delete mModulator;
   }
 
@@ -360,6 +362,10 @@ public:
       }
   }
 
+  float getParam() {
+    return mParameterInt->get();
+  }
+
   /**
    * Function that returns the ecParameterInt value transformed by AN EXTERNAL modulation source. 
    *  (ie independence set to false)  
@@ -375,15 +381,15 @@ public:
   int getModParam(float modSineValue, float modSquareValue, float modSawValue, float modNoiseValue, float modWidth) {
     switch(mModWaveform) {
       case consts::SINE:
-        return this->get() * ((modSineValue * modWidth) + 1);
+        return mParameterInt->get() * ((modSineValue * modWidth) + 1);
       case consts::SQUARE:
-        return this->get() * ((modSquareValue * modWidth) + 1);
+        return mParameterInt->get() * ((modSquareValue * modWidth) + 1);
       case consts::SAW:
-        return this->get() * ((modSawValue * modWidth) + 1);
+        return mParameterInt->get() * ((modSawValue * modWidth) + 1);
       case consts::NOISE:
-        return this->get() * ((modNoiseValue * modWidth) + 1);
+        return mParameterInt->get() * ((modNoiseValue * modWidth) + 1);
       default: 
-        return this->get() * ((modSineValue * modWidth) + 1);
+        return mParameterInt->get() * ((modSineValue * modWidth) + 1);
     }
   }
 
@@ -399,24 +405,25 @@ public:
       std::cerr << "PARAMETER must have independence set to true if you want to use this getModParam function\n";
       return -99999;
     }
-    return this->get() * (( (*mModulator)() * modWidth) + 1);
+    return mParameterInt->get() * (( (*mModulator)() * modWidth) + 1);
   }
 
 
   consts::waveform mModWaveform;
+  ParameterInt* mParameterInt = nullptr;
   ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
   bool mIndependent;
 };
 
 
 struct grainParameters{
-  ecParameter grainDurationMs;
+  ecParameter &grainDurationMs;
   float modGrainDurationWidth;
-  ecParameter envelope;
+  ecParameter &envelope;
   float modEnvelopeWidth;
-  ecParameter tapeHead;
+  ecParameter &tapeHead;
   float modTapeHeadWidth;
-  ecParameter playbackRate;
+  ecParameter &playbackRate;
   float modPlaybackRateWidth;
   util::Buffer<float>* source;
   float modSineVal;
@@ -447,8 +454,6 @@ public:
       sourceIndex = index();
       if(sourceIndex > source->size) 
         sourceIndex -= source->size;
-      //if(counter%12 == 0)
-        //std::cout << envVal << std::endl;
       io.out(0) += source->get(sourceIndex)  * envVal; 
       io.out(1) += source->get(sourceIndex)  * envVal;
       if (gEnv.done()) { 
@@ -478,12 +483,12 @@ public:
 
     if(list.modGrainDurationWidth > 0) 
       setDurationMs(list.grainDurationMs.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modGrainDurationWidth));
-    else setDurationMs(list.grainDurationMs.get());
+    else setDurationMs(list.grainDurationMs.getParam());
 
     if(list.modEnvelopeWidth > 0)
       gEnv.set(mDurationMs/1000, 
         list.envelope.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modEnvelopeWidth));
-    else gEnv.set(mDurationMs/1000, list.envelope.get());
+    else gEnv.set(mDurationMs/1000, list.envelope.getParam());
 
 
     this->source = list.source;
@@ -491,13 +496,13 @@ public:
     if(list.modTapeHeadWidth > 0)
       startSample = list.source->size * 
         (list.tapeHead.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modTapeHeadWidth)); 
-    else startSample = list.source->size * list.tapeHead.get();
+    else startSample = list.source->size * list.tapeHead.getParam();
 
     if(list.modPlaybackRateWidth > 0)
       endSample = startSample  + (mDurationMs/1000) * consts::SAMPLE_RATE 
         * abs(list.playbackRate.getModParam(list.modSineVal,list.modSquareVal,list.modSawVal,list.modNoiseVal,list.modPlaybackRateWidth));
-    else endSample = startSample  + (mDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate.get());
-    if(list.playbackRate.get() < 0) 
+    else endSample = startSample  + (mDurationMs/1000) * consts::SAMPLE_RATE * abs(list.playbackRate.getParam());
+    if(list.playbackRate.getParam() < 0) 
       index.set(endSample,startSample, mDurationMs/1000 ); 
     else 
       index.set(startSample,endSample, mDurationMs/1000); 

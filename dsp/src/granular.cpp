@@ -52,7 +52,7 @@ public:
   ecParameter envelope {"envelope", "", 0.5, "", 0, 1};
   ParameterMenu envelopeLFO {"     "}; 
   ecParameter modEnvelopeWidth {"modEnvelopeWidth", "", 0, "", 0, 1};
-  ecParameter tapeHead{"tapeHead", "", 0, "", 0, 1};
+  ecParameter tapeHead{"tapeHead", "", 0.5, "", 0, 1};
   ParameterMenu tapeHeadLFO {"      "}; 
   ecParameter modTapeHeadWidth {"modTapeHeadWidth", "", 0, "", 0, 1};
   ecParameter playbackRate {"playbackRate", "       ", 1, "", -2, 2};
@@ -128,28 +128,28 @@ public:
     volumeLFO.registerChangeCallback([&](int value) {
       volumeDB.setWaveformIndex(value);
     });
-    grainScheduler.configure(grainRate, 0.0, 0.0);
+    grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
-    modSineFrequency.registerChangeCallback([&](float value) {
+    modSineFrequency.mParameter->registerChangeCallback([&](float value) {
       modSine.setFrequency(value);
     });
 
-    modSinePhase.registerChangeCallback([&](float value) {
+    modSinePhase.mParameter->registerChangeCallback([&](float value) {
       modSine.setPhase(value);
     });
 
-    modSquareFrequency.registerChangeCallback([&](float value) {
+    modSquareFrequency.mParameter->registerChangeCallback([&](float value) {
       modSquare.setFrequency(value);
     });
 
-    modSquareWidth.registerChangeCallback([&](float value) {
+    modSquareWidth.mParameter->registerChangeCallback([&](float value) {
       modSquare.setWidth(value);
     });
 
-    modSawFrequency.registerChangeCallback([&](float value) {
+    modSawFrequency.mParameter->registerChangeCallback([&](float value) {
       modSaw.setFrequency(value);
     });
-    modSawWidth.registerChangeCallback([&](float value) {
+    modSawWidth.mParameter->registerChangeCallback([&](float value) {
       modSaw.setWidth(value);
     });
 
@@ -168,25 +168,25 @@ public:
       // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
       // NOTE grainRate noise isnt very perceptible 
-      if(modGrainRateWidth.get() > 0)  // modulate the grain rate
+      if(modGrainRateWidth.getParam() > 0)  // modulate the grain rate
         grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
-        modGrainRateWidth.get())); 
-      else grainScheduler.setFrequency(grainRate.get());
+        modGrainRateWidth.getParam())); 
+      else grainScheduler.setFrequency(grainRate.getParam());
 
-      if(modAsynchronicityWidth.get() > 0) //modulate the asynchronicity 
+      if(modAsynchronicityWidth.getParam() > 0) //modulate the asynchronicity 
         grainScheduler.setAsynchronicity(asynchronicity.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
-        modAsynchronicityWidth.get()));
-      else grainScheduler.setAsynchronicity(asynchronicity.get());
+        modAsynchronicityWidth.getParam()));
+      else grainScheduler.setAsynchronicity(asynchronicity.getParam());
 
-      if(modIntermittencyWidth.get() > 0)  //modulate the intermittency 
+      if(modIntermittencyWidth.getParam() > 0)  //modulate the intermittency 
         grainScheduler.setIntermittence(intermittency.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
-        modIntermittencyWidth.get())); 
-      else grainScheduler.setIntermittence(intermittency.get());
+        modIntermittencyWidth.getParam())); 
+      else grainScheduler.setIntermittence(intermittency.getParam());
 
-      if(modStreamsWidth.get() > 0) //Modulate the amount of streams playing.
+      if(modStreamsWidth.getParam() > 0) //Modulate the amount of streams playing.
         grainScheduler.setPolyStream(consts::synchronous, streams.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue,
-        modStreamsWidth.get()));
-      else grainScheduler.setPolyStream(consts::synchronous, streams.get());
+        modStreamsWidth.getParam()));
+      else grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
 
       // CONTROL RATE LOOP (Executes every 4th sample)
       if(controlRateCounter == 4) {
@@ -201,13 +201,13 @@ public:
         if (voice) {
           grainParameters list = {
             grainDurationMs,
-            modGrainDurationWidth.get(),
+            modGrainDurationWidth.getParam(),
             envelope,
-            modEnvelopeWidth.get(),
+            modEnvelopeWidth.getParam(),
             tapeHead,
-            modTapeHeadWidth.get(),
+            modTapeHeadWidth.getParam(),
             playbackRate,
-            modPlaybackRateWidth.get(),
+            modPlaybackRateWidth.getParam(),
             soundClip[0], 
             modSineValue,
             modSquareValue,
@@ -230,7 +230,7 @@ public:
     grainSynth.render(io);
 
     io.frame(0); 
-    float amp = powf(10,volumeDB.get()/20);
+    float amp = powf(10,volumeDB.getParam()/20);
     while (io()) {
       io.out(0) *=  amp ; // this manipulates the entire stream on the channel level 
       io.out(1) *=  amp ; //* mEnv() 
@@ -279,9 +279,9 @@ public:
     }
   }
 
-  float getAvgActiveVoices(float time, int currentActiveVoices) {
+  // float getAvgActiveVoices(float time, int currentActiveVoices) {
 
-  }
+  // }
 
 private:
   int mActiveVoices = 0;
