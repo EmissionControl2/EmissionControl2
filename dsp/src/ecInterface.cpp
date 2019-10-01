@@ -36,22 +36,19 @@ public:
 
   virtual void onCreate() override {
     ParameterGUI::initialize();
-
-    //Parameter temp = static_cast<Parameter>(granulator.grainRate);
-    //mPresets.registerParameter(temp);
     mPresets 
-      << granulator.grainRate << granulator.grainRateLFO << granulator.modGrainRateWidth
-      << granulator.asynchronicity << granulator.asyncLFO << granulator.modAsynchronicityWidth
-      << granulator.intermittency << granulator.intermittencyLFO << granulator.modIntermittencyWidth
-      << granulator.streams << granulator.streamsLFO << granulator.modStreamsWidth 
-      << granulator.grainDurationMs << granulator.grainDurationLFO << granulator.modGrainDurationWidth
-      << granulator.envelope << granulator.envelopeLFO << granulator.modEnvelopeWidth
-      << granulator.tapeHead << granulator.tapeHeadLFO << granulator.modTapeHeadWidth
-      << granulator.playbackRate << granulator.playbackRateLFO << granulator.modPlaybackRateWidth
-      << granulator.volumeDB << granulator.volumeLFO << granulator.modVolumeWidth
-      << granulator.modSineFrequency << granulator.modSinePhase
-      << granulator.modSquareFrequency << granulator.modSquareWidth
-      << granulator.modSawFrequency << granulator.modSawWidth;
+      << *granulator.grainRate.mParameter << granulator.grainRateLFO << *granulator.modGrainRateWidth.mParameter
+      << *granulator.asynchronicity.mParameter << granulator.asyncLFO << *granulator.modAsynchronicityWidth.mParameter
+      << *granulator.intermittency.mParameter << granulator.intermittencyLFO << *granulator.modIntermittencyWidth.mParameter
+      << *granulator.streams.mParameterInt << granulator.streamsLFO << *granulator.modStreamsWidth.mParameter
+      << *granulator.grainDurationMs.mParameter << granulator.grainDurationLFO << *granulator.modGrainDurationWidth.mParameter
+      << *granulator.envelope.mParameter << granulator.envelopeLFO << *granulator.modEnvelopeWidth.mParameter
+      << *granulator.tapeHead.mParameter << granulator.tapeHeadLFO << *granulator.modTapeHeadWidth.mParameter
+      << *granulator.playbackRate.mParameter << granulator.playbackRateLFO << *granulator.modPlaybackRateWidth.mParameter
+      << *granulator.volumeDB.mParameter << granulator.volumeLFO << *granulator.modVolumeWidth.mParameter
+      << *granulator.modSineFrequency.mParameter << *granulator.modSinePhase.mParameter
+      << *granulator.modSquareFrequency.mParameter << *granulator.modSquareWidth.mParameter
+      << *granulator.modSawFrequency.mParameter << *granulator.modSawWidth.mParameter;
 
     // Play example sequence. Comment this line to start from scratch
     //        synthManager.synthSequencer().playSequence("synth2.synthSequence");
@@ -85,24 +82,24 @@ public:
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("LFO Controls", 25, 25,500);
-    ParameterGUI::drawParameter(&granulator.modSineFrequency);
-    ParameterGUI::drawParameter(&granulator.modSinePhase);
-    ParameterGUI::drawParameter(&granulator.modSquareFrequency);
-    ParameterGUI::drawParameter(&granulator.modSquareWidth);
-    ParameterGUI::drawParameter(&granulator.modSawFrequency);
-    ParameterGUI::drawParameter(&granulator.modSawWidth);
+    ParameterGUI::drawParameter(granulator.modSineFrequency.mParameter);
+    ParameterGUI::drawParameter(granulator.modSinePhase.mParameter);
+    ParameterGUI::drawParameter(granulator.modSquareFrequency.mParameter);
+    ParameterGUI::drawParameter(granulator.modSquareWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modSawFrequency.mParameter);
+    ParameterGUI::drawParameter(granulator.modSawWidth.mParameter);
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Granulator Controls", 675, 250,500,-1);
-    ParameterGUI::drawParameter(&granulator.grainRate);
-    ParameterGUI::drawParameter(&granulator.asynchronicity);
-    ParameterGUI::drawParameter(&granulator.intermittency);
-    ParameterGUI::drawParameterInt(&granulator.streams,"");
-    ParameterGUI::drawParameter(&granulator.grainDurationMs);
-    ParameterGUI::drawParameter(&granulator.envelope);
-    ParameterGUI::drawParameter(&granulator.tapeHead);
-    ParameterGUI::drawParameter(&granulator.playbackRate);
-    ParameterGUI::drawParameter(&granulator.volumeDB);
+    ParameterGUI::drawParameter(granulator.grainRate.mParameter);
+    ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
+    ParameterGUI::drawParameter(granulator.intermittency.mParameter);
+    ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
+    ParameterGUI::drawParameter(granulator.grainDurationMs.mParameter);
+    ParameterGUI::drawParameter(granulator.envelope.mParameter);
+    ParameterGUI::drawParameter(granulator.tapeHead.mParameter);
+    ParameterGUI::drawParameter(granulator.playbackRate.mParameter);
+    ParameterGUI::drawParameter(granulator.volumeDB.mParameter);
     
     
     ParameterGUI::endPanel();
@@ -121,15 +118,15 @@ public:
 
     ParameterGUI::beginPanel("Modulation Width", 25, 250, 500, -1);
     
-    ParameterGUI::drawParameter(&granulator.modGrainRateWidth);
-    ParameterGUI::drawParameter(&granulator.modAsynchronicityWidth);
-    ParameterGUI::drawParameter(&granulator.modIntermittencyWidth);
-    ParameterGUI::drawParameter(&granulator.modStreamsWidth);
-    ParameterGUI::drawParameter(&granulator.modGrainDurationWidth);
-    ParameterGUI::drawParameter(&granulator.modEnvelopeWidth);
-    ParameterGUI::drawParameter(&granulator.modTapeHeadWidth);
-    ParameterGUI::drawParameter(&granulator.modPlaybackRateWidth);
-    ParameterGUI::drawParameter(&granulator.modVolumeWidth);
+    ParameterGUI::drawParameter(granulator.modGrainRateWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modAsynchronicityWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modIntermittencyWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modStreamsWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modGrainDurationWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modEnvelopeWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modTapeHeadWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modPlaybackRateWidth.mParameter);
+    ParameterGUI::drawParameter(granulator.modVolumeWidth.mParameter);
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Presets", 525, 25);
