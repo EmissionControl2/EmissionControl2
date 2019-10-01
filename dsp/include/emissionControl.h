@@ -638,4 +638,66 @@ private:
 };
 
 
+/** 
+ * Inspired by David Thall's Adaptive Flow Control Algorithm:
+ * 
+ * Class used to throttle grain rate and grain duration to avoid CPU spikes.
+ * 
+ */ 
+class flowControl {
+  //friend class Granular;
+public:
+
+  /**
+   * This class will be calculate if it is necessary to reduce grain rate/duration.
+   * Run at the audio rate (tentative).
+   * 
+   * param[in] The time used to take CPU average usage and activeVoices average. 
+   * param[in] The ratio used to reduce grain duration and rate.
+   * param[in] The current number of active voices.
+   * 
+   * Return true if necessary to throttle.
+   * 
+   */
+  bool throttle(float time, float ratio, int activeVoices) { 
+    if(mCounter < time * consts::SAMPLE_RATE) {
+      mCounter++;
+      mAvgActiveVoices += activeVoices;
+      return false;
+    } else {
+      mCounter++;
+      mAvgActiveVoices /= mCounter;
+      mCounter = 0; 
+    }
+
+    float adaptThresh;
+
+    if(getPeakCPU() > adaptThresh) {
+      return true;
+    } 
+    if(getAvgCPU() > adaptThresh) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  float getPeakCPU(){
+    return -11992.1;
+  }
+
+  float getAvgCPU(){
+    return -11992.1;
+  }
+
+private:
+  int mCounter;
+  float targetDuration;
+  float targetRate;
+  float mAvgActiveVoices;
+  float mPeakCPU;
+  float mAvgCPU;
+};
+
+
 #endif

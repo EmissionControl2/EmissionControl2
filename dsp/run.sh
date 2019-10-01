@@ -7,5 +7,6 @@
 
 result=$?
 if [ ${result} == 0 ]; then
-  ./bin/emissionControl
+   cd bin
+  ./emissionControl
 fi
