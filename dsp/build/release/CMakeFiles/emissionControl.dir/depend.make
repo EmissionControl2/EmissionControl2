@@ -26,7 +26,6 @@ CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/G
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/Gamma/Gamma/pstdint.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/Gamma/Gamma/scl.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/Gamma/Gamma/tbl.h
-CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/imgui/imconfig.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/imgui/imgui.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/rtmidi/RtMidi.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/include/al/core.hpp
@@ -101,6 +100,8 @@ CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/include/al
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/include/al/util/ui/al_PresetMIDI.hpp
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/include/al/util/ui/al_PresetSequencer.hpp
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/include/al/util/ui/al_SequenceRecorder.hpp
+CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/imgui/imconfig.h
+CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/allolib/external/imgui/imgui.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../external/libsamplerate/src/samplerate.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../include/const.h
 CMakeFiles/emissionControl.dir/src/main.cpp.o: ../../include/emissionControl.h

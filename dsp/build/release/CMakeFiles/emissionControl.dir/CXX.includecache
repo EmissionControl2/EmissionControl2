@@ -232,8 +232,6 @@ Gamma/Constants.h
 Gamma/Types.h
 ../../external/allolib/external/Gamma/Gamma/Gamma/Types.h
 
-../../external/allolib/external/imgui/imconfig.h
-
 ../../external/allolib/external/imgui/imgui.h
 imconfig.h
 ../../external/allolib/external/imgui/imconfig.h
@@ -1066,6 +1064,24 @@ al/util/ui/al_PresetSequencer.hpp
 al/util/ui/al_Preset.hpp
 ../../external/allolib/include/al/util/ui/al/util/ui/al_Preset.hpp
 
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imconfig.h
+
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imgui.h
+imconfig.h
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imconfig.h
+float.h
+-
+stdarg.h
+-
+stddef.h
+-
+string.h
+-
+assert.h
+-
+imgui_user.h
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imgui_user.h
+
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/src/samplerate.h
 
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h
@@ -1073,6 +1089,8 @@ al/util/ui/al_Preset.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/emissionControl.h
 Gamma/Oscillator.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/Gamma/Oscillator.h
+../external/allolib/external/imgui/imgui.h
+/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imgui.h
 const.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h
 iostream
@@ -1119,14 +1137,10 @@ al/core.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/core.hpp
 al/core/app/al_App.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/core/app/al_App.hpp
-al/core/graphics/al_Shapes.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/core/graphics/al_Shapes.hpp
 al/util/ui/al_Parameter.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/util/ui/al_Parameter.hpp
 al/util/scene/al_PolySynth.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/util/scene/al_PolySynth.hpp
-al/util/scene/al_SynthSequencer.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/util/scene/al_SynthSequencer.hpp
 al/util/ui/al_ControlGUI.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/al/util/ui/al_ControlGUI.hpp
 al/core/math/al_Random.hpp

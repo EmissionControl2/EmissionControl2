@@ -27,7 +27,6 @@ CMakeFiles/emissionControl.dir/src/main.cpp.o
  ../../external/allolib/external/Gamma/Gamma/pstdint.h
  ../../external/allolib/external/Gamma/Gamma/scl.h
  ../../external/allolib/external/Gamma/Gamma/tbl.h
- ../../external/allolib/external/imgui/imconfig.h
  ../../external/allolib/external/imgui/imgui.h
  ../../external/allolib/external/rtmidi/RtMidi.h
  ../../external/allolib/include/al/core.hpp
@@ -102,6 +101,8 @@ CMakeFiles/emissionControl.dir/src/main.cpp.o
  ../../external/allolib/include/al/util/ui/al_PresetMIDI.hpp
  ../../external/allolib/include/al/util/ui/al_PresetSequencer.hpp
  ../../external/allolib/include/al/util/ui/al_SequenceRecorder.hpp
+ /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imconfig.h
+ /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/imgui/imgui.h
  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/src/samplerate.h
  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h
  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/emissionControl.h

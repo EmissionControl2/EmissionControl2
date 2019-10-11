@@ -14,6 +14,7 @@ public:
   Granular granulator;
   PresetHandler mPresets{"presets"};
   float background = 0.21;
+  float dragTest = 1.0;
 
 
 
@@ -32,6 +33,9 @@ public:
     granulator.init();
     granulator.loadSoundFile("voicePop.wav");
     //granulator.verbose(true);
+
+    //experimenting with imgui widgets
+    
   }
 
   virtual void onCreate() override {
@@ -100,8 +104,10 @@ public:
     ParameterGUI::drawParameter(granulator.tapeHead.mParameter);
     ParameterGUI::drawParameter(granulator.playbackRate.mParameter);
     ParameterGUI::drawParameter(granulator.volumeDB.mParameter);
-    
-    
+    ParameterGUI::endPanel();
+
+    ParameterGUI::beginPanel("TestTEST MY RANGEE", 950,150,75,-1);
+    granulator.grainRate.drawRangeBox(true,0,200,0.1);
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Modulation Wave", 525, 250, 150, -1);
@@ -133,7 +139,9 @@ public:
     ParameterGUI::drawPresetHandler(&mPresets,12,4);
     ParameterGUI::endPanel();
 
+    
     ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );
+    ImGui::DragFloat("TESTs",&dragTest,1,1,1000);
     
     ParameterGUI::endDraw();
 

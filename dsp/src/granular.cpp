@@ -13,10 +13,8 @@
 
 #include "al/core.hpp"
 #include "al/core/app/al_App.hpp"
-#include "al/core/graphics/al_Shapes.hpp"
 #include "al/util/ui/al_Parameter.hpp"
 #include "al/util/scene/al_PolySynth.hpp"
-#include "al/util/scene/al_SynthSequencer.hpp"
 #include "al/util/ui/al_ControlGUI.hpp"
 #include "al/core/math/al_Random.hpp"
 
@@ -33,7 +31,7 @@ class Granular : public al::SynthVoice {
 public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
-  ecParameter grainRate {"grainRate", "", 1, "", 0.5, 100, consts::SINE, 0};
+  ecParameter grainRate {"grainRate", "", 1, "", 0.0000001, 100, consts::SINE, 0};
   ParameterMenu grainRateLFO {""}; 
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1};
   ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, consts::SINE};
