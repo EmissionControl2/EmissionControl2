@@ -2,6 +2,9 @@
 #define EMISSIONCONTROL_H 
 
 #include "Gamma/Oscillator.h"
+//#include "al/util/imgui/al_Imgui.hpp"
+//#include "al/core.hpp"
+#include "../external/allolib/external/imgui/imgui.h"
 #include "const.h"
 #include <iostream>
 
@@ -222,6 +225,27 @@ public:
   }
 
   /**
+   * Function that will draw a number box widget to set the bounds of the ecParameter slider. 
+   * To be run in an onDraw function.
+   * 
+   * param[in] If true, this function will set the manimum bound of the ecParameter. 
+   *           If false, this function will set the minimum bound of the ecParameter. 
+   * param[in] Sets the absolute minimum bound of the number box. 
+   * param[in] Sets the absolute maximum bound of the number box. 
+   * param[in] The speed in which dragging the box affects the number. 
+   */
+  void drawRangeBox(bool boundType, float absMin, float absMax, float speed = 1.0) {
+    if(boundType) {
+      ImGui::DragFloat("hi", &mMax, speed, absMin, absMax);
+      setMax();
+    } else {
+      ImGui::DragFloat("lo", &mMin, speed, absMin, absMax);
+      setMin();
+    }
+  }
+
+
+  /**
   * Function to set the waveform using an integer value rather than the mModWaveform type. 
   * param[in]
   *  0 = SINE
@@ -300,8 +324,20 @@ public:
   consts::waveform mModWaveform;
   ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
   Parameter* mParameter = nullptr;
+ 
+
 private: 
+  float mMax;
+  float mMin;
   bool mIndependent;
+
+  void setMin() {
+    mParameter->min(mMin);
+  }
+
+  void setMax() {
+    mParameter->max(mMax);
+  }
 };
 
 /** 
