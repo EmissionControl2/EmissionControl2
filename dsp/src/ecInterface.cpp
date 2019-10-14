@@ -106,8 +106,10 @@ public:
     ParameterGUI::drawParameter(granulator.volumeDB.mParameter);
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("TestTEST MY RANGEE", 950,150,75,-1);
-    granulator.grainRate.drawRangeBox(true,0,200,0.1);
+    //THIsWorks
+    ParameterGUI::beginPanel("TestTEST MY RANGEE", 950,150,100,-1);
+    granulator.grainRate.drawRangeBox(true,0.1);
+    granulator.grainRate.drawRangeBox(false,0.1);
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Modulation Wave", 525, 250, 150, -1);
