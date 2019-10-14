@@ -192,10 +192,16 @@ class ecModulator {
  */
 class ecParameter {
 public:
-  ecParameter(std::string parameterName, float defaultValue = 0, float min = -99999.0,float max = 99999.0, 
+  ecParameter(std::string parameterName, float defaultValue = 0, 
+  float min = -99999.0, float max = 99999.0, 
+  float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
   consts::waveform modWaveform = consts::SINE, bool independent = 0) {
     //mParam  = new Parameter{parameterName, defaultValue, min, max}; 
     mParameter = new Parameter{parameterName , defaultValue, min, max};
+    mMin = min;
+    mMax = max; 
+    mAbsMax = absMin;
+    mAbsMax = absMax;
     mModWaveform = modWaveform; 
     mIndependent = independent;
     if(mIndependent)  // if true, this parameter will have its own modulator
@@ -203,9 +209,14 @@ public:
   }
 
   ecParameter(std::string parameterName, std::string Group,float defaultValue = 0,
-	std::string prefix = "",float min = -99999.0,float max = 99999.0,
+	std::string prefix = "", float min = -99999.0,float max = 99999.0,
+  float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
   consts::waveform modWaveform = consts::SINE, bool independent = 0) {
     mParameter = new Parameter{parameterName, Group, defaultValue, prefix, min, max};
+    mMin = min;
+    mMax = max; 
+    mAbsMax = absMin;
+    mAbsMax = absMax;
     mModWaveform = modWaveform; 
     mIndependent = independent;
     if(mIndependent)  // if true, this parameter will have its own modulator
@@ -230,16 +241,20 @@ public:
    * 
    * param[in] If true, this function will set the manimum bound of the ecParameter. 
    *           If false, this function will set the minimum bound of the ecParameter. 
-   * param[in] Sets the absolute minimum bound of the number box. 
-   * param[in] Sets the absolute maximum bound of the number box. 
    * param[in] The speed in which dragging the box affects the number. 
    */
-  void drawRangeBox(bool boundType, float absMin, float absMax, float speed = 1.0) {
+  void drawRangeBox(bool boundType, float speed = 1.0) {
+    // if(mMax > mMin) 
+    //   mMax = mMin; //NOT sure if will include this or not
+    if(mMax > mAbsMax || mMax < mAbsMin)
+      mMax = mAbsMax;
+    if(mMin < mAbsMin || mMin > mAbsMax)
+      mMin = mAbsMin;
     if(boundType) {
-      ImGui::DragFloat("hi", &mMax, speed, absMin, absMax);
+      ImGui::DragFloat("hi", &mMax, speed, mAbsMin, mAbsMax);
       setMax();
     } else {
-      ImGui::DragFloat("lo", &mMin, speed, absMin, absMax);
+      ImGui::DragFloat("lo", &mMin, speed, mAbsMin, mAbsMax);
       setMin();
     }
   }
@@ -327,8 +342,7 @@ public:
  
 
 private: 
-  float mMax;
-  float mMin;
+  float mMax, mMin, mAbsMax, mAbsMin;
   bool mIndependent;
 
   void setMin() {
