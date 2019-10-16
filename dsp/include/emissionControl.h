@@ -204,6 +204,7 @@ public:
     mAbsMax = absMax;
     mModWaveform = modWaveform; 
     mIndependent = independent;
+    mName = parameterName;
     if(mIndependent)  // if true, this parameter will have its own modulator
       mModulator = new ecModulator{mModWaveform, 1, 1};
   }
@@ -219,6 +220,7 @@ public:
     mAbsMax = absMax;
     mModWaveform = modWaveform; 
     mIndependent = independent;
+    mName = parameterName;
     if(mIndependent)  // if true, this parameter will have its own modulator
       mModulator = new ecModulator{mModWaveform, 1, 1};
 
@@ -239,7 +241,7 @@ public:
    * Function that will draw a number box widget to set the bounds of the ecParameter slider. 
    * To be run in an onDraw function.
    * 
-   * param[in] If true, this function will set the manimum bound of the ecParameter. 
+   * param[in] If true, this function will set the maximum bound of the ecParameter. 
    *           If false, this function will set the minimum bound of the ecParameter. 
    * param[in] The speed in which dragging the box affects the number. 
    */
@@ -251,12 +253,27 @@ public:
     if(mMin < mAbsMin || mMin > mAbsMax)
       mMin = mAbsMin;
     if(boundType) {
-      ImGui::DragFloat("hi", &mMax, speed, mAbsMin, mAbsMax);
+      ImGui::DragFloat(("##" + mName + "hi").c_str(), &mMax, speed, mAbsMin, mAbsMax);
       setMax();
     } else {
-      ImGui::DragFloat("lo", &mMin, speed, mAbsMin, mAbsMax);
+      ImGui::DragFloat(("##" + mName + "lo").c_str(), &mMin, speed, mAbsMin, mAbsMax);
       setMin();
     }
+  }
+
+  void draw() {
+    //ImGuiCol_ x = ImGuiCol_TextDisabled;
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f); 
+    //ImGui::PushStyleColor(ImGuiCol_Text,149);;
+    drawRangeBox(false,0.1); ImGui::SameLine(); 
+    ImGui::PopItemWidth();
+    //ImGui::PopStyleColor();
+    ImGui::SameLine();
+    ParameterGUI::drawParameter(mParameter); 
+    ImGui::SameLine();
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+    drawRangeBox(false,0.1); 
+    ImGui::PopItemWidth();
   }
 
 
@@ -343,6 +360,7 @@ public:
 
 private: 
   float mMax, mMin, mAbsMax, mAbsMin;
+  std::string mName;
   bool mIndependent;
 
   void setMin() {
