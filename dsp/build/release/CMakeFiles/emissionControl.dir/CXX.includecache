@@ -12,24 +12,6 @@ al/core/io/al_AudioIOData.hpp
 al_SoundfileBufferedRecord.hpp
 ../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 
-../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBuffered.hpp
-mutex
--
-thread
--
-condition_variable
--
-memory
--
-atomic
--
-functional
--
-Gamma/SoundFile.h
-../../external/allolib/extensions/al_ext/soundfile/Gamma/SoundFile.h
-al/core/types/al_SingleRWRingBuffer.hpp
-../../external/allolib/extensions/al_ext/soundfile/al/core/types/al_SingleRWRingBuffer.hpp
-
 ../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 mutex
 -
@@ -1105,10 +1087,6 @@ cstdio
 -
 const.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h
-al_ext/soundfile/al_SoundfileBuffered.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/include/al_ext/soundfile/al_SoundfileBuffered.hpp
-al_ext/soundfile/al_SoundfileBufferedRecord.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/include/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 ../external/libsamplerate/src/samplerate.h
 /Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/src/samplerate.h
 
@@ -1119,10 +1097,6 @@ granular.cpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/granular.cpp
 math.h
 -
-al_ext/soundfile/al_SoundfileBuffered.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/src/al_ext/soundfile/al_SoundfileBuffered.hpp
-al_ext/soundfile/al_SoundfileBufferedRecord.hpp
-/Users/jkilgore/Projects/EmissionControlPort/dsp/src/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
 al_ext/soundfile/al_OutputRecorder.hpp
 /Users/jkilgore/Projects/EmissionControlPort/dsp/src/al_ext/soundfile/al_OutputRecorder.hpp
 al_ext/soundfile/al_SoundfileRecordGUI.hpp

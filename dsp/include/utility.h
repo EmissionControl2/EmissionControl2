@@ -5,8 +5,6 @@
 #include <cmath>
 #include <cstdio>
 #include "const.h"
-#include "al_ext/soundfile/al_SoundfileBuffered.hpp"
-#include "al_ext/soundfile/al_SoundfileBufferedRecord.hpp"
 #include "../external/libsamplerate/src/samplerate.h"
 
 namespace util {

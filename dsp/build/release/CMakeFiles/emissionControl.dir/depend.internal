@@ -3,7 +3,6 @@
 
 CMakeFiles/emissionControl.dir/src/main.cpp.o
  ../../external/allolib/extensions/al_ext/soundfile/al_OutputRecorder.hpp
- ../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBuffered.hpp
  ../../external/allolib/extensions/al_ext/soundfile/al_SoundfileBufferedRecord.hpp
  ../../external/allolib/extensions/al_ext/soundfile/al_SoundfileRecordGUI.hpp
  ../../external/allolib/external/Gamma/Gamma/Access.h

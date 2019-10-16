@@ -95,7 +95,8 @@ public:
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Granulator Controls", 675, 250,500,-1);
-    ParameterGUI::drawParameter(granulator.grainRate.mParameter);
+    //ParameterGUI::drawParameter(granulator.grainRate.mParameter); ImGui::SameLine();
+    granulator.grainRate.draw();
     ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
     ParameterGUI::drawParameter(granulator.intermittency.mParameter);
     ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
@@ -107,13 +108,13 @@ public:
     ParameterGUI::endPanel();
 
     //THIsWorks
-    ParameterGUI::beginPanel("TestTEST MY RANGEE", 950,150,100,-1);
-    granulator.grainRate.drawRangeBox(true,0.1);
-    granulator.grainRate.drawRangeBox(false,0.1);
+    ParameterGUI::beginPanel("TestTEST MY RANGEE", 950,150,200,75);
+      granulator.grainRate.drawRangeBox(false,0.1); 
+      granulator.grainRate.drawRangeBox(true,0.1); 
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Modulation Wave", 525, 250, 150, -1);
-    ParameterGUI::drawMenu(&granulator.grainRateLFO);
+    ParameterGUI::drawMenu(&granulator.grainRateLFO); 
     ParameterGUI::drawMenu(&granulator.asyncLFO);
     ParameterGUI::drawMenu(&granulator.intermittencyLFO);
     ParameterGUI::drawMenu(&granulator.streamsLFO);

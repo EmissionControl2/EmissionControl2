@@ -2,8 +2,6 @@
 #include <math.h>
 
 //AlloLib Includes 
-#include "al_ext/soundfile/al_SoundfileBuffered.hpp"
-#include "al_ext/soundfile/al_SoundfileBufferedRecord.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
 #include "al_ext/soundfile/al_SoundfileRecordGUI.hpp"
 
@@ -60,8 +58,6 @@ public:
   ecParameter volumeDB {"volumeDB", "", -6, "", -60, 6, -180, 24};
   ParameterMenu volumeLFO {"         "}; 
   ecParameter modVolumeWidth {"modVolumeWidth", "", 0, "", 0, 1, 0, 1};
-  
-
 
   ecParameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40, FLT_MIN, 1000};
   ecParameter modSinePhase {"modSinePhase", "", 0, "", 0, 1, 0, 1};
