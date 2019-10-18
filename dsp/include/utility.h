@@ -5,6 +5,8 @@
 #include <cmath>
 #include <cstdio>
 #include "const.h"
+#include "Gamma/Gamma.h"
+#include "Gamma/SoundFile.h"
 #include "../external/libsamplerate/src/samplerate.h"
 
 namespace util {
@@ -202,6 +204,7 @@ private:
   int currentS = 0, totalS = 1;
 };
 
+
 /**
  * A Buffer struct that has multi-sound file loading functionalities.
  */ 
@@ -261,6 +264,25 @@ struct Buffer {
   }
 };
 
+Buffer<float>* openAddressHash(Buffer<float>* buf) {
+  Buffer<float>* temp = new Buffer<float>();
+  temp->data = new float[buf->size * 3]{0};
+  temp->size = buf->size * 3;
+  // for(int i = 0; i < temp->size; i++)
+  //   temp->add(i,0);
+  for(int i = 0; i < buf->size; i++) {
+    int temp_key = static_cast<int>(buf->get(i) * 1000000);
+    int hash_i = temp_key % temp->size;
+    while(temp->get(hash_i) != 0) {
+      hash_i++;
+      hash_i %= temp->size;
+    }
+    temp->add(hash_i,buf->get(i));
+  }
+  std::cout << "here\n";
+  return temp;
+}
+
 /**
  * Load soundfile into a buffer in memory. 
  * 
@@ -314,6 +336,8 @@ void load(std::string fileName, std::vector<Buffer<float>*>& buf) { //only works
 
   soundFile.close();
 }
+
+
 
 
 
