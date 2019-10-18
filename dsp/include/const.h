@@ -12,6 +12,4 @@ enum waveform {SINE, SQUARE, SAW, NOISE};
 enum bound {MIN, MAX};
 
 }
-
-
 #endif

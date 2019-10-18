@@ -30,7 +30,7 @@ public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
   ecParameter grainRate {"grainRate", "", 1, "", 0.1, 100, 0, 500, consts::SINE, 0};
-  ParameterMenu grainRateLFO {""}; 
+  ParameterMenu grainRateLFO {"testMenu"}; 
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1, consts::SINE};
   ParameterMenu asyncLFO {" "}; // Using spaces so the ParameterGUI::drawMenu behaves correctly/
@@ -240,6 +240,24 @@ public:
 
   void loadSoundFile(std::string fileName) {
     util::load(fileName, soundClip);
+  }
+  //MIsccccc
+  void hashIt() {
+    int status;
+    util::Buffer<float> *linHash;
+    linHash = util::openAddressHash(soundClip[0]);
+    gam::SoundFile out;
+    //gam::Format form = AIFF;
+    out.path("/Users/jkilgore/Music/test/test.aiff");
+    out.channels(1);
+    out.frameRate(48000);
+    out.format(gam::SoundFile::AIFF);
+    out.encoding(gam::SoundFile::FLOAT);
+    status = out.openWrite();
+    if(!status) std::cout << "failed to open\n";
+    status = out.write(linHash->data, linHash->size);
+    std::cout << status << std::endl;
+    out.close();
   }
 
   void verbose(bool toggle) {

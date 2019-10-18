@@ -32,6 +32,7 @@ public:
 
     granulator.init();
     granulator.loadSoundFile("voicePop.wav");
+    //granulator.hashIt();//MIsccccc
     //granulator.verbose(true);
 
     //experimenting with imgui widgets
@@ -53,6 +54,8 @@ public:
       << *granulator.modSineFrequency.mParameter << *granulator.modSinePhase.mParameter
       << *granulator.modSquareFrequency.mParameter << *granulator.modSquareWidth.mParameter
       << *granulator.modSawFrequency.mParameter << *granulator.modSawWidth.mParameter;
+
+    granulator.grainRate.mParameter->displayName("");
 
     // Play example sequence. Comment this line to start from scratch
     //        synthManager.synthSequencer().playSequence("synth2.synthSequence");
@@ -97,7 +100,8 @@ public:
     ParameterGUI::beginPanel("Granulator Controls", 675, 250,500,-1);
     //ParameterGUI::drawParameter(granulator.grainRate.mParameter); ImGui::SameLine();
     granulator.grainRate.draw();
-    ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
+    granulator.asynchronicity.draw();
+    //ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
     ParameterGUI::drawParameter(granulator.intermittency.mParameter);
     ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
     ParameterGUI::drawParameter(granulator.grainDurationMs.mParameter);
