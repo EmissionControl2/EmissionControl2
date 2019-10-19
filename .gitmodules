@@ -4,3 +4,6 @@
 [submodule "dsp/external/libsamplerate"]
 	path = dsp/external/libsamplerate
 	url = https://github.com/erikd/libsamplerate.git
+[submodule "dsp/external/al_ext"]
+	path = dsp/external/al_ext
+	url = https://github.com/AlloSphere-Research-Group/al_ext

@@ -40,7 +40,7 @@ public:
   }
 
   virtual void onCreate() override {
-    ParameterGUI::initialize();
+    al::imguiInit(); 
     mPresets 
       << *granulator.grainRate.mParameter << granulator.grainRateLFO << *granulator.modGrainRateWidth.mParameter
       << *granulator.asynchronicity.mParameter << granulator.asyncLFO << *granulator.modAsynchronicityWidth.mParameter
@@ -71,7 +71,7 @@ public:
 
   virtual void onDraw(Graphics &g) override {
     g.clear(background);
-    ParameterGUI::beginDraw();
+    al::imguiBeginFrame();
     // synthManager.render(g);
 
     // // Draw GUI
@@ -150,8 +150,9 @@ public:
     ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );
     ImGui::DragFloat("TESTs",&dragTest,1,1,1000);
     
-    ParameterGUI::endDraw();
+    al::imguiEndFrame();
 
+    al::imguiDraw();
   }
 /*
   virtual void onKeyDown(Keyboard const& k) override {

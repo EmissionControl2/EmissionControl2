@@ -9,12 +9,12 @@
 #include "Gamma/Types.h"
 #include "Gamma/Envelope.h"
 
-#include "al/core.hpp"
-#include "al/core/app/al_App.hpp"
-#include "al/util/ui/al_Parameter.hpp"
-#include "al/util/scene/al_PolySynth.hpp"
-#include "al/util/ui/al_ControlGUI.hpp"
-#include "al/core/math/al_Random.hpp"
+#include "al/app/al_App.hpp"
+#include "al/ui/al_Parameter.hpp"
+#include "al/ui/al_PresetHandler.hpp"
+#include "al/scene/al_PolySynth.hpp"
+#include "al/ui/al_ControlGUI.hpp"
+#include "al/math/al_Random.hpp"
 
 
 //Local Includes
