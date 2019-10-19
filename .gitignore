@@ -1,2 +1,5 @@
 bin/
 build/
+.DS_STORE
+imgui.ini
+*.wav
