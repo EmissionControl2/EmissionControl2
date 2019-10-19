@@ -183,82 +183,43 @@ al/fast:
 .PHONY : al/fast
 
 #=============================================================================
-# Target rules for targets named decorrelationTests
+# Target rules for targets named serial
 
 # Build rule for target.
-decorrelationTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 decorrelationTests
-.PHONY : decorrelationTests
+serial: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial
+.PHONY : serial
 
 # fast build rule for target.
-decorrelationTests/fast:
-	$(MAKE) -f external/allolib/CMakeFiles/decorrelationTests.dir/build.make external/allolib/CMakeFiles/decorrelationTests.dir/build
-.PHONY : decorrelationTests/fast
+serial/fast:
+	$(MAKE) -f external/allolib/external/CMakeFiles/serial.dir/build.make external/allolib/external/CMakeFiles/serial.dir/build
+.PHONY : serial/fast
 
 #=============================================================================
-# Target rules for targets named convolverTests
+# Target rules for targets named oscpack
 
 # Build rule for target.
-convolverTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 convolverTests
-.PHONY : convolverTests
+oscpack: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 oscpack
+.PHONY : oscpack
 
 # fast build rule for target.
-convolverTests/fast:
-	$(MAKE) -f external/allolib/CMakeFiles/convolverTests.dir/build.make external/allolib/CMakeFiles/convolverTests.dir/build
-.PHONY : convolverTests/fast
+oscpack/fast:
+	$(MAKE) -f external/allolib/external/CMakeFiles/oscpack.dir/build.make external/allolib/external/CMakeFiles/oscpack.dir/build
+.PHONY : oscpack/fast
 
 #=============================================================================
-# Target rules for targets named al_spatialaudio
+# Target rules for targets named imgui
 
 # Build rule for target.
-al_spatialaudio: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 al_spatialaudio
-.PHONY : al_spatialaudio
+imgui: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 imgui
+.PHONY : imgui
 
 # fast build rule for target.
-al_spatialaudio/fast:
-	$(MAKE) -f external/allolib/CMakeFiles/al_spatialaudio.dir/build.make external/allolib/CMakeFiles/al_spatialaudio.dir/build
-.PHONY : al_spatialaudio/fast
-
-#=============================================================================
-# Target rules for targets named al_soundfile
-
-# Build rule for target.
-al_soundfile: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 al_soundfile
-.PHONY : al_soundfile
-
-# fast build rule for target.
-al_soundfile/fast:
-	$(MAKE) -f external/allolib/CMakeFiles/al_soundfile.dir/build.make external/allolib/CMakeFiles/al_soundfile.dir/build
-.PHONY : al_soundfile/fast
-
-#=============================================================================
-# Target rules for targets named soundfileBufferedRecordTests
-
-# Build rule for target.
-soundfileBufferedRecordTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 soundfileBufferedRecordTests
-.PHONY : soundfileBufferedRecordTests
-
-# fast build rule for target.
-soundfileBufferedRecordTests/fast:
-	$(MAKE) -f external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/build.make external/allolib/CMakeFiles/soundfileBufferedRecordTests.dir/build
-.PHONY : soundfileBufferedRecordTests/fast
-
-#=============================================================================
-# Target rules for targets named al_distributed
-
-# Build rule for target.
-al_distributed: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 al_distributed
-.PHONY : al_distributed
-
-# fast build rule for target.
-al_distributed/fast:
-	$(MAKE) -f external/allolib/CMakeFiles/al_distributed.dir/build.make external/allolib/CMakeFiles/al_distributed.dir/build
-.PHONY : al_distributed/fast
+imgui/fast:
+	$(MAKE) -f external/allolib/external/CMakeFiles/imgui.dir/build.make external/allolib/external/CMakeFiles/imgui.dir/build
+.PHONY : imgui/fast
 
 #=============================================================================
 # Target rules for targets named Gamma
@@ -270,21 +231,8 @@ Gamma: cmake_check_build_system
 
 # fast build rule for target.
 Gamma/fast:
-	$(MAKE) -f external/allolib/Gamma/CMakeFiles/Gamma.dir/build.make external/allolib/Gamma/CMakeFiles/Gamma.dir/build
+	$(MAKE) -f external/allolib/external/Gamma/CMakeFiles/Gamma.dir/build.make external/allolib/external/Gamma/CMakeFiles/Gamma.dir/build
 .PHONY : Gamma/fast
-
-#=============================================================================
-# Target rules for targets named uninstall
-
-# Build rule for target.
-uninstall: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 uninstall
-.PHONY : uninstall
-
-# fast build rule for target.
-uninstall/fast:
-	$(MAKE) -f external/allolib/glfw/CMakeFiles/uninstall.dir/build.make external/allolib/glfw/CMakeFiles/uninstall.dir/build
-.PHONY : uninstall/fast
 
 #=============================================================================
 # Target rules for targets named glfw
@@ -296,21 +244,99 @@ glfw: cmake_check_build_system
 
 # fast build rule for target.
 glfw/fast:
-	$(MAKE) -f external/allolib/glfw/src/CMakeFiles/glfw.dir/build.make external/allolib/glfw/src/CMakeFiles/glfw.dir/build
+	$(MAKE) -f external/allolib/external/glfw/src/CMakeFiles/glfw.dir/build.make external/allolib/external/glfw/src/CMakeFiles/glfw.dir/build
 .PHONY : glfw/fast
 
 #=============================================================================
-# Target rules for targets named glew_s
+# Target rules for targets named glad
 
 # Build rule for target.
-glew_s: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 glew_s
-.PHONY : glew_s
+glad: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 glad
+.PHONY : glad
 
 # fast build rule for target.
-glew_s/fast:
-	$(MAKE) -f external/allolib/glew/CMakeFiles/glew_s.dir/build.make external/allolib/glew/CMakeFiles/glew_s.dir/build
-.PHONY : glew_s/fast
+glad/fast:
+	$(MAKE) -f external/allolib/external/glad/CMakeFiles/glad.dir/build.make external/allolib/external/glad/CMakeFiles/glad.dir/build
+.PHONY : glad/fast
+
+#=============================================================================
+# Target rules for targets named rtaudio
+
+# Build rule for target.
+rtaudio: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rtaudio
+.PHONY : rtaudio
+
+# fast build rule for target.
+rtaudio/fast:
+	$(MAKE) -f external/allolib/external/rtaudio/CMakeFiles/rtaudio.dir/build.make external/allolib/external/rtaudio/CMakeFiles/rtaudio.dir/build
+.PHONY : rtaudio/fast
+
+#=============================================================================
+# Target rules for targets named RTAUDIO_UNINSTALL
+
+# Build rule for target.
+RTAUDIO_UNINSTALL: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 RTAUDIO_UNINSTALL
+.PHONY : RTAUDIO_UNINSTALL
+
+# fast build rule for target.
+RTAUDIO_UNINSTALL/fast:
+	$(MAKE) -f external/allolib/external/rtaudio/CMakeFiles/RTAUDIO_UNINSTALL.dir/build.make external/allolib/external/rtaudio/CMakeFiles/RTAUDIO_UNINSTALL.dir/build
+.PHONY : RTAUDIO_UNINSTALL/fast
+
+#=============================================================================
+# Target rules for targets named RTMIDI_UNINSTALL
+
+# Build rule for target.
+RTMIDI_UNINSTALL: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 RTMIDI_UNINSTALL
+.PHONY : RTMIDI_UNINSTALL
+
+# fast build rule for target.
+RTMIDI_UNINSTALL/fast:
+	$(MAKE) -f external/allolib/external/rtmidi/CMakeFiles/RTMIDI_UNINSTALL.dir/build.make external/allolib/external/rtmidi/CMakeFiles/RTMIDI_UNINSTALL.dir/build
+.PHONY : RTMIDI_UNINSTALL/fast
+
+#=============================================================================
+# Target rules for targets named rtmidi
+
+# Build rule for target.
+rtmidi: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rtmidi
+.PHONY : rtmidi
+
+# fast build rule for target.
+rtmidi/fast:
+	$(MAKE) -f external/allolib/external/rtmidi/CMakeFiles/rtmidi.dir/build.make external/allolib/external/rtmidi/CMakeFiles/rtmidi.dir/build
+.PHONY : rtmidi/fast
+
+#=============================================================================
+# Target rules for targets named al_ext
+
+# Build rule for target.
+al_ext: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 al_ext
+.PHONY : al_ext
+
+# fast build rule for target.
+al_ext/fast:
+	$(MAKE) -f external/al_ext/CMakeFiles/al_ext.dir/build.make external/al_ext/CMakeFiles/al_ext.dir/build
+.PHONY : al_ext/fast
+
+#=============================================================================
+# Target rules for targets named al_soundfile
+
+# Build rule for target.
+al_soundfile: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 al_soundfile
+.PHONY : al_soundfile
+
+# fast build rule for target.
+al_soundfile/fast:
+	$(MAKE) -f external/al_ext/soundfile/CMakeFiles/al_soundfile.dir/build.make external/al_ext/soundfile/CMakeFiles/al_soundfile.dir/build
+.PHONY : al_soundfile/fast
 
 src/main.o: src/main.cpp.o
 
@@ -353,16 +379,18 @@ help:
 	@echo "... install/local"
 	@echo "... emissionControl"
 	@echo "... al"
-	@echo "... decorrelationTests"
-	@echo "... convolverTests"
-	@echo "... al_spatialaudio"
-	@echo "... al_soundfile"
-	@echo "... soundfileBufferedRecordTests"
-	@echo "... al_distributed"
+	@echo "... serial"
+	@echo "... oscpack"
+	@echo "... imgui"
 	@echo "... Gamma"
-	@echo "... uninstall"
 	@echo "... glfw"
-	@echo "... glew_s"
+	@echo "... glad"
+	@echo "... rtaudio"
+	@echo "... RTAUDIO_UNINSTALL"
+	@echo "... RTMIDI_UNINSTALL"
+	@echo "... rtmidi"
+	@echo "... al_ext"
+	@echo "... al_soundfile"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

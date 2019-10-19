@@ -1,2 +1,3 @@
 # Hashes of file build rules.
-6f4735730574ace57d96e319f9cc2ccf external/allolib/glfw/CMakeFiles/uninstall
+842cd9aee6f2655b8e1ac00011d912e6 external/allolib/external/rtaudio/CMakeFiles/RTAUDIO_UNINSTALL
+cd97a7d89b79102b932a19c787f1ffbc external/allolib/external/rtmidi/CMakeFiles/RTMIDI_UNINSTALL

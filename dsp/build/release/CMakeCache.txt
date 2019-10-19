@@ -37,10 +37,13 @@ BUILD_EXAMPLES:BOOL=0
 //Build Framework bundle for OSX
 BUILD_FRAMEWORK:BOOL=OFF
 
-//Build shared libraries
+//Build as shared library
 BUILD_SHARED_LIBS:BOOL=OFF
 
-//utilities
+//Build the testing tree.
+BUILD_TESTING:BOOL=OFF
+
+//no utils for glew
 BUILD_UTILS:BOOL=OFF
 
 //Path to a program.
@@ -219,6 +222,21 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=granular
 
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION:STATIC=3.6.1
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_MAJOR:STATIC=3
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_MINOR:STATIC=6
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_PATCH:STATIC=1
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_TWEAK:STATIC=
+
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib
 
@@ -296,8 +314,23 @@ CORE_FOUNDATION_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Pl
 //Path to a library.
 CORE_VIDEO_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreVideo.framework
 
+//Build examples
+CPPTOML_BUILD_EXAMPLES:BOOL=OFF
+
+//Dot tool for use with Doxygen
+DOXYGEN_DOT_EXECUTABLE:FILEPATH=DOXYGEN_DOT_EXECUTABLE-NOTFOUND
+
+//Doxygen documentation generation tool (http://www.doxygen.org)
+DOXYGEN_EXECUTABLE:FILEPATH=DOXYGEN_EXECUTABLE-NOTFOUND
+
+//Use libc++ for the C++ standard library
+ENABLE_LIBCXX:BOOL=OFF
+
 //Path to a library.
 FFTW_LIBRARY:FILEPATH=/usr/local/lib/libfftw3f.dylib
+
+//Path to a library.
+FOUNDATION_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Foundation.framework
 
 //Set to TRUE if FreeImage is found, FALSE otherwise
 FREEIMAGE_FOUND:BOOL=FALSE
@@ -324,7 +357,7 @@ GLEW_OSMESA:BOOL=OFF
 GLEW_REGAL:BOOL=OFF
 
 //Value Computed by CMake
-GLFW_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/glfw
+GLFW_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/glfw
 
 //Build the GLFW documentation
 GLFW_BUILD_DOCS:BOOL=OFF
@@ -339,7 +372,7 @@ GLFW_BUILD_TESTS:BOOL=OFF
 GLFW_DOCUMENT_INTERNALS:BOOL=OFF
 
 //Generate installation target
-GLFW_INSTALL:BOOL=ON
+GLFW_INSTALL:BOOL=OFF
 
 //Value Computed by CMake
 GLFW_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw
@@ -347,17 +380,26 @@ GLFW_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external
 //Make glfwInit chdir to Contents/Resources
 GLFW_USE_CHDIR:BOOL=ON
 
+//Force high-performance GPU
+GLFW_USE_HYBRID_HPG:BOOL=OFF
+
 //Populate the menu bar on first window creation
 GLFW_USE_MENUBAR:BOOL=ON
+
+//Use OSMesa for offscreen context creation
+GLFW_USE_OSMESA:BOOL=OFF
 
 //Use the full resolution of Retina displays
 GLFW_USE_RETINA:BOOL=ON
 
-//Use the Vulkan loader statically linked into application
+//Use Wayland for window creation
+GLFW_USE_WAYLAND:BOOL=OFF
+
+//Assume the Vulkan loader is linked with the application
 GLFW_VULKAN_STATIC:BOOL=OFF
 
 //Value Computed by CMake
-Gamma_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/Gamma
+Gamma_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/Gamma
 
 //Dependencies for the target
 Gamma_LIB_DEPENDS:STATIC=general;/usr/local/lib/libsndfile.dylib;
@@ -367,6 +409,21 @@ Gamma_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/externa
 
 //Path to a library.
 IOKIT_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/IOKit.framework
+
+//Path to a library.
+IOKIT_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/IOKit.framework
+
+//Path to a library.
+JACK_LIB:FILEPATH=/usr/local/lib/libjack.dylib
+
+//Build the unit tests when BUILD_TESTING is enabled.
+JSON_BuildTests:BOOL=OFF
+
+//Install CMake targets during install step.
+JSON_Install:BOOL=ON
+
+//Use non-amalgamated version of the library.
+JSON_MultipleHeaders:BOOL=OFF
 
 //Takes an empty string or 64. Directory where lib will be installed:
 // lib or lib64
@@ -452,8 +509,72 @@ OPENVR_LIB:FILEPATH=OPENVR_LIB-NOTFOUND
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/local/bin/pkg-config
 
+//Build ALSA API
+RTAUDIO_API_ALSA:BOOL=OFF
+
+//Build ASIO API
+RTAUDIO_API_ASIO:BOOL=OFF
+
+//Build CoreAudio API
+RTAUDIO_API_CORE:BOOL=ON
+
+//Build DirectSound API
+RTAUDIO_API_DS:BOOL=OFF
+
+//Build JACK audio server API
+RTAUDIO_API_JACK:BOOL=ON
+
+//Build OSS4 API
+RTAUDIO_API_OSS:BOOL=OFF
+
+//Build PulseAudio API
+RTAUDIO_API_PULSE:BOOL=OFF
+
+//Build WASAPI API
+RTAUDIO_API_WASAPI:BOOL=OFF
+
+//Build PyRtAudio python bindings
+RTAUDIO_BUILD_PYTHON:BOOL=OFF
+
+RTAUDIO_BUILD_SHARED_LIBS:BOOL=OFF
+
+RTAUDIO_BUILD_STATIC_LIBS:BOOL=ON
+
+RTAUDIO_BUILD_TESTING:BOOL=OFF
+
+RTAUDIO_TARGETNAME_UNINSTALL:STRING=RTAUDIO_UNINSTALL
+
+//Compile with CoreMIDI support.
+RTMIDI_API_CORE:BOOL=ON
+
+//Compile with JACK support.
+RTMIDI_API_JACK:BOOL=ON
+
+//Compile with WINMM support.
+RTMIDI_API_WINMM:BOOL=OFF
+
+RTMIDI_BUILD_SHARED_LIBS:BOOL=OFF
+
+RTMIDI_BUILD_STATIC_LIBS:BOOL=ON
+
+RTMIDI_BUILD_TESTING:BOOL=OFF
+
+RTMIDI_TARGETNAME_UNINSTALL:STRING=RTMIDI_UNINSTALL
+
 //API For Linux when using RtAudio
 RtAudioLinuxAPI:STRING=alsa
+
+//Value Computed by CMake
+RtAudio_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/rtaudio
+
+//Value Computed by CMake
+RtAudio_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtaudio
+
+//Value Computed by CMake
+RtMidi_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/rtmidi
+
+//Value Computed by CMake
+RtMidi_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi
 
 //Path to a file.
 SNDFILE_INCLUDE_DIR:PATH=/usr/local/include
@@ -465,6 +586,9 @@ TRAVIS_BUILD:BOOL=OFF
 
 USE_MPI:BOOL=OFF
 
+//MSVC runtime library DLL
+USE_MSVC_RUNTIME_LIBRARY_DLL:BOOL=ON
+
 //Path to a file.
 VULKAN_INCLUDE_DIR:PATH=VULKAN_INCLUDE_DIR-NOTFOUND
 
@@ -472,10 +596,19 @@ VULKAN_INCLUDE_DIR:PATH=VULKAN_INCLUDE_DIR-NOTFOUND
 VULKAN_LIBRARY:FILEPATH=VULKAN_LIBRARY-NOTFOUND
 
 //Dependencies for the target
-al_LIB_DEPENDS:STATIC=general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreAudio.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreFoundation.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreMidi.framework;general;pthread;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreAudio.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreFoundation.framework;general;pthread;general;al_distributed;general;al_soundfile;general;/usr/local/lib/libsndfile.dylib;general;al_spatialaudio;general;/usr/local/lib/libfftw3f.dylib;general;Gamma;general;glfw;general;glew_s;
+al_LIB_DEPENDS:STATIC=general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework;general;Gamma;general;glfw;general;glad;general;rtaudio;general;rtmidi;general;imgui;general;oscpack;general;serial;
 
 //Dependencies for the target
 al_distributed_LIB_DEPENDS:STATIC=general;al;
+
+//Value Computed by CMake
+al_ext_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/al_ext
+
+//Value Computed by CMake
+al_ext_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/al_ext
+
+//Dependencies for the target
+al_openvr_LIB_DEPENDS:STATIC=general;al;
 
 //Dependencies for the target
 al_soundfile_LIB_DEPENDS:STATIC=general;al;general;/usr/local/lib/libsndfile.dylib;
@@ -490,10 +623,31 @@ allolib_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build
 allolib_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib
 
 //Value Computed by CMake
+cpptoml_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/cpptoml
+
+//Value Computed by CMake
+cpptoml_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/cpptoml
+
+//Value Computed by CMake
+dr_libs_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/dr_libs
+
+//Value Computed by CMake
+dr_libs_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/dr_libs
+
+//Value Computed by CMake
 emissionControl_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release
 
 //Value Computed by CMake
 emissionControl_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp
+
+//Value Computed by CMake
+glad_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/glad
+
+//Dependencies for the target
+glad_LIB_DEPENDS:STATIC=general;dl;
+
+//Value Computed by CMake
+glad_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glad
 
 //Value Computed by CMake
 glew_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/glew
@@ -509,6 +663,30 @@ granular_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/buil
 
 //Value Computed by CMake
 granular_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp
+
+//Value Computed by CMake
+nlohmann_json_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/json
+
+//Value Computed by CMake
+nlohmann_json_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/json
+
+//Path to a library.
+pkgcfg_lib_jack_jack:FILEPATH=/usr/local/lib/libjack.dylib
+
+//Dependencies for the target
+rtaudio_LIB_DEPENDS:STATIC=general;jack;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreAudio.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreFoundation.framework;
+
+//Dependencies for the target
+rtmidi_LIB_DEPENDS:STATIC=general;jack;general;-framework CoreServices;general;-framework CoreAudio;general;-framework CoreMIDI;general;-framework CoreFoundation;
+
+//Dependencies for the target
+serial_LIB_DEPENDS:STATIC=general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Foundation.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/IOKit.framework;
+
+//Value Computed by CMake
+stb_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/stb
+
+//Value Computed by CMake
+stb_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/stb
 
 
 ########################
@@ -667,7 +845,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=15
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -720,6 +898,10 @@ COMPILER_SUPPORTS_CXX11:INTERNAL=1
 CORE_FOUNDATION_FRAMEWORK-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CORE_VIDEO_FRAMEWORK
 CORE_VIDEO_FRAMEWORK-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: DOXYGEN_DOT_EXECUTABLE
+DOXYGEN_DOT_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: DOXYGEN_EXECUTABLE
+DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework][/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework][c ][v()]
 //Details about finding PkgConfig
@@ -734,8 +916,12 @@ FREEIMAGE_INCLUDE_PATH-ADVANCED:INTERNAL=1
 FREEIMAGE_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: FREETYPE_LIBRARY
 FREETYPE_LIBRARY-ADVANCED:INTERNAL=1
+//Have function gettimeofday
+HAVE_GETTIMEOFDAY:INTERNAL=1
 //ADVANCED property for variable: IOKIT_FRAMEWORK
 IOKIT_FRAMEWORK-ADVANCED:INTERNAL=1
+//Have symbol jack_port_rename
+JACK_HAS_PORT_RENAME:INTERNAL=
 //ADVANCED property for variable: MPIEXEC_EXECUTABLE
 MPIEXEC_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: MPIEXEC_MAX_NUMPROCS
@@ -784,6 +970,7 @@ MPI_RESULT_CXX_test_mpi_normal:INTERNAL=TRUE
 MPI_RESULT_C_test_mpi_normal:INTERNAL=TRUE
 //ADVANCED property for variable: MPI_mpi_LIBRARY
 MPI_mpi_LIBRARY-ADVANCED:INTERNAL=1
+NLOHMANN_JSON_CONFIG_INSTALL_DIR:INTERNAL=lib/cmake/nlohmann_json
 //ADVANCED property for variable: OPENGL_INCLUDE_DIR
 OPENGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gl_LIBRARY
@@ -828,6 +1015,70 @@ VULKAN_INCLUDE_DIR-ADVANCED:INTERNAL=1
 VULKAN_LIBRARY-ADVANCED:INTERNAL=1
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
+__pkg_config_arguments_jack:INTERNAL=jack
 __pkg_config_checked_ASSIMP_PKGCONF:INTERNAL=1
 __pkg_config_checked_SNDFILE_PKGCONF:INTERNAL=1
+__pkg_config_checked_jack:INTERNAL=1
+__pkg_config_checked_pulse:INTERNAL=1
+jack_CFLAGS:INTERNAL=-I/usr/local/include
+jack_CFLAGS_I:INTERNAL=
+jack_CFLAGS_OTHER:INTERNAL=
+jack_FOUND:INTERNAL=1
+jack_INCLUDEDIR:INTERNAL=/usr/local/include
+jack_INCLUDE_DIRS:INTERNAL=/usr/local/include
+jack_LDFLAGS:INTERNAL=-L/usr/local/lib;-ljack;-framework;CoreAudio;-framework;CoreServices;-framework;AudioUnit
+jack_LDFLAGS_OTHER:INTERNAL=-framework;CoreAudio;-framework;CoreServices;-framework;AudioUnit
+jack_LIBDIR:INTERNAL=/usr/local/lib
+jack_LIBRARIES:INTERNAL=jack
+jack_LIBRARY_DIRS:INTERNAL=/usr/local/lib
+jack_LIBS:INTERNAL=
+jack_LIBS_L:INTERNAL=
+jack_LIBS_OTHER:INTERNAL=
+jack_LIBS_PATHS:INTERNAL=
+jack_PREFIX:INTERNAL=/usr/local
+jack_STATIC_CFLAGS:INTERNAL=-I/usr/local/include
+jack_STATIC_CFLAGS_I:INTERNAL=
+jack_STATIC_CFLAGS_OTHER:INTERNAL=
+jack_STATIC_INCLUDE_DIRS:INTERNAL=/usr/local/include
+jack_STATIC_LDFLAGS:INTERNAL=-L/usr/local/lib;-ljack;-framework;CoreAudio;-framework;CoreServices;-framework;AudioUnit
+jack_STATIC_LDFLAGS_OTHER:INTERNAL=-framework;CoreAudio;-framework;CoreServices;-framework;AudioUnit
+jack_STATIC_LIBDIR:INTERNAL=
+jack_STATIC_LIBRARIES:INTERNAL=jack
+jack_STATIC_LIBRARY_DIRS:INTERNAL=/usr/local/lib
+jack_STATIC_LIBS:INTERNAL=
+jack_STATIC_LIBS_L:INTERNAL=
+jack_STATIC_LIBS_OTHER:INTERNAL=
+jack_STATIC_LIBS_PATHS:INTERNAL=
+jack_VERSION:INTERNAL=0.121.3
+jack_jack_INCLUDEDIR:INTERNAL=
+jack_jack_LIBDIR:INTERNAL=
+jack_jack_PREFIX:INTERNAL=
+jack_jack_VERSION:INTERNAL=
+//ADVANCED property for variable: pkgcfg_lib_jack_jack
+pkgcfg_lib_jack_jack-ADVANCED:INTERNAL=1
+prefix_result:INTERNAL=/usr/local/lib
+pulse_CFLAGS:INTERNAL=
+pulse_CFLAGS_I:INTERNAL=
+pulse_CFLAGS_OTHER:INTERNAL=
+pulse_FOUND:INTERNAL=
+pulse_INCLUDEDIR:INTERNAL=
+pulse_LIBDIR:INTERNAL=
+pulse_LIBS:INTERNAL=
+pulse_LIBS_L:INTERNAL=
+pulse_LIBS_OTHER:INTERNAL=
+pulse_LIBS_PATHS:INTERNAL=
+pulse_PREFIX:INTERNAL=
+pulse_STATIC_CFLAGS:INTERNAL=
+pulse_STATIC_CFLAGS_I:INTERNAL=
+pulse_STATIC_CFLAGS_OTHER:INTERNAL=
+pulse_STATIC_LIBDIR:INTERNAL=
+pulse_STATIC_LIBS:INTERNAL=
+pulse_STATIC_LIBS_L:INTERNAL=
+pulse_STATIC_LIBS_OTHER:INTERNAL=
+pulse_STATIC_LIBS_PATHS:INTERNAL=
+pulse_VERSION:INTERNAL=
+pulse_libpulse-simple_INCLUDEDIR:INTERNAL=
+pulse_libpulse-simple_LIBDIR:INTERNAL=
+pulse_libpulse-simple_PREFIX:INTERNAL=
+pulse_libpulse-simple_VERSION:INTERNAL=
 

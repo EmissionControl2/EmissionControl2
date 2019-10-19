@@ -5,19 +5,23 @@ set(APP_NAME emissionControl)
 
 project(${APP_NAME})
 
+link_directories("/usr/local/lib")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external")
 # path to main source file
-add_executable(${APP_NAME} src/main.cpp)
+add_executable(${APP_NAME} src/main.cpp) ### ADD CPP FILES BELOW 
 
 # add allolib as a subdirectory to the project
 add_subdirectory(external/allolib)
+add_subdirectory(external/al_ext)
 #add_subdirectory(external/libsamplerate)
 
+get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/allolib/external/Gamma/Gamma/)
 
 # link allolib to project
-target_link_libraries(${APP_NAME} PRIVATE  al)
+target_link_libraries(${APP_NAME} PRIVATE  al ${AL_EXT_LIBRARIES})
 target_link_libraries(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a)
 #target_link_libraries(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/emissionControl.cpp)
 

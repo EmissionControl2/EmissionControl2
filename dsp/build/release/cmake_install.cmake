@@ -35,6 +35,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/cmake_install.cmake")
+  include("/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/al_ext/cmake_install.cmake")
 
 endif()
 

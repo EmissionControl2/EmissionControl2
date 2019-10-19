@@ -79,20 +79,19 @@ emissionControl_EXTERNAL_OBJECTS =
 
 ../../bin/emissionControl: CMakeFiles/emissionControl.dir/src/main.cpp.o
 ../../bin/emissionControl: CMakeFiles/emissionControl.dir/build.make
-../../bin/emissionControl: external/allolib/lib/libal.a
+../../bin/emissionControl: external/allolib/libal.a
+../../bin/emissionControl: external/al_ext/soundfile/libal_soundfile.a
 ../../bin/emissionControl: ../../external/libsamplerate/build/libsamplerate.a
-../../bin/emissionControl: external/allolib/libal_distributed.a
-../../bin/emissionControl: external/allolib/libal_soundfile.a
-../../bin/emissionControl: external/allolib/libal_spatialaudio.a
-../../bin/emissionControl: external/allolib/lib/libal.a
-../../bin/emissionControl: external/allolib/libal_distributed.a
-../../bin/emissionControl: external/allolib/libal_soundfile.a
-../../bin/emissionControl: external/allolib/libal_spatialaudio.a
-../../bin/emissionControl: external/allolib/Gamma/lib/libGamma.a
-../../bin/emissionControl: external/allolib/glfw/src/libglfw3.a
-../../bin/emissionControl: external/allolib/glew/lib/libGLEW.a
+../../bin/emissionControl: external/allolib/libal.a
+../../bin/emissionControl: external/allolib/external/Gamma/lib/libGamma.a
+../../bin/emissionControl: external/allolib/external/glfw/src/libglfw3.a
+../../bin/emissionControl: external/allolib/external/glad/libglad.a
+../../bin/emissionControl: external/allolib/external/rtaudio/librtaudio.a
+../../bin/emissionControl: external/allolib/external/rtmidi/librtmidi.a
+../../bin/emissionControl: external/allolib/external/libimgui.a
+../../bin/emissionControl: external/allolib/external/liboscpack.a
+../../bin/emissionControl: external/allolib/external/libserial.a
 ../../bin/emissionControl: /usr/local/lib/libsndfile.dylib
-../../bin/emissionControl: /usr/local/lib/libfftw3f.dylib
 ../../bin/emissionControl: CMakeFiles/emissionControl.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../../bin/emissionControl"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/emissionControl.dir/link.txt --verbose=$(VERBOSE)
