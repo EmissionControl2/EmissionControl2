@@ -55,7 +55,18 @@ public:
       << *granulator.modSquareFrequency.mParameter << *granulator.modSquareWidth.mParameter
       << *granulator.modSawFrequency.mParameter << *granulator.modSawWidth.mParameter;
 
-    granulator.grainRate.mParameter->displayName("");
+    granulator.grainRate.mParameter->displayName("##grainRate");
+    granulator.asynchronicity.mParameter->displayName("##asynchronicity");
+    granulator.intermittency.mParameter->displayName("##intermittency");
+    granulator.streams.mParameterInt->displayName("##streams");
+    granulator.grainDurationMs.mParameter->displayName("##grainDurationMs");
+    granulator.envelope.mParameter->displayName("##envelope");
+    granulator.tapeHead.mParameter->displayName("##tapeHead");
+    granulator.playbackRate.mParameter->displayName("##playbackRate");
+    granulator.volumeDB.mParameter->displayName("##volumeDB"); 
+    // granulator.modSineFrequency.mParameter;
+    // granulator.modSquareFrequency.mParameter;
+    // granulator.modSawFrequency.mParameter;
 
     // Play example sequence. Comment this line to start from scratch
     //        synthManager.synthSequencer().playSequence("synth2.synthSequence");
@@ -89,26 +100,41 @@ public:
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("LFO Controls", 25, 25,500);
-    ParameterGUI::drawParameter(granulator.modSineFrequency.mParameter);
-    ParameterGUI::drawParameter(granulator.modSinePhase.mParameter);
-    ParameterGUI::drawParameter(granulator.modSquareFrequency.mParameter);
-    ParameterGUI::drawParameter(granulator.modSquareWidth.mParameter);
-    ParameterGUI::drawParameter(granulator.modSawFrequency.mParameter);
-    ParameterGUI::drawParameter(granulator.modSawWidth.mParameter);
+    // ParameterGUI::drawParameter(granulator.modSineFrequency.mParameter);
+    // ParameterGUI::drawParameter(granulator.modSinePhase.mParameter);
+    // ParameterGUI::drawParameter(granulator.modSquareFrequency.mParameter);
+    // ParameterGUI::drawParameter(granulator.modSquareWidth.mParameter);
+    // ParameterGUI::drawParameter(granulator.modSawFrequency.mParameter);
+    // ParameterGUI::drawParameter(granulator.modSawWidth.mParameter);
+
+    granulator.modSineFrequency.draw();
+    granulator.modSinePhase.draw();
+    granulator.modSquareFrequency.draw();
+    granulator.modSquareWidth.draw();
+    granulator.modSawFrequency.draw();
+    granulator.modSawWidth.draw();
+    
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Granulator Controls", 675, 250,500,-1);
-    //ParameterGUI::drawParameter(granulator.grainRate.mParameter); ImGui::SameLine();
     granulator.grainRate.draw();
     granulator.asynchronicity.draw();
-    //ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
-    ParameterGUI::drawParameter(granulator.intermittency.mParameter);
+    granulator.intermittency.draw();
     ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
-    ParameterGUI::drawParameter(granulator.grainDurationMs.mParameter);
-    ParameterGUI::drawParameter(granulator.envelope.mParameter);
-    ParameterGUI::drawParameter(granulator.tapeHead.mParameter);
-    ParameterGUI::drawParameter(granulator.playbackRate.mParameter);
-    ParameterGUI::drawParameter(granulator.volumeDB.mParameter);
+    granulator.grainDurationMs.draw();
+    granulator.envelope.draw();
+    granulator.tapeHead.draw();
+    granulator.playbackRate.draw();
+    granulator.volumeDB.draw();
+    //ParameterGUI::drawParameter(granulator.grainRate.mParameter); 
+    //ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
+    // ParameterGUI::drawParameter(granulator.intermittency.mParameter);
+    //ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
+    // ParameterGUI::drawParameter(granulator.grainDurationMs.mParameter);
+    // ParameterGUI::drawParameter(granulator.envelope.mParameter);
+    // ParameterGUI::drawParameter(granulator.tapeHead.mParameter);
+    // ParameterGUI::drawParameter(granulator.playbackRate.mParameter);
+    // ParameterGUI::drawParameter(granulator.volumeDB.mParameter);
     ParameterGUI::endPanel();
 
     //THIsWorks

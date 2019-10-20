@@ -272,7 +272,7 @@ public:
     ParameterGUI::drawParameter(mParameter); 
     ImGui::SameLine();
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
-    drawRangeBox(false,0.1); 
+    drawRangeBox(true,0.1); 
     ImGui::PopItemWidth();
   }
 

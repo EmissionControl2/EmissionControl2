@@ -30,7 +30,7 @@ public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
   ecParameter grainRate {"grainRate", "", 1, "", 0.1, 100, 0, 500, consts::SINE, 0};
-  ParameterMenu grainRateLFO {"testMenu"}; 
+  ParameterMenu grainRateLFO {""}; 
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1, consts::SINE};
   ParameterMenu asyncLFO {" "}; // Using spaces so the ParameterGUI::drawMenu behaves correctly/
