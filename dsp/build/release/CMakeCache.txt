@@ -23,19 +23,7 @@ AL_VERBOSE_OUTPUT:BOOL=OFF
 
 APPVEYOR_BUILD:BOOL=OFF
 
-//Path to a file.
-ASSIMP_INCLUDE_DIR:PATH=ASSIMP_INCLUDE_DIR-NOTFOUND
-
-//Path to a library.
-ASSIMP_LIBRARY:FILEPATH=ASSIMP_LIBRARY-NOTFOUND
-
-//Library for Audio IO
-AudioAPI:STRING=rtaudio
-
 BUILD_EXAMPLES:BOOL=0
-
-//Build Framework bundle for OSX
-BUILD_FRAMEWORK:BOOL=OFF
 
 //Build as shared library
 BUILD_SHARED_LIBS:BOOL=OFF
@@ -297,22 +285,10 @@ CMAKE_STRIP:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/Xcode
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Path to a library.
-COCOA_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Cocoa.framework
-
-//Path to a library.
 COREAUDIO_LIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreAudio.framework
 
 //Path to a library.
 COREFOUNDATION_LIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreFoundation.framework
-
-//Path to a library.
-COREMIDI_LIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreMidi.framework
-
-//Path to a library.
-CORE_FOUNDATION_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreFoundation.framework
-
-//Path to a library.
-CORE_VIDEO_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/CoreVideo.framework
 
 //Build examples
 CPPTOML_BUILD_EXAMPLES:BOOL=OFF
@@ -327,34 +303,7 @@ DOXYGEN_EXECUTABLE:FILEPATH=DOXYGEN_EXECUTABLE-NOTFOUND
 ENABLE_LIBCXX:BOOL=OFF
 
 //Path to a library.
-FFTW_LIBRARY:FILEPATH=/usr/local/lib/libfftw3f.dylib
-
-//Path to a library.
 FOUNDATION_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Foundation.framework
-
-//Set to TRUE if FreeImage is found, FALSE otherwise
-FREEIMAGE_FOUND:BOOL=FALSE
-
-//The directory where FreeImage.h resides
-FREEIMAGE_INCLUDE_PATH:PATH=FREEIMAGE_INCLUDE_PATH-NOTFOUND
-
-//The FreeImage library
-FREEIMAGE_LIBRARY:FILEPATH=FREEIMAGE_LIBRARY-NOTFOUND
-
-//Path to a file.
-FREETYPE_INCLUDE_DIR_freetype2:PATH=FREETYPE_INCLUDE_DIR_freetype2-NOTFOUND
-
-//Path to a file.
-FREETYPE_INCLUDE_DIR_ft2build:PATH=FREETYPE_INCLUDE_DIR_ft2build-NOTFOUND
-
-//Path to a library.
-FREETYPE_LIBRARY:FILEPATH=FREETYPE_LIBRARY-NOTFOUND
-
-//OSMesa mode
-GLEW_OSMESA:BOOL=OFF
-
-//Regal mode
-GLEW_REGAL:BOOL=OFF
 
 //Value Computed by CMake
 GLFW_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/glfw
@@ -368,29 +317,17 @@ GLFW_BUILD_EXAMPLES:BOOL=OFF
 //Build the GLFW test programs
 GLFW_BUILD_TESTS:BOOL=OFF
 
-//Include internals in documentation
-GLFW_DOCUMENT_INTERNALS:BOOL=OFF
-
 //Generate installation target
 GLFW_INSTALL:BOOL=OFF
 
 //Value Computed by CMake
 GLFW_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw
 
-//Make glfwInit chdir to Contents/Resources
-GLFW_USE_CHDIR:BOOL=ON
-
 //Force high-performance GPU
 GLFW_USE_HYBRID_HPG:BOOL=OFF
 
-//Populate the menu bar on first window creation
-GLFW_USE_MENUBAR:BOOL=ON
-
 //Use OSMesa for offscreen context creation
 GLFW_USE_OSMESA:BOOL=OFF
-
-//Use the full resolution of Retina displays
-GLFW_USE_RETINA:BOOL=ON
 
 //Use Wayland for window creation
 GLFW_USE_WAYLAND:BOOL=OFF
@@ -408,9 +345,6 @@ Gamma_LIB_DEPENDS:STATIC=general;/usr/local/lib/libsndfile.dylib;
 Gamma_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma
 
 //Path to a library.
-IOKIT_FRAMEWORK:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/IOKit.framework
-
-//Path to a library.
 IOKIT_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/IOKit.framework
 
 //Path to a library.
@@ -425,75 +359,6 @@ JSON_Install:BOOL=ON
 //Use non-amalgamated version of the library.
 JSON_MultipleHeaders:BOOL=OFF
 
-//Takes an empty string or 64. Directory where lib will be installed:
-// lib or lib64
-LIB_SUFFIX:STRING=
-
-//Executable for running MPI programs.
-MPIEXEC_EXECUTABLE:FILEPATH=/usr/local/bin/mpiexec
-
-//Maximum number of processors available to run MPI applications.
-MPIEXEC_MAX_NUMPROCS:STRING=4
-
-//Flag used by MPI to specify the number of processes for mpiexec;
-// the next option will be the number of processes.
-MPIEXEC_NUMPROC_FLAG:STRING=-n
-
-//These flags will be placed after all flags passed to mpiexec.
-MPIEXEC_POSTFLAGS:STRING=
-
-//These flags will be directly before the executable that is being
-// run by mpiexec.
-MPIEXEC_PREFLAGS:STRING=
-
-//MPI CXX additional include directories
-MPI_CXX_ADDITIONAL_INCLUDE_DIRS:STRING=
-
-//MPI compiler for CXX
-MPI_CXX_COMPILER:FILEPATH=/usr/local/bin/mpicxx
-
-//MPI CXX compilation definitions
-MPI_CXX_COMPILE_DEFINITIONS:STRING=
-
-//MPI CXX compilation options
-MPI_CXX_COMPILE_OPTIONS:STRING=
-
-//Path to a file.
-MPI_CXX_HEADER_DIR:PATH=/usr/local/Cellar/open-mpi/4.0.0/include
-
-//MPI CXX libraries to link against
-MPI_CXX_LIB_NAMES:STRING=mpi
-
-//MPI CXX linker flags
-MPI_CXX_LINK_FLAGS:STRING=-L/usr/local/Cellar/libevent/2.1.8/lib
-
-//If true, the MPI-2 C++ bindings are disabled using definitions.
-MPI_CXX_SKIP_MPICXX:BOOL=FALSE
-
-//MPI C additional include directories
-MPI_C_ADDITIONAL_INCLUDE_DIRS:STRING=
-
-//MPI compiler for C
-MPI_C_COMPILER:FILEPATH=/usr/local/bin/mpicc
-
-//MPI C compilation definitions
-MPI_C_COMPILE_DEFINITIONS:STRING=
-
-//MPI C compilation options
-MPI_C_COMPILE_OPTIONS:STRING=
-
-//Path to a file.
-MPI_C_HEADER_DIR:PATH=/usr/local/Cellar/open-mpi/4.0.0/include
-
-//MPI C libraries to link against
-MPI_C_LIB_NAMES:STRING=mpi
-
-//MPI C linker flags
-MPI_C_LINK_FLAGS:STRING=-L/usr/local/Cellar/libevent/2.1.8/lib
-
-//Location of the mpi library for MPI
-MPI_mpi_LIBRARY:FILEPATH=/usr/local/Cellar/open-mpi/4.0.0/lib/libmpi.dylib
-
 //Include for OpenGL on OS X
 OPENGL_INCLUDE_DIR:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework
 
@@ -502,9 +367,6 @@ OPENGL_gl_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/
 
 //GLU library for OS X (usually same as OpenGL library)
 OPENGL_glu_LIBRARY:FILEPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework
-
-//Path to a library.
-OPENVR_LIB:FILEPATH=OPENVR_LIB-NOTFOUND
 
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/local/bin/pkg-config
@@ -561,9 +423,6 @@ RTMIDI_BUILD_TESTING:BOOL=OFF
 
 RTMIDI_TARGETNAME_UNINSTALL:STRING=RTMIDI_UNINSTALL
 
-//API For Linux when using RtAudio
-RtAudioLinuxAPI:STRING=alsa
-
 //Value Computed by CMake
 RtAudio_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/external/rtaudio
 
@@ -584,22 +443,11 @@ SNDFILE_LIBRARY:FILEPATH=/usr/local/lib/libsndfile.dylib
 
 TRAVIS_BUILD:BOOL=OFF
 
-USE_MPI:BOOL=OFF
-
 //MSVC runtime library DLL
 USE_MSVC_RUNTIME_LIBRARY_DLL:BOOL=ON
 
-//Path to a file.
-VULKAN_INCLUDE_DIR:PATH=VULKAN_INCLUDE_DIR-NOTFOUND
-
-//Path to a library.
-VULKAN_LIBRARY:FILEPATH=VULKAN_LIBRARY-NOTFOUND
-
 //Dependencies for the target
 al_LIB_DEPENDS:STATIC=general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework;general;Gamma;general;glfw;general;glad;general;rtaudio;general;rtmidi;general;imgui;general;oscpack;general;serial;
-
-//Dependencies for the target
-al_distributed_LIB_DEPENDS:STATIC=general;al;
 
 //Value Computed by CMake
 al_ext_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/al_ext
@@ -608,13 +456,7 @@ al_ext_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/
 al_ext_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/al_ext
 
 //Dependencies for the target
-al_openvr_LIB_DEPENDS:STATIC=general;al;
-
-//Dependencies for the target
 al_soundfile_LIB_DEPENDS:STATIC=general;al;general;/usr/local/lib/libsndfile.dylib;
-
-//Dependencies for the target
-al_spatialaudio_LIB_DEPENDS:STATIC=general;al;general;/usr/local/lib/libfftw3f.dylib;
 
 //Value Computed by CMake
 allolib_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib
@@ -648,15 +490,6 @@ glad_LIB_DEPENDS:STATIC=general;dl;
 
 //Value Computed by CMake
 glad_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glad
-
-//Value Computed by CMake
-glew_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release/external/allolib/glew
-
-//Value Computed by CMake
-glew_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glew/build/cmake
-
-//Dependencies for the target
-glew_s_LIB_DEPENDS:STATIC=general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework;general;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework;
 
 //Value Computed by CMake
 granular_BINARY_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/build/release
@@ -693,32 +526,6 @@ stb_SOURCE_DIR:STATIC=/Users/jkilgore/Projects/EmissionControlPort/dsp/external/
 # INTERNAL cache entries
 ########################
 
-ASSIMP_PKGCONF_CFLAGS:INTERNAL=
-ASSIMP_PKGCONF_CFLAGS_I:INTERNAL=
-ASSIMP_PKGCONF_CFLAGS_OTHER:INTERNAL=
-ASSIMP_PKGCONF_FOUND:INTERNAL=
-ASSIMP_PKGCONF_INCLUDEDIR:INTERNAL=
-ASSIMP_PKGCONF_LIBDIR:INTERNAL=
-ASSIMP_PKGCONF_LIBS:INTERNAL=
-ASSIMP_PKGCONF_LIBS_L:INTERNAL=
-ASSIMP_PKGCONF_LIBS_OTHER:INTERNAL=
-ASSIMP_PKGCONF_LIBS_PATHS:INTERNAL=
-ASSIMP_PKGCONF_PREFIX:INTERNAL=
-ASSIMP_PKGCONF_STATIC_CFLAGS:INTERNAL=
-ASSIMP_PKGCONF_STATIC_CFLAGS_I:INTERNAL=
-ASSIMP_PKGCONF_STATIC_CFLAGS_OTHER:INTERNAL=
-ASSIMP_PKGCONF_STATIC_LIBDIR:INTERNAL=
-ASSIMP_PKGCONF_STATIC_LIBS:INTERNAL=
-ASSIMP_PKGCONF_STATIC_LIBS_L:INTERNAL=
-ASSIMP_PKGCONF_STATIC_LIBS_OTHER:INTERNAL=
-ASSIMP_PKGCONF_STATIC_LIBS_PATHS:INTERNAL=
-ASSIMP_PKGCONF_VERSION:INTERNAL=
-ASSIMP_PKGCONF_libassimp_INCLUDEDIR:INTERNAL=
-ASSIMP_PKGCONF_libassimp_LIBDIR:INTERNAL=
-ASSIMP_PKGCONF_libassimp_PREFIX:INTERNAL=
-ASSIMP_PKGCONF_libassimp_VERSION:INTERNAL=
-//STRINGS property for variable: AudioAPI
-AudioAPI-STRINGS:INTERNAL=rtaudio;portaudio;dummy
 //ADVANCED property for variable: CMAKE_AR
 CMAKE_AR-ADVANCED:INTERNAL=1
 //This is the directory where this CMakeCache.txt was created
@@ -888,16 +695,10 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Whether to issue warnings for deprecated functionality.
 CMAKE_WARN_DEPRECATED:INTERNAL=FALSE
-//ADVANCED property for variable: COCOA_FRAMEWORK
-COCOA_FRAMEWORK-ADVANCED:INTERNAL=1
 //Test COMPILER_SUPPORTS_CXX0X
 COMPILER_SUPPORTS_CXX0X:INTERNAL=1
 //Test COMPILER_SUPPORTS_CXX11
 COMPILER_SUPPORTS_CXX11:INTERNAL=1
-//ADVANCED property for variable: CORE_FOUNDATION_FRAMEWORK
-CORE_FOUNDATION_FRAMEWORK-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CORE_VIDEO_FRAMEWORK
-CORE_VIDEO_FRAMEWORK-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: DOXYGEN_DOT_EXECUTABLE
 DOXYGEN_DOT_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: DOXYGEN_EXECUTABLE
@@ -908,68 +709,10 @@ FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/Applications/Xcode.app/Contents/D
 FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/local/bin/pkg-config][v0.29.2()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
-//ADVANCED property for variable: FREEIMAGE_FOUND
-FREEIMAGE_FOUND-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FREEIMAGE_INCLUDE_PATH
-FREEIMAGE_INCLUDE_PATH-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FREEIMAGE_LIBRARY
-FREEIMAGE_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: FREETYPE_LIBRARY
-FREETYPE_LIBRARY-ADVANCED:INTERNAL=1
 //Have function gettimeofday
 HAVE_GETTIMEOFDAY:INTERNAL=1
-//ADVANCED property for variable: IOKIT_FRAMEWORK
-IOKIT_FRAMEWORK-ADVANCED:INTERNAL=1
 //Have symbol jack_port_rename
 JACK_HAS_PORT_RENAME:INTERNAL=
-//ADVANCED property for variable: MPIEXEC_EXECUTABLE
-MPIEXEC_EXECUTABLE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPIEXEC_MAX_NUMPROCS
-MPIEXEC_MAX_NUMPROCS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPIEXEC_NUMPROC_FLAG
-MPIEXEC_NUMPROC_FLAG-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPIEXEC_POSTFLAGS
-MPIEXEC_POSTFLAGS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPIEXEC_PREFLAGS
-MPIEXEC_PREFLAGS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_ADDITIONAL_INCLUDE_DIRS
-MPI_CXX_ADDITIONAL_INCLUDE_DIRS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_COMPILER
-MPI_CXX_COMPILER-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_COMPILE_DEFINITIONS
-MPI_CXX_COMPILE_DEFINITIONS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_COMPILE_OPTIONS
-MPI_CXX_COMPILE_OPTIONS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_HEADER_DIR
-MPI_CXX_HEADER_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_LIB_NAMES
-MPI_CXX_LIB_NAMES-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_LINK_FLAGS
-MPI_CXX_LINK_FLAGS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_CXX_SKIP_MPICXX
-MPI_CXX_SKIP_MPICXX-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_ADDITIONAL_INCLUDE_DIRS
-MPI_C_ADDITIONAL_INCLUDE_DIRS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_COMPILER
-MPI_C_COMPILER-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_COMPILE_DEFINITIONS
-MPI_C_COMPILE_DEFINITIONS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_COMPILE_OPTIONS
-MPI_C_COMPILE_OPTIONS-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_HEADER_DIR
-MPI_C_HEADER_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_LIB_NAMES
-MPI_C_LIB_NAMES-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: MPI_C_LINK_FLAGS
-MPI_C_LINK_FLAGS-ADVANCED:INTERNAL=1
-//Result of TRY_COMPILE
-MPI_RESULT_CXX_test_mpi_MPICXX:INTERNAL=TRUE
-//Result of TRY_COMPILE
-MPI_RESULT_CXX_test_mpi_normal:INTERNAL=TRUE
-//Result of TRY_COMPILE
-MPI_RESULT_C_test_mpi_normal:INTERNAL=TRUE
-//ADVANCED property for variable: MPI_mpi_LIBRARY
-MPI_mpi_LIBRARY-ADVANCED:INTERNAL=1
 NLOHMANN_JSON_CONFIG_INSTALL_DIR:INTERNAL=lib/cmake/nlohmann_json
 //ADVANCED property for variable: OPENGL_INCLUDE_DIR
 OPENGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
@@ -979,8 +722,6 @@ OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
 OPENGL_glu_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
-//STRINGS property for variable: RtAudioLinuxAPI
-RtAudioLinuxAPI-STRINGS:INTERNAL=alsa;pulse;jack;alsapulse
 //ADVANCED property for variable: SNDFILE_INCLUDE_DIR
 SNDFILE_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: SNDFILE_LIBRARY
@@ -1009,14 +750,9 @@ SNDFILE_PKGCONF_libsndfile_INCLUDEDIR:INTERNAL=
 SNDFILE_PKGCONF_libsndfile_LIBDIR:INTERNAL=
 SNDFILE_PKGCONF_libsndfile_PREFIX:INTERNAL=
 SNDFILE_PKGCONF_libsndfile_VERSION:INTERNAL=
-//ADVANCED property for variable: VULKAN_INCLUDE_DIR
-VULKAN_INCLUDE_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: VULKAN_LIBRARY
-VULKAN_LIBRARY-ADVANCED:INTERNAL=1
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
 __pkg_config_arguments_jack:INTERNAL=jack
-__pkg_config_checked_ASSIMP_PKGCONF:INTERNAL=1
 __pkg_config_checked_SNDFILE_PKGCONF:INTERNAL=1
 __pkg_config_checked_jack:INTERNAL=1
 __pkg_config_checked_pulse:INTERNAL=1

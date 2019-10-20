@@ -1,2 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libal_spatialaudio.a  CMakeFiles/al_spatialaudio.dir/extensions/al_ext/spatialaudio/src/al_Convolver.cpp.o CMakeFiles/al_spatialaudio.dir/extensions/al_ext/spatialaudio/src/al_Decorrelation.cpp.o CMakeFiles/al_spatialaudio.dir/extensions/al_ext/spatialaudio/zita-convolver-4.0.3/source/zita-convolver.cc.o
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libal_spatialaudio.a
