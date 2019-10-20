@@ -7,3 +7,6 @@
 [submodule "dsp/external/al_ext"]
 	path = dsp/external/al_ext
 	url = https://github.com/AlloSphere-Research-Group/al_ext
+[submodule "al_ext"]
+	path = al_ext
+	url = https://github.com/AlloSphere-Research-Group/al_ext
