@@ -3,3 +3,4 @@ build/
 .DS_STORE
 imgui.ini
 *.wav
+*.o
