@@ -4,3 +4,4 @@ build/
 imgui.ini
 *.wav
 *.o
+.vscode/
