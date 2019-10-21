@@ -64,6 +64,15 @@ public:
     granulator.tapeHead.mParameter->displayName("##tapeHead");
     granulator.playbackRate.mParameter->displayName("##playbackRate");
     granulator.volumeDB.mParameter->displayName("##volumeDB"); 
+    granulator.grainRateLFO.displayName("##grainRateLFO");
+    granulator.asyncLFO.displayName("##asyncLFO");
+    granulator.intermittencyLFO.displayName("##intermittencyLFO");
+    granulator.streamsLFO.displayName("##streamsLFO");
+    granulator.grainDurationLFO.displayName("##grainDurationMs");
+    granulator.envelopeLFO.displayName("##envelopeLFO");
+    granulator.tapeHeadLFO.displayName("##tapeHeadLFO");
+    granulator.playbackRateLFO.displayName("##playbackRate");
+    granulator.volumeLFO.displayName("##volumeLFO");
     // granulator.modSineFrequency.mParameter;
     // granulator.modSquareFrequency.mParameter;
     // granulator.modSawFrequency.mParameter;

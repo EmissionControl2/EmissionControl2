@@ -30,33 +30,33 @@ public:
 
   voiceScheduler grainScheduler{consts::SAMPLE_RATE};
   ecParameter grainRate {"grainRate", "", 1, "", 0.1, 100, 0, 500, consts::SINE, 0};
-  ParameterMenu grainRateLFO {""}; 
+  ParameterMenu grainRateLFO {"grainRateLFO"}; 
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter asynchronicity {"asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1, consts::SINE};
-  ParameterMenu asyncLFO {" "}; // Using spaces so the ParameterGUI::drawMenu behaves correctly/
+  ParameterMenu asyncLFO {"asyncLFO"}; // Using spaces so the ParameterGUI::drawMenu behaves correctly/
   ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter intermittency {"intermittency", "", 0,"", 0, 1, 0, 1};
-  ParameterMenu intermittencyLFO {"  "}; 
+  ParameterMenu intermittencyLFO {"intermittencyLFO"}; 
   ecParameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1, 0, 1};
   ecParameterInt streams {"streams", "", 1,"", 1, 12};
-  ParameterMenu streamsLFO {"   "}; 
+  ParameterMenu streamsLFO {"streamsLFO"}; 
   ecParameter modStreamsWidth {"modStreamsWidth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter grainDurationMs {"grainDurationMs", "", 25, "", 0.01, 1000, 0.0000001, 10000};
-  ParameterMenu grainDurationLFO {"    "}; 
+  ParameterMenu grainDurationLFO {"grainDurationLFO"}; 
   ecParameter modGrainDurationWidth {"modGrainDurationWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter envelope {"envelope", "", 0.5, "", 0, 1, 0, 1};
-  ParameterMenu envelopeLFO {"     "}; 
+  ParameterMenu envelopeLFO {"envelopeLFO"}; 
   ecParameter modEnvelopeWidth {"modEnvelopeWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter tapeHead{"tapeHead", "", 0.5, "", 0, 1, 0, 1};
-  ParameterMenu tapeHeadLFO {"      "}; 
+  ParameterMenu tapeHeadLFO {"tapeHeadLFO"}; 
   ecParameter modTapeHeadWidth {"modTapeHeadWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter playbackRate {"playbackRate", "       ", 1, "", -2, 2, -20, 20};
-  ParameterMenu playbackRateLFO {"        "}; 
+  ParameterMenu playbackRateLFO {"playbackRateLFO"}; 
   ecParameter modPlaybackRateWidth {"modPlaybackRateWidth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter volumeDB {"volumeDB", "", -6, "", -60, 6, -180, 24};
-  ParameterMenu volumeLFO {"         "}; 
+  ParameterMenu volumeLFO {"volumeLFO"}; 
   ecParameter modVolumeWidth {"modVolumeWidth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40, FLT_MIN, 1000};
