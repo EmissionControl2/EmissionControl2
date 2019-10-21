@@ -3,7 +3,6 @@
 
 #include "Gamma/Oscillator.h"
 //#include "al/util/imgui/al_Imgui.hpp"
-//#include "al/core.hpp"
 #include "../external/allolib/external/imgui/imgui.h"
 #include "const.h"
 #include <iostream>
@@ -197,7 +196,9 @@ public:
   float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
   consts::waveform modWaveform = consts::SINE, bool independent = 0) {
     //mParam  = new Parameter{parameterName, defaultValue, min, max}; 
-    mParameter = new Parameter{parameterName , defaultValue, min, max};
+    mParameter = new Parameter{parameterName , defaultValue, absMin, absMax};
+    mLowRange = new Parameter{(parameterName + "Low").c_str(), min, absMin, absMax};
+    mHighRange = new Parameter{(parameterName + "High").c_str(), max, absMin, absMax};
     mMin = min;
     mMax = max; 
     mAbsMax = absMin;
@@ -213,7 +214,9 @@ public:
 	std::string prefix = "", float min = -99999.0,float max = 99999.0,
   float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
   consts::waveform modWaveform = consts::SINE, bool independent = 0) {
-    mParameter = new Parameter{parameterName, Group, defaultValue, prefix, min, max};
+    mParameter = new Parameter{parameterName, Group, defaultValue, prefix, absMin, absMax};
+    mLowRange = new Parameter{(parameterName + "Low").c_str(), Group, min, prefix, absMin, absMax};
+    mHighRange = new Parameter{(parameterName + "High").c_str(), Group, max, prefix, absMin, absMax};
     mMin = min;
     mMax = max; 
     mAbsMax = absMin;
@@ -261,6 +264,7 @@ public:
     }
   }
 
+  //NEXT UP, draw dragFloats here, but using the members of type parameter instead.
   void draw() {
     //ImGuiCol_ x = ImGuiCol_TextDisabled;
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f); 
@@ -356,6 +360,8 @@ public:
   consts::waveform mModWaveform;
   ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
   Parameter* mParameter = nullptr;
+  Parameter* mLowRange = nullptr;  // Parameter designed to bound low mParameter. 
+  Parameter* mHighRange = nullptr; // Parameter designed to bound high mParameter. 
  
 
 private: 
