@@ -6,11 +6,6 @@ class ecInterface : public App
 public:
 
 
-  // GUI manager for OscEnv voices
-  // The name provided determines the name of the directory
-  // where the presets and sequences are stored
-  //SynthGUIManager<Granular> synthManager {"bin/Granulator"};
-  ControlGUI test;
   Granular granulator;
   PresetHandler mPresets{"presets"};
   float background = 0.21;
@@ -22,16 +17,13 @@ public:
 
   virtual void onInit( ) override {
 
-//    mRecorder.start("output.wav", audioIO().framesPerSecond(), 2);
-    // Append recorder to audio IO object. This will run the recorder
-    // after running the onSound() function below
     audioIO().append(mRecorder);
-    //synthManager.setCurrentTab(2); // Run constant synth note.
 
     //synthManager.triggerOn();
 
     granulator.init();
     granulator.loadSoundFile("voicePop.wav");
+    //granulator.loadSoundFile("Halo 3 Plasma Pistol.wav");
     //granulator.hashIt();//MIsccccc
     //granulator.verbose(true);
 
@@ -42,40 +34,85 @@ public:
   virtual void onCreate() override {
     al::imguiInit(); 
     mPresets 
-      << *granulator.grainRate.mParameter << granulator.grainRateLFO << *granulator.modGrainRateWidth.mParameter
-      << *granulator.asynchronicity.mParameter << granulator.asyncLFO << *granulator.modAsynchronicityWidth.mParameter
-      << *granulator.intermittency.mParameter << granulator.intermittencyLFO << *granulator.modIntermittencyWidth.mParameter
-      << *granulator.streams.mParameterInt << granulator.streamsLFO << *granulator.modStreamsWidth.mParameter
-      << *granulator.grainDurationMs.mParameter << granulator.grainDurationLFO << *granulator.modGrainDurationWidth.mParameter
-      << *granulator.envelope.mParameter << granulator.envelopeLFO << *granulator.modEnvelopeWidth.mParameter
-      << *granulator.tapeHead.mParameter << granulator.tapeHeadLFO << *granulator.modTapeHeadWidth.mParameter
-      << *granulator.playbackRate.mParameter << granulator.playbackRateLFO << *granulator.modPlaybackRateWidth.mParameter
-      << *granulator.volumeDB.mParameter << granulator.volumeLFO << *granulator.modVolumeWidth.mParameter
-      << *granulator.modSineFrequency.mParameter << *granulator.modSinePhase.mParameter
-      << *granulator.modSquareFrequency.mParameter << *granulator.modSquareWidth.mParameter
-      << *granulator.modSawFrequency.mParameter << *granulator.modSawWidth.mParameter;
+      << *granulator.grainRate.mParameter << *granulator.grainRate.mLowRange << *granulator.grainRate.mHighRange
+      << granulator.grainRateLFO << *granulator.modGrainRateWidth.mParameter
+      << *granulator.asynchronicity.mParameter << *granulator.asynchronicity.mLowRange << *granulator.asynchronicity.mHighRange
+      << granulator.asyncLFO << *granulator.modAsynchronicityWidth.mParameter
+      << *granulator.intermittency.mParameter << *granulator.intermittency.mLowRange << *granulator.intermittency.mHighRange
+      << granulator.intermittencyLFO << *granulator.modIntermittencyWidth.mParameter
+      << *granulator.streams.mParameterInt 
+      << granulator.streamsLFO << *granulator.modStreamsWidth.mParameter
+      << *granulator.grainDurationMs.mParameter << *granulator.grainDurationMs.mLowRange << *granulator.grainDurationMs.mHighRange
+      << granulator.grainDurationLFO << *granulator.modGrainDurationWidth.mParameter
+      << *granulator.envelope.mParameter << *granulator.envelope.mLowRange << *granulator.envelope.mHighRange
+      << granulator.envelopeLFO << *granulator.modEnvelopeWidth.mParameter
+      << *granulator.tapeHead.mParameter << *granulator.tapeHead.mLowRange << *granulator.tapeHead.mHighRange
+      << granulator.tapeHeadLFO << *granulator.modTapeHeadWidth.mParameter
+      << *granulator.playbackRate.mParameter << *granulator.playbackRate.mLowRange << *granulator.playbackRate.mHighRange
+      << granulator.playbackRateLFO << *granulator.modPlaybackRateWidth.mParameter
+      << *granulator.volumeDB.mParameter << *granulator.volumeDB.mLowRange << *granulator.volumeDB.mHighRange
+      << granulator.volumeLFO << *granulator.modVolumeWidth.mParameter
+      << *granulator.modSineFrequency.mParameter << *granulator.modSineFrequency.mLowRange 
+      << *granulator.modSineFrequency.mHighRange
+      << *granulator.modSinePhase.mParameter << *granulator.modSinePhase.mLowRange << *granulator.modSinePhase.mHighRange
+      << *granulator.modSquareFrequency.mParameter << *granulator.modSquareFrequency.mLowRange 
+      << *granulator.modSquareFrequency.mHighRange
+      << *granulator.modSquareWidth.mParameter << *granulator.modSquareWidth.mLowRange << *granulator.modSquareWidth.mHighRange
+      << *granulator.modSawFrequency.mParameter << *granulator.modSawFrequency.mLowRange << *granulator.modSawFrequency.mHighRange
+      << *granulator.modSawWidth.mParameter << *granulator.modSawWidth.mLowRange << *granulator.modSawWidth.mHighRange;
 
     granulator.grainRate.mParameter->displayName("##grainRate");
-    granulator.asynchronicity.mParameter->displayName("##asynchronicity");
-    granulator.intermittency.mParameter->displayName("##intermittency");
-    granulator.streams.mParameterInt->displayName("##streams");
-    granulator.grainDurationMs.mParameter->displayName("##grainDurationMs");
-    granulator.envelope.mParameter->displayName("##envelope");
-    granulator.tapeHead.mParameter->displayName("##tapeHead");
-    granulator.playbackRate.mParameter->displayName("##playbackRate");
-    granulator.volumeDB.mParameter->displayName("##volumeDB"); 
+    granulator.grainRate.mLowRange->displayName("##grainRateLow");
+    granulator.grainRate.mHighRange->displayName("##grainRateHigh");
     granulator.grainRateLFO.displayName("##grainRateLFO");
+    granulator.asynchronicity.mParameter->displayName("##asynchronicity");
+    granulator.asynchronicity.mLowRange->displayName("##asynchronicityLow");
+    granulator.asynchronicity.mHighRange->displayName("##asynchronicityHigh");
     granulator.asyncLFO.displayName("##asyncLFO");
+    granulator.intermittency.mParameter->displayName("##intermittency");
+    granulator.intermittency.mLowRange->displayName("##intermittencyLow");
+    granulator.intermittency.mHighRange->displayName("##intermittencyHigh");
     granulator.intermittencyLFO.displayName("##intermittencyLFO");
+    granulator.streams.mParameterInt->displayName("##streams");
     granulator.streamsLFO.displayName("##streamsLFO");
+    granulator.grainDurationMs.mParameter->displayName("##grainDurationMs");
+    granulator.grainDurationMs.mLowRange->displayName("##grainDurationMsLow");
+    granulator.grainDurationMs.mHighRange->displayName("##grainDurationMsHigh");
     granulator.grainDurationLFO.displayName("##grainDurationMs");
+    granulator.envelope.mParameter->displayName("##envelope");
+    granulator.envelope.mLowRange->displayName("##envelopeLow");
+    granulator.envelope.mHighRange->displayName("##envelopeHigh");
     granulator.envelopeLFO.displayName("##envelopeLFO");
+    granulator.tapeHead.mParameter->displayName("##tapeHead");
+    granulator.tapeHead.mLowRange->displayName("##tapeHeadLow");
+    granulator.tapeHead.mHighRange->displayName("##tapeHeadHigh");
     granulator.tapeHeadLFO.displayName("##tapeHeadLFO");
+    granulator.playbackRate.mParameter->displayName("##playbackRate");
+    granulator.playbackRate.mLowRange->displayName("##playbackRateLow");
+    granulator.playbackRate.mHighRange->displayName("##playbackRateHigh");
     granulator.playbackRateLFO.displayName("##playbackRate");
+    granulator.volumeDB.mParameter->displayName("##volumeDB"); 
+    granulator.volumeDB.mLowRange->displayName("##volumeDBLow");
+    granulator.volumeDB.mHighRange->displayName("##volumeDBHigh");
     granulator.volumeLFO.displayName("##volumeLFO");
-    // granulator.modSineFrequency.mParameter;
-    // granulator.modSquareFrequency.mParameter;
-    // granulator.modSawFrequency.mParameter;
+    granulator.modSineFrequency.mParameter->displayName("##modSineFrequency");
+    granulator.modSineFrequency.mLowRange->displayName("##modSineFrequencyLow");
+    granulator.modSineFrequency.mHighRange->displayName("##modSineFrequencyHigh");
+    granulator.modSinePhase.mParameter->displayName("##modSinePhase");
+    granulator.modSinePhase.mLowRange->displayName("##modSinePhaseLow");
+    granulator.modSinePhase.mHighRange->displayName("##modSinePhaseHigh");
+    granulator.modSquareFrequency.mParameter->displayName("##modSquareFrequency");
+    granulator.modSquareFrequency.mLowRange->displayName("##modSquareFrequencyLow");
+    granulator.modSquareFrequency.mHighRange->displayName("##modSquareFrequencyHigh");
+    granulator.modSquareWidth.mParameter->displayName("##modSquareWidth");
+    granulator.modSquareWidth.mLowRange->displayName("##modSquareWidthLow");
+    granulator.modSquareWidth.mHighRange->displayName("##modSquareWidthHigh");
+    granulator.modSawFrequency.mParameter->displayName("##modSawFrequency");
+    granulator.modSawFrequency.mLowRange->displayName("##modSawFrequencyLow");
+    granulator.modSawFrequency.mHighRange->displayName("##modSawFrequencyHigh");
+    granulator.modSawWidth.mParameter->displayName("##modSawWidth");
+    granulator.modSawWidth.mLowRange->displayName("##modSawWidthLow");
+    granulator.modSawWidth.mHighRange->displayName("##modSawWidthHigh");
 
     // Play example sequence. Comment this line to start from scratch
     //        synthManager.synthSequencer().playSequence("synth2.synthSequence");
@@ -92,29 +129,14 @@ public:
   virtual void onDraw(Graphics &g) override {
     g.clear(background);
     al::imguiBeginFrame();
-    // synthManager.render(g);
 
-    // // Draw GUI
-    // ParameterGUI::beginDraw();
-    // ParameterGUI::beginPanel(synthManager.name(),600,-1,-1,600);
-    // synthManager.drawFields();
-    // ParameterGUI::endPanel();
-
-    // ParameterGUI::beginPanel("Presets",600,600);
-    // synthManager.drawPresets();
-    // ParameterGUI::endPanel();
+    //Draw GUI
 
     ParameterGUI::beginPanel("Recorder",950,25);
     SoundFileRecordGUI::drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut());
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("LFO Controls", 25, 25,500);
-    // ParameterGUI::drawParameter(granulator.modSineFrequency.mParameter);
-    // ParameterGUI::drawParameter(granulator.modSinePhase.mParameter);
-    // ParameterGUI::drawParameter(granulator.modSquareFrequency.mParameter);
-    // ParameterGUI::drawParameter(granulator.modSquareWidth.mParameter);
-    // ParameterGUI::drawParameter(granulator.modSawFrequency.mParameter);
-    // ParameterGUI::drawParameter(granulator.modSawWidth.mParameter);
+    ParameterGUI::beginPanel("LFO Controls", 25, 25,600);
 
     granulator.modSineFrequency.draw();
     granulator.modSinePhase.draw();
@@ -125,7 +147,7 @@ public:
     
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Granulator Controls", 675, 250,500,-1);
+    ParameterGUI::beginPanel("Granulator Controls", 675, 250,700,-1);
     granulator.grainRate.draw();
     granulator.asynchronicity.draw();
     granulator.intermittency.draw();
@@ -135,21 +157,13 @@ public:
     granulator.tapeHead.draw();
     granulator.playbackRate.draw();
     granulator.volumeDB.draw();
-    //ParameterGUI::drawParameter(granulator.grainRate.mParameter); 
-    //ParameterGUI::drawParameter(granulator.asynchronicity.mParameter);
-    // ParameterGUI::drawParameter(granulator.intermittency.mParameter);
-    //ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
-    // ParameterGUI::drawParameter(granulator.grainDurationMs.mParameter);
-    // ParameterGUI::drawParameter(granulator.envelope.mParameter);
-    // ParameterGUI::drawParameter(granulator.tapeHead.mParameter);
-    // ParameterGUI::drawParameter(granulator.playbackRate.mParameter);
-    // ParameterGUI::drawParameter(granulator.volumeDB.mParameter);
+
     ParameterGUI::endPanel();
 
     //THIsWorks
     ParameterGUI::beginPanel("TestTEST MY RANGEE", 950,150,200,75);
-      granulator.grainRate.drawRangeBox(false,0.1); 
-      granulator.grainRate.drawRangeBox(true,0.1); 
+      //granulator.grainRate.drawRangeBox(false,0.1); 
+      //granulator.grainRate.drawRangeBox(true,0.1); 
     ParameterGUI::endPanel();
 
     ParameterGUI::beginPanel("Modulation Wave", 525, 250, 150, -1);
@@ -177,7 +191,7 @@ public:
     ParameterGUI::drawParameter(granulator.modVolumeWidth.mParameter);
     ParameterGUI::endPanel();
 
-    ParameterGUI::beginPanel("Presets", 525, 25);
+    ParameterGUI::beginPanel("Presets", 625, 25);
     ParameterGUI::drawPresetHandler(&mPresets,12,4);
     ParameterGUI::endPanel();
 
