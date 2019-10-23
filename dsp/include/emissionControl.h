@@ -195,17 +195,13 @@ public:
   float min = -99999.0, float max = 99999.0, 
   float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
   consts::waveform modWaveform = consts::SINE, bool independent = 0) {
-    //mParam  = new Parameter{parameterName, defaultValue, min, max}; 
-    mParameter = new Parameter{parameterName , defaultValue, absMin, absMax};
+    mParameter = new Parameter{parameterName , defaultValue, min, max};
     mLowRange = new Parameter{(parameterName + "Low").c_str(), min, absMin, absMax};
     mHighRange = new Parameter{(parameterName + "High").c_str(), max, absMin, absMax};
     mMin = min;
     mMax = max; 
-    mAbsMax = absMin;
-    mAbsMax = absMax;
     mModWaveform = modWaveform; 
     mIndependent = independent;
-    mName = parameterName;
     if(mIndependent)  // if true, this parameter will have its own modulator
       mModulator = new ecModulator{mModWaveform, 1, 1};
   }
@@ -214,16 +210,13 @@ public:
 	std::string prefix = "", float min = -99999.0,float max = 99999.0,
   float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
   consts::waveform modWaveform = consts::SINE, bool independent = 0) {
-    mParameter = new Parameter{parameterName, Group, defaultValue, prefix, absMin, absMax};
+    mParameter = new Parameter{parameterName, Group, defaultValue, prefix, min, max};
     mLowRange = new Parameter{(parameterName + "Low").c_str(), Group, min, prefix, absMin, absMax};
     mHighRange = new Parameter{(parameterName + "High").c_str(), Group, max, prefix, absMin, absMax};
     mMin = min;
     mMax = max; 
-    mAbsMax = absMin;
-    mAbsMax = absMax;
     mModWaveform = modWaveform; 
     mIndependent = independent;
-    mName = parameterName;
     if(mIndependent)  // if true, this parameter will have its own modulator
       mModulator = new ecModulator{mModWaveform, 1, 1};
 
@@ -240,43 +233,44 @@ public:
     else delete mModulator;    
   }
 
-  /**
-   * Function that will draw a number box widget to set the bounds of the ecParameter slider. 
-   * To be run in an onDraw function.
-   * 
-   * param[in] If true, this function will set the maximum bound of the ecParameter. 
-   *           If false, this function will set the minimum bound of the ecParameter. 
-   * param[in] The speed in which dragging the box affects the number. 
-   */
-  void drawRangeBox(bool boundType, float speed = 1.0) {
-    // if(mMax > mMin) 
-    //   mMax = mMin; //NOT sure if will include this or not
-    if(mMax > mAbsMax || mMax < mAbsMin)
-      mMax = mAbsMax;
-    if(mMin < mAbsMin || mMin > mAbsMax)
-      mMin = mAbsMin;
-    if(boundType) {
-      ImGui::DragFloat(("##" + mName + "hi").c_str(), &mMax, speed, mAbsMin, mAbsMax);
-      setMax();
-    } else {
-      ImGui::DragFloat(("##" + mName + "lo").c_str(), &mMin, speed, mAbsMin, mAbsMax);
-      setMin();
-    }
-  }
-
   //NEXT UP, draw dragFloats here, but using the members of type parameter instead.
   void draw() {
+    float valueSlider, valueLow, valueHigh;
+    bool changed;
     //ImGuiCol_ x = ImGuiCol_TextDisabled;
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f); 
     //ImGui::PushStyleColor(ImGuiCol_Text,149);;
-    drawRangeBox(false,0.1); ImGui::SameLine(); 
+    valueLow = mLowRange->get();
+    changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1, 
+                              mLowRange->min(), mLowRange->max()); ImGui::SameLine();
+    if(changed) 
+      mLowRange->set(valueLow);
+    //if(valueLow > mHighRange->get()) mParameter->min(mMin);
+    mParameter->min(valueLow);
+
     ImGui::PopItemWidth();
     //ImGui::PopStyleColor();
     ImGui::SameLine();
-    ParameterGUI::drawParameter(mParameter); 
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
+    valueSlider = mParameter->get();
+    changed = ImGui::SliderFloat((mParameter->displayName()).c_str(),&valueSlider, mParameter->min(), mParameter->max());
+    if(changed) mParameter->set(valueSlider);
+    ImGui::PopItemWidth();
+
     ImGui::SameLine();
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
-    drawRangeBox(true,0.1); 
+    valueHigh = mHighRange->get();
+    changed = ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHigh, 0.1, 
+                              mHighRange->min(), mHighRange->max()); 
+    if(changed) 
+      mHighRange->set(valueHigh);
+    mParameter->max(valueHigh);
+
+    ImGui::PopItemWidth();
+
+    ImGui::SameLine();
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+    ImGui::Text((mParameter->getName()).c_str());
     ImGui::PopItemWidth();
   }
 
@@ -356,7 +350,6 @@ public:
     return mParameter->get() * (( (*mModulator)() * modWidth) + 1);
   }
 
-
   consts::waveform mModWaveform;
   ecModulator* mModulator = nullptr; //This is for dynamically allocating a parameter's own modulator.
   Parameter* mParameter = nullptr;
@@ -365,17 +358,9 @@ public:
  
 
 private: 
-  float mMax, mMin, mAbsMax, mAbsMin;
-  std::string mName;
+  float mMax, mMin;
   bool mIndependent;
 
-  void setMin() {
-    mParameter->min(mMin);
-  }
-
-  void setMax() {
-    mParameter->max(mMax);
-  }
 };
 
 /** 
