@@ -6,9 +6,6 @@ project(${APP_NAME} VERSION 0.5
                     DESCRIPTION "Granular Scheduler for Arbitrary Sound Files"
                     LANGUAGES CXX)
 
-add_executable(${APP_NAME} 
-  src/main.cpp
-)
 add_subdirectory(external/allolib)
 #add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
@@ -26,13 +23,13 @@ set(srcs
   src/utility.cpp
 )
 
-target_include_directories(${APP_NAME} PRIVATE
-  ${includes}
-  ${srcs}
+add_executable(${APP_NAME}
+  src/main.cpp
 )
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
-#target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/allolib/external/Gamma/Gamma/)
+
+message(${CMAKE_CURRENT_SOURCE_DIR}/external/allolib/external/Gamma/)
 
 add_library(ecLib
   STATIC 
@@ -40,12 +37,14 @@ add_library(ecLib
     ${srcs}
 )
 
-target_link_libraries(${APP_NAME} PRIVATE al)
-target_link_libraries(${APP_NAME} PRIVATE ecLib)
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
-target_link_libraries(${APP_NAME} PRIVATE ${AL_EXT_LIBRARIES})
+target_link_libraries(${APP_NAME} PUBLIC al ecLib "${AL_EXT_LIBRARIES}")
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}")
 
-
+set_target_properties(ecLib PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDARD_REQUIRED ON
+)
 
 # binaries are put into the ./bin directory by default
 set_target_properties(${APP_NAME} PROPERTIES
