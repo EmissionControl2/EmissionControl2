@@ -1,7 +1,7 @@
 #ifndef EMISSIONCONTROL_H 
 #define EMISSIONCONTROL_H 
 
-//#include "../external/allolib/external/Gamma/Gamma/Oscillator.h"
+#include "../external/allolib/external/Gamma/Gamma/Oscillator.h"
 #include "Gamma/Oscillator.h"
 //#include "al/util/imgui/al_Imgui.hpp"
 #include "../external/allolib/external/imgui/imgui.h"
