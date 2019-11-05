@@ -1,5 +1,5 @@
 #include "../include/emissionControl.h"
-
+#include "../include/utility.h"
 
 //grainEnvelope
 
