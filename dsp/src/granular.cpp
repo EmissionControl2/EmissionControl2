@@ -18,9 +18,9 @@
 
 
 //Local Includes
-#include "../include/utility.h"
-#include "../include/const.h"
-#include "../include/emissionControl.h"
+#include "utility.h"
+#include "const.h"
+#include "emissionControl.h"
 
 //Externals
 

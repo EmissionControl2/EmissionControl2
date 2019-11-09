@@ -5,13 +5,10 @@ class ecInterface : public App
 {
 public:
 
-
   Granular granulator;
   PresetHandler mPresets{"presets"};
   float background = 0.21;
   float dragTest = 1.0;
-
-
 
   OutputRecorder mRecorder;
 
