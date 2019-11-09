@@ -12,8 +12,10 @@ add_subdirectory(external/al_ext)
 
 set(includes
   include/emissionControl.h
-  include/const.h
+  include/ecInterface.h
+  include/granular.h
   include/utility.h
+  include/const.h
 )
 
 set(srcs
@@ -28,6 +30,10 @@ add_executable(${APP_NAME}
 )
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
+target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
+target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+target_link_directories(${APP_NAME} PUBLIC /usr/local/lib)
 
 message(${CMAKE_CURRENT_SOURCE_DIR}/external/allolib/external/Gamma/)
 
@@ -36,6 +42,9 @@ add_library(ecLib
     ${includes}
     ${srcs}
 )
+
+target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/external)
+target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 target_link_libraries(${APP_NAME} PUBLIC al ecLib "${AL_EXT_LIBRARIES}")
