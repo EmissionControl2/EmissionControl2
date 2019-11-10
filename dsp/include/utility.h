@@ -275,8 +275,6 @@ struct Buffer {
   }
 };
 
-Buffer<float>* openAddressHash(Buffer<float>* buf);
-
 /**
  * Load soundfile into a buffer in memory.
  *

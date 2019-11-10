@@ -3,12 +3,11 @@
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
 
-/**** CSTD LIB ****/
-#include <iostream>
-
 /**** AlloLib LIB ****/
 #include "al/io/al_Imgui.hpp"
 
+/**** CSTD LIB ****/
+#include <iostream>
 
 using namespace al;
 

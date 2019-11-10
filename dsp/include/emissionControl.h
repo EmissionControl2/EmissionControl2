@@ -1,8 +1,9 @@
 #ifndef EMISSIONCONTROL_H
 #define EMISSIONCONTROL_H
 
-/**** CSTD LIB ****/
-#include <string>
+/**** Emission Control LIB ****/
+#include "const.h"
+#include "utility.h"
 
 /**** AlloLib LIB ****/
 #include "Gamma/Oscillator.h"
@@ -10,9 +11,8 @@
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
 
-/**** Emission Control LIB ****/
-#include "const.h"
-#include "utility.h"
+/**** CSTD LIB ****/
+#include <string>
 
 /**
  * Wrapper class of three envelopes:
@@ -170,6 +170,16 @@ class ecParameter {
 public:
 
   /**
+   * PUBLIC OBJECTS
+   * 
+   */
+  ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
+                                      // parameter's own modulator.
+  al::Parameter* mParameter = nullptr;
+  al::Parameter* mLowRange = nullptr;  // Parameter designed to bound low mParameter.
+  al::Parameter* mHighRange = nullptr;  // Parameter designed to bound high mParameter.
+
+  /**
    * @brief ecParameter Constructor.
    *
    * @param[in] parameterName The name of the parameter
@@ -276,16 +286,6 @@ public:
    */
   void draw();
 
-  /**
-   * PUBLIC OBJECTS
-   * 
-   */
-  ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
-  al::Parameter* mParameter = nullptr;
-  al::Parameter* mLowRange = nullptr;  // Parameter designed to bound low mParameter.
-  al::Parameter* mHighRange = nullptr;  // Parameter designed to bound high mParameter.
-
  private:
   consts::waveform mModWaveform;
   float mMax, mMin;
@@ -300,6 +300,15 @@ public:
  */
 class ecParameterInt {
 public:
+
+  /**
+   * PUBLIC OBJECTS
+   * 
+   */
+  al::ParameterInt* mParameterInt = nullptr;
+  ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
+                                      // parameter's own modulator.
+                                      
 /**
    * @brief ecParameterInt Constructor.
    *
@@ -384,13 +393,6 @@ public:
    */
   void draw();
 
-  /**
-   * PUBLIC OBJECTS
-   * 
-   */
-  al::ParameterInt* mParameterInt = nullptr;
-  ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
 private:
   bool mIndependentMod;
   consts::waveform mModWaveform;
@@ -426,7 +428,7 @@ class Grain : public al::SynthVoice {
   virtual void init() override;
 
   /**
-   * @briefConfigure grain parameters before being sent to scheduler.
+   * @brief Configure grain parameters before being sent to scheduler.
    * 
    * param[in] A struct containing a list of all grain parameters that need to
    * be set.

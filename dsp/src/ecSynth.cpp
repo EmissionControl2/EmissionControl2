@@ -1,0 +1,197 @@
+//ecSynth.cpp
+
+/**** Emission Control LIB ****/
+#include "ecSynth.h"
+#include "utility.h"
+
+using namespace al;
+
+/**** ecSynth Implementation ****/
+
+void ecSynth::init() {
+
+  mPActiveVoices = &mActiveVoices;
+
+  //MUST USE THIS ORDER
+  grainRateLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  grainRateLFO.registerChangeCallback([&](int value) {
+    grainRate.setWaveformIndex(value);
+  });
+  asyncLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  asyncLFO.registerChangeCallback([&](int value) {
+    asynchronicity.setWaveformIndex(value);
+  });
+  intermittencyLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  intermittencyLFO.registerChangeCallback([&](int value) {
+    intermittency.setWaveformIndex(value);
+  });
+  streamsLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  streamsLFO.registerChangeCallback([&](int value) {
+    streams.setWaveformIndex(value);
+  });
+  grainDurationLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  grainDurationLFO.registerChangeCallback([&](int value) {
+    grainDurationMs.setWaveformIndex(value);
+  });
+  envelopeLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  envelopeLFO.registerChangeCallback([&](int value) {
+    envelope.setWaveformIndex(value);
+  });
+  tapeHeadLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  tapeHeadLFO.registerChangeCallback([&](int value) {
+    tapeHead.setWaveformIndex(value);
+  });
+  playbackRateLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  playbackRateLFO.registerChangeCallback([&](int value) {
+    playbackRate.setWaveformIndex(value);
+  });
+  volumeLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  volumeLFO.registerChangeCallback([&](int value) {
+    volumeDB.setWaveformIndex(value);
+  });
+  grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
+
+  modSineFrequency.mParameter->registerChangeCallback([&](float value) {
+    modSine.setFrequency(value);
+  });
+
+  modSinePhase.mParameter->registerChangeCallback([&](float value) {
+    modSine.setPhase(value);
+  });
+
+  modSquareFrequency.mParameter->registerChangeCallback([&](float value) {
+    modSquare.setFrequency(value);
+  });
+
+  modSquareWidth.mParameter->registerChangeCallback([&](float value) {
+    modSquare.setWidth(value);
+  });
+
+  modSawFrequency.mParameter->registerChangeCallback([&](float value) {
+    modSaw.setFrequency(value);
+  });
+  modSawWidth.mParameter->registerChangeCallback([&](float value) {
+    modSaw.setWidth(value);
+  });
+
+  grainSynth.allocatePolyphony<Grain>(1024);
+  grainSynth.setDefaultUserData(this);
+}
+
+
+void ecSynth::onProcess(AudioIOData& io) {
+  //        updateFromParameters();
+  while (io()) {
+    modSineValue = modSine(); // construct modulation value
+    modSquareValue = modSquare();
+    modSawValue = modSaw();
+    modNoiseValue = modNoise();
+
+    // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
+
+    // NOTE grainRate noise isnt very perceptible 
+    if(modGrainRateWidth.getParam() > 0)  // modulate the grain rate
+      grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+      modGrainRateWidth.getParam())); 
+    else grainScheduler.setFrequency(grainRate.getParam());
+
+    if(modAsynchronicityWidth.getParam() > 0) //modulate the asynchronicity 
+      grainScheduler.setAsynchronicity(asynchronicity.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+      modAsynchronicityWidth.getParam()));
+    else grainScheduler.setAsynchronicity(asynchronicity.getParam());
+
+    if(modIntermittencyWidth.getParam() > 0)  //modulate the intermittency 
+      grainScheduler.setIntermittence(intermittency.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+      modIntermittencyWidth.getParam())); 
+    else grainScheduler.setIntermittence(intermittency.getParam());
+
+    if(modStreamsWidth.getParam() > 0) //Modulate the amount of streams playing.
+      grainScheduler.setPolyStream(consts::synchronous, streams.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue,
+      modStreamsWidth.getParam()));
+    else grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
+
+    // CONTROL RATE LOOP (Executes every 4th sample)
+    if(controlRateCounter == 4) {
+      controlRateCounter = 0;
+
+    }
+    controlRateCounter++;
+    /////
+    
+    //Grain by Grain Initilization 
+    if (grainScheduler.trigger()) {
+      auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
+      if (voice) {
+        grainParameters list = {
+          grainDurationMs,
+          modGrainDurationWidth.getParam(),
+          envelope,
+          modEnvelopeWidth.getParam(),
+          tapeHead,
+          modTapeHeadWidth.getParam(),
+          playbackRate,
+          modPlaybackRateWidth.getParam(),
+          soundClip[0], 
+          modSineValue,
+          modSquareValue,
+          modSawValue,
+          modNoiseValue,
+          mPActiveVoices
+        };
+
+        voice->configureGrain(list);
+        
+        mActiveVoices++; 
+        grainSynth.triggerOn(voice, io.frame());
+
+      } else {
+        std::cout << "out of voices!" <<std::endl;
+      }
+    }
+  }
+
+  grainSynth.render(io);
+
+  io.frame(0); 
+  float amp = powf(10,volumeDB.getParam()/20);
+  while (io()) {
+    io.out(0) *=  amp ; // this manipulates the entire stream on the channel level 
+    io.out(1) *=  amp ; //* mEnv() 
+    
+  }
+}
+
+void ecSynth::onTriggerOn() {
+}
+
+void ecSynth::onTriggerOff() {
+
+}
+
+void ecSynth::loadSoundFile(std::string fileName) {
+    util::load(fileName, soundClip);
+}
+
+/**** TO DO TO DO TO DO ****/
+void ecSynth::throttle(float time, float ratio) {
+  if(mCounter < time * consts::SAMPLE_RATE) {
+    mCounter++;
+    mAvgActiveVoices += mActiveVoices;
+    return ;
+  } else {
+    mCounter++;
+    mAvgActiveVoices /= mCounter;
+    mCounter = 0; 
+  }
+
+  float adaptThresh;
+
+  if(mPeakCPU > adaptThresh) {
+    
+  } 
+  if(mAvgCPU > adaptThresh) {
+    
+  } else {
+    
+  }
+}
