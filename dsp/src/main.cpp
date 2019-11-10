@@ -1,4 +1,4 @@
-#include "ecInterface.cpp"
+#include "ecInterface.h"
 
 int main(){    // Create app instance
 

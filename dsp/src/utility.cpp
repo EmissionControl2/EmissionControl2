@@ -2,25 +2,6 @@
 
 using namespace util;
 
-Buffer<float> *util::openAddressHash(Buffer<float> *buf) {
-  Buffer<float> *temp = new Buffer<float>();
-  temp->data = new float[buf->size * 3]{0};
-  temp->size = buf->size * 3;
-  // for(int i = 0; i < temp->size; i++)
-  //   temp->add(i,0);
-  for (int i = 0; i < buf->size; i++) {
-    int temp_key = static_cast<int>(buf->get(i) * 1000000);
-    int hash_i = temp_key % temp->size;
-    while (temp->get(hash_i) != 0) {
-      hash_i++;
-      hash_i %= temp->size;
-    }
-    temp->add(hash_i, buf->get(i));
-  }
-  std::cout << "here\n";
-  return temp;
-}
-
 void util::load(
     std::string fileName,
     std::vector<Buffer<float> *> &buf) {  // only works on mono files for now

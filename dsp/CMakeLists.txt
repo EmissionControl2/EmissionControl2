@@ -13,7 +13,7 @@ add_subdirectory(external/al_ext)
 set(includes
   include/emissionControl.h
   include/ecInterface.h
-  include/granular.h
+  include/ecSynth.h
   include/utility.h
   include/const.h
 )
@@ -21,7 +21,7 @@ set(includes
 set(srcs
   src/emissionControl.cpp
   src/ecInterface.cpp
-  src/granular.cpp
+  src/ecSynth.cpp
   src/utility.cpp
 )
 
