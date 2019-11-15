@@ -28,7 +28,7 @@ public:
   al::ParameterMenu streamsLFO {"streamsLFO"}; 
   ecParameter modStreamsWidth {"modStreamsWidth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter grainDurationMs {"Grain_Dur_Ms", "", 25, "", 0.01, 1000, 0.0000001, 10000};
+  ecParameter grainDurationMs {"Grain_Dur_Ms", "", 250, "", 0.01, 1000, 0.0000001, 10000};
   al::ParameterMenu grainDurationLFO {"grainDurationLFO"}; 
   ecParameter modGrainDurationWidth {"modGrainDurationWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter envelope {"Envelope", "", 0.5, "", 0, 1, 0, 1};
@@ -112,7 +112,7 @@ private:
 
   al::PolySynth grainSynth {al::PolySynth::TIME_MASTER_AUDIO}; /* Polyhpony and interface to audio callback */
   voiceScheduler grainScheduler{consts::SAMPLE_RATE}; /* Schedule grains */
-  std::vector<util::Buffer<float>*> soundClip; /* Store audio buffers in memory */
+  std::vector<util::buffer<float>*> soundClip; /* Store audio buffers in memory */
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;
