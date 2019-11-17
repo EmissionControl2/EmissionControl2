@@ -305,7 +305,9 @@ public:
    * PUBLIC OBJECTS
    * 
    */
-  al::ParameterInt* mParameterInt = nullptr;
+  al::ParameterInt* mParameterInt = nullptr; //Main Parameter.
+  al::ParameterInt* mLowRange = nullptr;  // Parameter designed to bound low mParameter.
+  al::ParameterInt* mHighRange = nullptr;  // Parameter designed to bound high mParameter.
   ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
                                       // parameter's own modulator.
                                       
@@ -317,19 +319,21 @@ public:
    * @param[in] defaultValue The initial value for the parameter
    * @param[in] prefix An address prefix that is prepended to the parameter's OSC
    * address
-   * @param[in] Default minimum value for the parameter. ****TODO
-   * @param[in] Default maximum value for the parameter.  ****TODO
-   * @param[in] Absolute minimum value for the parameter. ****TODO
-   * @param[in] Absolute maximum value for the parameter. ****TODO
+   * @param[in] Default minimum value for the parameter. 
+   * @param[in] Default maximum value for the parameter. 
+   * @param[in] Absolute minimum value for the parameter.
+   * @param[in] Absolute maximum value for the parameter.
    * @param[in] Waveform used to modulate the parameters current value.
    * @param[in] If set to true, the parameter will contain its own modulator.
    *            If false, must input data on an outside modulator when calling getParamMod().
    * 
    */
   ecParameterInt(std::string parameterName, std::string Group,
-                 int defaultValue = 0, std::string prefix = "", int min = 0,
-                 int max = 127, consts::waveform modWaveform = consts::SINE,
-                 bool independentMod = 0);
+              int defaultValue = 0, std::string prefix = "",
+              int defaultMin = -99999, int defaultMax = 99999,
+              int absMin = -1 * INT_MAX, int absMax = INT_MAX,
+              consts::waveform modWaveform = consts::SINE,
+              bool independentMod = 0);
 
   /**
    * @bried ecParameterInt destructor.
@@ -395,6 +399,7 @@ public:
 
 private:
   bool mIndependentMod;
+  int mMax, mMin;
   consts::waveform mModWaveform;
 };
 

@@ -19,12 +19,12 @@ public:
   al::ParameterMenu grainRateLFO {"grainRateLFO"}; 
   ecParameter modGrainRateWidth {"modGrainRateWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter asynchronicity {"Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1, consts::SINE};
-  al::ParameterMenu asyncLFO {"asyncLFO"}; // Using spaces so the ParameterGUI::drawMenu behaves correctly/
+  al::ParameterMenu asyncLFO {"asyncLFO"}; 
   ecParameter modAsynchronicityWidth {"modAsynchronicityWidth", "", 0, "", 0, 1, 0, 1};
   ecParameter intermittency {"Intermittency", "", 0,"", 0, 1, 0, 1};
   al::ParameterMenu intermittencyLFO {"intermittencyLFO"}; 
   ecParameter modIntermittencyWidth {"modIntermittencyWidth", "", 0, "", 0, 1, 0, 1};
-  ecParameterInt streams {"Streams", "", 1,"", 1, 12};
+  ecParameterInt streams {"Streams", "", 1,"", 1, 12, 1, 20};
   al::ParameterMenu streamsLFO {"streamsLFO"}; 
   ecParameter modStreamsWidth {"modStreamsWidth", "", 0, "", 0, 1, 0, 1};
 
