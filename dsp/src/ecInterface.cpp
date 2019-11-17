@@ -29,7 +29,7 @@ void ecInterface::onCreate() {
     << granulator.asyncLFO << *granulator.modAsynchronicityWidth.mParameter
     << *granulator.intermittency.mParameter << *granulator.intermittency.mLowRange << *granulator.intermittency.mHighRange
     << granulator.intermittencyLFO << *granulator.modIntermittencyWidth.mParameter
-    << *granulator.streams.mParameterInt 
+    << *granulator.streams.mParameterInt << *granulator.streams.mLowRange << *granulator.streams.mHighRange
     << granulator.streamsLFO << *granulator.modStreamsWidth.mParameter
     << *granulator.grainDurationMs.mParameter << *granulator.grainDurationMs.mLowRange << *granulator.grainDurationMs.mHighRange
     << granulator.grainDurationLFO << *granulator.modGrainDurationWidth.mParameter
@@ -63,6 +63,8 @@ void ecInterface::onCreate() {
   granulator.intermittency.mHighRange->displayName("##intermittencyHigh");
   granulator.intermittencyLFO.displayName("##intermittencyLFO");
   granulator.streams.mParameterInt->displayName("##streams");
+  granulator.streams.mLowRange->displayName("##streamsLow");
+  granulator.streams.mHighRange->displayName("##streamsHigh");
   granulator.streamsLFO.displayName("##streamsLFO");
   granulator.grainDurationMs.mParameter->displayName("##grainDurationMs");
   granulator.grainDurationMs.mLowRange->displayName("##grainDurationMsLow");
@@ -134,7 +136,7 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.grainRate.draw();
   granulator.asynchronicity.draw();
   granulator.intermittency.draw();
-  ParameterGUI::drawParameterInt(granulator.streams.mParameterInt,"");
+  granulator.streams.draw();
   granulator.grainDurationMs.draw();
   granulator.envelope.draw();
   granulator.tapeHead.draw();

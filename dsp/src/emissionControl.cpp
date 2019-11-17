@@ -143,6 +143,8 @@ ecParameter::ecParameter(std::string parameterName, std::string Group,
 
 ecParameter::~ecParameter() {
     delete mParameter;
+    delete mLowRange;
+    delete mHighRange;
     if (mIndependentMod) delete mModulator;
 }
 
@@ -240,11 +242,19 @@ void ecParameter::draw() {
 /******* ecParameterInt *******/
 
 ecParameterInt::ecParameterInt(std::string parameterName, std::string Group,
-                 int defaultValue, std::string prefix, int min,
-                 int max, consts::waveform modWaveform,
-                 bool independentMod) {
+              int defaultValue, std::string prefix,
+              int defaultMin, int defaultMax,
+              int absMin, int absMax,
+              consts::waveform modWaveform,
+              bool independentMod) {
   mParameterInt =
-      new ParameterInt{parameterName, Group, defaultValue, prefix, min, max};
+      new ParameterInt{parameterName, Group, defaultValue, prefix, defaultMin, defaultMax};
+  mLowRange = 
+      new ParameterInt{(parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
+  mHighRange = 
+      new ParameterInt{(parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
+  mMin = defaultMin;
+  mMax = defaultMax;
   mModWaveform = modWaveform;
   mIndependentMod = independentMod;
   if (mIndependentMod)  // if true, this parameter will have its own modulator
@@ -253,6 +263,8 @@ ecParameterInt::ecParameterInt(std::string parameterName, std::string Group,
 
 ecParameterInt::~ecParameterInt() {
   delete mParameterInt;
+  delete mLowRange;
+  delete mHighRange;
   if (mIndependentMod) delete mModulator;
 }
 
@@ -308,9 +320,45 @@ int ecParameterInt::getModParam(float modWidth) {
   return mParameterInt->get() * (((*mModulator)() * modWidth) + 1);
 }
 
-void draw() {
-  /**** TO DO ****/
-  return;
+void ecParameterInt::draw() {
+  int valueSlider, valueLow, valueHigh;
+  bool changed;
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  valueLow = mLowRange->get();
+  changed = ImGui::DragInt((mLowRange->displayName()).c_str(), &valueLow,
+                              0.1, mLowRange->min(), mLowRange->max());
+  ImGui::SameLine();
+  if (changed) mLowRange->set(valueLow);
+  mParameterInt->min(valueLow);
+  
+  // if(valueLow > mHighRange->get()) mParameter->min(mMin);
+
+  ImGui::PopItemWidth();
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
+  valueSlider = mParameterInt->get();
+  changed =
+      ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
+                          mParameterInt->min(), mParameterInt->max());
+  if (changed) mParameterInt->set(valueSlider);
+  ImGui::PopItemWidth();
+
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  valueHigh = mHighRange->get();
+  changed = ImGui::DragInt((mHighRange->displayName()).c_str(), &valueHigh,
+                              0.1, mHighRange->min(), mHighRange->max());
+
+  if (changed)  mHighRange->set(valueHigh);
+   
+  mParameterInt->max(valueHigh);
+
+  ImGui::PopItemWidth();
+
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+  ImGui::Text((mParameterInt->getName()).c_str());
+  ImGui::PopItemWidth();
 }
 
 /******* Grain Class *******/
