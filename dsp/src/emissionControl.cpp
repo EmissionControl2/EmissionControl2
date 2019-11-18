@@ -178,16 +178,50 @@ void ecParameter::setIndependentMod(bool independentMod) {
 float ecParameter::getModParam(float modSineValue, float modSquareValue, float modSawValue,
                             float modNoiseValue, float modWidth) {
   switch (mModWaveform) {
-    case consts::SINE:
-      return mParameter->get() * ((modSineValue * modWidth) + 1);
-    case consts::SQUARE:
-      return mParameter->get() * ((modSquareValue * modWidth) + 1);
-    case consts::SAW:
-      return mParameter->get() * ((modSawValue * modWidth) + 1);
-    case consts::NOISE:
-      return mParameter->get() * ((modNoiseValue * modWidth) + 1);
-    default:
-      return mParameter->get() * ((modSineValue * modWidth) + 1);
+    case consts::SINE: {
+      float temp = mParameter->get() * ((modSineValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    case consts::SQUARE:{
+      float temp = mParameter->get() * ((modSquareValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    case consts::SAW: {
+      float temp = mParameter->get() * ((modSawValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    case consts::NOISE: {
+      float temp = mParameter->get() * ((modNoiseValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    default: {
+      float temp = mParameter->get() * ((modSineValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
   }
 }
 
@@ -197,7 +231,12 @@ float ecParameter::getModParam(float modWidth) {
                   "to use this getModParam function\n";
     return -9999999999;
   }
-  return mParameter->get() * (((*mModulator)() * modWidth) + 1);
+  float temp = mParameter->get() * (((*mModulator)() * modWidth) + 1);
+  if(temp > mHighRange->max())
+    return mHighRange->max();
+  else if(temp < mLowRange->min())
+    return mLowRange->min();
+  else return temp;
 }
 
 void ecParameter::draw() {
@@ -298,16 +337,50 @@ void ecParameterInt::setWaveformIndex(int index) {
 int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float modSawValue,
                 float modNoiseValue, float modWidth) {
   switch (mModWaveform) {
-    case consts::SINE:
-      return mParameterInt->get() * ((modSineValue * modWidth) + 1);
-    case consts::SQUARE:
-      return mParameterInt->get() * ((modSquareValue * modWidth) + 1);
-    case consts::SAW:
-      return mParameterInt->get() * ((modSawValue * modWidth) + 1);
-    case consts::NOISE:
-      return mParameterInt->get() * ((modNoiseValue * modWidth) + 1);
-    default:
-      return mParameterInt->get() * ((modSineValue * modWidth) + 1);
+    case consts::SINE: {
+      int temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    case consts::SQUARE:{
+      int temp = mParameterInt->get() * ((modSquareValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    case consts::SAW: {
+      int temp = mParameterInt->get() * ((modSawValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    case consts::NOISE: {
+      int temp = mParameterInt->get() * ((modNoiseValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
+
+    default: {
+      int temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
+      if(temp > mHighRange->max())
+        return mHighRange->max();
+      else if(temp < mLowRange->min())
+        return mLowRange->min();
+      else return temp;
+    }
   }
 }
 
@@ -317,7 +390,12 @@ int ecParameterInt::getModParam(float modWidth) {
                   "to use this getModParam function\n";
     return -99999;
   }
-  return mParameterInt->get() * (((*mModulator)() * modWidth) + 1);
+  int temp = mParameterInt->get() * (((*mModulator)() * modWidth) + 1);
+  if(temp > mHighRange->max())
+    return mHighRange->max();
+  else if(temp < mLowRange->min())
+    return mLowRange->min();
+  else return temp;
 }
 
 void ecParameterInt::draw() {

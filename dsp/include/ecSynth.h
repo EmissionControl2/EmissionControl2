@@ -45,6 +45,10 @@ public:
   al::ParameterMenu volumeLFO {"volumeLFO"}; 
   ecParameter modVolumeWidth {"modVolumeWidth", "", 0, "", 0, 1, 0, 1};
 
+  ecParameterInt soundFile {"Sound_File", "", 1, "", 1, mClipNum, 1, mClipNum};
+  al::ParameterMenu soundFileLFO {"soundFileLFO"}; 
+  ecParameter modSoundFileWidth {"modSoundFileWidth", "", 0, "", 0, 1, 0, 1};
+
   ecParameter modSineFrequency {"modSineFrequency", "",1, "", 0.01, 40, FLT_MIN, 1000};
   ecParameter modSinePhase {"modSinePhase", "", 0, "", 0, 1, 0, 1};
   ecParameter modSquareFrequency {"modSquareFrequency", "",1,"", 0.01, 40,FLT_MIN, 1000};
@@ -113,6 +117,8 @@ private:
   al::PolySynth grainSynth {al::PolySynth::TIME_MASTER_AUDIO}; /* Polyhpony and interface to audio callback */
   voiceScheduler grainScheduler{consts::SAMPLE_RATE}; /* Schedule grains */
   std::vector<util::buffer<float>*> soundClip; /* Store audio buffers in memory */
+  int mClipNum = 0; /* Number of sound files being stored in memory */
+  int mModClip;
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;

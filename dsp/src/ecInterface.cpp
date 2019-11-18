@@ -14,8 +14,10 @@ using namespace al;
 void ecInterface::onInit() {
 
   audioIO().append(mRecorder);
-  granulator.init();
   granulator.loadSoundFile("voicePop.wav");
+  granulator.loadSoundFile("1.voice.wav");
+  granulator.init();
+  
   
 }
 
@@ -41,6 +43,8 @@ void ecInterface::onCreate() {
     << granulator.playbackRateLFO << *granulator.modPlaybackRateWidth.mParameter
     << *granulator.volumeDB.mParameter << *granulator.volumeDB.mLowRange << *granulator.volumeDB.mHighRange
     << granulator.volumeLFO << *granulator.modVolumeWidth.mParameter
+    << *granulator.soundFile.mParameterInt << *granulator.soundFile.mLowRange << *granulator.soundFile.mHighRange
+    << granulator.soundFileLFO << *granulator.modSoundFileWidth.mParameter
     << *granulator.modSineFrequency.mParameter << *granulator.modSineFrequency.mLowRange 
     << *granulator.modSineFrequency.mHighRange
     << *granulator.modSinePhase.mParameter << *granulator.modSinePhase.mLowRange << *granulator.modSinePhase.mHighRange
@@ -86,6 +90,10 @@ void ecInterface::onCreate() {
   granulator.volumeDB.mLowRange->displayName("##volumeDBLow");
   granulator.volumeDB.mHighRange->displayName("##volumeDBHigh");
   granulator.volumeLFO.displayName("##volumeLFO");
+  granulator.soundFile.mParameterInt->displayName("##soundFile"); 
+  granulator.soundFile.mLowRange->displayName("##soundFileLow");
+  granulator.soundFile.mHighRange->displayName("##soundFileHigh");
+  granulator.soundFileLFO.displayName("##soundFileLFO");
   granulator.modSineFrequency.mParameter->displayName("##modSineFrequency");
   granulator.modSineFrequency.mLowRange->displayName("##modSineFrequencyLow");
   granulator.modSineFrequency.mHighRange->displayName("##modSineFrequencyHigh");
@@ -142,6 +150,7 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.tapeHead.draw();
   granulator.playbackRate.draw();
   granulator.volumeDB.draw();
+  granulator.soundFile.draw();
 
   ParameterGUI::endPanel();
 
@@ -155,6 +164,7 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::drawMenu(&granulator.tapeHeadLFO);
   ParameterGUI::drawMenu(&granulator.playbackRateLFO);
   ParameterGUI::drawMenu(&granulator.volumeLFO);
+  ParameterGUI::drawMenu(&granulator.soundFileLFO);
   ParameterGUI::endPanel();
 
   ParameterGUI::beginPanel("Modulation Width", 25, 250, 500, -1);
@@ -168,6 +178,7 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::drawParameter(granulator.modTapeHeadWidth.mParameter);
   ParameterGUI::drawParameter(granulator.modPlaybackRateWidth.mParameter);
   ParameterGUI::drawParameter(granulator.modVolumeWidth.mParameter);
+  ParameterGUI::drawParameter(granulator.modSoundFileWidth.mParameter);
   ParameterGUI::endPanel();
 
   ParameterGUI::beginPanel("Presets", 625, 25);
