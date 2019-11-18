@@ -49,6 +49,11 @@ void ecSynth::init() {
   volumeLFO.registerChangeCallback([&](int value) {
     volumeDB.setWaveformIndex(value);
   });
+  soundFileLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  soundFileLFO.registerChangeCallback([&](int value) {
+    soundFile.setWaveformIndex(value);
+  });
+
   grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
   modSineFrequency.mParameter->registerChangeCallback([&](float value) {
@@ -76,6 +81,14 @@ void ecSynth::init() {
 
   grainSynth.allocatePolyphony<Grain>(1024);
   grainSynth.setDefaultUserData(this);
+
+  /**
+   * Input correct number of files into parameters. 
+   */
+  soundFile.mParameterInt->max(mClipNum);
+  soundFile.mLowRange->max(mClipNum);
+  soundFile.mHighRange->max(mClipNum);
+  soundFile.mHighRange->set(mClipNum);
 }
 
 
@@ -110,9 +123,13 @@ void ecSynth::onProcess(AudioIOData& io) {
       modStreamsWidth.getParam()));
     else grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
 
+    //if(modSoundFileWidth.getParam() > 0)
+    //  soundFile.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue,modSoundFileWidth.getParam());
+
     // CONTROL RATE LOOP (Executes every 4th sample)
     if(controlRateCounter == 4) {
       controlRateCounter = 0;
+      mModClip = soundFile.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue,modSoundFileWidth.getParam())-1;
 
     }
     controlRateCounter++;
@@ -131,7 +148,7 @@ void ecSynth::onProcess(AudioIOData& io) {
           modTapeHeadWidth.getParam(),
           playbackRate,
           modPlaybackRateWidth.getParam(),
-          soundClip[0], 
+          soundClip[mModClip], 
           modSineValue,
           modSquareValue,
           modSawValue,
@@ -170,6 +187,7 @@ void ecSynth::onTriggerOff() {
 
 void ecSynth::loadSoundFile(std::string fileName) {
     util::load(fileName, soundClip);
+    mClipNum++;
 }
 
 /**** TO DO TO DO TO DO ****/
