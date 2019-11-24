@@ -241,7 +241,7 @@ public:
  * param[in] The filename. An absolute filename is preferred.
  * param[out] A vector holding the audio buffers.
  */
-void load(std::string fileName, std::vector<buffer<float>*>& buf);
+bool load(std::string fileName, std::vector<buffer<float>*>& buf);
 
 }  // namespace util
 

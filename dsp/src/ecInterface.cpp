@@ -14,8 +14,9 @@ using namespace al;
 void ecInterface::onInit() {
 
   audioIO().append(mRecorder);
-  granulator.loadSoundFile("voicePop.wav");
-  granulator.loadSoundFile("1.voice.wav");
+  granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/voicePop.wav");
+  granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/1.voice.wav");
+  //granulator.loadDirectory("current relative to the executable"); //TO DO TO DO TO DO
   granulator.init();
   
   
@@ -190,7 +191,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
     // When the select file button is clicked, the file selector is shown
-    selector.start("");
+    selector.start("/Users/jkilgore/");
   }
   // The file selector knows internally whether it should be drawn or not,
   // so you should always draw it. Check the return value of the draw function
@@ -198,9 +199,16 @@ void ecInterface::onDraw(Graphics &g) {
   if (selector.drawFileSelector()) {
     auto selection = selector.getSelection();
     if (selection.count() > 0) {
+      previousFile = currentFile;
       currentFile = selection[0].filepath();
     }
   }
+  //std::cout << currentFile << std::endl;
+  if(currentFile != previousFile) {
+    granulator.loadSoundFile(currentFile);
+    previousFile = currentFile;
+  }
+
   ImGui::End();
 
   ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );

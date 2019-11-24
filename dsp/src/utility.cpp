@@ -108,30 +108,34 @@ void tukey::set(float seconds) {
 }
 
 /**** Load Soundfile into Memory ****/
-void util::load(
+bool util::load(
     std::string fileName,
     std::vector<buffer<float> *> &buf) {  // only works on mono files for now
+
   al::SearchPaths searchPaths;
   // searchPaths.addSearchPath("../../samples");
   // searchPaths.addSearchPath("..");
-  searchPaths.addSearchPath(
-      "/Users/jkilgore/Projects/EmissionControlPort/samples");
-  // searchPaths.addSearchPath("",true);
-  // searchPaths.addSearchPath("/Users/jkilgore/Applications/allo/EmissionControlPort/samples/voicePop.wav");
+  //searchPaths.addSearchPath("/Users/jkilgore/Projects/EmissionControlPort/samples");
+
+  // searchPaths.addSearchPath(
+  //   "../../samples");
+
   // searchPaths.addSearchPath("../../samples");
-  searchPaths.print();
+  //searchPaths.print();
 
   std::string filePath = searchPaths.find(fileName).filepath();
   gam::SoundFile soundFile;
-  soundFile.path(filePath);
+  soundFile.path(fileName);
 
   if (!soundFile.openRead()) {
     std::cout << "We could not read " << fileName << "!" << std::endl;
-    exit(1);
+    //exit(1); 
+    return 0;
   }
   if (soundFile.channels() != 1) {
     std::cout << fileName << " is not a mono file" << std::endl;
-    exit(1);
+    //exit(1);
+    return 0;
   }
 
   buffer<float> *a = new buffer<float>();
@@ -156,4 +160,5 @@ void util::load(
   buf.push_back(a);
 
   soundFile.close();
+  return 1;
 }

@@ -186,8 +186,14 @@ void ecSynth::onTriggerOff() {
 }
 
 void ecSynth::loadSoundFile(std::string fileName) {
-    util::load(fileName, soundClip);
-    mClipNum++;
+    bool temp = util::load(fileName, soundClip);
+    if(temp) {
+      mClipNum++;
+      soundFile.mParameterInt->max(mClipNum);
+      soundFile.mLowRange->max(mClipNum);
+      soundFile.mHighRange->max(mClipNum);
+      soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
+    }
 }
 
 /**** TO DO TO DO TO DO ****/

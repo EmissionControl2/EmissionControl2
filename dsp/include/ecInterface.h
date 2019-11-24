@@ -41,6 +41,7 @@ private:
   al::OutputRecorder mRecorder;
   al::FileSelector selector;
   std::string currentFile = "No file selected";
+  std::string previousFile = "No file selected";
 
 };
 
