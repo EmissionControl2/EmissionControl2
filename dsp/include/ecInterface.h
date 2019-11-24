@@ -8,6 +8,7 @@
 #include "al/app/al_App.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
+#include "al/ui/al_FileSelector.hpp"
 
 class ecInterface : public al::App
 {
@@ -38,6 +39,8 @@ private:
   ecSynth granulator;
   al::PresetHandler mPresets{"presets"};
   al::OutputRecorder mRecorder;
+  al::FileSelector selector;
+  std::string currentFile = "No file selected";
 
 };
 
