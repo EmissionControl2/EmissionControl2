@@ -185,6 +185,24 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::drawPresetHandler(&mPresets,12,4);
   ParameterGUI::endPanel();
 
+  ImGui::Begin("File Selector");
+
+  ImGui::Text("%s", currentFile.c_str());
+  if (ImGui::Button("Select File")) {
+    // When the select file button is clicked, the file selector is shown
+    selector.start("");
+  }
+  // The file selector knows internally whether it should be drawn or not,
+  // so you should always draw it. Check the return value of the draw function
+  // to know if the user has selected a file through the file selector
+  if (selector.drawFileSelector()) {
+    auto selection = selector.getSelection();
+    if (selection.count() > 0) {
+      currentFile = selection[0].filepath();
+    }
+  }
+  ImGui::End();
+
   ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );
   
   al::imguiEndFrame();
