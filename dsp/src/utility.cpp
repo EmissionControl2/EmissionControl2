@@ -107,6 +107,7 @@ void tukey::set(float seconds) {
   set();
 }
 
+
 /**** Load Soundfile into Memory ****/
 bool util::load(
     std::string fileName,
@@ -132,33 +133,42 @@ bool util::load(
     //exit(1); 
     return 0;
   }
-  if (soundFile.channels() != 1) {
-    std::cout << fileName << " is not a mono file" << std::endl;
+  if ( soundFile.channels() > 2 ) {
+    std::cout << fileName << " is not a mono/stereo file" << std::endl;
     //exit(1);
     return 0;
   }
 
   buffer<float> *a = new buffer<float>();
-  a->size = soundFile.samples();
+  a->size = soundFile.samples() ;
   a->data = new float[a->size];
+  a->channels = soundFile.channels();
   soundFile.read(a->data, a->size);
 
-  // Not working correctly :(
-  // if(soundFile.frameRate() != consts::SAMPLE_RATE) {
-  //   Buffer<float>* b = new Buffer<float>();
-  //   b->size = a->size/soundFile.frameRate() * consts::SAMPLE_RATE;
-  //   b->data = new float[b->size];
-  //   SRC_DATA *conversion = new SRC_DATA{a->data, b->data, a->size, b->size};
-  //   conversion->src_ratio = soundFile.frameRate()/consts::SAMPLE_RATE;
-  //   src_simple(conversion, 0, soundFile.channels());
-  //   buf.push_back(b);
-  //   std::cout<< "b->size: " << b->size << " a->size: " << a->size <<
-  //   std::endl; delete[] a->data; delete conversion;
+  /**
+   * If buffer sample rate is not equal to synth's sample rate, convert.
+   */
+  if(soundFile.frameRate() != consts::SAMPLE_RATE) {
+    buffer<float>* b = new buffer<float>();
+    b->size = (a->size/a->channels)/soundFile.frameRate() * consts::SAMPLE_RATE;
+    b->data = new float[b->size];
+    b->channels = soundFile.channels();
+    SRC_DATA *conversion = new SRC_DATA;
+    conversion->data_in = a->data;
+    conversion->input_frames = a->size/a->channels;
+    conversion->data_out = b->data;
+    conversion->output_frames = b->size/b->channels;
+    conversion->src_ratio = consts::SAMPLE_RATE/soundFile.frameRate();
+    src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
+    buf.push_back(b);
+    //std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
+    delete[] a->data; delete conversion;
 
-  // } else buf.push_back(a);
+  } else buf.push_back(a);
 
-  buf.push_back(a);
-
+  std::cout <<  a->get(48000) << std::endl;
   soundFile.close();
   return 1;
 }
+
+
