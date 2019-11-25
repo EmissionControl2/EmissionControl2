@@ -168,6 +168,7 @@ class buffer {
 public:
   T* data;
   unsigned size = 0;
+  int channels;
 
   virtual ~buffer() {
     printf("Buffer deleted.\n");
@@ -245,16 +246,5 @@ bool load(std::string fileName, std::vector<buffer<float>*>& buf);
 
 }  // namespace util
 
-// typedef struct
-// {
-//   float  *data_in, *data_out ;
-
-//   long   input_frames, output_frames ;
-//   long   input_frames_used, output_frames_gen ;
-
-//   int    end_of_input ;
-
-//   double src_ratio ;
-// } SRC_DATA ;
 
 #endif

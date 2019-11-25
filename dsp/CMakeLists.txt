@@ -7,7 +7,7 @@ project(${APP_NAME} VERSION 0.5
                     LANGUAGES CXX)
 
 add_subdirectory(external/allolib)
-#add_subdirectory(external/libsamplerate)
+add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
 set(includes
@@ -47,8 +47,8 @@ target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
-target_link_libraries(${APP_NAME} PUBLIC al ecLib "${AL_EXT_LIBRARIES}")
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}")
+target_link_libraries(${APP_NAME} PUBLIC al ecLib "${AL_EXT_LIBRARIES}" "/Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/build/libsamplerate.a" )
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" "/Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/build/libsamplerate.a")
 
 set_target_properties(ecLib PROPERTIES
   CXX_STANDARD 14

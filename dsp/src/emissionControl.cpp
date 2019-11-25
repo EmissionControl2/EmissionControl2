@@ -468,22 +468,22 @@ void Grain::configureGrain(grainParameters& list) {
   this->source = list.source;
 
   if (list.modTapeHeadWidth > 0)
-    startSample = list.source->size *
+    startSample = source->size/source->channels *
                   (list.tapeHead.getModParam(
                       list.modSineVal, list.modSquareVal, list.modSawVal,
                       list.modNoiseVal, list.modTapeHeadWidth));
   else
-    startSample = list.source->size * list.tapeHead.getParam();
+    startSample = source->size/source->channels * list.tapeHead.getParam();
 
   if (list.modPlaybackRateWidth > 0)
-    endSample = startSample +
+    endSample = startSample + source->channels * (
                 (mDurationMs / 1000) * consts::SAMPLE_RATE *
                     abs(list.playbackRate.getModParam(
                         list.modSineVal, list.modSquareVal, list.modSawVal,
-                        list.modNoiseVal, list.modPlaybackRateWidth));
+                        list.modNoiseVal, list.modPlaybackRateWidth)) );
   else
-    endSample = startSample + (mDurationMs / 1000) * consts::SAMPLE_RATE *
-                                  abs(list.playbackRate.getParam());
+    endSample = startSample + source->channels * ( (mDurationMs / 1000) * consts::SAMPLE_RATE * abs(list.playbackRate.getParam()) );
+
   if (list.playbackRate.getParam() < 0)
     index.set(endSample, startSample, mDurationMs / 1000);
   else
@@ -495,8 +495,17 @@ void Grain::onProcess(al::AudioIOData& io) {
     envVal = gEnv();
     sourceIndex = index();
     if (sourceIndex > source->size) sourceIndex -= source->size;
-    io.out(0) += source->get(sourceIndex) * envVal;
-    io.out(1) += source->get(sourceIndex) * envVal;
+
+    if(source->channels == 1) {
+      io.out(0) += source->get(sourceIndex) * envVal;
+      io.out(1) += source->get(sourceIndex) * envVal;
+    }
+    else if (source->channels == 2) {
+      //std::cout << source->get() << std::endl;
+      io.out(0) += source->get(sourceIndex) * envVal;
+      io.out(1) += source->get(sourceIndex+1) * envVal;
+    }
+
     if (gEnv.done()) {
       *mPActiveVoices -= 1;  // This will remove a grain from the active list.
       free();
