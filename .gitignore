@@ -7,3 +7,4 @@ imgui.ini
 *.wav
 *.o
 .vscode/
+sc/
