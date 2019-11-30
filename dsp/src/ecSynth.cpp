@@ -4,6 +4,19 @@
 #include "ecSynth.h"
 #include "utility.h"
 
+/**** ALLOLIB ****/
+#include "al/io/al_File.hpp"
+
+/**** C STANDARD ****/
+#include <stdio.h>  /* defines FILENAME_MAX */
+#ifdef WINDOWS
+    #include <direct.h>
+    #define GetCurrentDir _getcwd
+#else
+    #include <unistd.h>
+    #define GetCurrentDir getcwd
+#endif
+
 using namespace al;
 
 /**** ecSynth Implementation ****/
@@ -194,6 +207,21 @@ void ecSynth::loadSoundFile(std::string fileName) {
       soundFile.mHighRange->max(mClipNum);
       soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
     }
+}
+
+void ecSynth::loadInitSoundFiles() {
+  std::string execPath = util::getExecutablePath();
+  File f(execPath);
+  std::string initDir = f.directory(execPath) + "samples/";
+  FileList initAudioFiles = fileListFromDir(initDir);
+  for(auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
+    if(i->file().substr(i->file().length() - 4) == ".wav" || i->file().substr(i->file().length() - 4) == ".aif" ) {
+      loadSoundFile(i->filepath());
+    } else if(i->file().substr(i->file().length() - 5) == ".aiff") {
+      loadSoundFile(i->filepath());
+    }
+  }
+
 }
 
 /**** TO DO TO DO TO DO ****/

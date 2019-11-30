@@ -1,13 +1,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <chrono>
 #include <cmath>
-#include <cstdio>
-#include "../external/libsamplerate/src/samplerate.h"
 #include "Gamma/Gamma.h"
-#include "Gamma/SoundFile.h"
-#include "al/io/al_File.hpp"
 #include "const.h"
 
 namespace util {
@@ -107,22 +102,7 @@ class tukey {
    * 
    * @return Amplitude value at a point in time.
    */
-  float operator()() {
-    if (currentS < (alpha * totalS) / 2) {
-      value =
-          0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
-      currentS++;
-    } else if (currentS <= totalS * (1 - alpha / 2)) {
-      value = 1;
-      currentS++;
-    } else if (currentS <= totalS) {
-      value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) -
-                                          (2 / alpha) + 1)));
-      currentS++;
-    } else
-      currentS = 0;
-    return value;
-  }
+  float operator()();
 
    /**
    * Used to reset values to original position.
@@ -168,6 +148,7 @@ class buffer {
 public:
   T* data;
   unsigned size = 0;
+  int channels;
 
   virtual ~buffer() {
     printf("Buffer deleted.\n");
@@ -236,25 +217,22 @@ public:
 };
 
 /**
- * Load soundfile into a buffer in memory.
+ * @brief Load soundfile into a buffer in memory.
  *
- * param[in] The filename. An absolute filename is preferred.
- * param[out] A vector holding the audio buffers.
+ * @param[in] The filename. An absolute filename is preferred.
+ * @param[out] A vector holding the audio buffers.
  */
 bool load(std::string fileName, std::vector<buffer<float>*>& buf);
 
+
+/**
+ * @brief Get absolute path of executable.
+ */
+std::string getExecutablePath();
+
+
+
 }  // namespace util
 
-// typedef struct
-// {
-//   float  *data_in, *data_out ;
-
-//   long   input_frames, output_frames ;
-//   long   input_frames_used, output_frames_gen ;
-
-//   int    end_of_input ;
-
-//   double src_ratio ;
-// } SRC_DATA ;
 
 #endif

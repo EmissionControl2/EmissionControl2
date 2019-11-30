@@ -84,6 +84,11 @@ public:
   void loadSoundFile(std::string fileName);
 
   /**
+   * @brief Load sound files from designated sample folder.
+   */
+  void loadInitSoundFiles();
+
+  /**
    * @brief Print out what the synth is doing at runtime. 
    *        Used for debugging purposes.
    * 

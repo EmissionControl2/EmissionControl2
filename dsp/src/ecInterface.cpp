@@ -14,9 +14,9 @@ using namespace al;
 void ecInterface::onInit() {
 
   audioIO().append(mRecorder);
-  granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/voicePop.wav");
-  granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/1.voice.wav");
-  //granulator.loadDirectory("current relative to the executable"); //TO DO TO DO TO DO
+  granulator.loadInitSoundFiles();
+  // granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/voicePop.wav");
+  // granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/1.voice.wav");
   granulator.init();
   
   
@@ -191,7 +191,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
     // When the select file button is clicked, the file selector is shown
-    selector.start("/Users/jkilgore/");
+    selector.start("/Users/jkilgore/Projects/EmissionControlPort/samples");
   }
   // The file selector knows internally whether it should be drawn or not,
   // so you should always draw it. Check the return value of the draw function

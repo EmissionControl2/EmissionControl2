@@ -1,7 +1,9 @@
+ec_2019/
 bin/
 build/
 .DS_STORE
 imgui.ini
+*.aiff
 *.wav
 *.o
 .vscode/
