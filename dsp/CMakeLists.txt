@@ -7,8 +7,10 @@ project(${APP_NAME} VERSION 0.5
                     LANGUAGES CXX)
 
 add_subdirectory(external/allolib)
-#add_subdirectory(external/libsamplerate)
+add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
+
+find_package(Boost REQUIRED system)
 
 set(includes
   include/emissionControl.h
@@ -30,6 +32,7 @@ add_executable(${APP_NAME}
 )
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
+target_include_directories(${APP_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -46,9 +49,19 @@ add_library(ecLib
 target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
+message(STATUS "---------------------")
+message(STATUS "Boost_FOUND: ${Boost_FOUND}")
+message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
+message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
+message(STATUS "---------------------")
+
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
-target_link_libraries(${APP_NAME} PUBLIC al ecLib "${AL_EXT_LIBRARIES}")
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}")
+
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" "/Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/build/libsamplerate.a" ${Boost_LIBRARIES})
+
+target_link_libraries(${APP_NAME} PUBLIC ecLib)
+
 
 set_target_properties(ecLib PROPERTIES
   CXX_STANDARD 14

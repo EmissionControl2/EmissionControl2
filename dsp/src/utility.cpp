@@ -1,4 +1,25 @@
 #include "utility.h"
+#include "Gamma/SoundFile.h"
+#include "al/io/al_File.hpp"
+#include "../external/libsamplerate/src/samplerate.h"
+
+#include <string>
+#include <boost/predef/os.h>
+
+#if (BOOST_OS_WINDOWS)
+#  include <stdlib.h>
+#elif (BOOST_OS_SOLARIS)
+#  include <stdlib.h>
+#  include <limits.h>
+#elif (BOOST_OS_LINUX)
+#  include <unistd.h>
+#  include <limits.h>
+#elif (BOOST_OS_MACOS)
+#  include <mach-o/dyld.h>
+#elif (BOOST_OS_BSD_FREE)
+#  include <sys/types.h>
+#  include <sys/sysctl.h>
+#endif
 
 using namespace util;
 
@@ -90,6 +111,23 @@ void expo::set(float seconds) {
 
 /**** tukey Class Implementation ****/
 
+float tukey::operator()() {
+  if (currentS < (alpha * totalS) / 2) {
+    value =
+        0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
+    currentS++;
+  } else if (currentS <= totalS * (1 - alpha / 2)) {
+    value = 1;
+    currentS++;
+  } else if (currentS <= totalS) {
+    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) -
+                                        (2 / alpha) + 1)));
+    currentS++;
+  } else
+    currentS = 0;
+  return value;
+}
+
 void tukey::set() {
   if (totalS <= 0) totalS = 1;
   currentS = 0;
@@ -106,6 +144,7 @@ void tukey::set(float seconds) {
   totalS = seconds * consts::SAMPLE_RATE;
   set();
 }
+
 
 /**** Load Soundfile into Memory ****/
 bool util::load(
@@ -132,33 +171,89 @@ bool util::load(
     //exit(1); 
     return 0;
   }
-  if (soundFile.channels() != 1) {
-    std::cout << fileName << " is not a mono file" << std::endl;
+  if ( soundFile.channels() > 2 ) {
+    std::cout << fileName << " is not a mono/stereo file" << std::endl;
     //exit(1);
     return 0;
   }
 
   buffer<float> *a = new buffer<float>();
-  a->size = soundFile.samples();
+  a->size = soundFile.samples() ;
   a->data = new float[a->size];
+  a->channels = soundFile.channels();
+  //a->channels = 1; //Use for loading in non-audio files
   soundFile.read(a->data, a->size);
 
-  // Not working correctly :(
-  // if(soundFile.frameRate() != consts::SAMPLE_RATE) {
-  //   Buffer<float>* b = new Buffer<float>();
-  //   b->size = a->size/soundFile.frameRate() * consts::SAMPLE_RATE;
-  //   b->data = new float[b->size];
-  //   SRC_DATA *conversion = new SRC_DATA{a->data, b->data, a->size, b->size};
-  //   conversion->src_ratio = soundFile.frameRate()/consts::SAMPLE_RATE;
-  //   src_simple(conversion, 0, soundFile.channels());
-  //   buf.push_back(b);
-  //   std::cout<< "b->size: " << b->size << " a->size: " << a->size <<
-  //   std::endl; delete[] a->data; delete conversion;
+  /**
+   * If buffer sample rate is not equal to synth's sample rate, convert.
+   * Comment out if you want to read arbitrary files.
+   */
+  if(soundFile.frameRate() != consts::SAMPLE_RATE) {
+    buffer<float>* b = new buffer<float>();
+    b->size = (a->size/a->channels)/soundFile.frameRate() * consts::SAMPLE_RATE;
+    b->data = new float[b->size];
+    b->channels = soundFile.channels();
+    SRC_DATA *conversion = new SRC_DATA;
+    conversion->data_in = a->data;
+    conversion->input_frames = a->size/a->channels;
+    conversion->data_out = b->data;
+    conversion->output_frames = b->size/b->channels;
+    conversion->src_ratio = consts::SAMPLE_RATE/soundFile.frameRate();
+    src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
+    buf.push_back(b);
+    //std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
+    delete[] a->data; delete conversion;
 
-  // } else buf.push_back(a);
-
-  buf.push_back(a);
+  } else buf.push_back(a);
+  
+  //buf.push_back(a); //Use for loading in non audio files
 
   soundFile.close();
   return 1;
 }
+
+
+
+/*
+ * Returns the full path to the currently running executable,
+ * or an empty string in case of failure.
+ */
+std::string util::getExecutablePath() {
+#if (BOOST_OS_WINDOWS)
+    char *exePath;
+    if (_get_pgmptr(&exePath) != 0)
+        exePath = "";
+#elif (BOOST_OS_SOLARIS)
+    char exePath[PATH_MAX];
+    if (realpath(getexecname(), exePath) == NULL)
+        exePath[0] = '\0';
+#elif (BOOST_OS_LINUX)
+    char exePath[PATH_MAX];
+    ssize_t len = ::readlink("/proc/self/exe", exePath, sizeof(exePath));
+    if (len == -1 || len == sizeof(exePath))
+        len = 0;
+    exePath[len] = '\0';
+#elif (BOOST_OS_MACOS)
+    char exePath[PATH_MAX];
+    uint32_t len = sizeof(exePath);
+    if (_NSGetExecutablePath(exePath, &len) != 0) {
+        exePath[0] = '\0'; // buffer too small (!)
+    } else {
+        // resolve symlinks, ., .. if possible
+        char *canonicalPath = realpath(exePath, NULL);
+        if (canonicalPath != NULL) {
+            strncpy(exePath,canonicalPath,len);
+            free(canonicalPath);
+        }
+    }
+#elif (BOOST_OS_BSD_FREE)
+    char exePath[2048];
+    int mib[4];  mib[0] = CTL_KERN;  mib[1] = KERN_PROC;  mib[2] = KERN_PROC_PATHNAME;  mib[3] = -1;
+    size_t len = sizeof(exePath);
+    if (sysctl(mib, 4, exePath, &len, NULL, 0) != 0)
+        exePath[0] = '\0';
+#endif
+    return std::string(exePath);
+}
+
+
