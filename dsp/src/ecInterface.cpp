@@ -2,9 +2,10 @@
 
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
+#include "utility.h"
 
 /**** AlloLib LIB ****/
-#include "al_ext/soundfile/al_SoundfileRecordGUI.hpp"
+#include "al/io/al_File.hpp"
 
 
 using namespace al;
@@ -12,13 +13,19 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
+  std::string execPath = util::getExecutablePath();
+  File f(execPath);
+  //Set output directory for presets.
+  mPresets.setRootPath(f.directory(execPath) + "presets/");
+  //Set output directory of recorded files.
+  soundOutput = f.directory(execPath) + "soundOutput/";
 
   audioIO().append(mRecorder);
-  granulator.loadInitSoundFiles();
-  // granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/voicePop.wav");
-  // granulator.loadSoundFile("/Users/jkilgore/Projects/EmissionControlPort/samples/1.voice.wav");
+
+  // Load in all files in {ExecutableLocation}/samples/
+  initialDirectory = granulator.loadInitSoundFiles();
+
   granulator.init();
-  
   
 }
 
@@ -127,7 +134,7 @@ void ecInterface::onDraw(Graphics &g) {
   //Draw GUI
 
   ParameterGUI::beginPanel("Recorder",950,25);
-  SoundFileRecordGUI::drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut());
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(),soundOutput);
   ParameterGUI::endPanel();
 
   ParameterGUI::beginPanel("LFO Controls", 25, 25,600);
@@ -191,7 +198,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
     // When the select file button is clicked, the file selector is shown
-    selector.start("/Users/jkilgore/Projects/EmissionControlPort/samples");
+    selector.start(initialDirectory);
   }
   // The file selector knows internally whether it should be drawn or not,
   // so you should always draw it. Check the return value of the draw function
@@ -217,3 +224,61 @@ void ecInterface::onDraw(Graphics &g) {
 
   al::imguiDraw();
 }
+
+
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels, 
+  std::string directory, uint32_t bufferSize) {
+
+    struct SoundfileRecorderState {
+        bool recordButton;
+        bool overwriteButton;
+    };
+    static std::map<SoundFileBufferedRecord *, SoundfileRecorderState> stateMap;
+    if(stateMap.find(recorder) == stateMap.end()) {
+        stateMap[recorder] = SoundfileRecorderState{0, false};
+    }
+    SoundfileRecorderState &state = stateMap[recorder];
+    ImGui::PushID(std::to_string((unsigned long) recorder).c_str());
+    if (ImGui::CollapsingHeader("Record Audio", ImGuiTreeNodeFlags_CollapsingHeader | ImGuiTreeNodeFlags_DefaultOpen)) {
+        static char buf1[64] = "test.wav"; ImGui::InputText("Record Name", buf1, 63);
+        if (state.recordButton) {
+          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
+          ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0, 0.5, 0.5, 1.0));
+        }
+        std::string buttonText = state.recordButton ? "Stop" : "Record";
+        bool recordButtonClicked = ImGui::Button(buttonText.c_str());
+        if (state.recordButton) {
+          ImGui::PopStyleColor();
+          ImGui::PopStyleColor();
+        }
+        if (recordButtonClicked) {
+            state.recordButton = !state.recordButton;
+            if (state.recordButton) {
+              uint32_t ringBufferSize;
+              if (bufferSize == 0) {
+                ringBufferSize = 8192;
+              } else {
+                ringBufferSize = bufferSize * numChannels * 4;
+              }
+              std::string filename;
+              if (!state.overwriteButton) {
+                filename = buf1;
+                int counter = 0;
+                while(File::exists(directory + filename) && counter < 9999) {
+                  filename = buf1;
+                  int lastDot = filename.find_last_of(".");
+                  filename = filename.substr(0, lastDot) + std::to_string(counter++) + filename.substr(lastDot);
+                }
+              }
+              if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize)) {
+                std::cerr << "Error opening file for record" << std::endl;
+              }
+            } else {
+                recorder->close();
+            }
+        }
+        ImGui::SameLine();
+        ImGui::Checkbox("Overwrite", &state.overwriteButton);
+    }
+    ImGui::PopID();
+  }

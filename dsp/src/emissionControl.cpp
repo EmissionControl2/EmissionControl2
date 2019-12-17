@@ -501,7 +501,6 @@ void Grain::onProcess(al::AudioIOData& io) {
       io.out(1) += source->get(sourceIndex) * envVal;
     }
     else if (source->channels == 2) {
-      //std::cout << source->get() << std::endl;
       io.out(0) += source->get(sourceIndex) * envVal;
       io.out(1) += source->get(sourceIndex+1) * envVal;
     }

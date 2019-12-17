@@ -85,8 +85,10 @@ public:
 
   /**
    * @brief Load sound files from designated sample folder.
+   * 
+   * @return Return the directory path where the files were loaded in from.
    */
-  void loadInitSoundFiles();
+  std::string loadInitSoundFiles();
 
   /**
    * @brief Print out what the synth is doing at runtime. 

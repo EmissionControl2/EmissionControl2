@@ -49,16 +49,18 @@ add_library(ecLib
 target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-message(STATUS "---------------------")
-message(STATUS "Boost_FOUND: ${Boost_FOUND}")
-message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
-message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
-message(STATUS "---------------------")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # On macOS if jack is present, RtMidi will link to jack but not provide the
+    # /usr/local/lib location as link directory. This statement only serves the
+    # purpose of working around that bug. Perhaps can be removed on future
+    # updates of RtMidi
+    link_directories("/usr/local/lib")
+    link_directories("/Library/Frameworks/Jackmp.framework/Versions/A/")
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" "/Users/jkilgore/Projects/EmissionControlPort/dsp/external/libsamplerate/build/libsamplerate.a" ${Boost_LIBRARIES})
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a ${Boost_LIBRARIES})
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib)
 
