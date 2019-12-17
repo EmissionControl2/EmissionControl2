@@ -231,7 +231,6 @@ bool load(std::string fileName, std::vector<buffer<float>*>& buf);
 std::string getExecutablePath();
 
 
-
 }  // namespace util
 
 

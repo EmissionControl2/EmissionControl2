@@ -209,7 +209,7 @@ void ecSynth::loadSoundFile(std::string fileName) {
     }
 }
 
-void ecSynth::loadInitSoundFiles() {
+std::string ecSynth::loadInitSoundFiles() {
   std::string execPath = util::getExecutablePath();
   File f(execPath);
   std::string initDir = f.directory(execPath) + "samples/";
@@ -221,6 +221,8 @@ void ecSynth::loadInitSoundFiles() {
       loadSoundFile(i->filepath());
     }
   }
+
+  return initDir;
 
 }
 
