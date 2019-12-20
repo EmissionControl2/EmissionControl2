@@ -57,7 +57,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a)
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a )
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib)
 
@@ -69,6 +69,8 @@ set_target_properties(ecLib PROPERTIES
 
 # binaries are put into the ./bin directory by default
 set_target_properties(${APP_NAME} PROPERTIES
+  BUILD_WITH_INSTALL_RPATH 1
+  INSTALL_NAME_DIR "@rpath"
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin
@@ -76,5 +78,10 @@ set_target_properties(${APP_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
 )
 
+set(${CMAKE_CURRENT_LIST_DIR}bin/resources/libsndfile.dylib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/buildTest)
 
+add_custom_command(TARGET ${APP_NAME}
+    POST_BUILD COMMAND 
+    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/libraries" #libsndfile.1.dylib"
+    $<TARGET_FILE:${APP_NAME}>)
