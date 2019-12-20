@@ -7,16 +7,6 @@
 /**** ALLOLIB ****/
 #include "al/io/al_File.hpp"
 
-/**** C STANDARD ****/
-#include <stdio.h>  /* defines FILENAME_MAX */
-#ifdef WINDOWS
-    #include <direct.h>
-    #define GetCurrentDir _getcwd
-#else
-    #include <unistd.h>
-    #define GetCurrentDir getcwd
-#endif
-
 using namespace al;
 
 /**** ecSynth Implementation ****/
