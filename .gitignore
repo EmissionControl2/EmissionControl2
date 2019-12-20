@@ -5,6 +5,8 @@ build/
 imgui.ini
 *.aiff
 *.wav
+!samples/*.aiff
+!samples/*.wav
 *.o
 .vscode/
 sc/
