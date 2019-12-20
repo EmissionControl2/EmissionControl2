@@ -10,8 +10,6 @@ add_subdirectory(external/allolib)
 add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
-find_package(Boost REQUIRED system)
-
 set(includes
   include/emissionControl.h
   include/ecInterface.h
@@ -32,7 +30,6 @@ add_executable(${APP_NAME}
 )
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
-target_include_directories(${APP_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -60,7 +57,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a ${Boost_LIBRARIES})
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a)
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib)
 
