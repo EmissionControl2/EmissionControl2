@@ -13,12 +13,12 @@ using namespace al;
 
 void ecSynth::setIO(al::AudioIOData* io) {
 	grainScheduler.setSamplingRate(io->fps());
-	mSamplingRate = io->fps();
+	setGlobalSamplingRate(io->fps());
 }
 
 void ecSynth::init(al::AudioIOData* io) {
 
-	mSamplingRate = io->fps();
+	setGlobalSamplingRate(io->fps());
 
 	mPActiveVoices = &mActiveVoices;
 
@@ -166,7 +166,7 @@ void ecSynth::onProcess(AudioIOData& io) {
 					mPActiveVoices
 				};
 
-				voice->configureGrain(list,getSamplingRate());
+				voice->configureGrain(list,getGlobalSamplingRate());
 				
 				mActiveVoices++; 
 				grainSynth.triggerOn(voice, io.frame());
@@ -196,14 +196,14 @@ void ecSynth::onTriggerOff() {
 }
 
 void ecSynth::loadSoundFile(std::string fileName) {
-		bool temp = util::load(fileName, soundClip);
-		if(temp) {
-			mClipNum++;
-			soundFile.mParameterInt->max(mClipNum);
-			soundFile.mLowRange->max(mClipNum);
-			soundFile.mHighRange->max(mClipNum);
-			soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
-		}
+	bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true);
+	if(temp) {
+		mClipNum++;
+		soundFile.mParameterInt->max(mClipNum);
+		soundFile.mLowRange->max(mClipNum);
+		soundFile.mHighRange->max(mClipNum);
+		soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
+	}
 }
 
 std::string ecSynth::loadInitSoundFiles() {
@@ -218,9 +218,20 @@ std::string ecSynth::loadInitSoundFiles() {
 			loadSoundFile(i->filepath());
 		}
 	}
-
 	return initDir;
+}
 
+void ecSynth::clearInitSoundFiles() {
+	for(auto i = soundClip.begin(); i != soundClip.end(); i++) {
+		(*i)->deleteBuffer();
+	}
+	soundClip.clear();
+
+	mClipNum = 0;
+	soundFile.mParameterInt->max(mClipNum);
+	soundFile.mLowRange->max(mClipNum);
+	soundFile.mHighRange->max(mClipNum);
+	soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
 }
 
 /**** TO DO TO DO TO DO ****/

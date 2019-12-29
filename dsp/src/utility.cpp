@@ -137,8 +137,8 @@ void tukey::set(float seconds) {
 
 /**** Load Soundfile into Memory ****/
 bool util::load(
-		std::string fileName,
-		std::vector<buffer<float> *> &buf) {  // only works on mono files for now
+		std::string fileName, std::vector<buffer<float> *> &buf,
+		float samplingRate,bool resample) {  
 
 	al::SearchPaths searchPaths;
 
@@ -164,30 +164,32 @@ bool util::load(
 	//a->channels = 1; //Use for loading in non-audio files
 	soundFile.read(a->data, a->size);
 
-	/**
-	 * If buffer sample rate is not equal to synth's sample rate, convert.
-	 * Comment out if you want to read arbitrary files.
-	 */
-	if(soundFile.frameRate() != consts::SAMPLE_RATE) {
-		buffer<float>* b = new buffer<float>();
-		b->size = (a->size/a->channels)/soundFile.frameRate() * consts::SAMPLE_RATE;
-		b->data = new float[b->size];
-		b->channels = soundFile.channels();
-		SRC_DATA *conversion = new SRC_DATA;
-		conversion->data_in = a->data;
-		conversion->input_frames = a->size/a->channels;
-		conversion->data_out = b->data;
-		conversion->output_frames = b->size/b->channels;
-		conversion->src_ratio = consts::SAMPLE_RATE/soundFile.frameRate();
-		src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
-		buf.push_back(b);
-		//std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
-		delete[] a->data; delete conversion;
+	if(resample) { //We care about resampling.
 
-	} else buf.push_back(a);
-	
-	//buf.push_back(a); //Use for loading in non audio files
+		/**
+		 * If buffer sample rate is not equal to synth's sample rate, convert.
+		 * Comment out if you want to read arbitrary files.
+		 */
+		if(soundFile.frameRate() != samplingRate) {
+			buffer<float>* b = new buffer<float>();
+			b->size = (a->size/a->channels)/soundFile.frameRate() * samplingRate;
+			b->data = new float[b->size];
+			b->channels = soundFile.channels();
+			SRC_DATA *conversion = new SRC_DATA;
+			conversion->data_in = a->data;
+			conversion->input_frames = a->size/a->channels;
+			conversion->data_out = b->data;
+			conversion->output_frames = b->size/b->channels;
+			conversion->src_ratio = samplingRate/soundFile.frameRate();
+			src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
+			buf.push_back(b);
+			//std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
+			delete[] a->data; delete conversion;
 
+		} else buf.push_back(a);
+	}
+	else buf.push_back(a); // We don't care about resampling the audio buffer.
+							// Note: can be used to load in non-audio files ;)
 	soundFile.close();
 	return 1;
 }

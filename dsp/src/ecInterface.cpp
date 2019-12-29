@@ -13,6 +13,8 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
+	granulator.init(&audioIO());
+
 	std::string execPath = util::getExecutablePath();
 	File f(execPath);
 	//Set output directory for presets.
@@ -24,9 +26,6 @@ void ecInterface::onInit() {
 
 	// Load in all files in {ExecutableLocation}/samples/
 	initialDirectory = granulator.loadInitSoundFiles();
-
-	granulator.init(&audioIO());
-	
 }
 
 void ecInterface::onCreate() {
@@ -294,7 +293,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 				io->framesPerBuffer(std::stof(bufferSizes[state.currentBufSize]));
 				io->device(AudioDevice(state.currentDevice));
 				granulator.setIO(io);
-				// onInit();
+				granulator.clearInitSoundFiles();
+				initialDirectory = granulator.loadInitSoundFiles();
 				io->open();
 				io->start();
 			}

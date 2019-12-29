@@ -96,6 +96,12 @@ public:
 	std::string loadInitSoundFiles();
 
 	/**
+	 * @brief Clear sound files stored in memory.
+	 * 
+	 */
+	void clearInitSoundFiles();
+
+	/**
 	 * @brief Print out what the synth is doing at runtime. 
 	 *        Used for debugging purposes.
 	 * 
@@ -111,18 +117,16 @@ public:
 	 * 
 	 * @return The number of active voices.
 	 */
-	int getActiveVoices() {
-		return mActiveVoices;
-	}
+	int getActiveVoices() {return mActiveVoices;}
 
-/**
- * @brief Get sampling rate of synth.
- * 
- * @return sampling rate
- */
-	float getSamplingRate() {
-		return mSamplingRate;
-	}
+	/**
+	 * @brief Get sampling rate of synth.
+	 * 
+	 * @return sampling rate
+	 */
+	float getGlobalSamplingRate() {return mGlobalSamplingRate;}
+
+	void setGlobalSamplingRate(float samplingRate) {mGlobalSamplingRate = samplingRate;}
 
 	/**
 	 * WORK IN PROGRESS
@@ -134,7 +138,7 @@ public:
 	void throttle(float time, float ratio);
 
 private:
-	float mSamplingRate;
+	float mGlobalSamplingRate;
 
 	al::PolySynth grainSynth {al::PolySynth::TIME_MASTER_AUDIO}; /* Polyhpony and interface to audio callback */
 	voiceScheduler grainScheduler; /* Schedule grains */

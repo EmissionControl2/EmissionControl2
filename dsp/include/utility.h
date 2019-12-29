@@ -186,6 +186,11 @@ public:
 		if (data) delete[] data;
 	}
 
+	void deleteBuffer() {
+		fflush(stdout);
+		if (data) delete[] data;
+	}
+
 	T& operator[](unsigned index) { return data[index]; }
 	T operator[](const T index) const { return get(index); }
 
@@ -253,7 +258,9 @@ public:
  * @param[in] The filename. An absolute filename is preferred.
  * @param[out] A vector holding the audio buffers.
  */
-bool load(std::string fileName, std::vector<buffer<float>*>& buf);
+bool load(
+	std::string fileName, std::vector<buffer<float>*>& buf, 
+	float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
 
 
 /**
