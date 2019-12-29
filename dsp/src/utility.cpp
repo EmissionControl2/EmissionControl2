@@ -14,11 +14,11 @@
 
 #include <stdio.h>  /* defines FILENAME_MAX */
 #ifdef AL_WINDOWS
-    #include <direct.h>
-    #define GetCurrentDir _getcwd
+	#include <direct.h>
+	#define GetCurrentDir _getcwd
 #else
-    #include <unistd.h>
-    #define GetCurrentDir getcwd
+	#include <unistd.h>
+	#define GetCurrentDir getcwd
 #endif
 
 using namespace util;
@@ -26,190 +26,170 @@ using namespace util;
 /**** line Class Implementation ****/
 
 float line::operator()() {
-  if (value != target) {
-    value += increment;
-    if ((increment < 0) ? (value < target) : (value > target)) value = target;
-  }
-  return value;
+	if (value != target) {
+		value += increment;
+		if ((increment < 0) ? (value < target) : (value > target)) value = target;
+	}
+	return value;
 }
 
 void line::set(float v, float t, float s) {
-  value = v;
-  target = t;
-  seconds = s;
-  if (seconds <= 0) seconds = 1 / consts::SAMPLE_RATE;
-  increment = (target - value) / (seconds * consts::SAMPLE_RATE);
+	value = v;
+	target = t;
+	seconds = s;
+	if (seconds <= 0) seconds = 1 / mSamplingRate;
+	increment = (target - value) / (seconds * mSamplingRate);
 }
 
 /**** expo Class Implementation ****/
 float expo::operator()() {
-  if (!mReverse) {
-    if (mX < mThresholdX * 0.01) {  // ratio of initial ramp up to 1
-      mY = powf(M_E, 100 * mX - mThresholdX);  // bias needed to reach that
-                                                // value in time (SEE DESMOS)
-      mX += mIncrementX;
-    } else if (mX < mThresholdX) {
-      mY = powf(M_E,
-                -1 * mX + (mThresholdX *
-                            0.01));  // this compensates for initial ramp up
-      mX += mIncrementX;
-    } else {
-      mY = mThresholdY;
-      mX = 0;
-    }
-  } else {  // reversed Logic
-    if (mX < mThresholdX * 0.92761758634) {
-      mY = powf(M_E,
-                0.9 * (mX - mThresholdX +
-                        0.5));  // (mx - thresh + bias ) where bias determines
-                                // the ratio of envelope (mThresholdX * ratio)
-      mX += mIncrementX;
-    } else if (mX <
-                mThresholdX * 0.95) {  // small sustain to makeup for percieved
-                                      // volume loss (in relation to expodec)
-      mY = 1;
-      mX += mIncrementX;
-    } else if (mX < mThresholdX) {  // quickly bring envelope down to zero
-                                    // before marking as done.
-      mY = powf(M_E, -20 * ((mX) - (mThresholdX * 0.95)));
-      mX += mIncrementX;
-    } else {
-      mY = mThresholdY;
-      mX = 0;
-    }
-  }
-  return mY;
+	if (!mReverse) {
+		if (mX < mThresholdX * 0.01) {  // ratio of initial ramp up to 1
+			mY = powf(M_E, 100 * mX - mThresholdX);  // bias needed to reach that
+			mX += mIncrementX; // value in time (SEE DESMOS)
+		} else if (mX < mThresholdX) {
+			mY = powf(M_E, -1 * mX + (mThresholdX * 0.01));  // this compensates for initial ramp up
+			mX += mIncrementX;
+		} else {
+			mY = mThresholdY;
+			mX = 0;
+		}
+	} else {  // reversed Logic
+		if (mX < mThresholdX * 0.92761758634) {
+			mY = powf(M_E, 0.9 * (mX - mThresholdX +0.5));  // (mx - thresh + bias ) where bias determines 
+			mX += mIncrementX; // the ratio of envelope (mThresholdX * ratio)
+		} else if (mX < mThresholdX * 0.95) {  // small sustain to makeup for percieved volume loss (in relation to expodec).
+			mY = 1; 
+			mX += mIncrementX;
+		} else if (mX < mThresholdX) {  // quickly bring envelope down to zero // before marking as done.
+			mY = powf(M_E, -20 * ((mX) - (mThresholdX * 0.95)));
+			mX += mIncrementX;
+		} else {
+			mY = mThresholdY;
+			mX = 0;
+		}
+	}
+	return mY;
 }
 
 void expo::set() {
-  if (mTotalS <= 0) mTotalS = 1;
-  if (mThresholdY <= 0)
-    mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
-  mX = 0;
-  mY = mThresholdY;
-  mIncrementX = (mThresholdX / mTotalS);
+	if (mTotalS <= 0) mTotalS = 1;
+	if (mThresholdY <= 0)
+		mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
+	mX = 0;
+	mY = mThresholdY;
+	mIncrementX = (mThresholdX / mTotalS);
 }
 
 void expo::set(float seconds, bool reverse, float threshold) {
-  mTotalS = seconds * consts::SAMPLE_RATE;
-  mReverse = reverse;
-  mThresholdY = threshold;
-  mThresholdX = -1 * std::log(threshold);
-  set();
+	mTotalS = seconds * mSamplingRate;
+	mReverse = reverse;
+	mThresholdY = threshold;
+	mThresholdX = -1 * std::log(threshold);
+	set();
 }
 
 void expo::set(float seconds, bool reverse) {
-  mTotalS = seconds * consts::SAMPLE_RATE;
-  mReverse = reverse;
-  set();
+	mTotalS = seconds * mSamplingRate;
+	mReverse = reverse;
+	set();
 }
 
 void expo::set(float seconds) {
-  mTotalS = seconds * consts::SAMPLE_RATE;
-  set();
+	mTotalS = seconds * mSamplingRate;
+	set();
 }
 
 /**** tukey Class Implementation ****/
 
 float tukey::operator()() {
-  if (currentS < (alpha * totalS) / 2) {
-    value =
-        0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
-    currentS++;
-  } else if (currentS <= totalS * (1 - alpha / 2)) {
-    value = 1;
-    currentS++;
-  } else if (currentS <= totalS) {
-    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) -
-                                        (2 / alpha) + 1)));
-    currentS++;
-  } else
-    currentS = 0;
-  return value;
+	if (currentS < (alpha * totalS) / 2) {
+		value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
+		currentS++;
+	} else if (currentS <= totalS * (1 - alpha / 2)) {
+		value = 1;
+		currentS++;
+	} else if (currentS <= totalS) {
+		value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
+		currentS++;
+	} else
+		currentS = 0;
+	return value;
 }
 
 void tukey::set() {
-  if (totalS <= 0) totalS = 1;
-  currentS = 0;
-  value = 0;
+	if (totalS <= 0) totalS = 1;
+	currentS = 0;
+	value = 0;
 }
 
 void tukey::set(float seconds, float alpha) {
-  this->alpha = alpha;
-  totalS = seconds * consts::SAMPLE_RATE;
-  set();
+	this->alpha = alpha;
+	totalS = seconds * mSamplingRate;
+	set();
 }
 
 void tukey::set(float seconds) {
-  totalS = seconds * consts::SAMPLE_RATE;
-  set();
+	totalS = seconds * mSamplingRate;
+	set();
 }
 
 
 /**** Load Soundfile into Memory ****/
 bool util::load(
-    std::string fileName,
-    std::vector<buffer<float> *> &buf) {  // only works on mono files for now
+		std::string fileName,
+		std::vector<buffer<float> *> &buf) {  // only works on mono files for now
 
-  al::SearchPaths searchPaths;
-  // searchPaths.addSearchPath("../../samples");
-  // searchPaths.addSearchPath("..");
-  //searchPaths.addSearchPath("/Users/jkilgore/Projects/EmissionControlPort/samples");
+	al::SearchPaths searchPaths;
 
-  // searchPaths.addSearchPath(
-  //   "../../samples");
+	std::string filePath = searchPaths.find(fileName).filepath();
+	gam::SoundFile soundFile;
+	soundFile.path(fileName);
 
-  // searchPaths.addSearchPath("../../samples");
-  //searchPaths.print();
+	if (!soundFile.openRead()) {
+		std::cout << "We could not read " << fileName << "!" << std::endl;
+		//exit(1); 
+		return 0;
+	}
+	if ( soundFile.channels() > 2 ) {
+		std::cout << fileName << " is not a mono/stereo file" << std::endl;
+		//exit(1);
+		return 0;
+	}
 
-  std::string filePath = searchPaths.find(fileName).filepath();
-  gam::SoundFile soundFile;
-  soundFile.path(fileName);
+	buffer<float> *a = new buffer<float>();
+	a->size = soundFile.samples() ;
+	a->data = new float[a->size];
+	a->channels = soundFile.channels();
+	//a->channels = 1; //Use for loading in non-audio files
+	soundFile.read(a->data, a->size);
 
-  if (!soundFile.openRead()) {
-    std::cout << "We could not read " << fileName << "!" << std::endl;
-    //exit(1); 
-    return 0;
-  }
-  if ( soundFile.channels() > 2 ) {
-    std::cout << fileName << " is not a mono/stereo file" << std::endl;
-    //exit(1);
-    return 0;
-  }
+	/**
+	 * If buffer sample rate is not equal to synth's sample rate, convert.
+	 * Comment out if you want to read arbitrary files.
+	 */
+	if(soundFile.frameRate() != consts::SAMPLE_RATE) {
+		buffer<float>* b = new buffer<float>();
+		b->size = (a->size/a->channels)/soundFile.frameRate() * consts::SAMPLE_RATE;
+		b->data = new float[b->size];
+		b->channels = soundFile.channels();
+		SRC_DATA *conversion = new SRC_DATA;
+		conversion->data_in = a->data;
+		conversion->input_frames = a->size/a->channels;
+		conversion->data_out = b->data;
+		conversion->output_frames = b->size/b->channels;
+		conversion->src_ratio = consts::SAMPLE_RATE/soundFile.frameRate();
+		src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
+		buf.push_back(b);
+		//std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
+		delete[] a->data; delete conversion;
 
-  buffer<float> *a = new buffer<float>();
-  a->size = soundFile.samples() ;
-  a->data = new float[a->size];
-  a->channels = soundFile.channels();
-  //a->channels = 1; //Use for loading in non-audio files
-  soundFile.read(a->data, a->size);
+	} else buf.push_back(a);
+	
+	//buf.push_back(a); //Use for loading in non audio files
 
-  /**
-   * If buffer sample rate is not equal to synth's sample rate, convert.
-   * Comment out if you want to read arbitrary files.
-   */
-  if(soundFile.frameRate() != consts::SAMPLE_RATE) {
-    buffer<float>* b = new buffer<float>();
-    b->size = (a->size/a->channels)/soundFile.frameRate() * consts::SAMPLE_RATE;
-    b->data = new float[b->size];
-    b->channels = soundFile.channels();
-    SRC_DATA *conversion = new SRC_DATA;
-    conversion->data_in = a->data;
-    conversion->input_frames = a->size/a->channels;
-    conversion->data_out = b->data;
-    conversion->output_frames = b->size/b->channels;
-    conversion->src_ratio = consts::SAMPLE_RATE/soundFile.frameRate();
-    src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
-    buf.push_back(b);
-    //std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
-    delete[] a->data; delete conversion;
-
-  } else buf.push_back(a);
-  
-  //buf.push_back(a); //Use for loading in non audio files
-
-  soundFile.close();
-  return 1;
+	soundFile.close();
+	return 1;
 }
 
 
@@ -221,24 +201,24 @@ bool util::load(
 std::string util::getExecutablePath() {
 
 #if (AL_WINDOWS)
-    char *exePath;
-    if (_get_pgmptr(&exePath) != 0)
-        exePath = "";
+		char *exePath;
+		if (_get_pgmptr(&exePath) != 0)
+				exePath = "";
 #else
-    char exePath[PATH_MAX];
-    uint32_t len = sizeof(exePath);
-    if (_NSGetExecutablePath(exePath, &len) != 0) {
-        exePath[0] = '\0'; // buffer too small (!)
-    } else {
-        // resolve symlinks, ., .. if possible
-        char *canonicalPath = realpath(exePath, NULL);
-        if (canonicalPath != NULL) {
-            strncpy(exePath,canonicalPath,len);
-            free(canonicalPath);
-        }
-    }
+		char exePath[PATH_MAX];
+		uint32_t len = sizeof(exePath);
+		if (_NSGetExecutablePath(exePath, &len) != 0) {
+				exePath[0] = '\0'; // buffer too small (!)
+		} else {
+				// resolve symlinks, ., .. if possible
+				char *canonicalPath = realpath(exePath, NULL);
+				if (canonicalPath != NULL) {
+						strncpy(exePath,canonicalPath,len);
+						free(canonicalPath);
+				}
+		}
 #endif
-    return std::string(exePath);
+		return std::string(exePath);
 }
 
 

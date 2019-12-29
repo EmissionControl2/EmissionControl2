@@ -15,36 +15,38 @@ class ecInterface : public al::App
 {
 public:
 
-  /**
-   * @brief Initilialize the synth interface.
-   */
-  virtual void onInit() override;
+	/**
+	 * @brief Initilialize the synth interface.
+	 */
+	virtual void onInit() override;
 
-  /**
-   * @brief Run once on starup.
-   */
-  virtual void onCreate() override;
+	/**
+	 * @brief Run once on starup.
+	 */
+	virtual void onCreate() override;
 
-  /**
-   * @brief Audio rate processing of synth.
-   */
-  virtual void onSound(al::AudioIOData &io) override;
+	/**
+	 * @brief Audio rate processing of synth.
+	 */
+	virtual void onSound(al::AudioIOData &io) override;
 
-  /**
-   * @brief Draw rate processing of synth interface.
-   */
-  virtual void onDraw(al::Graphics &g) override;
+	/**
+	 * @brief Draw rate processing of synth interface.
+	 */
+	virtual void onDraw(al::Graphics &g) override;
+
+	void drawAudioIO(al::AudioIO *io);
 
 private:
-  float background = 0.21;
-  ecSynth granulator;
-  al::PresetHandler mPresets;
-  al::OutputRecorder mRecorder;
-  al::FileSelector selector;
-  std::string soundOutput;
-  std::string initialDirectory;
-  std::string currentFile = "No file selected";
-  std::string previousFile = "No file selected";
+	float background = 0.21;
+	ecSynth granulator;
+	al::PresetHandler mPresets;
+	al::OutputRecorder mRecorder;
+	al::FileSelector selector;
+	std::string soundOutput;
+	std::string initialDirectory;
+	std::string currentFile = "No file selected";
+	std::string previousFile = "No file selected";
 
 };
 
@@ -62,7 +64,10 @@ private:
  * @param[in] Amount of space allocated for sound.
  */
 static void drawRecorderWidget(al::OutputRecorder *recorder,double frameRate, uint32_t numChannels,
-  std::string directory = "", uint32_t bufferSize = 0);
+	std::string directory = "", uint32_t bufferSize = 0);
+
+
+
 
 
 
