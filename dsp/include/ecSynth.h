@@ -96,10 +96,15 @@ public:
 	std::string loadInitSoundFiles();
 
 	/**
+	 * @brief Resample all files in SoundClip to match globalSamplingRate.
+	 */
+	void resampleSoundFiles();
+
+	/**
 	 * @brief Clear sound files stored in memory.
 	 * 
 	 */
-	void clearInitSoundFiles();
+	void clearSoundFiles();
 
 	/**
 	 * @brief Print out what the synth is doing at runtime. 
@@ -120,15 +125,6 @@ public:
 	int getActiveVoices() {return mActiveVoices;}
 
 	/**
-	 * @brief Get sampling rate of synth.
-	 * 
-	 * @return sampling rate
-	 */
-	float getGlobalSamplingRate() {return mGlobalSamplingRate;}
-
-	void setGlobalSamplingRate(float samplingRate) {mGlobalSamplingRate = samplingRate;}
-
-	/**
 	 * WORK IN PROGRESS
 	 * @brief Throttles the amount of grains that can be active at once. TODO 
 	 * 
@@ -138,7 +134,7 @@ public:
 	void throttle(float time, float ratio);
 
 private:
-	float mGlobalSamplingRate;
+	float mGlobalSamplingRate, mPrevSR;
 
 	al::PolySynth grainSynth {al::PolySynth::TIME_MASTER_AUDIO}; /* Polyhpony and interface to audio callback */
 	voiceScheduler grainScheduler; /* Schedule grains */
@@ -162,7 +158,7 @@ private:
 	ecModulator modSaw {consts::SAW};
 	ecModulator modNoise {consts::NOISE};
 
-		float modSineValue, modSquareValue, modSawValue, modNoiseValue;
+	float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 	
 };
 

@@ -12,13 +12,15 @@ using namespace al;
 /**** ecSynth Implementation ****/
 
 void ecSynth::setIO(al::AudioIOData* io) {
+	mPrevSR = mGlobalSamplingRate;
 	grainScheduler.setSamplingRate(io->fps());
-	setGlobalSamplingRate(io->fps());
+	mGlobalSamplingRate = io->fps();
 }
 
 void ecSynth::init(al::AudioIOData* io) {
 
-	setGlobalSamplingRate(io->fps());
+	mGlobalSamplingRate = io->fps();
+	mPrevSR = io->fps();
 
 	mPActiveVoices = &mActiveVoices;
 
@@ -166,7 +168,7 @@ void ecSynth::onProcess(AudioIOData& io) {
 					mPActiveVoices
 				};
 
-				voice->configureGrain(list,getGlobalSamplingRate());
+				voice->configureGrain(list,mGlobalSamplingRate);
 				
 				mActiveVoices++; 
 				grainSynth.triggerOn(voice, io.frame());
@@ -221,7 +223,7 @@ std::string ecSynth::loadInitSoundFiles() {
 	return initDir;
 }
 
-void ecSynth::clearInitSoundFiles() {
+void ecSynth::clearSoundFiles() {
 	for(auto i = soundClip.begin(); i != soundClip.end(); i++) {
 		(*i)->deleteBuffer();
 	}
@@ -232,6 +234,23 @@ void ecSynth::clearInitSoundFiles() {
 	soundFile.mLowRange->max(mClipNum);
 	soundFile.mHighRange->max(mClipNum);
 	soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
+}
+
+void ecSynth::resampleSoundFiles() {
+	// If sampling rate is the same as before, no need for resampling.
+	if(static_cast<int>(mPrevSR) == static_cast<int>(mGlobalSamplingRate))
+		return;
+
+	int i;
+	std::vector<std::string> filePaths;
+	//Collect filepaths of audio buffers.
+	for(i = 0; i < soundClip.size(); i++) {
+		filePaths.push_back(soundClip[i]->filePath);
+	}
+
+	clearSoundFiles();
+	for(i = 0; i < filePaths.size(); i++)
+		loadSoundFile(filePaths[i]);
 }
 
 /**** TO DO TO DO TO DO ****/

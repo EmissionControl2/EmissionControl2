@@ -237,8 +237,8 @@ void ecInterface::onDraw(Graphics &g) {
 
 void ecInterface::drawAudioIO(AudioIO *io) {
 	struct AudioIOState {
-		int currentSr = 0;
-		int currentBufSize = 0;
+		int currentSr = 1;
+		int currentBufSize = 3;
 		int currentDevice = 0;
 		std::vector<std::string> devices;
 	};
@@ -256,8 +256,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 	}
 	AudioIOState &state = stateMap[io];
 	ImGui::PushID(std::to_string((unsigned long)io).c_str());
-	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_CollapsingHeader |
-																					 ImGuiTreeNodeFlags_DefaultOpen)) {
+	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_CollapsingHeader | ImGuiTreeNodeFlags_DefaultOpen)) {
 		if (io->isOpen()) {
 			std::string text;
 			text += "Sampling Rate: " + std::to_string(io->fps());
@@ -278,8 +277,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 							static_cast<void *>(&state.devices), state.devices.size())) {
 				// TODO adjust valid number of channels.
 			}
-			std::vector<std::string> samplingRates{"44100", "48000", "88100",
-																						 "96000"};
+			std::vector<std::string> samplingRates{"44100", "48000", "88100","96000"};
 			ImGui::Combo("Sampling Rate", &state.currentSr,
 									 ParameterGUI::vector_getter,
 									 static_cast<void *>(&samplingRates), samplingRates.size());
@@ -293,8 +291,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 				io->framesPerBuffer(std::stof(bufferSizes[state.currentBufSize]));
 				io->device(AudioDevice(state.currentDevice));
 				granulator.setIO(io);
-				granulator.clearInitSoundFiles();
-				initialDirectory = granulator.loadInitSoundFiles();
+				granulator.resampleSoundFiles();
 				io->open();
 				io->start();
 			}
