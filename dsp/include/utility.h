@@ -179,6 +179,7 @@ public:
 	T* data;
 	unsigned size = 0;
 	int channels;
+	std::string filePath;
 
 	virtual ~buffer() {
 		printf("Buffer deleted.\n");

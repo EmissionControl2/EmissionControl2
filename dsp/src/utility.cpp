@@ -141,7 +141,6 @@ bool util::load(
 		float samplingRate,bool resample) {  
 
 	al::SearchPaths searchPaths;
-
 	std::string filePath = searchPaths.find(fileName).filepath();
 	gam::SoundFile soundFile;
 	soundFile.path(fileName);
@@ -158,6 +157,7 @@ bool util::load(
 	}
 
 	buffer<float> *a = new buffer<float>();
+	a->filePath = fileName;
 	a->size = soundFile.samples() ;
 	a->data = new float[a->size];
 	a->channels = soundFile.channels();
@@ -172,6 +172,7 @@ bool util::load(
 		 */
 		if(soundFile.frameRate() != samplingRate) {
 			buffer<float>* b = new buffer<float>();
+			b->filePath = fileName;
 			b->size = (a->size/a->channels)/soundFile.frameRate() * samplingRate;
 			b->data = new float[b->size];
 			b->channels = soundFile.channels();
