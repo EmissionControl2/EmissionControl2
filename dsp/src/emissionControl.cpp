@@ -500,6 +500,13 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	else
 		index.set(startSample, endSample, mDurationMs / 1000);
 
+	// Store modulated pan value of grain IF it is being modulated.
+	if(list.modPanWidth > 0 ) 
+		mPan = list.pan.getModParam(
+								list.modSineVal, list.modSquareVal, list.modSawVal,
+								list.modNoiseVal, list.modPanWidth);
+	else 
+		mPan = list.pan.getParam();
 
 	/**Set sampling rate of envelope**/
 	gEnv.setSamplingRate(samplingRate);

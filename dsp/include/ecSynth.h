@@ -41,6 +41,10 @@ public:
 	al::ParameterMenu playbackRateLFO {"playbackRateLFO"}; 
 	ecParameter modPlaybackRateWidth {"modPlaybackRateWidth", "", 0, "", 0, 1, 0, 1};
 
+	ecParameter pan {"Pan", "", 0, "", -1,1,-1,1};
+	al::ParameterMenu panLFO {"panLFO"};
+	ecParameter modPanWidth {"modPanWidth", "", 0, "", 0, 1, 0, 1};
+
 	ecParameter volumeDB {"Volume_DB", "", -6, "", -60, 6, -180, 24};
 	al::ParameterMenu volumeLFO {"volumeLFO"}; 
 	ecParameter modVolumeWidth {"modVolumeWidth", "", 0, "", 0, 1, 0, 1};

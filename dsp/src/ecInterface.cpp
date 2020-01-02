@@ -50,6 +50,8 @@ void ecInterface::onCreate() {
 		<< granulator.playbackRateLFO << *granulator.modPlaybackRateWidth.mParameter
 		<< *granulator.volumeDB.mParameter << *granulator.volumeDB.mLowRange << *granulator.volumeDB.mHighRange
 		<< granulator.volumeLFO << *granulator.modVolumeWidth.mParameter
+		<< *granulator.pan.mParameter << *granulator.pan.mLowRange << *granulator.pan.mHighRange
+		<< granulator.panLFO << *granulator.modPanWidth.mParameter
 		<< *granulator.soundFile.mParameterInt << *granulator.soundFile.mLowRange << *granulator.soundFile.mHighRange
 		<< granulator.soundFileLFO << *granulator.modSoundFileWidth.mParameter
 		<< *granulator.modSineFrequency.mParameter << *granulator.modSineFrequency.mLowRange 
@@ -97,6 +99,10 @@ void ecInterface::onCreate() {
 	granulator.volumeDB.mLowRange->displayName("##volumeDBLow");
 	granulator.volumeDB.mHighRange->displayName("##volumeDBHigh");
 	granulator.volumeLFO.displayName("##volumeLFO");
+	granulator.pan.mParameter->displayName("##pan"); 
+	granulator.pan.mLowRange->displayName("##PanLow");
+	granulator.pan.mHighRange->displayName("##PanHigh");
+	granulator.panLFO.displayName("##PanLFO");
 	granulator.soundFile.mParameterInt->displayName("##soundFile"); 
 	granulator.soundFile.mLowRange->displayName("##soundFileLow");
 	granulator.soundFile.mHighRange->displayName("##soundFileHigh");
@@ -132,21 +138,6 @@ void ecInterface::onDraw(Graphics &g) {
 
 	//Draw GUI
 
-	ParameterGUI::beginPanel("IO",125,500,200,200);
-		// Draw an interface to Audio IO.
-		// This enables starting and stopping audio as well as selecting
-		// Audio device and its parameters
-		drawAudioIO(&audioIO()); //works but it needs to affect all objects that rely on sampling rate
-		
-		// Draw an interface to the ParameterMIDI object
-		//
-		// ParameterGUI::drawParameterMIDI(&parameterMidi);
-		ParameterGUI::endPanel();
-
-	ParameterGUI::beginPanel("Recorder",950,25);
-	drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(),soundOutput);
-	ParameterGUI::endPanel();
-
 	ParameterGUI::beginPanel("LFO Controls", 25, 25,600);
 
 	granulator.modSineFrequency.draw();
@@ -168,6 +159,7 @@ void ecInterface::onDraw(Graphics &g) {
 	granulator.tapeHead.draw();
 	granulator.playbackRate.draw();
 	granulator.volumeDB.draw();
+	granulator.pan.draw();
 	granulator.soundFile.draw();
 
 	ParameterGUI::endPanel();
@@ -182,6 +174,7 @@ void ecInterface::onDraw(Graphics &g) {
 	ParameterGUI::drawMenu(&granulator.tapeHeadLFO);
 	ParameterGUI::drawMenu(&granulator.playbackRateLFO);
 	ParameterGUI::drawMenu(&granulator.volumeLFO);
+	ParameterGUI::drawMenu(&granulator.panLFO);
 	ParameterGUI::drawMenu(&granulator.soundFileLFO);
 	ParameterGUI::endPanel();
 
@@ -196,14 +189,26 @@ void ecInterface::onDraw(Graphics &g) {
 	ParameterGUI::drawParameter(granulator.modTapeHeadWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modPlaybackRateWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modVolumeWidth.mParameter);
+	ParameterGUI::drawParameter(granulator.modPanWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modSoundFileWidth.mParameter);
 	ParameterGUI::endPanel();
 
-	ParameterGUI::beginPanel("Presets", 625, 25);
+	ParameterGUI::beginPanel("IO",1125,25,200,200);
+	// Draw an interface to Audio IO.
+	// This enables starting and stopping audio as well as selecting
+	// Audio device and its parameters
+	drawAudioIO(&audioIO()); 
+	ParameterGUI::endPanel();
+
+	ParameterGUI::beginPanel("Recorder",950,25);
+	drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(),soundOutput);
+	ParameterGUI::endPanel();
+
+	ParameterGUI::beginPanel("Presets", 625, 25,320,220);
 	ParameterGUI::drawPresetHandler(&mPresets,12,4);
 	ParameterGUI::endPanel();
 
-	ParameterGUI::beginPanel("File Selector",1125,25);
+	ParameterGUI::beginPanel("File Selector",25,535,-1,-1);
 
 	ImGui::Text("%s", currentFile.c_str());
 	if (ImGui::Button("Select File")) {
@@ -225,11 +230,13 @@ void ecInterface::onDraw(Graphics &g) {
 		granulator.loadSoundFile(currentFile);
 		previousFile = currentFile;
 	}
+	ParameterGUI::endPanel();
 
-	ImGui::End();
-
+	ParameterGUI::beginPanel("Info", 525, 535,200,-1);
 	ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );
+	ParameterGUI::endPanel();
 	
+	ImGui::End();
 	al::imguiEndFrame();
 
 	al::imguiDraw();
@@ -288,7 +295,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 									 static_cast<void *>(&bufferSizes), bufferSizes.size());
 			if (ImGui::Button("Start")) {
 				io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
-				io->framesPerBuffer(std::stof(bufferSizes[state.currentBufSize]));
+				io->framesPerBuffer(std::stoi(bufferSizes[state.currentBufSize]));
 				io->device(AudioDevice(state.currentDevice));
 				granulator.setIO(io);
 				granulator.resampleSoundFiles();

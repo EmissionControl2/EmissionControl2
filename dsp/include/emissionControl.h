@@ -417,6 +417,8 @@ struct grainParameters {
 	float modTapeHeadWidth;
 	ecParameter& playbackRate;
 	float modPlaybackRateWidth;
+	ecParameter& pan;
+	float modPanWidth;
 	util::buffer<float>* source;
 	float modSineVal;
 	float modSquareVal;
@@ -470,7 +472,7 @@ class Grain : public al::SynthVoice {
 	util::line index;
 	grainEnvelope gEnv;
 	int* mPActiveVoices;
-	float envVal, sourceIndex, tapeHead, mDurationMs;
+	float envVal, sourceIndex, tapeHead, mDurationMs, mPan;
 };
 
 /**
