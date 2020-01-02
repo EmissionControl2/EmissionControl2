@@ -61,6 +61,10 @@ void ecSynth::init(al::AudioIOData* io) {
 	volumeLFO.registerChangeCallback([&](int value) {
 		volumeDB.setWaveformIndex(value);
 	});
+	panLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+	panLFO.registerChangeCallback([&](int value) {
+		pan.setWaveformIndex(value);
+	});
 	soundFileLFO.setElements({"Sine", "Square", "Saw", "Noise"});
 	soundFileLFO.registerChangeCallback([&](int value) {
 		soundFile.setWaveformIndex(value);
@@ -160,6 +164,8 @@ void ecSynth::onProcess(AudioIOData& io) {
 					modTapeHeadWidth.getParam(),
 					playbackRate,
 					modPlaybackRateWidth.getParam(),
+					pan,
+					modPanWidth.getParam(),
 					soundClip[mModClip], 
 					modSineValue,
 					modSquareValue,
