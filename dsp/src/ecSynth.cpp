@@ -164,6 +164,8 @@ void ecSynth::onProcess(AudioIOData& io) {
 					modTapeHeadWidth.getParam(),
 					playbackRate,
 					modPlaybackRateWidth.getParam(),
+					volumeDB,
+					modVolumeWidth.getParam(),
 					pan,
 					modPanWidth.getParam(),
 					soundClip[mModClip], 

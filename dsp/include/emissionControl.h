@@ -417,6 +417,8 @@ struct grainParameters {
 	float modTapeHeadWidth;
 	ecParameter& playbackRate;
 	float modPlaybackRateWidth;
+	ecParameter& volumeDB;
+	float modVolumeWidth;
 	ecParameter& pan;
 	float modPanWidth;
 	util::buffer<float>* source;
