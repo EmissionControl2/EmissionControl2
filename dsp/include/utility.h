@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "Gamma/Gamma.h"
+#include "al/io/al_File.hpp"
 #include "const.h"
 
 namespace util {
@@ -268,6 +269,11 @@ bool load(
  * @brief Get absolute path of executable.
  */
 std::string getExecutablePath();
+
+/**
+ * @brief a comparator function for sorting the filePaths (case insensitive).
+ */
+bool compareFileNoCase( al::FilePath s1, al::FilePath s2 );
 
 
 }  // namespace util

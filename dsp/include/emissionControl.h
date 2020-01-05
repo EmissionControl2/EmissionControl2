@@ -289,7 +289,7 @@ public:
 	/**
 	 * @brief Draw the parameter range slider.
 	 */
-	void draw();
+	void drawRangeSlider();
 
  private:
 	consts::waveform mModWaveform;
@@ -398,9 +398,9 @@ public:
 	int getModParam(float modWidth);
 
 	/**
-	 * @brief Draw the parameter range slider. ****TODO
+	 * @brief Draw the parameter range slider. 
 	 */
-	void draw();
+	void drawRangeSlider();
 
 private:
 	bool mIndependentMod;
@@ -415,8 +415,8 @@ struct grainParameters {
 	float modEnvelopeWidth;
 	ecParameter& tapeHead;
 	float modTapeHeadWidth;
-	ecParameter& playbackRate;
-	float modPlaybackRateWidth;
+	ecParameter& transposition;
+	float modTranspositionWidth;
 	ecParameter& volumeDB;
 	float modVolumeWidth;
 	ecParameter& pan;

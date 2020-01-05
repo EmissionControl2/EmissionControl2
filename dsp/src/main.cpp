@@ -8,6 +8,7 @@ int main(){    // Create app instance
 	gam::sampleRate(app.audioIO().framesPerSecond());
 	app.dimensions(1920, 1080);
 	app.fullScreen(1); //not working
+	app.title("Emission Control");
 
 	app.audioIO().print();
 
