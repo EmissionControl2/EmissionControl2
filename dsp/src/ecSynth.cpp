@@ -53,9 +53,9 @@ void ecSynth::init(al::AudioIOData* io) {
 	tapeHeadLFO.registerChangeCallback([&](int value) {
 		tapeHead.setWaveformIndex(value);
 	});
-	playbackRateLFO.setElements({"Sine", "Square", "Saw", "Noise"});
-	playbackRateLFO.registerChangeCallback([&](int value) {
-		playbackRate.setWaveformIndex(value);
+	transpositionLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+	transpositionLFO.registerChangeCallback([&](int value) {
+		transposition.setWaveformIndex(value);
 	});
 	volumeLFO.setElements({"Sine", "Square", "Saw", "Noise"});
 	volumeLFO.registerChangeCallback([&](int value) {
@@ -162,8 +162,8 @@ void ecSynth::onProcess(AudioIOData& io) {
 					modEnvelopeWidth.getParam(),
 					tapeHead,
 					modTapeHeadWidth.getParam(),
-					playbackRate,
-					modPlaybackRateWidth.getParam(),
+					transposition,
+					modTranspositionWidth.getParam(),
 					volumeDB,
 					modVolumeWidth.getParam(),
 					pan,
@@ -221,7 +221,9 @@ std::string ecSynth::loadInitSoundFiles() {
 	File f(execPath);
 	std::string initDir = f.directory(execPath) + "samples/";
 	FileList initAudioFiles = fileListFromDir(initDir);
+	initAudioFiles.sort(util::compareFileNoCase);
 	for(auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
+		std::cout << i->file() << std::endl;
 		if(i->file().substr(i->file().length() - 4) == ".wav" || i->file().substr(i->file().length() - 4) == ".aif" ) {
 			loadSoundFile(i->filepath());
 		} else if(i->file().substr(i->file().length() - 5) == ".aiff") {

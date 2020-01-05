@@ -1,7 +1,7 @@
 #include "utility.h"
 #include "Gamma/SoundFile.h"
-#include "al/io/al_File.hpp"
 #include "../external/libsamplerate/src/samplerate.h"
+
 
 /**** C STANDARD ****/
 #include <string>
@@ -222,6 +222,10 @@ std::string util::getExecutablePath() {
 		}
 #endif
 		return std::string(exePath);
+}
+
+bool util::compareFileNoCase( al::FilePath s1, al::FilePath s2 ){
+    return strcasecmp( s1.file().c_str(), s2.file().c_str() ) <= 0;
 }
 
 

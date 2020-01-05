@@ -247,7 +247,7 @@ float ecParameter::getModParam(float modWidth) {
 	else return temp;
 }
 
-void ecParameter::draw() {
+void ecParameter::drawRangeSlider() {
 	float valueSlider, valueLow, valueHigh;
 	bool changed;
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
@@ -406,7 +406,7 @@ int ecParameterInt::getModParam(float modWidth) {
 	else return temp;
 }
 
-void ecParameterInt::draw() {
+void ecParameterInt::drawRangeSlider() {
 	int valueSlider, valueLow, valueHigh;
 	bool changed;
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
@@ -483,19 +483,19 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	else
 		startSample = source->size/source->channels * list.tapeHead.getParam();
 
-	if (list.modPlaybackRateWidth > 0)
+	if (list.modTranspositionWidth > 0)
 		endSample = startSample + source->channels * (
 					(mDurationMs / 1000) * samplingRate *
-					abs(list.playbackRate.getModParam(
+					abs(list.transposition.getModParam(
 													list.modSineVal, list.modSquareVal, list.modSawVal,
-													list.modNoiseVal, list.modPlaybackRateWidth)
+													list.modNoiseVal, list.modTranspositionWidth)
 					) );
 	else
-		endSample = startSample + source->channels * ( (mDurationMs / 1000) * samplingRate * abs(list.playbackRate.getParam()) );
+		endSample = startSample + source->channels * ( (mDurationMs / 1000) * samplingRate * abs(list.transposition.getParam()) );
 
 	index.setSamplingRate(samplingRate); // Set sampling rate of line function moving through audio buffer.
 
-	if (list.playbackRate.getParam() < 0)
+	if (list.transposition.getParam() < 0)
 		index.set(endSample, startSample, mDurationMs / 1000);
 	else
 		index.set(startSample, endSample, mDurationMs / 1000);
@@ -508,6 +508,8 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	else 
 		mPan = list.pan.getParam();
 
+	mPan = std::sqrt((mPan + 1) * 0.5); //Normalize the pan parameter and set up for equal power using square root.
+
 	/**Set sampling rate of envelope**/
 	gEnv.setSamplingRate(samplingRate);
 }
@@ -519,12 +521,13 @@ void Grain::onProcess(al::AudioIOData& io) {
 		if (sourceIndex > source->size) sourceIndex -= source->size;
 
 		if(source->channels == 1) {
-			io.out(0) += source->get(sourceIndex) * envVal;
-			io.out(1) += source->get(sourceIndex) * envVal;
+			// std::cout << mPan << std::endl;
+			io.out(0) += source->get(sourceIndex) * envVal * (1-mPan);
+			io.out(1) += source->get(sourceIndex) * envVal * mPan;
 		}
 		else if (source->channels == 2) {
-			io.out(0) += source->get(sourceIndex) * envVal;
-			io.out(1) += source->get(sourceIndex+1) * envVal;
+			io.out(0) += source->get(sourceIndex) * envVal * (1-mPan);
+			io.out(1) += source->get(sourceIndex+1) * envVal * mPan;
 		}
 
 		if (gEnv.done()) {
