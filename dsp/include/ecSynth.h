@@ -31,7 +31,7 @@ public:
 	al::ParameterMenu streamsLFO {"streamsLFO"}; 
 	ecParameter modStreamsWidth {"modStreamsWidth", "", 0, "", 0, 1, 0, 1};
 
-	ecParameter grainDurationMs {"Grain_Dur_Ms", "", 250, "", 0.01, 1000, 0.0000001, 10000};
+	ecParameter grainDurationMs {"Grain_Dur_Ms", "", 30, "", 0.01, 1000, 0.0000001, 10000};
 	al::ParameterMenu grainDurationLFO {"grainDurationLFO"}; 
 	ecParameter modGrainDurationWidth {"modGrainDurationWidth", "", 0, "", 0, 1, 0, 1};
 	

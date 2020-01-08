@@ -184,10 +184,11 @@ void ecParameter::setIndependentMod(bool independentMod) {
 }
 
 float ecParameter::getModParam(float modSineValue, float modSquareValue, float modSawValue,
-														float modNoiseValue, float modWidth) {
+													float modNoiseValue, float modWidth) {
+	float temp;
 	switch (mModWaveform) {
 		case consts::SINE: {
-			float temp = mParameter->get() * ((modSineValue * modWidth) + 1);
+			temp = mParameter->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); //WIIIPS
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -196,7 +197,7 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 		}
 
 		case consts::SQUARE:{
-			float temp = mParameter->get() * ((modSquareValue * modWidth) + 1);
+			temp = mParameter->get() + (modSquareValue * modWidth * (mHighRange->get() - mLowRange->get()) ); 
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -205,7 +206,7 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 		}
 
 		case consts::SAW: {
-			float temp = mParameter->get() * ((modSawValue * modWidth) + 1);
+			temp = mParameter->get() + (modSawValue * modWidth * (mHighRange->get() - mLowRange->get()) ); 
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -214,7 +215,7 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 		}
 
 		case consts::NOISE: {
-			float temp = mParameter->get() * ((modNoiseValue * modWidth) + 1);
+			temp = mParameter->get() + (modNoiseValue * modWidth * (mHighRange->get() - mLowRange->get()) ); 
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -223,7 +224,7 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 		}
 
 		default: {
-			float temp = mParameter->get() * ((modSineValue * modWidth) + 1);
+			temp = mParameter->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); 
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -239,7 +240,7 @@ float ecParameter::getModParam(float modWidth) {
 									"to use this getModParam function\n";
 		return -9999999999;
 	}
-	float temp = mParameter->get() * (((*mModulator)() * modWidth) + 1);
+	float temp = mParameter->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
 	if(temp > mHighRange->max())
 		return mHighRange->max();
 	else if(temp < mLowRange->min())
@@ -344,9 +345,10 @@ void ecParameterInt::setWaveformIndex(int index) {
 
 int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float modSawValue,
 								float modNoiseValue, float modWidth) {
+	int temp;
 	switch (mModWaveform) {
 		case consts::SINE: {
-			int temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
+			temp = mParameterInt->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); //WIIIPS
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -355,7 +357,7 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 		}
 
 		case consts::SQUARE:{
-			int temp = mParameterInt->get() * ((modSquareValue * modWidth) + 1);
+			temp = mParameterInt->get() + (modSquareValue * modWidth * (mHighRange->get() - mLowRange->get()) );
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -364,7 +366,7 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 		}
 
 		case consts::SAW: {
-			int temp = mParameterInt->get() * ((modSawValue * modWidth) + 1);
+			temp = mParameterInt->get() + (modSawValue * modWidth * (mHighRange->get() - mLowRange->get()) );
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -373,7 +375,7 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 		}
 
 		case consts::NOISE: {
-			int temp = mParameterInt->get() * ((modNoiseValue * modWidth) + 1);
+			temp = mParameterInt->get() + (modNoiseValue * modWidth * (mHighRange->get() - mLowRange->get()) );
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -382,7 +384,7 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 		}
 
 		default: {
-			int temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
+			temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
 			if(temp > mHighRange->max())
 				return mHighRange->max();
 			else if(temp < mLowRange->min())
@@ -398,7 +400,7 @@ int ecParameterInt::getModParam(float modWidth) {
 									"to use this getModParam function\n";
 		return -99999;
 	}
-	int temp = mParameterInt->get() * (((*mModulator)() * modWidth) + 1);
+	int temp = mParameterInt->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
 	if(temp > mHighRange->max())
 		return mHighRange->max();
 	else if(temp < mLowRange->min())
@@ -504,12 +506,11 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	if(list.modPanWidth > 0 ) 
 		mPan = list.pan.getModParam(
 								list.modSineVal, list.modSquareVal, list.modSawVal,
-								list.modNoiseVal, list.modPanWidth);
+								list.modNoiseVal, list.modPanWidth); //Make the modulator additive
 	else 
 		mPan = list.pan.getParam();
 
-	mPan = std::sqrt((mPan + 1) * 0.5); //Normalize the pan parameter and set up for equal power using square root.
-
+	mPan = std::sqrt(mPan + 1) * 0.5; //Normalize the pan parameter and set up for equal power using square root.
 	/**Set sampling rate of envelope**/
 	gEnv.setSamplingRate(samplingRate);
 }
@@ -521,7 +522,6 @@ void Grain::onProcess(al::AudioIOData& io) {
 		if (sourceIndex > source->size) sourceIndex -= source->size;
 
 		if(source->channels == 1) {
-			// std::cout << mPan << std::endl;
 			io.out(0) += source->get(sourceIndex) * envVal * (1-mPan);
 			io.out(1) += source->get(sourceIndex) * envVal * mPan;
 		}
