@@ -192,8 +192,8 @@ void ecSynth::onProcess(AudioIOData& io) {
 	io.frame(0); 
 	float amp = powf(10,volumeDB.getParam()/20);
 	while (io()) {
-		io.out(0) *=  amp ; // this manipulates the entire stream on the channel level 
-		io.out(1) *=  amp ; //* mEnv() 
+		// io.out(0) *=  amp ; // this manipulates the entire stream on the channel level 
+		// io.out(1) *=  amp ; 
 		
 	}
 }

@@ -250,6 +250,14 @@ public:
 	 */
 	void setIndependentMod(bool independentMod);
 
+	/**
+	 * @brief Set current parameter value.
+	 * 
+	 * @param[in] New parameter value
+	 * 
+	 */
+	void setParam(float value) { mParameter->set(value); }
+
 	 /**
 	 * @brief Get current parameter value.
 	 * 
@@ -474,7 +482,7 @@ class Grain : public al::SynthVoice {
 	util::line index;
 	grainEnvelope gEnv;
 	int* mPActiveVoices;
-	float envVal, sourceIndex, tapeHead, mDurationMs, mPan;
+	float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mAmp;
 };
 
 /**
