@@ -300,11 +300,6 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 			ImGui::Combo("Sampling Rate", &state.currentSr,
 									 ParameterGUI::vector_getter,
 									 static_cast<void *>(&samplingRates), samplingRates.size());
-
-			// std::vector<std::string> bufferSizes{"64", "128", "256", "512", "1024"};
-			// ImGui::Combo("Buffer size", &state.currentBufSize,
-			// 						 ParameterGUI::vector_getter,
-			// 						 static_cast<void *>(&bufferSizes), bufferSizes.size());
 			if (ImGui::Button("Start")) {
 				io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
 				io->framesPerBuffer(1024);
