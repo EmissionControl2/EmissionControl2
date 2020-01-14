@@ -67,7 +67,7 @@ void ecInterface::onCreate() {
 	granulator.grainRate.mLowRange->displayName("##grainRateLow");
 	granulator.grainRate.mHighRange->displayName("##grainRateHigh");
 	granulator.grainRateLFO.displayName("##grainRateLFO");
-	granulator.modGrainRateWidth.mParameter->displayName("##modGrainRateWidth");
+	granulator.modGrainRateWidth.mParameter->displayName("##modGrainRateWidth"); 
 	granulator.asynchronicity.mParameter->displayName("##asynchronicity");
 	granulator.asynchronicity.mLowRange->displayName("##asynchronicityLow");
 	granulator.asynchronicity.mHighRange->displayName("##asynchronicityHigh");
@@ -188,7 +188,7 @@ void ecInterface::onDraw(Graphics &g) {
 	ParameterGUI::drawMenu(&granulator.volumeLFO);
 	ParameterGUI::drawMenu(&granulator.panLFO);
 	ParameterGUI::drawMenu(&granulator.soundFileLFO);
-	ParameterGUI::endPanel();
+	ParameterGUI::endPanel();	
 
 	ParameterGUI::beginPanel("Modulation Depth", 25, 250, 500, -1);
 	

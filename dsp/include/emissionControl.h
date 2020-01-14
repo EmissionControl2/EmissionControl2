@@ -455,6 +455,8 @@ class Grain : public al::SynthVoice {
 	 * param[in] A struct containing a list of all grain parameters that need to
 	 * be set.
 	 *  - Note: see struct grainParameters above for details.
+	 * 
+	 * @param[in] The global sampling rate.
 	 */
 	void configureGrain(grainParameters& list, float samplingRate);
 
@@ -613,5 +615,8 @@ class flowControl {
 	float mPeakCPU;
 	float mAvgCPU;
 };
+
+
+/*** GUI ELEMENTS ***/
 
 #endif
