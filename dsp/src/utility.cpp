@@ -8,7 +8,10 @@
 
 #ifdef AL_WINDOWS
 #  include <stdlib.h>
-#else
+#elif (AL_LINUX)
+	#	include <unistd.h>
+	# include <limits.h>
+#	else
 #  include <mach-o/dyld.h>
 #endif
 
@@ -16,9 +19,6 @@
 #ifdef AL_WINDOWS
 	#include <direct.h>
 	#define GetCurrentDir _getcwd
-elif (AL_LINUX)
-	#  include <unistd.h>
-	#  include <limits.h>
 #else
 	#include <unistd.h>
 	#define GetCurrentDir getcwd
