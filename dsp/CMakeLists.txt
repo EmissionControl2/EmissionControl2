@@ -7,7 +7,7 @@ project(${APP_NAME} VERSION 0.5
                     LANGUAGES CXX)
 
 add_subdirectory(external/allolib)
-# add_subdirectory(external/libsamplerate)
+add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
 set(includes
@@ -29,7 +29,7 @@ add_executable(${APP_NAME}
   src/main.cpp
 )
 
-# target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
+target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -57,7 +57,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libraries/libsamplerate/libsamplerate.a )
+target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a )
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib)
 
