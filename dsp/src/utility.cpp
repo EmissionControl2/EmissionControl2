@@ -16,6 +16,9 @@
 #ifdef AL_WINDOWS
 	#include <direct.h>
 	#define GetCurrentDir _getcwd
+elif (AL_LINUX)
+	#  include <unistd.h>
+	#  include <limits.h>
 #else
 	#include <unistd.h>
 	#define GetCurrentDir getcwd
@@ -207,6 +210,13 @@ std::string util::getExecutablePath() {
 		char *exePath;
 		if (_get_pgmptr(&exePath) != 0)
 				exePath = "";
+
+#elif (AL_LINUX)
+    char exePath[PATH_MAX];
+    ssize_t len = ::readlink("/proc/self/exe", exePath, sizeof(exePath));
+    if (len == -1 || len == sizeof(exePath))
+        len = 0;
+    exePath[len] = '\0';
 #else
 		char exePath[PATH_MAX];
 		uint32_t len = sizeof(exePath);

@@ -6,6 +6,7 @@
 
   chmod 644 bin/libraries/libsndfile/* #allow permissions to wewrite load commands of exectuables
   #rewrite load commands for dynamic libraries
+  
   install_name_tool -change /usr/local/opt/libsndfile/lib/libsndfile.1.dylib @rpath/libsndfile/libsndfile.1.dylib bin/emissionControl
       install_name_tool -change /usr/local/opt/flac/lib/libFLAC.8.dylib @rpath/libsndfile/libFLAC.8.dylib bin/libraries/libsndfile/libsndfile.1.dylib
           install_name_tool -change /usr/local/opt/libogg/lib/libogg.0.dylib @rpath/libsndfile/libogg.0.dylib bin/libraries/libsndfile/libFLAC.8.dylib
@@ -16,6 +17,7 @@
         install_name_tool -change /usr/local/opt/libogg/lib/libogg.0.dylib @rpath/libsndfile/libogg.0.dylib bin/libraries/libsndfile/libvorbisenc.2.dylib
         install_name_tool -change /usr/local/Cellar/libvorbis/1.3.6/lib/libvorbis.0.dylib @rpath/libsndfile/libvorbis.0.dylib bin/libraries/libsndfile/libvorbisenc.2.dylib
   chmod 444 bin/libraries/libsndfile/*
+  
 )
 
 result=$?
