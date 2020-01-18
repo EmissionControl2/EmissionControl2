@@ -302,7 +302,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 									 static_cast<void *>(&samplingRates), samplingRates.size());
 			if (ImGui::Button("Start")) {
 				io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
-				io->framesPerBuffer(1024);
+				io->framesPerBuffer(consts::BLOCK_SIZE);
 				io->device(AudioDevice(state.currentDevice));
 				granulator.setIO(io);
 				granulator.resampleSoundFiles();

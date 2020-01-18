@@ -220,7 +220,6 @@ std::string ecSynth::loadInitSoundFiles() {
 	FileList initAudioFiles = fileListFromDir(initDir);
 	initAudioFiles.sort(util::compareFileNoCase);
 	for(auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
-		std::cout << i->file() << std::endl;
 		if(i->file().substr(i->file().length() - 4) == ".wav" || i->file().substr(i->file().length() - 4) == ".aif" ) {
 			loadSoundFile(i->filepath());
 		} else if(i->file().substr(i->file().length() - 5) == ".aiff") {

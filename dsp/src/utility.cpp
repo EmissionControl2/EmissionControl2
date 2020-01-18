@@ -176,7 +176,7 @@ bool util::load(
 		if(soundFile.frameRate() != samplingRate) {
 			buffer<float>* b = new buffer<float>();
 			b->filePath = fileName;
-			b->size = (a->size/a->channels)/soundFile.frameRate() * samplingRate;
+			b->size = (a->size)/soundFile.frameRate() * samplingRate;
 			b->data = new float[b->size];
 			b->channels = soundFile.channels();
 			SRC_DATA *conversion = new SRC_DATA;
@@ -187,10 +187,13 @@ bool util::load(
 			conversion->src_ratio = samplingRate/soundFile.frameRate();
 			src_simple(conversion, 2, soundFile.channels()); //const value changes quality of sample rate conversion
 			buf.push_back(b);
-			//std::cout<< "b->size: " << b->size << " a->size: " << a->size <<std::endl; 
 			delete[] a->data; delete conversion;
+		} else  {
+			buf.push_back(a);
+		}
 
-		} else buf.push_back(a);
+			
+
 	}
 	else buf.push_back(a); // We don't care about resampling the audio buffer.
 							// Note: can be used to load in non-audio files ;)
