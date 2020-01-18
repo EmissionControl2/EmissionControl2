@@ -477,13 +477,13 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 
 	this->source = list.source;
 
-	if (list.modTapeHeadWidth > 0)
-		startSample = source->size/source->channels *
+	if (list.modTapeHeadWidth > 0) //NOTE: the tape head wraps around to the beginning of the buffer when it exceeds its buffer size.
+		startSample = source->size *
 									(list.tapeHead.getModParam(
 											list.modSineVal, list.modSquareVal, list.modSawVal,
 											list.modNoiseVal, list.modTapeHeadWidth));
 	else
-		startSample = source->size/source->channels * list.tapeHead.getParam();
+		startSample = source->size * list.tapeHead.getParam();
 
 	if (list.modTranspositionWidth > 0)
 		endSample = startSample + source->channels * (
