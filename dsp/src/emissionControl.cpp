@@ -526,9 +526,7 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	mPan = std::sqrt(mPan + 1) * 0.5; //Normalize the pan parameter and set up for equal power using square root.
 	/**Set sampling rate of envelope**/
 	gEnv.setSamplingRate(samplingRate);
-	// std::cout << "Active Grains: " << *mPActiveVoices << std::endl;
-	// std::cout << "Amp: " << mAmp * powf(*mPActiveVoices + 1,-0.35) << std::endl; //experimenting with global amplitude setting of parameters
-	mAmp = mAmp * powf(*mPActiveVoices + 1,-0.35);
+	mAmp = mAmp * powf(*mPActiveVoices + 1,-0.36787698193); //  1/e 
 }
 
 void Grain::onProcess(al::AudioIOData& io) {
