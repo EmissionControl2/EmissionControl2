@@ -48,6 +48,10 @@ void ecInterface::onCreate() {
 		<< granulator.tapeHeadLFO << *granulator.modTapeHeadWidth.mParameter
 		<< *granulator.transposition.mParameter << *granulator.transposition.mLowRange << *granulator.transposition.mHighRange
 		<< granulator.transpositionLFO << *granulator.modTranspositionWidth.mParameter
+		<< *granulator.filter.mParameter << *granulator.filter.mLowRange << *granulator.filter.mHighRange
+		<< granulator.filterLFO << *granulator.modFilterDepth.mParameter
+		<< *granulator.resonance.mParameter << *granulator.resonance.mLowRange << *granulator.resonance.mHighRange
+		<< granulator.resonanceLFO << *granulator.modResonanceDepth.mParameter
 		<< *granulator.volumeDB.mParameter << *granulator.volumeDB.mLowRange << *granulator.volumeDB.mHighRange
 		<< granulator.volumeLFO << *granulator.modVolumeWidth.mParameter
 		<< *granulator.pan.mParameter << *granulator.pan.mLowRange << *granulator.pan.mHighRange
@@ -103,6 +107,19 @@ void ecInterface::onCreate() {
 	granulator.transposition.mHighRange->displayName("##playbackRateHigh");
 	granulator.transpositionLFO.displayName("##transposition");
 	granulator.modTranspositionWidth.mParameter->displayName("##modTranspositionWidth");
+
+	granulator.filter.mParameter->displayName("##filter");
+	granulator.filter.mLowRange->displayName("##filterLow");
+	granulator.filter.mHighRange->displayName("##filterHigh");
+	granulator.filterLFO.displayName("##filterLFO");
+	granulator.modFilterDepth.mParameter->displayName("##modFilterDepth");
+
+	granulator.resonance.mParameter->displayName("##resonance");
+	granulator.resonance.mLowRange->displayName("##resonanceLow");
+	granulator.resonance.mHighRange->displayName("##resonanceHigh");
+	granulator.resonanceLFO.displayName("##resonanceLFO");
+	granulator.modResonanceDepth.mParameter->displayName("##modResonanceDepth");
+
 	granulator.volumeDB.mParameter->displayName("##volumeDB"); 
 	granulator.volumeDB.mLowRange->displayName("##volumeDBLow");
 	granulator.volumeDB.mHighRange->displayName("##volumeDBHigh");
@@ -170,6 +187,8 @@ void ecInterface::onDraw(Graphics &g) {
 	granulator.envelope.drawRangeSlider();
 	granulator.tapeHead.drawRangeSlider();
 	granulator.transposition.drawRangeSlider();
+	granulator.filter.drawRangeSlider();
+	granulator.resonance.drawRangeSlider();
 	granulator.volumeDB.drawRangeSlider();
 	granulator.pan.drawRangeSlider();
 	granulator.soundFile.drawRangeSlider();
@@ -185,6 +204,8 @@ void ecInterface::onDraw(Graphics &g) {
 	ParameterGUI::drawMenu(&granulator.envelopeLFO);
 	ParameterGUI::drawMenu(&granulator.tapeHeadLFO);
 	ParameterGUI::drawMenu(&granulator.transpositionLFO);
+	ParameterGUI::drawMenu(&granulator.filterLFO);
+	ParameterGUI::drawMenu(&granulator.resonanceLFO);
 	ParameterGUI::drawMenu(&granulator.volumeLFO);
 	ParameterGUI::drawMenu(&granulator.panLFO);
 	ParameterGUI::drawMenu(&granulator.soundFileLFO);
@@ -200,6 +221,8 @@ void ecInterface::onDraw(Graphics &g) {
 	ParameterGUI::drawParameter(granulator.modEnvelopeWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modTapeHeadWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modTranspositionWidth.mParameter);
+	ParameterGUI::drawParameter(granulator.modFilterDepth.mParameter);
+	ParameterGUI::drawParameter(granulator.modResonanceDepth.mParameter);
 	ParameterGUI::drawParameter(granulator.modVolumeWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modPanWidth.mParameter);
 	ParameterGUI::drawParameter(granulator.modSoundFileWidth.mParameter);
@@ -220,7 +243,7 @@ void ecInterface::onDraw(Graphics &g) {
 	ParameterGUI::drawPresetHandler(&mPresets,12,4);
 	ParameterGUI::endPanel();
 
-	ParameterGUI::beginPanel("File Selector",25,535,-1,-1);
+	ParameterGUI::beginPanel("File Selector",25,580,-1,-1);
 
 	ImGui::Text("%s", currentFile.c_str());
 	if (ImGui::Button("Select File")) {
@@ -244,7 +267,7 @@ void ecInterface::onDraw(Graphics &g) {
 	}
 	ParameterGUI::endPanel();
 
-	ParameterGUI::beginPanel("Info", 525, 535,200,-1);
+	ParameterGUI::beginPanel("Info", 525, 580,200,-1);
 	ImGui::Text("Number of Active Grains: %.1i ",granulator.getActiveVoices() );
 	ParameterGUI::endPanel();
 	

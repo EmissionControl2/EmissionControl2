@@ -57,6 +57,17 @@ void ecSynth::init(al::AudioIOData* io) {
 	transpositionLFO.registerChangeCallback([&](int value) {
 		transposition.setWaveformIndex(value);
 	});
+
+	filterLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+	filterLFO.registerChangeCallback([&](int value) {
+		filter.setWaveformIndex(value);
+	});
+
+	resonanceLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+	resonanceLFO.registerChangeCallback([&](int value) {
+		resonance.setWaveformIndex(value);
+	});
+
 	volumeLFO.setElements({"Sine", "Square", "Saw", "Noise"});
 	volumeLFO.registerChangeCallback([&](int value) {
 		volumeDB.setWaveformIndex(value);
@@ -164,6 +175,10 @@ void ecSynth::onProcess(AudioIOData& io) {
 					modTapeHeadWidth.getParam(),
 					transposition,
 					modTranspositionWidth.getParam(),
+					filter,
+					modFilterDepth.getParam(),
+					resonance,
+					modResonanceDepth.getParam(),
 					volumeDB,
 					modVolumeWidth.getParam(),
 					pan,

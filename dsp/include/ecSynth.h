@@ -47,6 +47,14 @@ public:
 	al::ParameterMenu transpositionLFO {"transpositionLFO"}; 
 	ecParameter modTranspositionWidth {"modTranspositionWidth", "", 0, "", 0, 1, 0, 1};
 
+	ecParameter filter {"Filter", "", 440, "", 60, 5000, 20, 24000};
+	al::ParameterMenu filterLFO {"filterLFO"};
+	ecParameter modFilterDepth {"modFilterDepth", "", 0, "", 0, 1, 0, 1};
+
+	ecParameter resonance {"Resonance", "", 0, "", 0, 1, 0, 1};
+	al::ParameterMenu resonanceLFO {"resonanceLFO"};
+	ecParameter modResonanceDepth {"modResonanceDepth", "", 0, "", 0, 1, 0, 1};
+
 	ecParameter volumeDB {"Volume_DB", "", -6, "", -60, 6, -180, 24};
 	al::ParameterMenu volumeLFO {"volumeLFO"}; 
 	ecParameter modVolumeWidth {"modVolumeWidth", "", 0, "", 0, 1, 0, 1};
