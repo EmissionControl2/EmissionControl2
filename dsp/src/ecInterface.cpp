@@ -146,11 +146,27 @@ void ecInterface::onSound(AudioIOData &io) {
 
 void ecInterface::onDraw(Graphics &g) {
 	g.clear(background);
+
+	// handle hidpi displays for imgui (mostly for linux and windows)
+    ImGui::GetIO().FontGlobalScale = 1.2;
+
 	al::imguiBeginFrame();
 
 	//Draw GUI
 
-	ParameterGUI::beginPanel("LFO Controls", 25, 25,600);
+    // ImGui::SetWindowSize("Emission Control", ImVec2(fbWidth(), fbHeight()), 1);
+    // ImGui::Begin("Emission Control", NULL, flags);
+	// ImGui::Text("width: %.1i ", width());
+	// granulator.modSineFrequency.drawRangeSlider();
+	// granulator.modSinePhase.drawRangeSlider();
+	// granulator.modSquareFrequency.drawRangeSlider();
+	// granulator.modSquareWidth.drawRangeSlider();
+	// granulator.modSawFrequency.drawRangeSlider();
+	// granulator.modSawWidth.drawRangeSlider();
+	// ImGui::End();
+
+
+	ParameterGUI::beginPanel("LFO Controls", 25, 25);
 
 	granulator.modSineFrequency.drawRangeSlider();
 	granulator.modSinePhase.drawRangeSlider();
