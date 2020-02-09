@@ -7,6 +7,7 @@
 
 /**** AlloLib LIB ****/
 #include "Gamma/Oscillator.h"
+#include "Gamma/Filter.h"
 #include "al/math/al_Random.hpp"
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
@@ -425,6 +426,10 @@ struct grainParameters {
 	float modTapeHeadWidth;
 	ecParameter& transposition;
 	float modTranspositionWidth;
+	ecParameter& filter;
+	float modFilterDepth;
+	ecParameter& resonance;
+	float modResonanceDepth;
 	ecParameter& volumeDB;
 	float modVolumeWidth;
 	ecParameter& pan;
@@ -482,7 +487,10 @@ class Grain : public al::SynthVoice {
  private:
 	util::buffer<float>* source = nullptr;
 	util::line index;
+	gam::Biquad<> lowShelf;
+	gam::Biquad<> highShelf;
 	grainEnvelope gEnv;
+	float currentSample;
 	int* mPActiveVoices;
 	float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mAmp;
 };

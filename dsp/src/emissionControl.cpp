@@ -453,6 +453,8 @@ void ecParameterInt::drawRangeSlider() {
 
 void Grain::init() {
 	gEnv.reset();
+	lowShelf.type(gam::LOW_SHELF);
+	highShelf.type(gam::HIGH_SHELF);
 }
 
 void Grain::configureGrain(grainParameters& list, float samplingRate) {
@@ -527,6 +529,25 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	/**Set sampling rate of envelope**/
 	gEnv.setSamplingRate(samplingRate);
 	mAmp = mAmp * powf(*mPActiveVoices + 1,-0.36787698193); //  1/e 
+
+	// FILTERING SETUP
+
+	float level = list.resonance.getModParam(
+		list.modSineVal, list.modSquareVal, list.modSawVal,
+		list.modNoiseVal, list.modPanWidth);
+	level = 1/level;
+	lowShelf.res(40);
+	highShelf.res(40);
+	lowShelf.level(0.25);
+	highShelf.level(0.25);
+	lowShelf.freq(list.filter.getModParam(
+		list.modSineVal, list.modSquareVal, list.modSawVal,
+		list.modNoiseVal, list.modPanWidth) - 40
+	);
+	highShelf.freq(list.filter.getModParam(
+		list.modSineVal, list.modSquareVal, list.modSawVal,
+		list.modNoiseVal, list.modPanWidth) + 40
+	);
 }
 
 void Grain::onProcess(al::AudioIOData& io) {
@@ -537,12 +558,15 @@ void Grain::onProcess(al::AudioIOData& io) {
 		if (sourceIndex > source->size) sourceIndex -= source->size;
 
 		if(source->channels == 1) {
-			io.out(0) += source->get(sourceIndex) * envVal * (1-mPan) * mAmp;
-			io.out(1) += source->get(sourceIndex) * envVal * mPan * mAmp;
+			currentSample = highShelf(lowShelf(source->get(sourceIndex)));
+			io.out(0) += currentSample * envVal * (1-mPan) * mAmp;
+			io.out(1) += currentSample * envVal * mPan * mAmp;
 		}
 		else if (source->channels == 2) {
-			io.out(0) += source->get(sourceIndex) * envVal * (1-mPan) * mAmp;
-			io.out(1) += source->get(sourceIndex+1) * envVal * mPan * mAmp;
+			io.out(0) += highShelf(lowShelf(source->get(sourceIndex)))
+						* envVal * (1-mPan) * mAmp;
+			io.out(1) += highShelf(lowShelf(source->get(sourceIndex + 1)))
+						* envVal * mPan * mAmp;
 		}
 
 		if (gEnv.done()) {
