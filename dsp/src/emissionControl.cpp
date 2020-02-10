@@ -535,9 +535,9 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 	float level = list.resonance.getModParam(
 		list.modSineVal, list.modSquareVal, list.modSawVal,
 		list.modNoiseVal, list.modPanWidth);
-	level = 1/level;
-	lowShelf.res(40);
-	highShelf.res(40);
+	level = (level + 0.001) * 80;
+	lowShelf.res(level);
+	highShelf.res(level);
 	lowShelf.level(0.25);
 	highShelf.level(0.25);
 	lowShelf.freq(list.filter.getModParam(
