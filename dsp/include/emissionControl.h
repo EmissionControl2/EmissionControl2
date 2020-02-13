@@ -487,8 +487,7 @@ class Grain : public al::SynthVoice {
  private:
 	util::buffer<float>* source = nullptr;
 	util::line index;
-	gam::Biquad<> lowShelf;
-	gam::Biquad<> highShelf;
+	gam::Biquad<> mBPF;
 	grainEnvelope gEnv;
 	float currentSample;
 	int* mPActiveVoices;
