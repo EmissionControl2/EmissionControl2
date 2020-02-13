@@ -8,6 +8,16 @@
   mkdir -p soundOutput
   cp -r ../external/libraries .
 	cd ..
+
+  # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
+  if ! [-d ./external/libsamplerate/build]; then
+    cmake -E make_directory external/libsamplerate/build
+    cd external/libsamplerate/build
+    cmake ..
+    make
+    cd ../../../
+  fi
+
   mkdir -p build
   cd build
   mkdir -p release
