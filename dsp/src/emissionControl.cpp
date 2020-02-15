@@ -453,7 +453,8 @@ void ecParameterInt::drawRangeSlider() {
 
 void Grain::init() {
 	gEnv.reset();
-	mBPF.type(gam::RESONANT);
+	mLowShelf.type(gam::LOW_SHELF);
+	mHighShelf.type(gam::HIGH_SHELF);
 }
 
 void Grain::configureGrain(grainParameters& list, float samplingRate) {
@@ -505,7 +506,6 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 
 
 	// Store modulated volume value of grain IF it is being modulated.
-	// list.volumeDB.setParam(powf(10,list.volumeDB.getParam()/20));
 	if(list.modVolumeWidth > 0 ) 
 		mAmp = list.volumeDB.getModParam(
 								list.modSineVal, list.modSquareVal, list.modSawVal,
@@ -522,7 +522,7 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 								list.modSineVal, list.modSquareVal, list.modSawVal,
 								list.modNoiseVal, list.modPanWidth); 
 	else 
-		mPan = list.pan.getParam();
+	mPan = list.pan.getParam();
 
 	mPan = std::sqrt(mPan + 1) * 0.5; //Normalize the pan parameter and set up for equal power using square root.
 	/**Set sampling rate of envelope**/
@@ -531,16 +531,28 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 
 	// FILTERING SETUP
 
-	float level = list.resonance.getModParam(
+	float resonance = list.resonance.getModParam(
 		list.modSineVal, list.modSquareVal, list.modSawVal,
-		list.modNoiseVal, list.modPanWidth);
-	level = (level + 0.001) * 80;
-	mBPF.res(level);
-	mBPF.level(0.25);
-	mBPF.freq(list.filter.getModParam(
+		list.modNoiseVal, list.modResonanceDepth);
+	
+	float freq = list.filter.getModParam(
 		list.modSineVal, list.modSquareVal, list.modSawVal,
-		list.modNoiseVal, list.modPanWidth)
-	);
+		list.modNoiseVal, list.modFilterDepth);
+	
+	// delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
+	float delta = 0.4; // MIN_LEVEL = -30dB 
+	mLowShelf.freq(freq * delta); 
+	mHighShelf.freq(freq * 1/delta);
+	
+	float res_process = (resonance + 0.25) * 25;
+	mLowShelf.res(res_process);
+	mHighShelf.res(res_process);
+
+	// MIN_LEVEL = -30B
+	res_process = 1 - resonance * 0.85; //Compliment of -30dB
+	mLowShelf.level(res_process); 
+	mHighShelf.level(res_process);
+
 }
 
 void Grain::onProcess(al::AudioIOData& io) {
@@ -551,14 +563,20 @@ void Grain::onProcess(al::AudioIOData& io) {
 		if (sourceIndex > source->size) sourceIndex -= source->size;
 
 		if(source->channels == 1) {
-			currentSample = mBPF.nextBP(source->get(sourceIndex));
+			currentSample = mLowShelf(source->get(sourceIndex));
+			currentSample = mHighShelf(currentSample);
 			io.out(0) += currentSample * envVal * (1-mPan) * mAmp;
 			io.out(1) += currentSample * envVal * mPan * mAmp;
 		}
 		else if (source->channels == 2) {
-			io.out(0) += mBPF.nextBP(source->get(sourceIndex))
+			currentSample = mLowShelf(source->get(sourceIndex));
+			currentSample = mHighShelf(currentSample);
+			io.out(0) += currentSample
 						* envVal * (1-mPan) * mAmp;
-			io.out(1) += mBPF.nextBP(source->get(sourceIndex + 1))
+
+			currentSample = mLowShelf(source->get(sourceIndex + 1));
+			currentSample = mHighShelf(currentSample);
+			io.out(1) += currentSample
 						* envVal * mPan * mAmp;
 		}
 
