@@ -8,7 +8,6 @@
 
 namespace util {
 
-
 /**
  * Line class that moves from one point to another over a set period of time.
  */
