@@ -1,3 +1,9 @@
+/** 
+ * ecSynth.h
+ * 
+ * AUTHOR: Jack Kilgore
+ */
+
 #ifndef ECSYNTH_H
 #define ECSYNTH_H
 
@@ -9,8 +15,17 @@
 #include "al/ui/al_Parameter.hpp"
 #include "al/scene/al_PolySynth.hpp"
 
+/**** CSTD LIB ****/
+#include <memory>
+
+
 class ecSynth: public al::SynthVoice {
 public:
+
+	/**
+	 * The number of modulators in ecSynth.
+	 */
+	const static int NUM_MODULATORS = 4;
 
 	/**
 	 * PUBLIC PARAMETERS OF SYNTH
@@ -175,6 +190,8 @@ private:
 	ecModulator modSquare {consts::SQUARE};
 	ecModulator modSaw {consts::SAW};
 	ecModulator modNoise {consts::NOISE};
+
+	std::vector<std::shared_ptr<ecModulator>> Modulators;
 
 	float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 	

@@ -16,7 +16,7 @@ class line {
 
 /**
  * @brief Default constructor.
- */
+ */ 
  line() {mSamplingRate = consts::SAMPLE_RATE; }
 
 	/**
