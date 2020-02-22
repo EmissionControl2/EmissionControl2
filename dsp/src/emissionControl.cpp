@@ -1,4 +1,8 @@
-//emissionControl.cpp
+/** 
+ * emissionControl.cpp
+ * 
+ * AUTHOR: Jack Kilgore
+ */
 
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
@@ -188,7 +192,7 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 	float temp;
 	switch (mModWaveform) {
 		case consts::SINE: {
-			temp = mParameter->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); //WIIIPS
+			temp = mParameter->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); 
 			if(temp > mHighRange->get())
 				return mHighRange->get();
 			else if(temp < mLowRange->get())
@@ -235,12 +239,15 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 }
 
 float ecParameter::getModParam(float modWidth) {
-	if (!mIndependentMod) {
-		std::cerr << "PARAMETER must have independence set to true if you want "
-									"to use this getModParam function\n";
-		return -9999999999;
+	float temp;
+	if (!mIndependentMod && mModSource.get() != nullptr) 
+		temp = mParameter->get() + (mModSource->getCurrentSample() * modWidth * (mHighRange->get() - mLowRange->get()) ); 
+	else if(mIndependentMod)
+		temp = mParameter->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
+	else {
+		std::cerr << "No Valid Modulation source for ecParameter instance: " << mParameter->getName() << std::endl;
+		std::exit(1);
 	}
-	float temp = mParameter->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
 	if(temp > mHighRange->get())
 		return mHighRange->get();
 	else if(temp < mLowRange->get())
@@ -348,7 +355,7 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 	int temp;
 	switch (mModWaveform) {
 		case consts::SINE: {
-			temp = mParameterInt->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); //WIIIPS
+			temp = mParameterInt->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) );
 			if(temp > mHighRange->get())
 				return mHighRange->get();
 			else if(temp < mLowRange->min())
@@ -395,12 +402,15 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 }
 
 int ecParameterInt::getModParam(float modWidth) {
-	if (!mIndependentMod) {
-		std::cerr << "PARAMETER must have independence set to true if you want "
-									"to use this getModParam function\n";
-		return -99999;
+	int temp;
+	if (!mIndependentMod && mModSource.get() != nullptr) 
+		temp = mParameterInt->get() + (mModSource->getCurrentSample() * modWidth * (mHighRange->get() - mLowRange->get()) ); 
+	else if(mIndependentMod)
+		temp = mParameterInt->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
+	else {
+		std::cerr << "No Valid Modulation source for ecParameterInt instance: " << mParameterInt->getName() << std::endl;
+		std::exit(1);
 	}
-	int temp = mParameterInt->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
 	if(temp > mHighRange->get())
 		return mHighRange->get();
 	else if(temp < mLowRange->get())

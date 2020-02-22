@@ -1,4 +1,8 @@
-//ecInterface.cpp 
+/** 
+ * ecInterface.cpp
+ * 
+ * AUTHOR: Jack Kilgore
+ */
 
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
