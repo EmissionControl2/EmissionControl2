@@ -84,6 +84,7 @@ float ecModulator::operator()() {
 	} else if (mModWaveform == consts::SQUARE) {
 		return mLFO.stair();
 	} else if (mModWaveform == consts::NOISE) {
+		// TO DO TO DO -- make changes based on frequency parameter.
 		return rand.uniform(-1.0, 1.0);
 	} else {
 		return mLFO.cos();
@@ -101,6 +102,7 @@ void ecModulator::setWaveform(consts::waveform modWaveform) {
 
 void ecModulator::setFrequency(float frequency) {
 	mLFO.freq(frequency);
+	mFrequency = frequency;
 }
 
 void ecModulator::setWidth(float width) {

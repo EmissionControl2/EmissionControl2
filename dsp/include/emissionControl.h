@@ -190,8 +190,7 @@ class ecModulator {
 	gam::LFO<> mLFO{};
 	al::rnd::Random<> rand;
 	consts::waveform mModWaveform;
-	float mWidth;
-	float mCurrentSample;
+	float mWidth, mFrequency, mCurrentSample;
 };
 
 /**
