@@ -158,9 +158,9 @@ void ecSynth::onProcess(AudioIOData& io) {
 
 		// NOTE grainRate noise isnt very perceptible 
 		if(modGrainRateWidth.getParam() > 0)  // modulate the grain rate
-			grainScheduler.setFrequency(grainRate.getModParam(modGrainRateWidth.getParam()));
-			// grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
-			// modGrainRateWidth.getParam())); 
+			// grainScheduler.setFrequency(grainRate.getModParam(modGrainRateWidth.getParam()));
+			grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+			modGrainRateWidth.getParam())); 
 		else grainScheduler.setFrequency(grainRate.getParam());
 
 		if(modAsynchronicityWidth.getParam() > 0) //modulate the asynchronicity 

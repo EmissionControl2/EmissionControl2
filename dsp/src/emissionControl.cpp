@@ -120,10 +120,11 @@ ecParameter::ecParameter(std::string parameterName, float defaultValue,
 						consts::waveform modWaveform,
 						bool independentMod) {
 	mParameter = new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
+	mParameter->displayName("##" + parameterName);
 	mLowRange =
-			new Parameter{(parameterName + "Low").c_str(), defaultMin, absMin, absMax};
+			new Parameter{("##" + parameterName + "Low").c_str(), defaultMin, absMin, absMax};
 	mHighRange =
-			new Parameter{(parameterName + "High").c_str(), defaultMax, absMin, absMax};
+			new Parameter{("##" + parameterName + "High").c_str(), defaultMax, absMin, absMax};
 	mMin = defaultMin;
 	mMax = defaultMax;
 	mModWaveform = modWaveform;
@@ -141,10 +142,11 @@ ecParameter::ecParameter(std::string parameterName, std::string Group,
 						bool independentMod) {
 	mParameter =
 			new Parameter{parameterName, Group, defaultValue, prefix, defaultMin, defaultMax};
+	mParameter->displayName("##" + parameterName);
 	mLowRange = new Parameter{
-			(parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
+			("##" + parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
 	mHighRange = new Parameter{
-			(parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
+			("##" + parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
 	mMin = defaultMin;
 	mMax = defaultMax;
 	mModWaveform = modWaveform;
@@ -304,10 +306,11 @@ ecParameterInt::ecParameterInt(std::string parameterName, std::string Group,
 							bool independentMod) {
 	mParameterInt =
 			new ParameterInt{parameterName, Group, defaultValue, prefix, defaultMin, defaultMax};
+	mParameterInt->displayName("##" + parameterName);
 	mLowRange = 
-			new ParameterInt{(parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
+			new ParameterInt{("##" + parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
 	mHighRange = 
-			new ParameterInt{(parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
+			new ParameterInt{("##" + parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
 	mMin = defaultMin;
 	mMax = defaultMax;
 	mModWaveform = modWaveform;
