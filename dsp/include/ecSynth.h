@@ -25,6 +25,9 @@ public:
    */
   const static int NUM_MODULATORS = 4;
 
+	// array of lfo parameters to draw later
+	std::vector<LFOstruct*> LFOparameters;
+
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
@@ -202,8 +205,6 @@ private:
 
 
   std::vector<std::shared_ptr<ecModulator>> Modulators;
-  // array of lfo parameters to draw later
-  std::vector<LFOstruct*> LFOparameters;
   float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 };
 
