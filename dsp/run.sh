@@ -8,6 +8,7 @@
     #rewrite load commands for dynamic libraries
   fi
   if [ $(uname -s) == "Darwin" ]; then
+    chmod 644 bin/libraries/libsndfile/*
     install_name_tool -change /usr/local/opt/libsndfile/lib/libsndfile.1.dylib @rpath/libsndfile/libsndfile.1.dylib bin/emissionControl
     install_name_tool -change /usr/local/opt/flac/lib/libFLAC.8.dylib @rpath/libsndfile/libFLAC.8.dylib bin/libraries/libsndfile/libsndfile.1.dylib
     install_name_tool -change /usr/local/opt/libogg/lib/libogg.0.dylib @rpath/libsndfile/libogg.0.dylib bin/libraries/libsndfile/libFLAC.8.dylib
