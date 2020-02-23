@@ -82,6 +82,7 @@ public:
     al::Parameter *frequency = nullptr;
     al::Parameter *duty = nullptr;
 
+    // constructor
     LFOstruct(int lfoNumber) {
       std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
       std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
@@ -93,8 +94,15 @@ public:
 
       shape->setElements({"Sine", "Square", "Saw", "Noise"});
     }
+
+    // destructor
+    ~LFOstruct() {
+      delete shape;
+      delete frequency;
+      delete duty;
+    }
   };
- // array of lfo parameters to draw later
+  // array of lfo parameters to draw later
   std::vector<LFOstruct> LFOparameters;
   LFOstruct lfo1{1};
   LFOstruct lfo2{2};
