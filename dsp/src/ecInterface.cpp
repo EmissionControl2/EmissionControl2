@@ -13,6 +13,9 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
+
+  dimensions(1920, 1080);
+
   granulator.init(&audioIO());
 
   std::string execPath = util::getExecutablePath();
@@ -99,8 +102,15 @@ void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
 
   // Get window height and width
-  float windowWidth = fbWidth();
-  float windowHeight = fbHeight();
+  float windowHeight, windowWidth;
+  if(fbWidth() != width()) {
+    windowWidth = fbWidth()/2;
+    windowHeight = fbHeight()/2;
+  }
+  else {
+    windowWidth = fbWidth();
+    windowHeight = fbHeight();
+  }
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
