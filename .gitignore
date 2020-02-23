@@ -10,3 +10,4 @@ imgui.ini
 *.o
 .vscode/
 sc/
+valgrind-output.txt
