@@ -28,8 +28,8 @@ void ecSynth::init(al::AudioIOData *io) {
     Modulators.push_back(std::make_shared<ecModulator>());
   }
   
-  for (index = 0; i < NUM_MODULATORS; index++) {
-    LFOparameters.push_back(new LFOstruct{i});
+  for (index = 0; index < NUM_MODULATORS; index++) {
+    LFOparameters.push_back(new LFOstruct{index});
   }
 
   mGlobalSamplingRate = io->fps();
