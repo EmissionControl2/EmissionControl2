@@ -5,6 +5,7 @@
   mkdir -p bin 
   cd bin 
   cp -r ../../samples .
+  cp -r ../../Fonts .
   mkdir -p soundOutput
   cp -r ../external/libraries .
 	cd ..
