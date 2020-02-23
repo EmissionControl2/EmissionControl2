@@ -1,8 +1,5 @@
-/**
- * ecInterface.cpp
- *
- * AUTHOR: Jack Kilgore
- */
+// ecInterface.cpp
+
 
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
@@ -100,22 +97,94 @@ void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
+
+  // Get window height and width
+  float windowWidth = fbWidth();
+  float windowHeight = fbHeight();
+
+  // Initialize Audio IO popup to false
+  bool displayIO = false;
+
+  // Load Font
+  ImFont *font1 = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      "./Fonts/Roboto-Medium.ttf", 14.0f);
+
+  // Scale font
+  ImGui::GetIO().FontGlobalScale = 1.2;
+
+  // Make window borders not rounded
+  // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); // not working
+
   al::imguiBeginFrame();
+
+  // colors
+  ImGui::PushStyleColor(ImGuiCol_WindowBg,
+                        (ImVec4)ImColor(0.8f, 0.969f, 0.8f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PopupBg,
+                        (ImVec4)ImColor(0.8f, 0.969f, 0.8f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.651f, 0.933f, 0.651f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg,
+                        (ImVec4)ImColor(0.651f, 0.933f, 0.651f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrab,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_Button,
+                        (ImVec4)ImColor(0.651f, 0.933f, 0.651f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_Header,
+                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
+                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderActive,
+                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBg,
+                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBgActive,
+                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed,
+                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
 
   // Draw GUI
 
-  ParameterGUI::beginPanel("LFO Controls", 25, 25, 600);
+  // draw menu bar
+  static bool show_app_main_menu_bar = true;
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("File")) {
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("View")) {
+      if (ImGui::MenuItem("blah", "CTRL+1")) {
+      }
+      if (ImGui::MenuItem("blah", "", false, false)) {
+      } // Disabled item
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Preferences")) {
+      if (ImGui::MenuItem("Audio IO", "")) {
+        displayIO = true;
+      }
+      if (ImGui::MenuItem("blah", "", false, false)) {
+      } // Disabled item
+      ImGui::EndMenu();
+    }
+    ImGui::EndMainMenuBar();
+  }
 
-  granulator.modSineFrequency.drawRangeSlider();
-  granulator.modSinePhase.drawRangeSlider();
-  granulator.modSquareFrequency.drawRangeSlider();
-  granulator.modSquareWidth.drawRangeSlider();
-  granulator.modSawFrequency.drawRangeSlider();
-  granulator.modSawWidth.drawRangeSlider();
-
+  // Draw LFO parameters window
+  ParameterGUI::beginPanel("LFO Controls", 0, 25, windowWidth / 2,
+                           windowHeight / 4, flags);
+  drawLFOcontrol(granulator, 0);
+  drawLFOcontrol(granulator, 1);
+  drawLFOcontrol(granulator, 2);
+  drawLFOcontrol(granulator, 3);
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("Granulator Controls", 675, 250, 700, -1);
+  ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2,
+                           windowHeight / 4 + 25, windowWidth / 2,
+                           windowHeight / 2, flags);
+
   granulator.grainRate.drawRangeSlider();
   granulator.asynchronicity.drawRangeSlider();
   granulator.intermittency.drawRangeSlider();
@@ -129,59 +198,68 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.volumeDB.drawRangeSlider();
   granulator.pan.drawRangeSlider();
   granulator.soundFile.drawRangeSlider();
-
+  ParameterGUI::endPanel();
+ 
+  // Draw modulation window
+  ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
+                           windowWidth / 2, windowHeight / 2, flags);
+  drawModulationControl(granulator.grainRateLFO,
+                        granulator.modGrainRateWidth.mParameter);
+  drawModulationControl(granulator.asyncLFO,
+                        granulator.modAsynchronicityWidth.mParameter);
+  drawModulationControl(granulator.intermittencyLFO,
+                        granulator.modIntermittencyWidth.mParameter);
+  drawModulationControl(granulator.streamsLFO,
+                        granulator.modStreamsWidth.mParameter);
+  drawModulationControl(granulator.grainDurationLFO,
+                        granulator.modGrainDurationWidth.mParameter);
+  drawModulationControl(granulator.envelopeLFO,
+                        granulator.modEnvelopeWidth.mParameter);
+  drawModulationControl(granulator.tapeHeadLFO,
+                        granulator.modTapeHeadWidth.mParameter);
+  drawModulationControl(granulator.transpositionLFO,
+                        granulator.modTranspositionWidth.mParameter);
+  drawModulationControl(granulator.filterLFO,
+                        granulator.modFilterDepth.mParameter);
+  drawModulationControl(granulator.resonanceLFO,
+                        granulator.modResonanceDepth.mParameter);
+  drawModulationControl(granulator.volumeLFO,
+                        granulator.modVolumeWidth.mParameter);
+  drawModulationControl(granulator.panLFO, granulator.modPanWidth.mParameter);
+  drawModulationControl(granulator.soundFileLFO,
+                        granulator.modSoundFileWidth.mParameter);
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("Modulation Wave", 525, 250, 150, -1);
-  ParameterGUI::drawMenu(&granulator.grainRateLFO);
-  ParameterGUI::drawMenu(&granulator.asyncLFO);
-  ParameterGUI::drawMenu(&granulator.intermittencyLFO);
-  ParameterGUI::drawMenu(&granulator.streamsLFO);
-  ParameterGUI::drawMenu(&granulator.grainDurationLFO);
-  ParameterGUI::drawMenu(&granulator.envelopeLFO);
-  ParameterGUI::drawMenu(&granulator.tapeHeadLFO);
-  ParameterGUI::drawMenu(&granulator.transpositionLFO);
-  ParameterGUI::drawMenu(&granulator.filterLFO);
-  ParameterGUI::drawMenu(&granulator.resonanceLFO);
-  ParameterGUI::drawMenu(&granulator.volumeLFO);
-  ParameterGUI::drawMenu(&granulator.panLFO);
-  ParameterGUI::drawMenu(&granulator.soundFileLFO);
-  ParameterGUI::endPanel();
-
-  ParameterGUI::beginPanel("Modulation Depth", 25, 250, 500, -1);
-
-  ParameterGUI::drawParameter(granulator.modGrainRateWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modAsynchronicityWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modIntermittencyWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modStreamsWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modGrainDurationWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modEnvelopeWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modTapeHeadWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modTranspositionWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modFilterDepth.mParameter);
-  ParameterGUI::drawParameter(granulator.modResonanceDepth.mParameter);
-  ParameterGUI::drawParameter(granulator.modVolumeWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modPanWidth.mParameter);
-  ParameterGUI::drawParameter(granulator.modSoundFileWidth.mParameter);
-  ParameterGUI::endPanel();
-
-  ParameterGUI::beginPanel("IO", 1125, 25, 200, 200);
   // Draw an interface to Audio IO.
   // This enables starting and stopping audio as well as selecting
   // Audio device and its parameters
-  drawAudioIO(&audioIO());
-  ParameterGUI::endPanel();
+  // if statement opens Audio IO popup if chosen from menu
+  if (displayIO == true) {
+    ImGui::OpenPopup("Audio IO");
+  }
+  bool open = true;
+  if (ImGui::BeginPopupModal("Audio IO", &open)) {
+    drawAudioIO(&audioIO());
+    ImGui::EndPopup();
+  }
 
-  ParameterGUI::beginPanel("Recorder", 950, 25);
+  // Draw recorder window
+  ParameterGUI::beginPanel("Recorder", windowWidth * 3 / 4,
+                           windowHeight * 3 / 4 + 25, windowWidth / 4,
+                           windowHeight / 4, flags);
+
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
                      audioIO().channelsOut(), soundOutput);
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("Presets", 625, 25, 320, 220);
+  ParameterGUI::beginPanel("Presets", windowWidth / 2, 25, windowWidth / 2,
+                           windowHeight / 4, flags);
   ParameterGUI::drawPresetHandler(&mPresets, 12, 4);
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("File Selector", 25, 580, -1, -1);
+  ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25,
+                           windowWidth / 4, windowHeight / 4, flags);
+
 
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
@@ -205,9 +283,18 @@ void ecInterface::onDraw(Graphics &g) {
   }
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("Info", 525, 580, 200, -1);
+  // Draw Scope window
+  ParameterGUI::beginPanel("Scope", windowWidth / 4, windowHeight * 3 / 4 + 25,
+                           windowWidth / 2, windowHeight / 4, flags);
   ImGui::Text("Number of Active Grains: %.1i ", granulator.getActiveVoices());
+  // ImGui::PlotHistogram("Number of Active Grains: %.1i
+  // ",granulator.getActiveVoices() );
+
   ParameterGUI::endPanel();
+
+  // Pop the colors that were pushed at the start of the draw call
+  ImGui::PopStyleColor(13);
+  // ImGui::PopStyleVar();
 
   ImGui::End();
   al::imguiEndFrame();
@@ -236,42 +323,38 @@ void ecInterface::drawAudioIO(AudioIO *io) {
   }
   AudioIOState &state = stateMap[io];
   ImGui::PushID(std::to_string((unsigned long)io).c_str());
-  if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_CollapsingHeader |
-                                           ImGuiTreeNodeFlags_DefaultOpen)) {
-    if (io->isOpen()) {
-      std::string text;
-      text += "Sampling Rate: " + std::to_string(io->fps());
-      text += "\nbuffer size: " + std::to_string(io->framesPerBuffer());
-      text += "\nin chnls: " + std::to_string(io->channelsIn());
-      text += "\nout chnls:" + std::to_string(io->channelsOut());
-      ImGui::Text("%s", text.c_str());
-      if (ImGui::Button("Stop")) {
-        io->stop();
-        io->close();
-      }
-    } else {
-      if (ImGui::Button("Update Devices")) {
-        updateDevices(state);
-      }
-      if (ImGui::Combo(
-              "Device", &state.currentDevice, ParameterGUI::vector_getter,
-              static_cast<void *>(&state.devices), state.devices.size())) {
-        // TODO adjust valid number of channels.
-      }
-      std::vector<std::string> samplingRates{"44100", "48000", "88100",
-                                             "96000"};
-      ImGui::Combo("Sampling Rate", &state.currentSr,
-                   ParameterGUI::vector_getter,
-                   static_cast<void *>(&samplingRates), samplingRates.size());
-      if (ImGui::Button("Start")) {
-        io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
-        io->framesPerBuffer(consts::BLOCK_SIZE);
-        io->device(AudioDevice(state.currentDevice));
-        granulator.setIO(io);
-        granulator.resampleSoundFiles();
-        io->open();
-        io->start();
-      }
+  
+  if (io->isOpen()) {
+    std::string text;
+    text += "Sampling Rate: " + std::to_string(int(io->fps()));
+    text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
+    text += "\nInput Channels: " + std::to_string(io->channelsIn());
+    text += "\nOutput Channels:" + std::to_string(io->channelsOut());
+    ImGui::Text("%s", text.c_str());
+    if (ImGui::Button("Stop")) {
+      io->stop();
+      io->close();
+    }
+  } else {
+    if (ImGui::Button("Update Devices")) {
+      updateDevices(state);
+    }
+    if (ImGui::Combo(
+            "Device", &state.currentDevice, ParameterGUI::vector_getter,
+            static_cast<void *>(&state.devices), state.devices.size())) {
+      // TODO adjust valid number of channels.
+    }
+    std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
+    ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
+                 static_cast<void *>(&samplingRates), samplingRates.size());
+    if (ImGui::Button("Start")) {
+      io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
+      io->framesPerBuffer(consts::BLOCK_SIZE);
+      io->device(AudioDevice(state.currentDevice));
+      granulator.setIO(io);
+      granulator.resampleSoundFiles();
+      io->open();
+      io->start();
     }
   }
   ImGui::PopID();
@@ -338,4 +421,34 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
     ImGui::Checkbox("Overwrite", &state.overwriteButton);
   }
   ImGui::PopID();
+}
+
+void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
+  ImGui::Text("LFO %i", lfoNumber + 1);
+  ImGui::SameLine();
+  ImGui::PushItemWidth(120);
+  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
+  ImGui::PopItemWidth();
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
+  ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
+  ImGui::PopItemWidth();
+  ImGui::Indent(200);
+  if (*synth.LFOparameters[lfoNumber]->shape == 1) {
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
+    ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
+    ImGui::PopItemWidth();
+  }
+  ImGui::Unindent(200);
+}
+
+void ecInterface::drawModulationControl(al::ParameterMenu &menu,
+                                        al::Parameter *slider) {
+  ImGui::PushItemWidth(120);
+  ParameterGUI::drawMenu(&menu);
+  ImGui::PopItemWidth();
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
+  ParameterGUI::drawParameter(slider);
+  ImGui::PopItemWidth();
 }
