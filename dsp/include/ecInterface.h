@@ -1,3 +1,9 @@
+/** 
+ * ecInterface.h
+ * 
+ * AUTHOR: Jack Kilgore
+ */
+
 #ifndef ECINTERFACE_H
 #define ECINTERFACE_H
 
