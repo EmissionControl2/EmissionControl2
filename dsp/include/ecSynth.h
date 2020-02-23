@@ -75,39 +75,9 @@ public:
                               FLT_MIN,           1000};
   ecParameter modSawWidth{"modSawWidth", "", 1, "", 0, 1, 0, 1};
 
-  // a struct to wrap LFO parameters
-  struct LFOstruct {
-  public:
-    al::ParameterMenu *shape = nullptr;
-    al::Parameter *frequency = nullptr;
-    al::Parameter *duty = nullptr;
 
-    // constructor
-    LFOstruct(int lfoNumber) {
-      std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
-      std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
-      std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
-
-      shape = new al::ParameterMenu(menuName);
-      frequency = new al::Parameter(freqName, "", 1, "", 0.01, 1000);
-      duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
-
-      shape->setElements({"Sine", "Square", "Saw", "Noise"});
-    }
-
-    // destructor
-    ~LFOstruct() {
-      delete shape;
-      delete frequency;
-      delete duty;
-    }
-  };
   // array of lfo parameters to draw later
-  std::vector<LFOstruct> LFOparameters;
-  LFOstruct lfo1{1};
-  LFOstruct lfo2{2};
-  LFOstruct lfo3{3};
-  LFOstruct lfo4{4};
+  std::vector<LFOstruct*> LFOparameters;
 
   /**
    * @brief Initilialize the synth.

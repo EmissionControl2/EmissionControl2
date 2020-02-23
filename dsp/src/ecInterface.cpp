@@ -490,16 +490,16 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO %i", lfoNumber + 1);
   ImGui::SameLine();
   ImGui::PushItemWidth(120);
-  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber].shape);
+  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
-  ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber].frequency);
+  ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
   ImGui::PopItemWidth();
   ImGui::Indent(200);
-  if (*synth.LFOparameters[lfoNumber].shape == 1) {
+  if (*synth.LFOparameters[lfoNumber]->shape == 1) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
-    ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber].duty);
+    ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
     ImGui::PopItemWidth();
   }
   ImGui::Unindent(200);
