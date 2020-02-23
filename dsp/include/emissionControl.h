@@ -1,3 +1,9 @@
+/**
+ * emissionControl.h
+ *
+ * AUTHOR: Jack Kilgore
+ */
+
 #ifndef EMISSIONCONTROL_H
 #define EMISSIONCONTROL_H
 
@@ -6,6 +12,7 @@
 #include "utility.h"
 
 /**** AlloLib LIB ****/
+#include "Gamma/Filter.h"
 #include "Gamma/Oscillator.h"
 #include "al/math/al_Random.hpp"
 #include "al/scene/al_DynamicScene.hpp"
@@ -23,73 +30,72 @@
  * Allows for a single value [0,1] to interpolate between all three envelopes.
  */
 class grainEnvelope {
-	public:
+public:
+  void setSamplingRate(float samplingRate);
 
-	void setSamplingRate(float samplingRate);
+  float getSamplingRate() { return mSamplingRate; }
 
-	float getSamplingRate() {return mSamplingRate;}
+  /**
+   * @brief Generate envelope in real-time.
+   *
+   * @return Amplitude value at a point in time.
+   */
+  float operator()();
 
-	/**
-	 * @brief Generate envelope in real-time.
-	 * 
-	 * @return Amplitude value at a point in time.
-	 */
-	float operator()();
+  /**
+   * @brief Set grainEnvelope parameters.
+   *
+   * @param[in] sets the duration of the envelope in SECONDS, usually equal to
+   * duration of grain.
+   * @param[in] FROM 0 to 1, where 0 to 0.5 interplates between expo and tukey
+   * and 0.5 to 1 interpolated between tukey and reverse expo.
+   */
+  grainEnvelope(float duration = 1, float envelope = 0) {
+    this->setDuration(duration);
+    this->setEnvelope(envelope);
+  }
 
-	/**
-	 * @brief Set grainEnvelope parameters.
-	 *
-	 * @param[in] sets the duration of the envelope in SECONDS, usually equal to
-	 * duration of grain.
-	 * @param[in] FROM 0 to 1, where 0 to 0.5 interplates between expo and tukey
-	 * and 0.5 to 1 interpolated between tukey and reverse expo.
-	 */
-	grainEnvelope(float duration = 1, float envelope = 0) {
-		this->setDuration(duration);
-		this->setEnvelope(envelope);
-	}
+  /**
+   * @brief Set enevlope type.
+   *
+   * @param[in] FROM 0 to 1, where 0 to 0.5 interplates between expo and tukey
+   * and 0.5 to 1 interpolated between tukey and reverse expo.
+   */
+  void setEnvelope(float envelope);
 
-	/**
-	 * @brief Set enevlope type.
-	 * 
-	 * @param[in] FROM 0 to 1, where 0 to 0.5 interplates between expo and tukey
-	 * and 0.5 to 1 interpolated between tukey and reverse expo.
-	 */
-	void setEnvelope(float envelope);
+  /**
+   * @brief Set duration of envelope.
+   *
+   * @param[in] Duration in seconds.
+   */
+  void setDuration(float duration);
 
-	/**
-	 * @brief Set duration of envelope.
-	 * 
-	 * @param[in] Duration in seconds.
-	 */
-	void setDuration(float duration);
+  void set(float duration, float envelope) {
+    this->setDuration(duration);
+    this->setEnvelope(envelope);
+  }
 
-	void set(float duration, float envelope) {
-		this->setDuration(duration);
-		this->setEnvelope(envelope);
-	}
+  /**
+   * @brief Mark envelope as done.
+   */
+  bool done();
 
-	/**
-	 * @brief Mark envelope as done.
-	 */
-	bool done();
+  /**
+   * @brief Call to reset envelope parameters to original starting position.
+   */
+  void reset();
 
-	/**
-	 * @brief Call to reset envelope parameters to original starting position.
-	 */
-	void reset();
+  float getEnvelope() const { return mEnvelope; }
 
-	float getEnvelope() const { return mEnvelope; }
+  float getDuration() const { return mDuration; }
 
-	float getDuration() const { return mDuration; }
-
- private:
-	float mSamplingRate;
-	util::expo mExpoEnv;
-	util::tukey mTurkeyEnv;
-	util::expo mRExpoEnv;
-	float mEnvelope;  // assumes between 0 and 1
-	float mDuration;  // in seconds
+private:
+  float mSamplingRate;
+  util::expo mExpoEnv;
+  util::tukey mTurkeyEnv;
+  util::expo mRExpoEnv;
+  float mEnvelope; // assumes between 0 and 1
+  float mDuration; // in seconds
 };
 
 /**
@@ -97,71 +103,94 @@ class grainEnvelope {
  * grain/voiceScheduler parameters/
  */
 class ecModulator {
- public:
-	/**
-	 * @brief Constructor for ecModulator.
-	 *
-	 * @param[in] An enum type defined in consts.h. 
-	 *            SINE, SQUARE, SAW, or NOISE.
-	 * @param[in] The frequency of the modulator.
-	 * @param[in] The width of the modulator.
-	 */
-	ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1,
-							float width = 1)
-			: mWidth(width) {
-		this->setWaveform(modWaveform);
-		mLFO.set(frequency, 0, width);
-	}
+public:
+  /**
+   * @brief Constructor for ecModulator.
+   *
+   * @param[in] An enum type defined in consts.h.
+   *            SINE, SQUARE, SAW, or NOISE.
+   * @param[in] The frequency of the modulator.
+   * @param[in] The width of the modulator.
+   */
+  ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1,
+              float width = 1)
+      : mWidth(width) {
+    this->setWaveform(modWaveform);
+    mLFO.set(frequency, 0, width);
+  }
 
-	/**
-	 * @brief Processing done at the audio rate.
-	 * 
-	 * @return Modulation value at a point in time.
-	 */
-	float operator()();
+  /**
+   * @brief Processing done at the audio rate.
+   *
+   * @return Modulation value at a point in time.
+   */
+  float operator()();
 
-	/**
-	 * @brief Set the waveform of the modulator.
-	 * 
-	 * @param[in] An enum type defined in consts.h. 
-	 *            SINE, SQUARE, SAW, or NOISE.
-	 */ 
-	void setWaveform(consts::waveform modWaveform);
+  /**
+   * @brief Calls the operator() function and then calls
+   * setCurrentSample(float). For convenience.
+   */
+  void sampleAndStore() { setCurrentSample((*this)()); }
 
-	/**
-	 * @brief Set the frequency of the modulator.
-	 * 
-	 * @param[in] Frequency in Hz.
-	 */ 
-	void setFrequency(float frequency);
+  /**
+   * @brief If you are using these as global modulators it might be useful to
+   * store the current sample.
+   *
+   * @param sample : The current sample to be stored, usually comes from
+   * this->operator()
+   */
+  void setCurrentSample(float sample) { mCurrentSample = sample; }
 
-	/**
-	 * @brief Set the width of the modulator.
-	 * 
-	 * @param[in] Frequency in Hz.
-	 */ 
-	void setWidth(float width);
+  /**
+   * @brief If you are using these as global modulators it might be useful to
+   * get the current sample.
+   *
+   * @return The current sample being stored.
+   */
+  float getCurrentSample() const { return mCurrentSample; }
 
-	/**
-	 * Set the phase of the modulator.
-	 * 
-	 * @param[in] The phase as a number between 0 and 1.
-	 */ 
-	void setPhase(float phase);
+  /**
+   * @brief Set the waveform of the modulator.
+   *
+   * @param[in] An enum type defined in consts.h.
+   *            SINE, SQUARE, SAW, or NOISE.
+   */
+  void setWaveform(consts::waveform modWaveform);
 
-	consts::waveform getWaveform() const { return mModWaveform; }
+  /**
+   * @brief Set the frequency of the modulator.
+   *
+   * @param[in] Frequency in Hz.
+   */
+  void setFrequency(float frequency);
 
-	float getFrequency() const { return mLFO.freq(); }
+  /**
+   * @brief Set the width of the modulator.
+   *
+   * @param[in] Frequency in Hz.
+   */
+  void setWidth(float width);
 
-	float getWidth() const { return mWidth; }
+  /**
+   * Set the phase of the modulator.
+   *
+   * @param[in] The phase as a number between 0 and 1.
+   */
+  void setPhase(float phase);
 
-	float getPhase() const { return mLFO.phase(); }
+  consts::waveform getWaveform() const { return mModWaveform; }
 
- private:
-	gam::LFO<> mLFO{};
-	al::rnd::Random<> rand;
-	consts::waveform mModWaveform;
-	float mWidth;
+  float getFrequency() const { return mLFO.freq(); }
+
+  float getWidth() const { return mWidth; }
+
+  float getPhase() const { return mLFO.phase(); }
+
+private:
+  gam::LFO<> mLFO{};
+  al::rnd::Random<> rand;
+  consts::waveform mModWaveform;
+  float mWidth, mFrequency, mCurrentSample;
 };
 
 /**
@@ -173,136 +202,148 @@ class ecModulator {
  */
 class ecParameter {
 public:
+  /**
+   * PUBLIC OBJECTS
+   *
+   */
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
+  al::Parameter *mParameter = nullptr;
+  al::Parameter *mLowRange =
+      nullptr; // Parameter designed to bound low mParameter.
+  al::Parameter *mHighRange =
+      nullptr; // Parameter designed to bound high mParameter.
 
-	/**
-	 * PUBLIC OBJECTS
-	 * 
-	 */
-	ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
-																			// parameter's own modulator.
-	al::Parameter* mParameter = nullptr;
-	al::Parameter* mLowRange = nullptr;  // Parameter designed to bound low mParameter.
-	al::Parameter* mHighRange = nullptr;  // Parameter designed to bound high mParameter.
+  /**
+   * @brief ecParameter Constructor.
+   *
+   * @param[in] parameterName The name of the parameter
+   * @param[in] defaultValue The initial value for the parameter
+   * @param[in] Default minimum value for the parameter.
+   * @param[in] Default maximum value for the parameter.
+   * @param[in] Absolute minimum value for the parameter.
+   * @param[in] Absolute maximum value for the parameter.
+   * @param[in] Waveform used to modulate the parameters current value.
+   * @param[in] If set to true, the parameter will contain its own modulator.
+   *            If false, must input data on an outside modulator when calling
+   * getParamMod().
+   */
+  ecParameter(std::string parameterName, float defaultValue = 0,
+              float defaultMin = -99999.0, float defaultMax = 99999.0,
+              float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
+              consts::waveform modWaveform = consts::SINE,
+              bool independentMod = 0);
 
-	/**
-	 * @brief ecParameter Constructor.
-	 *
-	 * @param[in] parameterName The name of the parameter
-	 * @param[in] defaultValue The initial value for the parameter
-	 * @param[in] Default minimum value for the parameter.
-	 * @param[in] Default maximum value for the parameter.
-	 * @param[in] Absolute minimum value for the parameter.
-	 * @param[in] Absolute maximum value for the parameter.
-	 * @param[in] Waveform used to modulate the parameters current value.
-	 * @param[in] If set to true, the parameter will contain its own modulator.
-	 *            If false, must input data on an outside modulator when calling getParamMod().
-	 */
-	ecParameter(std::string parameterName, float defaultValue = 0,
-							float defaultMin = -99999.0, float defaultMax = 99999.0,
-							float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
-							consts::waveform modWaveform = consts::SINE,
-							bool independentMod = 0);
+  /**
+   * @brief ecParameter Constructor.
+   *
+   * @param[in] parameterName The name of the parameter
+   * @param[in] Group The group the parameter belongs to
+   * @param[in] defaultValue The initial value for the parameter
+   * @param[in] prefix An address prefix that is prepended to the parameter's
+   * OSC address
+   * @param[in] Default minimum value for the parameter.
+   * @param[in] Default maximum value for the parameter.
+   * @param[in] Absolute minimum value for the parameter.
+   * @param[in] Absolute maximum value for the parameter.
+   * @param[in] Waveform used to modulate the parameters current value.
+   * @param[in] If set to true, the parameter will contain its own modulator.
+   *            If false, must input data on an outside modulator when calling
+   * getParamMod().
+   *
+   */
+  ecParameter(std::string parameterName, std::string Group,
+              float defaultValue = 0, std::string prefix = "",
+              float defaultMin = -99999.0, float defaultMax = 99999.0,
+              float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
+              consts::waveform modWaveform = consts::SINE,
+              bool independentMod = 0);
 
-	/**
-	 * @brief ecParameter Constructor.
-	 *
-	 * @param[in] parameterName The name of the parameter
-	 * @param[in] Group The group the parameter belongs to
-	 * @param[in] defaultValue The initial value for the parameter
-	 * @param[in] prefix An address prefix that is prepended to the parameter's OSC
-	 * address
-	 * @param[in] Default minimum value for the parameter.
-	 * @param[in] Default maximum value for the parameter.
-	 * @param[in] Absolute minimum value for the parameter.
-	 * @param[in] Absolute maximum value for the parameter.
-	 * @param[in] Waveform used to modulate the parameters current value.
-	 * @param[in] If set to true, the parameter will contain its own modulator.
-	 *            If false, must input data on an outside modulator when calling getParamMod().
-	 * 
-	 */
-	ecParameter(std::string parameterName, std::string Group,
-							float defaultValue = 0, std::string prefix = "",
-							float defaultMin = -99999.0, float defaultMax = 99999.0,
-							float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
-							consts::waveform modWaveform = consts::SINE,
-							bool independentMod = 0);
+  /**
+   * @brief ecParameter destructor.
+   */
+  ~ecParameter();
 
-	/**
-	 * @brief ecParameter destructor.
-	 */
-	~ecParameter();
+  /**
+   * @brief Function to set the waveform using an integer value rather than the
+   * mModWaveform type.
+   *
+   * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
+   *
+   */
+  void setWaveformIndex(int index);
 
+  /**
+   * @brief Set which external modulation source to use.
+   *
+   * @param modSource: Pointer to the external ecModulator for this parameter.
+   */
+  void setModulationSource(const std::shared_ptr<ecModulator> &modSource) {
+    mModSource = modSource;
+  }
 
-	/**
-	 * @brief Function to set the waveform using an integer value rather than the
-	 * mModWaveform type. 
-	 * 
-	 * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
-	 *
-	 */
-	void setWaveformIndex(int index);
+  /**
+   * @brief Decide if there will be a modulator contained within instance.
+   *
+   * @param[in] If set to true, the parameter will contain its own modulator.
+   *            If false, must input data on an outside modulator when calling
+   * getParamMod().
+   */
+  void setIndependentMod(bool independentMod);
 
-	/**
-	 * @brief Decide if there will be a modulator contained within instance.
-	 * 
-	 * @param[in] If set to true, the parameter will contain its own modulator.
-	 *            If false, must input data on an outside modulator when calling getParamMod().
-	 */
-	void setIndependentMod(bool independentMod);
+  /**
+   * @brief Set current parameter value.
+   *
+   * @param[in] New parameter value
+   *
+   */
+  void setParam(float value) { mParameter->set(value); }
 
-	/**
-	 * @brief Set current parameter value.
-	 * 
-	 * @param[in] New parameter value
-	 * 
-	 */
-	void setParam(float value) { mParameter->set(value); }
+  /**
+   * @brief Get current parameter value.
+   *
+   * @return Parameter value.
+   */
+  float getParam() const { return mParameter->get(); }
 
-	 /**
-	 * @brief Get current parameter value.
-	 * 
-	 * @return Parameter value.
-	 */
-	float getParam() const { return mParameter->get(); }
+  /**
+   * @brief Function that returns the ecParameter value transformed by AN
+   * EXTERNAL modulation source. (ie independence set to false) This function
+   * assumes that there are four external modulation sources (see ecModulator).
+   * Runs at the Audio/Control rate.
+   *
+   * param[in] The current value of the SINE modulator.
+   * param[in] The current value of the SQUARE modulator.
+   * param[in] The current value of the SAW modulator.
+   * param[in] The current value of the NOISE modulator.
+   * param[in] FROM 0 to 1; The width of the modulation source.
+   *
+   * @return Modified version of the current parameter value.
+   */
+  float getModParam(float modSineValue, float modSquareValue, float modSawValue,
+                    float modNoiseValue, float modWidth);
 
-	/**
-	 * @brief Function that returns the ecParameter value transformed by AN EXTERNAL
-	 * modulation source. (ie independence set to false) This function assumes
-	 * that there are four external modulation sources (see ecModulator). Runs at the Audio/Control
-	 * rate.
-	 *
-	 * param[in] The current value of the SINE modulator.
-	 * param[in] The current value of the SQUARE modulator.
-	 * param[in] The current value of the SAW modulator.
-	 * param[in] The current value of the NOISE modulator.
-	 * param[in] FROM 0 to 1; The width of the modulation source.
-	 * 
-	 * @return Modified version of the current parameter value.
-	 */
-	float getModParam(float modSineValue, float modSquareValue, float modSawValue,
-										float modNoiseValue, float modWidth);
+  /**
+   * @brief Function that returns the ecParameter value transformed by its
+   * INTERNAL modulation source. (ie independence set to true) Runs at
+   * Audio/Control Rate.
+   *
+   * param[in] FROM 0 to 1; The width of the modulation source.
+   *
+   * @return Modified version of the current parameter value.
+   */
+  float getModParam(float modWidth);
 
-	/**
-	 * @brief Function that returns the ecParameter value transformed by its INTERNAL
-	 * modulation source. (ie independence set to true) Runs at Audio/Control
-	 * Rate.
-	 *
-	 * param[in] FROM 0 to 1; The width of the modulation source.
-	 * 
-	 * @return Modified version of the current parameter value.
-	 */
-	float getModParam(float modWidth);
+  /**
+   * @brief Draw the parameter range slider.
+   */
+  void drawRangeSlider();
 
-
-	/**
-	 * @brief Draw the parameter range slider.
-	 */
-	void drawRangeSlider();
-
- private:
-	consts::waveform mModWaveform;
-	float mMax, mMin;
-	bool mIndependentMod;
+private:
+  consts::waveform mModWaveform;
+  std::shared_ptr<ecModulator> mModSource;
+  float mMax, mMin;
+  bool mIndependentMod;
 };
 
 /**
@@ -313,128 +354,145 @@ public:
  */
 class ecParameterInt {
 public:
+  /**
+   * PUBLIC OBJECTS
+   *
+   */
+  al::ParameterInt *mParameterInt = nullptr; // Main Parameter.
+  al::ParameterInt *mLowRange =
+      nullptr; // Parameter designed to bound low mParameter.
+  al::ParameterInt *mHighRange =
+      nullptr; // Parameter designed to bound high mParameter.
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
 
-	/**
-	 * PUBLIC OBJECTS
-	 * 
-	 */
-	al::ParameterInt* mParameterInt = nullptr; //Main Parameter.
-	al::ParameterInt* mLowRange = nullptr;  // Parameter designed to bound low mParameter.
-	al::ParameterInt* mHighRange = nullptr;  // Parameter designed to bound high mParameter.
-	ecModulator* mModulator = nullptr;  // This is for dynamically allocating a
-																			// parameter's own modulator.
-																			
-/**
-	 * @brief ecParameterInt Constructor.
-	 *
-	 * @param[in] parameterName The name of the parameter
-	 * @param[in] Group The group the parameter belongs to
-	 * @param[in] defaultValue The initial value for the parameter
-	 * @param[in] prefix An address prefix that is prepended to the parameter's OSC
-	 * address
-	 * @param[in] Default minimum value for the parameter. 
-	 * @param[in] Default maximum value for the parameter. 
-	 * @param[in] Absolute minimum value for the parameter.
-	 * @param[in] Absolute maximum value for the parameter.
-	 * @param[in] Waveform used to modulate the parameters current value.
-	 * @param[in] If set to true, the parameter will contain its own modulator.
-	 *            If false, must input data on an outside modulator when calling getParamMod().
-	 * 
-	 */
-	ecParameterInt(std::string parameterName, std::string Group,
-							int defaultValue = 0, std::string prefix = "",
-							int defaultMin = -99999, int defaultMax = 99999,
-							int absMin = -1 * INT_MAX, int absMax = INT_MAX,
-							consts::waveform modWaveform = consts::SINE,
-							bool independentMod = 0);
+  /**
+   * @brief ecParameterInt Constructor.
+   *
+   * @param[in] parameterName The name of the parameter
+   * @param[in] Group The group the parameter belongs to
+   * @param[in] defaultValue The initial value for the parameter
+   * @param[in] prefix An address prefix that is prepended to the parameter's
+   * OSC address
+   * @param[in] Default minimum value for the parameter.
+   * @param[in] Default maximum value for the parameter.
+   * @param[in] Absolute minimum value for the parameter.
+   * @param[in] Absolute maximum value for the parameter.
+   * @param[in] Waveform used to modulate the parameters current value.
+   * @param[in] If set to true, the parameter will contain its own modulator.
+   *            If false, must input data on an outside modulator when calling
+   * getParamMod().
+   *
+   */
+  ecParameterInt(std::string parameterName, std::string Group,
+                 int defaultValue = 0, std::string prefix = "",
+                 int defaultMin = -99999, int defaultMax = 99999,
+                 int absMin = -1 * INT_MAX, int absMax = INT_MAX,
+                 consts::waveform modWaveform = consts::SINE,
+                 bool independentMod = 0);
 
-	/**
-	 * @bried ecParameterInt destructor.
-	 */
-	~ecParameterInt();
+  /**
+   * @bried ecParameterInt destructor.
+   */
+  ~ecParameterInt();
 
-	/**
-	 * @brief Function to set the waveform using an integer value rather than the
-	 * mModWaveform type. 
-	 * 
-	 * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
-	 *
-	 */
-	void setWaveformIndex(int index);
+  /**
+   * @brief Function to set the waveform using an integer value rather than the
+   * mModWaveform type.
+   *
+   * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
+   *
+   */
+  void setWaveformIndex(int index);
 
-	/**
-	 * @brief Decide if there will be a modulator contained within instance.
-	 * 
-	 * @param[in] If set to true, the parameter will contain its own modulator.
-	 *            If false, must input data on an outside modulator when calling getParamMod().
-	 */
-	void setIndependentMod(bool independentMod);
+  /**
+   * @brief Set which external modulation source to use.
+   *
+   * @param modSource: Pointer to the external ecModulator for this parameter.
+   */
+  void setModulationSource(const std::shared_ptr<ecModulator> &modSource) {
+    mModSource = modSource;
+  }
 
-	/**
-	 * @brief Get current parameter value.
-	 * 
-	 * @return Parameter value.
-	 */
-	float getParam() { return mParameterInt->get(); }
+  /**
+   * @brief Decide if there will be a modulator contained within instance.
+   *
+   * @param[in] If set to true, the parameter will contain its own modulator.
+   *            If false, must input data on an outside modulator when calling
+   * getParamMod().
+   */
+  void setIndependentMod(bool independentMod);
 
-	/**
-	 * @brief Function that returns the ecParameterInt value transformed by AN EXTERNAL
-	 * modulation source. (ie independence set to false) This function assumes
-	 * that there are four external modulation sources (see ecModulator). Runs at the Audio/Control
-	 * rate.
-	 *
-	 * param[in] The current value of the SINE modulator.
-	 * param[in] The current value of the SQUARE modulator.
-	 * param[in] The current value of the SAW modulator.
-	 * param[in] The current value of the NOISE modulator.
-	 * param[in] FROM 0 to 1; The width of the modulation source.
-	 * 
-	 * @return Modified version of the current parameter value.
-	 */
-	int getModParam(float modSineValue, float modSquareValue, float modSawValue,
-									float modNoiseValue, float modWidth);
+  /**
+   * @brief Get current parameter value.
+   *
+   * @return Parameter value.
+   */
+  float getParam() { return mParameterInt->get(); }
 
-	/**
-	 * @brief Function that returns the ecParameterInt value transformed by its INTERNAL
-	 * modulation source. (ie independence set to true) Runs at Audio/Control
-	 * Rate.
-	 *
-	 * param[in] FROM 0 to 1; The width of the modulation source.
-	 * 
-	 * @return Modified version of the current parameter value.
-	 */
-	int getModParam(float modWidth);
+  /**
+   * @brief Function that returns the ecParameterInt value transformed by AN
+   * EXTERNAL modulation source. (ie independence set to false) This function
+   * assumes that there are four external modulation sources (see ecModulator).
+   * Runs at the Audio/Control rate.
+   *
+   * param[in] The current value of the SINE modulator.
+   * param[in] The current value of the SQUARE modulator.
+   * param[in] The current value of the SAW modulator.
+   * param[in] The current value of the NOISE modulator.
+   * param[in] FROM 0 to 1; The width of the modulation source.
+   *
+   * @return Modified version of the current parameter value.
+   */
+  int getModParam(float modSineValue, float modSquareValue, float modSawValue,
+                  float modNoiseValue, float modWidth);
 
-	/**
-	 * @brief Draw the parameter range slider. 
-	 */
-	void drawRangeSlider();
+  /**
+   * @brief Function that returns the ecParameterInt value transformed by its
+   * INTERNAL modulation source. (ie independence set to true) Runs at
+   * Audio/Control Rate.
+   *
+   * param[in] FROM 0 to 1; The width of the modulation source.
+   *
+   * @return Modified version of the current parameter value.
+   */
+  int getModParam(float modWidth);
+
+  /**
+   * @brief Draw the parameter range slider.
+   */
+  void drawRangeSlider();
 
 private:
-	bool mIndependentMod;
-	int mMax, mMin;
-	consts::waveform mModWaveform;
+  std::shared_ptr<ecModulator> mModSource;
+  bool mIndependentMod;
+  int mMax, mMin;
+  consts::waveform mModWaveform;
 };
 
 struct grainParameters {
-	ecParameter& grainDurationMs;
-	float modGrainDurationWidth;
-	ecParameter& envelope;
-	float modEnvelopeWidth;
-	ecParameter& tapeHead;
-	float modTapeHeadWidth;
-	ecParameter& transposition;
-	float modTranspositionWidth;
-	ecParameter& volumeDB;
-	float modVolumeWidth;
-	ecParameter& pan;
-	float modPanWidth;
-	util::buffer<float>* source;
-	float modSineVal;
-	float modSquareVal;
-	float modSawVal;
-	float modNoiseVal;
-	int* activeVoices;
+  ecParameter &grainDurationMs;
+  float modGrainDurationWidth;
+  ecParameter &envelope;
+  float modEnvelopeWidth;
+  ecParameter &tapeHead;
+  float modTapeHeadWidth;
+  ecParameter &transposition;
+  float modTranspositionWidth;
+  ecParameter &filter;
+  float modFilterDepth;
+  ecParameter &resonance;
+  float modResonanceDepth;
+  ecParameter &volumeDB;
+  float modVolumeWidth;
+  ecParameter &pan;
+  float modPanWidth;
+  util::buffer<float> *source;
+  float modSineVal;
+  float modSquareVal;
+  float modSawVal;
+  float modNoiseVal;
+  int *activeVoices;
 };
 
 /**
@@ -442,180 +500,177 @@ struct grainParameters {
  * the voiceScheduler class
  */
 class Grain : public al::SynthVoice {
-	public:
+public:
+  /**
+   * @brief Initialize voice. This function will only be called once per voice
+   */
+  virtual void init() override;
 
-	/**
-	 * @brief Initialize voice. This function will only be called once per voice
-	 */
-	virtual void init() override;
+  /**
+   * @brief Configure grain parameters before being sent to scheduler.
+   *
+   * param[in] A struct containing a list of all grain parameters that need to
+   * be set.
+   *  - Note: see struct grainParameters above for details.
+   *
+   * @param[in] The global sampling rate.
+   */
+  void configureGrain(grainParameters &list, float samplingRate);
 
-	/**
-	 * @brief Configure grain parameters before being sent to scheduler.
-	 * 
-	 * param[in] A struct containing a list of all grain parameters that need to
-	 * be set.
-	 *  - Note: see struct grainParameters above for details.
-	 * 
-	 * @param[in] The global sampling rate.
-	 */
-	void configureGrain(grainParameters& list, float samplingRate);
+  /**
+   * @brief Processing done at the audio rate.
+   */
+  virtual void onProcess(al::AudioIOData &io) override;
 
-	/**
-	 * @brief Processing done at the audio rate.
-	 */
-	virtual void onProcess(al::AudioIOData& io) override;
+  /**
+   * @brief This function will only be called once per trigger.
+   */
+  virtual void onTriggerOn() override;
 
-	/**
-	 * @brief This function will only be called once per trigger.
-	 */
-	virtual void onTriggerOn() override;
+  /**
+   * @brief Sets duration of grain.
+   *
+   * @param[in] Set duration of grain in milliseconds.
+   */
+  void setDurationMs(float dur) { mDurationMs = dur; }
 
-	/**
-	 * @brief Sets duration of grain. 
-	 * 
-	 * @param[in] Set duration of grain in milliseconds.
-	 */
-	void setDurationMs(float dur) { mDurationMs = dur; }
+  float getDurationMs() const { return mDurationMs; }
 
-	float getDurationMs() const { return mDurationMs; }
-
- private:
-	util::buffer<float>* source = nullptr;
-	util::line index;
-	grainEnvelope gEnv;
-	int* mPActiveVoices;
-	float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mAmp;
+private:
+  util::buffer<float> *source = nullptr;
+  util::line index;
+  gam::Biquad<> mHighShelf;
+  gam::Biquad<> mLowShelf;
+  grainEnvelope gEnv;
+  float currentSample;
+  int *mPActiveVoices;
+  float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mAmp;
 };
 
 /**
  * Class used to schedule the emission of an arbitrary voice.
  */
 class voiceScheduler {
- public:
+public:
+  /**
+   * @brief Constructor of the voice scheduler.
+   *
+   * @param[in] The audio samplingRate.
+   */
+  voiceScheduler(double samplingRate = 48000) { mSamplingRate = samplingRate; }
 
-	/**
-	 * @brief Constructor of the voice scheduler.
-	 *
-	 * @param[in] The audio samplingRate.
-	 */
-	voiceScheduler(double samplingRate = 48000) { mSamplingRate = samplingRate; }
+  /**
+   * @brief Set sampling rate.
+   *
+   * @param[in] The global audio sampling rate.
+   */
+  void setSamplingRate(double samplingRate) { mSamplingRate = samplingRate; }
 
-	/**
-	 * @brief Set sampling rate. 
-	 * 
-	 * @param[in] The global audio sampling rate.
-	 */
-	void setSamplingRate(double samplingRate) {
-		mSamplingRate = samplingRate;
-	}
+  /**
+   * @brief Used to configure all parameters necessary for voiceScheduler.
+   *
+   * @param[in] The frequency in which voices are emitted.
+   * @param[in] FROM 0 to 1; The value of the asynchronicity parameter.
+   * @param[in] FROM 0 to 1; The value of the intermittence parameter.
+   */
+  void configure(double frequency, double async, double intermittence);
 
-	/**
-	 * @brief Used to configure all parameters necessary for voiceScheduler.
-	 *
-	 * @param[in] The frequency in which voices are emitted.
-	 * @param[in] FROM 0 to 1; The value of the asynchronicity parameter.
-	 * @param[in] FROM 0 to 1; The value of the intermittence parameter.
-	 */
-	void configure(double frequency, double async, double intermittence);
+  /**
+   * When return true, trigger a voice.
+   * Run at the audio rate.
+   */
+  bool trigger();
 
-	/**
-	 * When return true, trigger a voice.
-	 * Run at the audio rate.
-	 */
-	bool trigger();
+  /**
+   * Sets frequency in which voices are emitted.
+   */
+  void setFrequency(double frequency) {
+    configure(frequency, mAsync, mIntermittence);
+  }
 
-	/**
-	 * Sets frequency in which voices are emitted.
-	 */
-	void setFrequency(double frequency) {
-		configure(frequency, mAsync, mIntermittence);
-	}
+  /**
+   * Sets the asynchronicity parameter.
+   * This randomly triggers a voice between its scheduled trigger point and a
+   * percentage of one period of the scheduler.
+   *
+   * param[in] FROM 0 to 1. This determines the width of the random trigger.
+   *  0 being completely synchronous and 1 being completely asynchronous.
+   *
+   * DOES NOT AFFECT DENSITY OF EMISSION.
+   */
+  void setAsynchronicity(double async) {
+    configure(mFrequency, async, mIntermittence);
+  }
 
-	/**
-	 * Sets the asynchronicity parameter.
-	 * This randomly triggers a voice between its scheduled trigger point and a
-	 * percentage of one period of the scheduler.
-	 *
-	 * param[in] FROM 0 to 1. This determines the width of the random trigger.
-	 *  0 being completely synchronous and 1 being completely asynchronous.
-	 *
-	 * DOES NOT AFFECT DENSITY OF EMISSION.
-	 */
-	void setAsynchronicity(double async) {
-		configure(mFrequency, async, mIntermittence);
-	}
+  /**
+   * Set the intermittence parameter.
+   * This randomly drops a voice from being triggered.
+   *
+   * param[in] FROM 0 to 1. Probability of dropping voice is determined by this
+   * value. 0 being a 0% chance of dropping the voice and 1 being a 100% chance
+   * of dropping the voice.
+   *
+   * AFFECTS DENSITY OF EMISSION.
+   */
+  void setIntermittence(double intermittence) {
+    configure(mFrequency, mAsync, intermittence);
+  }
 
-	/**
-	 * Set the intermittence parameter.
-	 * This randomly drops a voice from being triggered.
-	 *
-	 * param[in] FROM 0 to 1. Probability of dropping voice is determined by this
-	 * value. 0 being a 0% chance of dropping the voice and 1 being a 100% chance
-	 * of dropping the voice.
-	 *
-	 * AFFECTS DENSITY OF EMISSION.
-	 */
-	void setIntermittence(double intermittence) {
-		configure(mFrequency, mAsync, intermittence);
-	}
+  /**
+   * @brief Set the amount of voices running in parallel.
+   *
+   * IN PROGRESS
+   */
+  void setPolyStream(consts::streamType type, int numStreams);
 
-	/**
-	 * @brief Set the amount of voices running in parallel.
-	 *
-	 * IN PROGRESS
-	 */
-	void setPolyStream(consts::streamType type, int numStreams);
+private:
+  gam::LFO<> mPulse;
+  al::rnd::Random<> rand;
 
- private:
-	gam::LFO<> mPulse;
-	al::rnd::Random<> rand;
-
-	double mCounter{1.0};
-	double mSamplingRate;
-	double mAsync{0.0};
-	double mFrequency{1.0};
-	double mIncrement{0.0};
-	double mIntermittence{0.0};
+  double mCounter{1.0};
+  double mSamplingRate;
+  double mAsync{0.0};
+  double mFrequency{1.0};
+  double mIncrement{0.0};
+  double mIntermittence{0.0};
 };
 
-/** 
+/**
  * ****TODO : VERY MUCH A WIP
  * Inspired by David Thall's Adaptive Flow Control Algorithm:
- * 
+ *
  *
  * Class used to throttle grain rate and grain duration to avoid CPU spikes.
  *
  */
 class flowControl {
-	// friend class Granular;
- public:
+  // friend class Granular;
+public:
+  /**
+   * This class will be calculate if it is necessary to reduce grain
+   * rate/duration. Run at the audio rate (tentative).
+   *
+   * param[in] The time used to take CPU average usage and activeVoices average.
+   * param[in] The ratio used to reduce grain duration and rate.
+   * param[in] The current number of active voices.
+   *
+   * Return true if necessary to throttle.
+   *
+   */
+  bool throttle(float time, float ratio, int activeVoices);
 
-	/**
-	 * This class will be calculate if it is necessary to reduce grain
-	 * rate/duration. Run at the audio rate (tentative).
-	 *
-	 * param[in] The time used to take CPU average usage and activeVoices average.
-	 * param[in] The ratio used to reduce grain duration and rate.
-	 * param[in] The current number of active voices.
-	 *
-	 * Return true if necessary to throttle.
-	 *
-	 */
-	bool throttle(float time, float ratio, int activeVoices);
+  float getPeakCPU() { return -11992.1; }
 
-	float getPeakCPU() { return -11992.1; }
+  float getAvgCPU() { return -11992.1; }
 
-	float getAvgCPU() { return -11992.1; }
-
- private:
-	int mCounter;
-	float targetDuration;
-	float targetRate;
-	float mAvgActiveVoices;
-	float mPeakCPU;
-	float mAvgCPU;
+private:
+  int mCounter;
+  float targetDuration;
+  float targetRate;
+  float mAvgActiveVoices;
+  float mPeakCPU;
+  float mAvgCPU;
 };
-
 
 /*** GUI ELEMENTS ***/
 
