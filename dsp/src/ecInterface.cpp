@@ -171,14 +171,19 @@ void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
 
+  // Get window height and width
   float windowWidth = fbWidth();
   float windowHeight = fbHeight();
+
+  // Initialize Audio IO popup to false
   bool displayIO = false;
 
-  ImGui::GetIO().FontGlobalScale = 2;
-  // Font
+  // Load Font
   ImFont *font1 = ImGui::GetIO().Fonts->AddFontFromFileTTF(
       "./Fonts/Roboto-Medium.ttf", 14.0f);
+
+  // Scale font
+  ImGui::GetIO().FontGlobalScale = 1.2;
 
   // Make window borders not rounded
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); // not working
@@ -216,6 +221,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw GUI
 
+  // draw menu bar
   static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
@@ -239,6 +245,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndMainMenuBar();
   }
 
+  // Draw LFO parameters window
   ParameterGUI::beginPanel("LFO Controls", 0, 25, windowWidth / 2,
                            windowHeight / 4, flags);
   drawLFOcontrol(granulator, 0);
@@ -263,6 +270,7 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.soundFile.drawRangeSlider();
   ParameterGUI::endPanel();
 
+  // Draw modulation window
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
                            windowWidth / 2, windowHeight / 2, flags);
   drawModulationControl(granulator.grainRateLFO,
@@ -288,18 +296,20 @@ void ecInterface::onDraw(Graphics &g) {
                         granulator.modSoundFileWidth.mParameter);
   ParameterGUI::endPanel();
 
-  if (displayIO == true) {
-    ImGui::OpenPopup("Audio IO");
-  }
   // Draw an interface to Audio IO.
   // This enables starting and stopping audio as well as selecting
   // Audio device and its parameters
+  // if statement opens Audio IO popup if chosen from menu
+  if (displayIO == true) {
+    ImGui::OpenPopup("Audio IO");
+  }
   bool open = true;
   if (ImGui::BeginPopupModal("Audio IO", &open)) {
     drawAudioIO(&audioIO());
     ImGui::EndPopup();
   }
 
+  // Draw recorder window
   ParameterGUI::beginPanel("Recorder", windowWidth * 3 / 4,
                            windowHeight * 3 / 4 + 25, windowWidth / 4,
                            windowHeight / 4, flags);
@@ -337,6 +347,7 @@ void ecInterface::onDraw(Graphics &g) {
   }
   ParameterGUI::endPanel();
 
+  // Draw Scope window
   ParameterGUI::beginPanel("Scope", windowWidth / 4, windowHeight * 3 / 4 + 25,
                            windowWidth / 2, windowHeight / 4, flags);
   ImGui::Text("Number of Active Grains: %.1i ", granulator.getActiveVoices());
@@ -345,6 +356,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   ParameterGUI::endPanel();
 
+  // Pop the colors that were pushed at the start of the draw call
   ImGui::PopStyleColor(13);
   // ImGui::PopStyleVar();
 
@@ -499,7 +511,7 @@ void ecInterface::drawModulationControl(al::ParameterMenu &menu,
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
   ParameterGUI::drawParameter(slider);
   ImGui::PopItemWidth();
 }
