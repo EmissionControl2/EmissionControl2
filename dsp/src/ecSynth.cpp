@@ -37,8 +37,8 @@ void ecSynth::init(al::AudioIOData* io) {
 	grainRateLFO.setElements({"One", "Two", "Thee", "Four"});
 	grainRate.setModulationSource(Modulators[0]);
 	grainRateLFO.registerChangeCallback([&](int value) {
-		grainRate.setWaveformIndex(value);
-		grainRate.setModulationSource(Modulators[value]);
+		grainRate.setWaveformIndex(value); 
+		grainRate.setModulationSource(Modulators[value]); //NEW WAY
 	});
 	asyncLFO.setElements({"One", "Two", "Three", "Four"});
 	asynchronicity.setModulationSource(Modulators[0]);
@@ -106,9 +106,30 @@ void ecSynth::init(al::AudioIOData* io) {
 
 	grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
+	// PSEUDO CODE
+	// for(int index = 0; index < NUM_MODULATORS; ++index) {
+	// 	LFOStruct[i].mShape->egisterChangeCallback([&](float value) {
+	// 		Modulators[i]->setWaveform(value);
+	// 	});
+
+	// 	LFOStruct[i].mFrequency->egisterChangeCallback([&](float value) {
+	// 		Modulators[i]->setFrequency(value);
+	// 	});
+
+	// 	LFOStruct[i].mDuty->egisterChangeCallback([&](float value) {
+	// 		Modulators[i]->setWidth(value);
+	// 	});
+
+	// }
+
+	// WHAT IT SHOULD LIKE
 	modSineFrequency.mParameter->registerChangeCallback([&](float value) {
-		modSine.setFrequency(value);
+		Modulators[0]->setFrequency(value);
 	});
+
+	// modSineFrequency.mParameter->registerChangeCallback([&](float value) {
+	// 	modSine.setFrequency(value);
+	// });
 
 	modSinePhase.mParameter->registerChangeCallback([&](float value) {
 		modSine.setPhase(value);
@@ -145,7 +166,7 @@ void ecSynth::init(al::AudioIOData* io) {
 void ecSynth::onProcess(AudioIOData& io) {
 	//        updateFromParameters();
 	while (io()) {
-
+		
 		for(int index = 0; index < NUM_MODULATORS; ++index)
 			Modulators[index]->sampleAndStore();
 
@@ -158,9 +179,9 @@ void ecSynth::onProcess(AudioIOData& io) {
 
 		// NOTE grainRate noise isnt very perceptible 
 		if(modGrainRateWidth.getParam() > 0)  // modulate the grain rate
-			// grainScheduler.setFrequency(grainRate.getModParam(modGrainRateWidth.getParam()));
-			grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
-			modGrainRateWidth.getParam())); 
+			grainScheduler.setFrequency(grainRate.getModParam(modGrainRateWidth.getParam()));
+			// grainScheduler.setFrequency(grainRate.getModParam(modSineValue, modSquareValue, modSawValue, modNoiseValue, 
+			// modGrainRateWidth.getParam())); 
 		else grainScheduler.setFrequency(grainRate.getParam());
 
 		if(modAsynchronicityWidth.getParam() > 0) //modulate the asynchronicity 
