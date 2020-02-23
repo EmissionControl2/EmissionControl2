@@ -178,8 +178,7 @@ public:
 private:
   float mGlobalSamplingRate, mPrevSR;
 
-  al::PolySynth grainSynth{
-      al::PolySynth::TIME_MASTER_AUDIO}; /* Polyhpony and interface to audio
+  al::PolySynth grainSynth{}; /* Polyhpony and interface to audio
                                             callback */
   voiceScheduler grainScheduler;         /* Schedule grains */
   std::vector<util::buffer<float> *>
