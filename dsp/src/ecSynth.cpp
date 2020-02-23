@@ -1,4 +1,8 @@
-// ecSynth.cpp
+/**
+ * ecSynth.cpp
+ *
+ * AUTHOR: Jack Kilgore
+ */
 
 /**** Emission Control LIB ****/
 #include "ecSynth.h"
@@ -18,6 +22,15 @@ void ecSynth::setIO(al::AudioIOData *io) {
 }
 
 void ecSynth::init(al::AudioIOData *io) {
+  int index;
+  
+  for (index = 0; index < NUM_MODULATORS; index++) {
+    Modulators.push_back(std::make_shared<ecModulator>());
+  }
+  
+  for (index = 0; i < NUM_MODULATORS; index++) {
+    LFOparameters.push_back(new LFOstruct{i});
+  }
 
   mGlobalSamplingRate = io->fps();
   mPrevSR = io->fps();
@@ -25,49 +38,90 @@ void ecSynth::init(al::AudioIOData *io) {
   mPActiveVoices = &mActiveVoices;
 
   // MUST USE THIS ORDER
-  grainRateLFO.setElements({"Sine", "Square", "Saw", "Noise"});
-  grainRateLFO.registerChangeCallback(
-      [&](int value) { grainRate.setWaveformIndex(value); });
-  asyncLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  grainRateLFO.setElements({"One", "Two", "Thee", "Four"});
+  grainRate.setModulationSource(Modulators[0]);
+  grainRateLFO.registerChangeCallback([&](int value) {
+    grainRate.setWaveformIndex(value);
+    grainRate.setModulationSource(Modulators[value]); // NEW WAY
+  });
+  asyncLFO.setElements({"One", "Two", "Three", "Four"});
+  asynchronicity.setModulationSource(Modulators[0]);
   asyncLFO.registerChangeCallback(
       [&](int value) { asynchronicity.setWaveformIndex(value); });
-  intermittencyLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  intermittencyLFO.setElements({"One", "Two", "Three", "Four"});
+  intermittency.setModulationSource(Modulators[0]);
   intermittencyLFO.registerChangeCallback(
       [&](int value) { intermittency.setWaveformIndex(value); });
-  streamsLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  streamsLFO.setElements({"One", "Two", "Three", "Four"});
+  streams.setModulationSource(Modulators[0]);
   streamsLFO.registerChangeCallback(
       [&](int value) { streams.setWaveformIndex(value); });
-  grainDurationLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  grainDurationLFO.setElements({"One", "Two", "Three", "Four"});
+  grainDurationMs.setModulationSource(Modulators[0]);
   grainDurationLFO.registerChangeCallback(
       [&](int value) { grainDurationMs.setWaveformIndex(value); });
-  envelopeLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  envelopeLFO.setElements({"One", "Two", "Three", "Four"});
+  envelope.setModulationSource(Modulators[0]);
   envelopeLFO.registerChangeCallback(
       [&](int value) { envelope.setWaveformIndex(value); });
-  tapeHeadLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  tapeHeadLFO.setElements({"One", "Two", "Three", "Four"});
+  tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
       [&](int value) { tapeHead.setWaveformIndex(value); });
-  transpositionLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  transpositionLFO.setElements({"One", "Two", "Three", "Four"});
+  transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
       [&](int value) { transposition.setWaveformIndex(value); });
-  volumeLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+
+  filterLFO.setElements({"One", "Two", "Three", "Four"});
+  filter.setModulationSource(Modulators[0]);
+  filterLFO.registerChangeCallback(
+      [&](int value) { filter.setWaveformIndex(value); });
+
+  resonanceLFO.setElements({"One", "Two", "Three", "Four"});
+  resonance.setModulationSource(Modulators[0]);
+  resonanceLFO.registerChangeCallback(
+      [&](int value) { resonance.setWaveformIndex(value); });
+
+  volumeLFO.setElements({"One", "Two", "Three", "Four"});
+  volumeDB.setModulationSource(Modulators[0]);
   volumeLFO.registerChangeCallback(
       [&](int value) { volumeDB.setWaveformIndex(value); });
-  panLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  panLFO.setElements({"One", "Two", "Three", "Four"});
+  pan.setModulationSource(Modulators[0]);
   panLFO.registerChangeCallback(
       [&](int value) { pan.setWaveformIndex(value); });
-  soundFileLFO.setElements({"Sine", "Square", "Saw", "Noise"});
+  soundFileLFO.setElements({"One", "Two", "Three", "Four"});
+  soundFile.setModulationSource(Modulators[0]);
   soundFileLFO.registerChangeCallback(
       [&](int value) { soundFile.setWaveformIndex(value); });
 
-  for (int i = 0; i < 4; i++) {
-    LFOparameters.push_back(new LFOstruct{i});
-  }
-
   grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
-  modSineFrequency.mParameter->registerChangeCallback(
-      [&](float value) { modSine.setFrequency(value); });
+  // PSEUDO CODE
+  // for(int index = 0; index < NUM_MODULATORS; ++index) {
+  // 	LFOStruct[i].mShape->egisterChangeCallback([&](float value) {
+  // 		Modulators[i]->setWaveform(value);
+  // 	});
 
+  // 	LFOStruct[i].mFrequency->egisterChangeCallback([&](float value) {
+  // 		Modulators[i]->setFrequency(value);
+  // 	});
+
+  // 	LFOStruct[i].mDuty->egisterChangeCallback([&](float value) {
+  // 		Modulators[i]->setWidth(value);
+  // 	});
+
+  // }
+
+  // WHAT IT SHOULD LIKE
+  modSineFrequency.mParameter->registerChangeCallback(
+      [&](float value) { Modulators[0]->setFrequency(value); });
+
+  // modSineFrequency.mParameter->registerChangeCallback([&](float value) {
+  // 	modSine.setFrequency(value);
+  // });
+  
   modSinePhase.mParameter->registerChangeCallback(
       [&](float value) { modSine.setPhase(value); });
 
@@ -97,6 +151,10 @@ void ecSynth::init(al::AudioIOData *io) {
 void ecSynth::onProcess(AudioIOData &io) {
   //        updateFromParameters();
   while (io()) {
+    
+    for (int index = 0; index < NUM_MODULATORS; ++index)
+      Modulators[index]->sampleAndStore();
+    
     modSineValue = modSine(); // construct modulation value
     modSquareValue = modSquare();
     modSawValue = modSaw();
@@ -107,8 +165,10 @@ void ecSynth::onProcess(AudioIOData &io) {
     // NOTE grainRate noise isnt very perceptible
     if (modGrainRateWidth.getParam() > 0) // modulate the grain rate
       grainScheduler.setFrequency(
-          grainRate.getModParam(modSineValue, modSquareValue, modSawValue,
-                                modNoiseValue, modGrainRateWidth.getParam()));
+          grainRate.getModParam(modGrainRateWidth.getParam()));
+    // grainScheduler.setFrequency(grainRate.getModParam(modSineValue,
+    // modSquareValue, modSawValue, modNoiseValue,
+    // modGrainRateWidth.getParam()));
     else
       grainScheduler.setFrequency(grainRate.getParam());
 
@@ -162,6 +222,10 @@ void ecSynth::onProcess(AudioIOData &io) {
                                 modTapeHeadWidth.getParam(),
                                 transposition,
                                 modTranspositionWidth.getParam(),
+                                filter,
+                                modFilterDepth.getParam(),
+                                resonance,
+                                modResonanceDepth.getParam(),
                                 volumeDB,
                                 modVolumeWidth.getParam(),
                                 pan,

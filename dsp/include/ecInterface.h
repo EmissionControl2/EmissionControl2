@@ -1,3 +1,9 @@
+/**
+ * ecInterface.h
+ *
+ * AUTHOR: Jack Kilgore
+ */
+
 #ifndef ECINTERFACE_H
 #define ECINTERFACE_H
 
@@ -38,7 +44,7 @@ public:
   void drawLFOcontrol(ecSynth &synth, int lfoNumber);
 
   void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
-
+  
 private:
   float background = 0.21;
   ecSynth granulator;

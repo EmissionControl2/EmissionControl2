@@ -1,11 +1,13 @@
 // ecInterface.cpp
 
+
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
 #include "utility.h"
 
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
+
 using namespace al;
 
 /**** ecInterface Implementation ****/
@@ -58,6 +60,12 @@ void ecInterface::onCreate() {
       << *granulator.transposition.mLowRange
       << *granulator.transposition.mHighRange << granulator.transpositionLFO
       << *granulator.modTranspositionWidth.mParameter
+      << *granulator.filter.mParameter << *granulator.filter.mLowRange
+      << *granulator.filter.mHighRange << granulator.filterLFO
+      << *granulator.modFilterDepth.mParameter
+      << *granulator.resonance.mParameter << *granulator.resonance.mLowRange
+      << *granulator.resonance.mHighRange << granulator.resonanceLFO
+      << *granulator.modResonanceDepth.mParameter
       << *granulator.volumeDB.mParameter << *granulator.volumeDB.mLowRange
       << *granulator.volumeDB.mHighRange << granulator.volumeLFO
       << *granulator.modVolumeWidth.mParameter << *granulator.pan.mParameter
@@ -83,87 +91,6 @@ void ecInterface::onCreate() {
       << *granulator.modSawFrequency.mHighRange
       << *granulator.modSawWidth.mParameter << *granulator.modSawWidth.mLowRange
       << *granulator.modSawWidth.mHighRange;
-
-  granulator.grainRate.mParameter->displayName("##grainRate");
-  granulator.grainRate.mLowRange->displayName("##grainRateLow");
-  granulator.grainRate.mHighRange->displayName("##grainRateHigh");
-  granulator.grainRateLFO.displayName("##grainRateLFO");
-  granulator.modGrainRateWidth.mParameter->displayName("##modGrainRateWidth");
-  granulator.asynchronicity.mParameter->displayName("##asynchronicity");
-  granulator.asynchronicity.mLowRange->displayName("##asynchronicityLow");
-  granulator.asynchronicity.mHighRange->displayName("##asynchronicityHigh");
-  granulator.asyncLFO.displayName("##asyncLFO");
-  granulator.modAsynchronicityWidth.mParameter->displayName(
-      "##modAsynchronicityWidth");
-  granulator.intermittency.mParameter->displayName("##intermittency");
-  granulator.intermittency.mLowRange->displayName("##intermittencyLow");
-  granulator.intermittency.mHighRange->displayName("##intermittencyHigh");
-  granulator.intermittencyLFO.displayName("##intermittencyLFO");
-  granulator.modIntermittencyWidth.mParameter->displayName(
-      "##modIntermittencyWidth");
-  granulator.streams.mParameterInt->displayName("##streams");
-  granulator.streams.mLowRange->displayName("##streamsLow");
-  granulator.streams.mHighRange->displayName("##streamsHigh");
-  granulator.streamsLFO.displayName("##streamsLFO");
-  granulator.modStreamsWidth.mParameter->displayName("##modStreamsWidth");
-  granulator.grainDurationMs.mParameter->displayName("##grainDurationMs");
-  granulator.grainDurationMs.mLowRange->displayName("##grainDurationMsLow");
-  granulator.grainDurationMs.mHighRange->displayName("##grainDurationMsHigh");
-  granulator.grainDurationLFO.displayName("##grainDurationMs");
-  granulator.modGrainDurationWidth.mParameter->displayName(
-      "##modGrainDurationWidth");
-  granulator.envelope.mParameter->displayName("##envelope");
-  granulator.envelope.mLowRange->displayName("##envelopeLow");
-  granulator.envelope.mHighRange->displayName("##envelopeHigh");
-  granulator.envelopeLFO.displayName("##envelopeLFO");
-  granulator.modEnvelopeWidth.mParameter->displayName("##modEnvelopeWidth");
-  granulator.tapeHead.mParameter->displayName("##tapeHead");
-  granulator.tapeHead.mLowRange->displayName("##tapeHeadLow");
-  granulator.tapeHead.mHighRange->displayName("##tapeHeadHigh");
-  granulator.tapeHeadLFO.displayName("##tapeHeadLFO");
-  granulator.modTapeHeadWidth.mParameter->displayName("##modTapeHeadWidth");
-  granulator.transposition.mParameter->displayName("##transposition");
-  granulator.transposition.mLowRange->displayName("##playbackRateLow");
-  granulator.transposition.mHighRange->displayName("##playbackRateHigh");
-  granulator.transpositionLFO.displayName("##transposition");
-  granulator.modTranspositionWidth.mParameter->displayName(
-      "##modTranspositionWidth");
-  granulator.volumeDB.mParameter->displayName("##volumeDB");
-  granulator.volumeDB.mLowRange->displayName("##volumeDBLow");
-  granulator.volumeDB.mHighRange->displayName("##volumeDBHigh");
-  granulator.volumeLFO.displayName("##volumeLFO");
-  granulator.modVolumeWidth.mParameter->displayName("##modVolumeWidth");
-  granulator.pan.mParameter->displayName("##pan");
-  granulator.pan.mLowRange->displayName("##PanLow");
-  granulator.pan.mHighRange->displayName("##PanHigh");
-  granulator.panLFO.displayName("##PanLFO");
-  granulator.modPanWidth.mParameter->displayName("##modPanWidth");
-  granulator.soundFile.mParameterInt->displayName("##soundFile");
-  granulator.soundFile.mLowRange->displayName("##soundFileLow");
-  granulator.soundFile.mHighRange->displayName("##soundFileHigh");
-  granulator.soundFileLFO.displayName("##soundFileLFO");
-  granulator.modSoundFileWidth.mParameter->displayName("##modSoundFileWidth");
-
-  granulator.modSineFrequency.mParameter->displayName("##modSineFrequency");
-  granulator.modSineFrequency.mLowRange->displayName("##modSineFrequencyLow");
-  granulator.modSineFrequency.mHighRange->displayName("##modSineFrequencyHigh");
-  granulator.modSinePhase.mParameter->displayName("##modSinePhase");
-  granulator.modSinePhase.mLowRange->displayName("##modSinePhaseLow");
-  granulator.modSinePhase.mHighRange->displayName("##modSinePhaseHigh");
-  granulator.modSquareFrequency.mParameter->displayName("##modSquareFrequency");
-  granulator.modSquareFrequency.mLowRange->displayName(
-      "##modSquareFrequencyLow");
-  granulator.modSquareFrequency.mHighRange->displayName(
-      "##modSquareFrequencyHigh");
-  granulator.modSquareWidth.mParameter->displayName("##modSquareWidth");
-  granulator.modSquareWidth.mLowRange->displayName("##modSquareWidthLow");
-  granulator.modSquareWidth.mHighRange->displayName("##modSquareWidthHigh");
-  granulator.modSawFrequency.mParameter->displayName("##modSawFrequency");
-  granulator.modSawFrequency.mLowRange->displayName("##modSawFrequencyLow");
-  granulator.modSawFrequency.mHighRange->displayName("##modSawFrequencyHigh");
-  granulator.modSawWidth.mParameter->displayName("##modSawWidth");
-  granulator.modSawWidth.mLowRange->displayName("##modSawWidthLow");
-  granulator.modSawWidth.mHighRange->displayName("##modSawWidthHigh");
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -257,6 +184,7 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2,
                            windowHeight / 4 + 25, windowWidth / 2,
                            windowHeight / 2, flags);
+
   granulator.grainRate.drawRangeSlider();
   granulator.asynchronicity.drawRangeSlider();
   granulator.intermittency.drawRangeSlider();
@@ -265,11 +193,13 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.envelope.drawRangeSlider();
   granulator.tapeHead.drawRangeSlider();
   granulator.transposition.drawRangeSlider();
+  granulator.filter.drawRangeSlider();
+  granulator.resonance.drawRangeSlider();
   granulator.volumeDB.drawRangeSlider();
   granulator.pan.drawRangeSlider();
   granulator.soundFile.drawRangeSlider();
   ParameterGUI::endPanel();
-
+ 
   // Draw modulation window
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
                            windowWidth / 2, windowHeight / 2, flags);
@@ -289,6 +219,10 @@ void ecInterface::onDraw(Graphics &g) {
                         granulator.modTapeHeadWidth.mParameter);
   drawModulationControl(granulator.transpositionLFO,
                         granulator.modTranspositionWidth.mParameter);
+  drawModulationControl(granulator.filterLFO,
+                        granulator.modFilterDepth.mParameter);
+  drawModulationControl(granulator.resonanceLFO,
+                        granulator.modResonanceDepth.mParameter);
   drawModulationControl(granulator.volumeLFO,
                         granulator.modVolumeWidth.mParameter);
   drawModulationControl(granulator.panLFO, granulator.modPanWidth.mParameter);
@@ -313,6 +247,7 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Recorder", windowWidth * 3 / 4,
                            windowHeight * 3 / 4 + 25, windowWidth / 4,
                            windowHeight / 4, flags);
+
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
                      audioIO().channelsOut(), soundOutput);
   ParameterGUI::endPanel();
@@ -324,6 +259,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25,
                            windowWidth / 4, windowHeight / 4, flags);
+
 
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
@@ -387,6 +323,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
   }
   AudioIOState &state = stateMap[io];
   ImGui::PushID(std::to_string((unsigned long)io).c_str());
+  
   if (io->isOpen()) {
     std::string text;
     text += "Sampling Rate: " + std::to_string(int(io->fps()));
