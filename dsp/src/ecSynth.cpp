@@ -59,11 +59,9 @@ void ecSynth::init(al::AudioIOData *io) {
   soundFileLFO.registerChangeCallback(
       [&](int value) { soundFile.setWaveformIndex(value); });
 
-
-  LFOparameters.push_back(lfo1);
-  LFOparameters.push_back(lfo2);
-  LFOparameters.push_back(lfo3);
-  LFOparameters.push_back(lfo4);
+  for (int i = 0; i < 4; i++) {
+    LFOparameters.push_back(new LFOstruct{i});
+  }
 
   grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
