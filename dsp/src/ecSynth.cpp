@@ -22,9 +22,14 @@ void ecSynth::setIO(al::AudioIOData *io) {
 }
 
 void ecSynth::init(al::AudioIOData *io) {
-
-  for (int index = 0; index < NUM_MODULATORS; index++) {
+  int index;
+  
+  for (index = 0; index < NUM_MODULATORS; index++) {
     Modulators.push_back(std::make_shared<ecModulator>());
+  }
+  
+  for (index = 0; i < NUM_MODULATORS; index++) {
+    LFOparameters.push_back(new LFOstruct{i});
   }
 
   mGlobalSamplingRate = io->fps();
@@ -116,7 +121,7 @@ void ecSynth::init(al::AudioIOData *io) {
   // modSineFrequency.mParameter->registerChangeCallback([&](float value) {
   // 	modSine.setFrequency(value);
   // });
-
+  
   modSinePhase.mParameter->registerChangeCallback(
       [&](float value) { modSine.setPhase(value); });
 
@@ -146,10 +151,10 @@ void ecSynth::init(al::AudioIOData *io) {
 void ecSynth::onProcess(AudioIOData &io) {
   //        updateFromParameters();
   while (io()) {
-
+    
     for (int index = 0; index < NUM_MODULATORS; ++index)
       Modulators[index]->sampleAndStore();
-
+    
     modSineValue = modSine(); // construct modulation value
     modSquareValue = modSquare();
     modSawValue = modSaw();

@@ -86,7 +86,7 @@ public:
   ecParameterInt soundFile{"Sound_File", "", 1, "", 1, mClipNum, 1, mClipNum};
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
   ecParameter modSoundFileWidth{"modSoundFileWidth", "", 0, "", 0, 1, 0, 1};
-
+  
   ecParameter modSineFrequency{
       "modSineFrequency", "", 1, "", 0.01, 40, FLT_MIN, 1000};
   ecParameter modSinePhase{"modSinePhase", "", 0, "", 0, 1, 0, 1};
@@ -200,8 +200,10 @@ private:
   ecModulator modSaw{consts::SAW};
   ecModulator modNoise{consts::NOISE};
 
-  std::vector<std::shared_ptr<ecModulator>> Modulators;
 
+  std::vector<std::shared_ptr<ecModulator>> Modulators;
+  // array of lfo parameters to draw later
+  std::vector<LFOstruct*> LFOparameters;
   float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 };
 
