@@ -1,4 +1,8 @@
-//emissionControl.cpp
+/** 
+ * emissionControl.cpp
+ * 
+ * AUTHOR: Jack Kilgore
+ */
 
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
@@ -80,6 +84,7 @@ float ecModulator::operator()() {
 	} else if (mModWaveform == consts::SQUARE) {
 		return mLFO.stair();
 	} else if (mModWaveform == consts::NOISE) {
+		// TO DO TO DO -- make changes based on frequency parameter.
 		return rand.uniform(-1.0, 1.0);
 	} else {
 		return mLFO.cos();
@@ -97,6 +102,7 @@ void ecModulator::setWaveform(consts::waveform modWaveform) {
 
 void ecModulator::setFrequency(float frequency) {
 	mLFO.freq(frequency);
+	mFrequency = frequency;
 }
 
 void ecModulator::setWidth(float width) {
@@ -116,10 +122,11 @@ ecParameter::ecParameter(std::string parameterName, float defaultValue,
 						consts::waveform modWaveform,
 						bool independentMod) {
 	mParameter = new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
+	mParameter->displayName("##" + parameterName);
 	mLowRange =
-			new Parameter{(parameterName + "Low").c_str(), defaultMin, absMin, absMax};
+			new Parameter{("##" + parameterName + "Low").c_str(), defaultMin, absMin, absMax};
 	mHighRange =
-			new Parameter{(parameterName + "High").c_str(), defaultMax, absMin, absMax};
+			new Parameter{("##" + parameterName + "High").c_str(), defaultMax, absMin, absMax};
 	mMin = defaultMin;
 	mMax = defaultMax;
 	mModWaveform = modWaveform;
@@ -137,10 +144,11 @@ ecParameter::ecParameter(std::string parameterName, std::string Group,
 						bool independentMod) {
 	mParameter =
 			new Parameter{parameterName, Group, defaultValue, prefix, defaultMin, defaultMax};
+	mParameter->displayName("##" + parameterName);
 	mLowRange = new Parameter{
-			(parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
+			("##" + parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
 	mHighRange = new Parameter{
-			(parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
+			("##" + parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
 	mMin = defaultMin;
 	mMax = defaultMax;
 	mModWaveform = modWaveform;
@@ -188,7 +196,7 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 	float temp;
 	switch (mModWaveform) {
 		case consts::SINE: {
-			temp = mParameter->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); //WIIIPS
+			temp = mParameter->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); 
 			if(temp > mHighRange->get())
 				return mHighRange->get();
 			else if(temp < mLowRange->get())
@@ -235,12 +243,15 @@ float ecParameter::getModParam(float modSineValue, float modSquareValue, float m
 }
 
 float ecParameter::getModParam(float modWidth) {
-	if (!mIndependentMod) {
-		std::cerr << "PARAMETER must have independence set to true if you want "
-									"to use this getModParam function\n";
-		return -9999999999;
+	float temp;
+	if (!mIndependentMod && mModSource.get() != nullptr) 
+		temp = mParameter->get() + (mModSource->getCurrentSample() * modWidth * (mHighRange->get() - mLowRange->get()) ); 
+	else if(mIndependentMod)
+		temp = mParameter->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
+	else {
+		std::cerr << "No Valid Modulation source for ecParameter instance: " << mParameter->getName() << std::endl;
+		std::exit(1);
 	}
-	float temp = mParameter->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
 	if(temp > mHighRange->get())
 		return mHighRange->get();
 	else if(temp < mLowRange->get())
@@ -297,10 +308,11 @@ ecParameterInt::ecParameterInt(std::string parameterName, std::string Group,
 							bool independentMod) {
 	mParameterInt =
 			new ParameterInt{parameterName, Group, defaultValue, prefix, defaultMin, defaultMax};
+	mParameterInt->displayName("##" + parameterName);
 	mLowRange = 
-			new ParameterInt{(parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
+			new ParameterInt{("##" + parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
 	mHighRange = 
-			new ParameterInt{(parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
+			new ParameterInt{("##" + parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
 	mMin = defaultMin;
 	mMax = defaultMax;
 	mModWaveform = modWaveform;
@@ -348,7 +360,7 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 	int temp;
 	switch (mModWaveform) {
 		case consts::SINE: {
-			temp = mParameterInt->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) ); //WIIIPS
+			temp = mParameterInt->get() + (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()) );
 			if(temp > mHighRange->get())
 				return mHighRange->get();
 			else if(temp < mLowRange->min())
@@ -395,12 +407,15 @@ int ecParameterInt::getModParam(float modSineValue, float modSquareValue, float 
 }
 
 int ecParameterInt::getModParam(float modWidth) {
-	if (!mIndependentMod) {
-		std::cerr << "PARAMETER must have independence set to true if you want "
-									"to use this getModParam function\n";
-		return -99999;
+	int temp;
+	if (!mIndependentMod && mModSource.get() != nullptr) 
+		temp = mParameterInt->get() + (mModSource->getCurrentSample() * modWidth * (mHighRange->get() - mLowRange->get()) ); 
+	else if(mIndependentMod)
+		temp = mParameterInt->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
+	else {
+		std::cerr << "No Valid Modulation source for ecParameterInt instance: " << mParameterInt->getName() << std::endl;
+		std::exit(1);
 	}
-	int temp = mParameterInt->get() + ( (*mModulator)() * modWidth *  (mHighRange->get() - mLowRange->get())  );
 	if(temp > mHighRange->get())
 		return mHighRange->get();
 	else if(temp < mLowRange->get())
@@ -453,7 +468,8 @@ void ecParameterInt::drawRangeSlider() {
 
 void Grain::init() {
 	gEnv.reset();
-	mBPF.type(gam::RESONANT);
+	mLowShelf.type(gam::LOW_SHELF);
+	mHighShelf.type(gam::HIGH_SHELF);
 }
 
 void Grain::configureGrain(grainParameters& list, float samplingRate) {
@@ -505,7 +521,6 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 
 
 	// Store modulated volume value of grain IF it is being modulated.
-	// list.volumeDB.setParam(powf(10,list.volumeDB.getParam()/20));
 	if(list.modVolumeWidth > 0 ) 
 		mAmp = list.volumeDB.getModParam(
 								list.modSineVal, list.modSquareVal, list.modSawVal,
@@ -522,7 +537,7 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 								list.modSineVal, list.modSquareVal, list.modSawVal,
 								list.modNoiseVal, list.modPanWidth); 
 	else 
-		mPan = list.pan.getParam();
+	mPan = list.pan.getParam();
 
 	mPan = std::sqrt(mPan + 1) * 0.5; //Normalize the pan parameter and set up for equal power using square root.
 	/**Set sampling rate of envelope**/
@@ -531,16 +546,28 @@ void Grain::configureGrain(grainParameters& list, float samplingRate) {
 
 	// FILTERING SETUP
 
-	float level = list.resonance.getModParam(
+	float resonance = list.resonance.getModParam(
 		list.modSineVal, list.modSquareVal, list.modSawVal,
-		list.modNoiseVal, list.modPanWidth);
-	level = (level + 0.001) * 80;
-	mBPF.res(level);
-	mBPF.level(0.25);
-	mBPF.freq(list.filter.getModParam(
+		list.modNoiseVal, list.modResonanceDepth);
+	
+	float freq = list.filter.getModParam(
 		list.modSineVal, list.modSquareVal, list.modSawVal,
-		list.modNoiseVal, list.modPanWidth)
-	);
+		list.modNoiseVal, list.modFilterDepth);
+	
+	// delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
+	float delta = 0.4; // MIN_LEVEL = -30dB 
+	mLowShelf.freq(freq * delta); 
+	mHighShelf.freq(freq * 1/delta);
+	
+	float res_process = (resonance + 0.25) * 25;
+	mLowShelf.res(res_process);
+	mHighShelf.res(res_process);
+
+	// MIN_LEVEL = -30B
+	res_process = 1 - resonance * 0.85; //Compliment of -30dB
+	mLowShelf.level(res_process); 
+	mHighShelf.level(res_process);
+
 }
 
 void Grain::onProcess(al::AudioIOData& io) {
@@ -551,14 +578,20 @@ void Grain::onProcess(al::AudioIOData& io) {
 		if (sourceIndex > source->size) sourceIndex -= source->size;
 
 		if(source->channels == 1) {
-			currentSample = mBPF.nextBP(source->get(sourceIndex));
+			currentSample = mLowShelf(source->get(sourceIndex));
+			currentSample = mHighShelf(currentSample);
 			io.out(0) += currentSample * envVal * (1-mPan) * mAmp;
 			io.out(1) += currentSample * envVal * mPan * mAmp;
 		}
 		else if (source->channels == 2) {
-			io.out(0) += mBPF.nextBP(source->get(sourceIndex))
+			currentSample = mLowShelf(source->get(sourceIndex));
+			currentSample = mHighShelf(currentSample);
+			io.out(0) += currentSample
 						* envVal * (1-mPan) * mAmp;
-			io.out(1) += mBPF.nextBP(source->get(sourceIndex + 1))
+
+			currentSample = mLowShelf(source->get(sourceIndex + 1));
+			currentSample = mHighShelf(currentSample);
+			io.out(1) += currentSample
 						* envVal * mPan * mAmp;
 		}
 

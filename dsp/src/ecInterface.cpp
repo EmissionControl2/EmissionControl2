@@ -1,4 +1,8 @@
-//ecInterface.cpp 
+/** 
+ * ecInterface.cpp
+ * 
+ * AUTHOR: Jack Kilgore
+ */
 
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
@@ -66,94 +70,6 @@ void ecInterface::onCreate() {
 		<< *granulator.modSquareWidth.mParameter << *granulator.modSquareWidth.mLowRange << *granulator.modSquareWidth.mHighRange
 		<< *granulator.modSawFrequency.mParameter << *granulator.modSawFrequency.mLowRange << *granulator.modSawFrequency.mHighRange
 		<< *granulator.modSawWidth.mParameter << *granulator.modSawWidth.mLowRange << *granulator.modSawWidth.mHighRange;
-
-	granulator.grainRate.mParameter->displayName("##grainRate");
-	granulator.grainRate.mLowRange->displayName("##grainRateLow");
-	granulator.grainRate.mHighRange->displayName("##grainRateHigh");
-	granulator.grainRateLFO.displayName("##grainRateLFO");
-	granulator.modGrainRateWidth.mParameter->displayName("##modGrainRateWidth"); 
-	granulator.asynchronicity.mParameter->displayName("##asynchronicity");
-	granulator.asynchronicity.mLowRange->displayName("##asynchronicityLow");
-	granulator.asynchronicity.mHighRange->displayName("##asynchronicityHigh");
-	granulator.asyncLFO.displayName("##asyncLFO");
-	granulator.modAsynchronicityWidth.mParameter->displayName("##modAsynchronicityWidth");
-	granulator.intermittency.mParameter->displayName("##intermittency");
-	granulator.intermittency.mLowRange->displayName("##intermittencyLow");
-	granulator.intermittency.mHighRange->displayName("##intermittencyHigh");
-	granulator.intermittencyLFO.displayName("##intermittencyLFO");
-	granulator.modIntermittencyWidth.mParameter->displayName("##modIntermittencyWidth");
-	granulator.streams.mParameterInt->displayName("##streams");
-	granulator.streams.mLowRange->displayName("##streamsLow");
-	granulator.streams.mHighRange->displayName("##streamsHigh");
-	granulator.streamsLFO.displayName("##streamsLFO");
-	granulator.modStreamsWidth.mParameter->displayName("##modStreamsWidth");
-	granulator.grainDurationMs.mParameter->displayName("##grainDurationMs");
-	granulator.grainDurationMs.mLowRange->displayName("##grainDurationMsLow");
-	granulator.grainDurationMs.mHighRange->displayName("##grainDurationMsHigh");
-	granulator.grainDurationLFO.displayName("##grainDurationMs");
-	granulator.modGrainDurationWidth.mParameter->displayName("##modGrainDurationWidth");
-	granulator.envelope.mParameter->displayName("##envelope");
-	granulator.envelope.mLowRange->displayName("##envelopeLow");
-	granulator.envelope.mHighRange->displayName("##envelopeHigh");
-	granulator.envelopeLFO.displayName("##envelopeLFO");
-	granulator.modEnvelopeWidth.mParameter->displayName("##modEnvelopeWidth");
-	granulator.tapeHead.mParameter->displayName("##tapeHead");
-	granulator.tapeHead.mLowRange->displayName("##tapeHeadLow");
-	granulator.tapeHead.mHighRange->displayName("##tapeHeadHigh");
-	granulator.tapeHeadLFO.displayName("##tapeHeadLFO");
-	granulator.modTapeHeadWidth.mParameter->displayName("##modTapeHeadWidth");
-	granulator.transposition.mParameter->displayName("##transposition");
-	granulator.transposition.mLowRange->displayName("##playbackRateLow");
-	granulator.transposition.mHighRange->displayName("##playbackRateHigh");
-	granulator.transpositionLFO.displayName("##transposition");
-	granulator.modTranspositionWidth.mParameter->displayName("##modTranspositionWidth");
-
-	granulator.filter.mParameter->displayName("##filter");
-	granulator.filter.mLowRange->displayName("##filterLow");
-	granulator.filter.mHighRange->displayName("##filterHigh");
-	granulator.filterLFO.displayName("##filterLFO");
-	granulator.modFilterDepth.mParameter->displayName("##modFilterDepth");
-
-	granulator.resonance.mParameter->displayName("##resonance");
-	granulator.resonance.mLowRange->displayName("##resonanceLow");
-	granulator.resonance.mHighRange->displayName("##resonanceHigh");
-	granulator.resonanceLFO.displayName("##resonanceLFO");
-	granulator.modResonanceDepth.mParameter->displayName("##modResonanceDepth");
-
-	granulator.volumeDB.mParameter->displayName("##volumeDB"); 
-	granulator.volumeDB.mLowRange->displayName("##volumeDBLow");
-	granulator.volumeDB.mHighRange->displayName("##volumeDBHigh");
-	granulator.volumeLFO.displayName("##volumeLFO");
-	granulator.modVolumeWidth.mParameter->displayName("##modVolumeWidth");
-	granulator.pan.mParameter->displayName("##pan"); 
-	granulator.pan.mLowRange->displayName("##PanLow");
-	granulator.pan.mHighRange->displayName("##PanHigh");
-	granulator.panLFO.displayName("##PanLFO");
-	granulator.modPanWidth.mParameter->displayName("##modPanWidth");
-	granulator.soundFile.mParameterInt->displayName("##soundFile"); 
-	granulator.soundFile.mLowRange->displayName("##soundFileLow");
-	granulator.soundFile.mHighRange->displayName("##soundFileHigh");
-	granulator.soundFileLFO.displayName("##soundFileLFO");
-	granulator.modSoundFileWidth.mParameter->displayName("##modSoundFileWidth");
-
-	granulator.modSineFrequency.mParameter->displayName("##modSineFrequency");
-	granulator.modSineFrequency.mLowRange->displayName("##modSineFrequencyLow");
-	granulator.modSineFrequency.mHighRange->displayName("##modSineFrequencyHigh");
-	granulator.modSinePhase.mParameter->displayName("##modSinePhase");
-	granulator.modSinePhase.mLowRange->displayName("##modSinePhaseLow");
-	granulator.modSinePhase.mHighRange->displayName("##modSinePhaseHigh");
-	granulator.modSquareFrequency.mParameter->displayName("##modSquareFrequency");
-	granulator.modSquareFrequency.mLowRange->displayName("##modSquareFrequencyLow");
-	granulator.modSquareFrequency.mHighRange->displayName("##modSquareFrequencyHigh");
-	granulator.modSquareWidth.mParameter->displayName("##modSquareWidth");
-	granulator.modSquareWidth.mLowRange->displayName("##modSquareWidthLow");
-	granulator.modSquareWidth.mHighRange->displayName("##modSquareWidthHigh");
-	granulator.modSawFrequency.mParameter->displayName("##modSawFrequency");
-	granulator.modSawFrequency.mLowRange->displayName("##modSawFrequencyLow");
-	granulator.modSawFrequency.mHighRange->displayName("##modSawFrequencyHigh");
-	granulator.modSawWidth.mParameter->displayName("##modSawWidth");
-	granulator.modSawWidth.mLowRange->displayName("##modSawWidthLow");
-	granulator.modSawWidth.mHighRange->displayName("##modSawWidthHigh");
 
 }
 

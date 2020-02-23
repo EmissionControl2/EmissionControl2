@@ -8,7 +8,6 @@
 
 namespace util {
 
-
 /**
  * Line class that moves from one point to another over a set period of time.
  */
@@ -17,7 +16,7 @@ class line {
 
 /**
  * @brief Default constructor.
- */
+ */ 
  line() {mSamplingRate = consts::SAMPLE_RATE; }
 
 	/**

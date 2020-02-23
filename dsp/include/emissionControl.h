@@ -1,3 +1,11 @@
+/** 
+ * emissionControl.h
+ * 
+ * AUTHOR: Jack Kilgore
+ */
+
+
+
 #ifndef EMISSIONCONTROL_H
 #define EMISSIONCONTROL_H
 
@@ -122,6 +130,26 @@ class ecModulator {
 	float operator()();
 
 	/**
+	 * @brief Calls the operator() function and then calls setCurrentSample(float).
+	 * For convenience.
+	 */
+	void sampleAndStore() {setCurrentSample((*this)());}
+
+	/**
+	 * @brief If you are using these as global modulators it might be useful to store the current sample.
+	 * 
+	 * @param sample : The current sample to be stored, usually comes from this->operator()
+	 */
+	void setCurrentSample(float sample) {mCurrentSample = sample;}
+
+	/**
+	 * @brief If you are using these as global modulators it might be useful to get the current sample.
+	 * 
+	 * @return The current sample being stored.
+	 */
+	float getCurrentSample() const {return mCurrentSample;}
+
+	/**
 	 * @brief Set the waveform of the modulator.
 	 * 
 	 * @param[in] An enum type defined in consts.h. 
@@ -162,7 +190,7 @@ class ecModulator {
 	gam::LFO<> mLFO{};
 	al::rnd::Random<> rand;
 	consts::waveform mModWaveform;
-	float mWidth;
+	float mWidth, mFrequency, mCurrentSample;
 };
 
 /**
@@ -244,6 +272,13 @@ public:
 	void setWaveformIndex(int index);
 
 	/**
+	 * @brief Set which external modulation source to use.
+	 * 
+	 * @param modSource: Pointer to the external ecModulator for this parameter.
+	 */
+	void setModulationSource(const std::shared_ptr<ecModulator>& modSource) {mModSource = modSource;}
+
+	/**
 	 * @brief Decide if there will be a modulator contained within instance.
 	 * 
 	 * @param[in] If set to true, the parameter will contain its own modulator.
@@ -302,6 +337,7 @@ public:
 
  private:
 	consts::waveform mModWaveform;
+	std::shared_ptr<ecModulator> mModSource;
 	float mMax, mMin;
 	bool mIndependentMod;
 };
@@ -364,6 +400,14 @@ public:
 	void setWaveformIndex(int index);
 
 	/**
+	 * @brief Set which external modulation source to use.
+	 * 
+	 * @param modSource: Pointer to the external ecModulator for this parameter.
+	 */
+	void setModulationSource(const std::shared_ptr<ecModulator>& modSource) {
+		mModSource = modSource;}
+
+	/**
 	 * @brief Decide if there will be a modulator contained within instance.
 	 * 
 	 * @param[in] If set to true, the parameter will contain its own modulator.
@@ -412,6 +456,7 @@ public:
 	void drawRangeSlider();
 
 private:
+	std::shared_ptr<ecModulator> mModSource;
 	bool mIndependentMod;
 	int mMax, mMin;
 	consts::waveform mModWaveform;
@@ -487,7 +532,8 @@ class Grain : public al::SynthVoice {
  private:
 	util::buffer<float>* source = nullptr;
 	util::line index;
-	gam::Biquad<> mBPF;
+	gam::Biquad<> mHighShelf;
+	gam::Biquad<> mLowShelf;
 	grainEnvelope gEnv;
 	float currentSample;
 	int* mPActiveVoices;
