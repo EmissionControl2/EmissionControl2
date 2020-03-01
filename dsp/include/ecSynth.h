@@ -25,8 +25,8 @@ public:
    */
   const static int NUM_MODULATORS = 4;
 
-	// array of lfo parameters to draw later
-	std::vector<LFOstruct*> LFOparameters;
+  // array of lfo parameters to draw later
+  std::vector<LFOstruct *> LFOparameters;
 
   /**
    * PUBLIC PARAMETERS OF SYNTH
@@ -34,7 +34,7 @@ public:
   ecParameter grainRate{"Grain_Rate", "", 1,   "",           0.1,
                         100,          0,  500, consts::SINE, 0};
   al::ParameterMenu grainRateLFO{"##grainRateLFO"};
-  ecParameter modGrainRateWidth{"modGrainRateWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modGrainRateDepth{"modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter asynchronicity{"Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1,
                              consts::SINE};
@@ -89,7 +89,7 @@ public:
   ecParameterInt soundFile{"Sound_File", "", 1, "", 1, mClipNum, 1, mClipNum};
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
   ecParameter modSoundFileWidth{"modSoundFileWidth", "", 0, "", 0, 1, 0, 1};
-  
+
   ecParameter modSineFrequency{
       "modSineFrequency", "", 1, "", 0.01, 40, FLT_MIN, 1000};
   ecParameter modSinePhase{"modSinePhase", "", 0, "", 0, 1, 0, 1};
@@ -178,9 +178,9 @@ public:
 private:
   float mGlobalSamplingRate, mPrevSR;
 
-  al::PolySynth grainSynth{}; /* Polyhpony and interface to audio
-                                            callback */
-  voiceScheduler grainScheduler;         /* Schedule grains */
+  al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
+                                               callback */
+  voiceScheduler grainScheduler; /* Schedule grains */
   std::vector<util::buffer<float> *>
       soundClip;    /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
@@ -201,7 +201,6 @@ private:
   ecModulator modSquare{consts::SQUARE};
   ecModulator modSaw{consts::SAW};
   ecModulator modNoise{consts::NOISE};
-
 
   std::vector<std::shared_ptr<ecModulator>> Modulators;
   float modSineValue, modSquareValue, modSawValue, modNoiseValue;

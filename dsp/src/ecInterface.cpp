@@ -1,6 +1,5 @@
 // ecInterface.cpp
 
-
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
 #include "utility.h"
@@ -37,7 +36,7 @@ void ecInterface::onCreate() {
   mPresets
       << *granulator.grainRate.mParameter << *granulator.grainRate.mLowRange
       << *granulator.grainRate.mHighRange << granulator.grainRateLFO
-      << *granulator.modGrainRateWidth.mParameter
+      << *granulator.modGrainRateDepth.mParameter
       << *granulator.asynchronicity.mParameter
       << *granulator.asynchronicity.mLowRange
       << *granulator.asynchronicity.mHighRange << granulator.asyncLFO
@@ -102,15 +101,8 @@ void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
 
   // Get window height and width
-  float windowHeight, windowWidth;
-  if(fbWidth() != width()) {
-    windowWidth = fbWidth()/2;
-    windowHeight = fbHeight()/2;
-  }
-  else {
-    windowWidth = fbWidth();
-    windowHeight = fbHeight();
-  }
+  float windowWidth = width();
+  float windowHeight = height();
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
@@ -209,12 +201,12 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.pan.drawRangeSlider();
   granulator.soundFile.drawRangeSlider();
   ParameterGUI::endPanel();
- 
+
   // Draw modulation window
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
                            windowWidth / 2, windowHeight / 2, flags);
   drawModulationControl(granulator.grainRateLFO,
-                        granulator.modGrainRateWidth.mParameter);
+                        granulator.modGrainRateDepth.mParameter);
   drawModulationControl(granulator.asyncLFO,
                         granulator.modAsynchronicityWidth.mParameter);
   drawModulationControl(granulator.intermittencyLFO,
@@ -269,7 +261,6 @@ void ecInterface::onDraw(Graphics &g) {
 
   ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25,
                            windowWidth / 4, windowHeight / 4, flags);
-
 
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
@@ -333,7 +324,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
   }
   AudioIOState &state = stateMap[io];
   ImGui::PushID(std::to_string((unsigned long)io).c_str());
-  
+
   if (io->isOpen()) {
     std::string text;
     text += "Sampling Rate: " + std::to_string(int(io->fps()));
