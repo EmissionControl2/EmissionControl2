@@ -8,8 +8,8 @@
 #ifdef AL_WINDOWS
 #include <stdlib.h>
 #elif (AL_LINUX)
-#include <unistd.h>
 #include <limits.h>
+#include <unistd.h>
 #else
 #include <mach-o/dyld.h>
 #endif

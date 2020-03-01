@@ -101,6 +101,28 @@ void ecModulator::setWaveform(consts::waveform modWaveform) {
   mModWaveform = modWaveform;
 }
 
+void ecModulator::setWaveform(int modWaveformIndex) {
+  if (modWaveformIndex > 3) {
+    std::cerr << "invalid waveform" << std::endl;
+    return;
+  }
+
+  switch (modWaveformIndex) {
+  case 0:
+    mModWaveform = consts::SINE;
+    break;
+  case 1:
+    mModWaveform = consts::SQUARE;
+    break;
+  case 2:
+    mModWaveform = consts::SAW;
+    break;
+  case 3:
+    mModWaveform = consts::NOISE;
+    break;
+  }
+}
+
 void ecModulator::setFrequency(float frequency) {
   mLFO.freq(frequency);
   mFrequency = frequency;

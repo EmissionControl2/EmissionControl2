@@ -158,6 +158,16 @@ public:
   void setWaveform(consts::waveform modWaveform);
 
   /**
+   * @bried Set the waveform using an integer.
+   * @param modwaveformIndex :
+   *                           0 = SINE
+   *                           1 = SQUARE
+   *                           2 = SAW
+   *                           3 = NOISE
+   */
+  void setWaveform(int modwaveformIndex);
+
+  /**
    * @brief Set the frequency of the modulator.
    *
    * @param[in] Frequency in Hz.
@@ -675,31 +685,31 @@ private:
 /*** GUI ELEMENTS ***/
 
 // a struct to wrap LFO parameters
-  struct LFOstruct {
-  public:
-    al::ParameterMenu *shape = nullptr;
-    al::Parameter *frequency = nullptr;
-    al::Parameter *duty = nullptr;
+struct LFOstruct {
+public:
+  al::ParameterMenu *shape = nullptr;
+  al::Parameter *frequency = nullptr;
+  al::Parameter *duty = nullptr;
 
-    // constructor
-    LFOstruct(int lfoNumber) {
-      std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
-      std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
-      std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
+  // constructor
+  LFOstruct(int lfoNumber) {
+    std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
+    std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
+    std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
 
-      shape = new al::ParameterMenu(menuName);
-      frequency = new al::Parameter(freqName, "", 1, "", 0.01, 1000);
-      duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
+    shape = new al::ParameterMenu(menuName);
+    frequency = new al::Parameter(freqName, "", 1, "", 0.01, 1000);
+    duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
-      shape->setElements({"Sine", "Square", "Saw", "Noise"});
-    }
+    shape->setElements({"Sine", "Square", "Saw", "Noise"});
+  }
 
-    // destructor
-    ~LFOstruct() {
-      delete shape;
-      delete frequency;
-      delete duty;
-    }
-  };
+  // destructor
+  ~LFOstruct() {
+    delete shape;
+    delete frequency;
+    delete duty;
+  }
+};
 
 #endif

@@ -44,7 +44,7 @@ public:
   void drawLFOcontrol(ecSynth &synth, int lfoNumber);
 
   void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
-  
+
 private:
   float background = 0.21;
   ecSynth granulator;
