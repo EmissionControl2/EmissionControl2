@@ -76,7 +76,6 @@ void grainEnvelope::setEnvelope(float envelope) {
 bool grainEnvelope::done() { return mTurkeyEnv.done(); }
 
 /******* ecModulator *******/
-
 float ecModulator::operator()() {
   if (mModWaveform == consts::SINE) {
     return mLFO.cos();
@@ -85,8 +84,15 @@ float ecModulator::operator()() {
   } else if (mModWaveform == consts::SQUARE) {
     return mLFO.stair();
   } else if (mModWaveform == consts::NOISE) {
-    // TO DO TO DO -- make changes based on frequency parameter.
-    return rand.uniform(-1.0, 1.0);
+    mLFO.nextPhase();
+    lastPhase = currentPhase;
+    currentPhase = mLFO.phaseI();
+    if ( lastPhase > currentPhase) {
+      mHoldNoiseSample = rand.uniform(-1.0, 1.0);
+      return mHoldNoiseSample;
+    } else
+      return mHoldNoiseSample;
+
   } else {
     return mLFO.cos();
   }
@@ -189,93 +195,12 @@ ecParameter::~ecParameter() {
     delete mModulator;
 }
 
-void ecParameter::setWaveformIndex(int index) {
-  switch (index) {
-  case 0:
-    mModWaveform = consts::SINE;
-    break;
-  case 1:
-    mModWaveform = consts::SQUARE;
-    break;
-  case 2:
-    mModWaveform = consts::SAW;
-    break;
-  case 3:
-    mModWaveform = consts::NOISE;
-    break;
-  default:
-    mModWaveform = consts::SINE;
-  }
-}
-
 void ecParameter::setIndependentMod(bool independentMod) {
   mIndependentMod = independentMod;
   if (mIndependentMod && mModulator == nullptr)
     mModulator = new ecModulator{mModWaveform, 1, 1};
   else
     delete mModulator;
-}
-
-float ecParameter::getModParam(float modSineValue, float modSquareValue,
-                               float modSawValue, float modNoiseValue,
-                               float modWidth) {
-  float temp;
-  switch (mModWaveform) {
-  case consts::SINE: {
-    temp = mParameter->get() +
-           (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::SQUARE: {
-    temp = mParameter->get() +
-           (modSquareValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::SAW: {
-    temp = mParameter->get() +
-           (modSawValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::NOISE: {
-    temp = mParameter->get() +
-           (modNoiseValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  default: {
-    temp = mParameter->get() +
-           (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-  }
 }
 
 float ecParameter::getModParam(float modWidth) {
@@ -384,86 +309,6 @@ void ecParameterInt::setIndependentMod(bool independentMod) {
     mModulator = new ecModulator{mModWaveform, 1, 1};
   else
     delete mModulator;
-}
-
-void ecParameterInt::setWaveformIndex(int index) {
-  switch (index) {
-  case 0:
-    mModWaveform = consts::SINE;
-    break;
-  case 1:
-    mModWaveform = consts::SQUARE;
-    break;
-  case 2:
-    mModWaveform = consts::SAW;
-    break;
-  case 3:
-    mModWaveform = consts::NOISE;
-    break;
-  default:
-    mModWaveform = consts::SINE;
-  }
-}
-
-int ecParameterInt::getModParam(float modSineValue, float modSquareValue,
-                                float modSawValue, float modNoiseValue,
-                                float modWidth) {
-  int temp;
-  switch (mModWaveform) {
-  case consts::SINE: {
-    temp = mParameterInt->get() +
-           (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->min())
-      return mLowRange->min();
-    else
-      return temp;
-  }
-
-  case consts::SQUARE: {
-    temp = mParameterInt->get() +
-           (modSquareValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::SAW: {
-    temp = mParameterInt->get() +
-           (modSawValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::NOISE: {
-    temp = mParameterInt->get() +
-           (modNoiseValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  default: {
-    temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-  }
 }
 
 int ecParameterInt::getModParam(float modWidth) {
