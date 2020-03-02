@@ -76,7 +76,6 @@ void grainEnvelope::setEnvelope(float envelope) {
 bool grainEnvelope::done() { return mTurkeyEnv.done(); }
 
 /******* ecModulator *******/
-
 float ecModulator::operator()() {
   if (mModWaveform == consts::SINE) {
     return mLFO.cos();
@@ -85,8 +84,15 @@ float ecModulator::operator()() {
   } else if (mModWaveform == consts::SQUARE) {
     return mLFO.stair();
   } else if (mModWaveform == consts::NOISE) {
-    // TO DO TO DO -- make changes based on frequency parameter.
-    return rand.uniform(-1.0, 1.0);
+    mLFO.nextPhase();
+    lastPhase = currentPhase;
+    currentPhase = mLFO.phaseI();
+    if ( lastPhase > currentPhase) {
+      mHoldNoiseSample = rand.uniform(-1.0, 1.0);
+      return mHoldNoiseSample;
+    } else
+      return mHoldNoiseSample;
+
   } else {
     return mLFO.cos();
   }
@@ -101,15 +107,34 @@ void ecModulator::setWaveform(consts::waveform modWaveform) {
   mModWaveform = modWaveform;
 }
 
+void ecModulator::setWaveform(int modWaveformIndex) {
+  if (modWaveformIndex > 3) {
+    std::cerr << "invalid waveform" << std::endl;
+    return;
+  }
+
+  switch (modWaveformIndex) {
+  case 0:
+    mModWaveform = consts::SINE;
+    break;
+  case 1:
+    mModWaveform = consts::SQUARE;
+    break;
+  case 2:
+    mModWaveform = consts::SAW;
+    break;
+  case 3:
+    mModWaveform = consts::NOISE;
+    break;
+  }
+}
+
 void ecModulator::setFrequency(float frequency) {
   mLFO.freq(frequency);
   mFrequency = frequency;
 }
 
-void ecModulator::setWidth(float width) {
-  mWidth = width;
-  mLFO.mod(width);
-}
+void ecModulator::setWidth(float width) { mLFO.mod(width); }
 
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
@@ -170,93 +195,12 @@ ecParameter::~ecParameter() {
     delete mModulator;
 }
 
-void ecParameter::setWaveformIndex(int index) {
-  switch (index) {
-  case 0:
-    mModWaveform = consts::SINE;
-    break;
-  case 1:
-    mModWaveform = consts::SQUARE;
-    break;
-  case 2:
-    mModWaveform = consts::SAW;
-    break;
-  case 3:
-    mModWaveform = consts::NOISE;
-    break;
-  default:
-    mModWaveform = consts::SINE;
-  }
-}
-
 void ecParameter::setIndependentMod(bool independentMod) {
   mIndependentMod = independentMod;
   if (mIndependentMod && mModulator == nullptr)
     mModulator = new ecModulator{mModWaveform, 1, 1};
   else
     delete mModulator;
-}
-
-float ecParameter::getModParam(float modSineValue, float modSquareValue,
-                               float modSawValue, float modNoiseValue,
-                               float modWidth) {
-  float temp;
-  switch (mModWaveform) {
-  case consts::SINE: {
-    temp = mParameter->get() +
-           (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::SQUARE: {
-    temp = mParameter->get() +
-           (modSquareValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::SAW: {
-    temp = mParameter->get() +
-           (modSawValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::NOISE: {
-    temp = mParameter->get() +
-           (modNoiseValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  default: {
-    temp = mParameter->get() +
-           (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-  }
 }
 
 float ecParameter::getModParam(float modWidth) {
@@ -367,86 +311,6 @@ void ecParameterInt::setIndependentMod(bool independentMod) {
     delete mModulator;
 }
 
-void ecParameterInt::setWaveformIndex(int index) {
-  switch (index) {
-  case 0:
-    mModWaveform = consts::SINE;
-    break;
-  case 1:
-    mModWaveform = consts::SQUARE;
-    break;
-  case 2:
-    mModWaveform = consts::SAW;
-    break;
-  case 3:
-    mModWaveform = consts::NOISE;
-    break;
-  default:
-    mModWaveform = consts::SINE;
-  }
-}
-
-int ecParameterInt::getModParam(float modSineValue, float modSquareValue,
-                                float modSawValue, float modNoiseValue,
-                                float modWidth) {
-  int temp;
-  switch (mModWaveform) {
-  case consts::SINE: {
-    temp = mParameterInt->get() +
-           (modSineValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->min())
-      return mLowRange->min();
-    else
-      return temp;
-  }
-
-  case consts::SQUARE: {
-    temp = mParameterInt->get() +
-           (modSquareValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::SAW: {
-    temp = mParameterInt->get() +
-           (modSawValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  case consts::NOISE: {
-    temp = mParameterInt->get() +
-           (modNoiseValue * modWidth * (mHighRange->get() - mLowRange->get()));
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-
-  default: {
-    temp = mParameterInt->get() * ((modSineValue * modWidth) + 1);
-    if (temp > mHighRange->get())
-      return mHighRange->get();
-    else if (temp < mLowRange->get())
-      return mLowRange->get();
-    else
-      return temp;
-  }
-  }
-}
-
 int ecParameterInt::getModParam(float modWidth) {
   int temp;
   if (!mIndependentMod && mModSource.get() != nullptr)
@@ -525,40 +389,33 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   mPActiveVoices = list.activeVoices;
 
-  if (list.modGrainDurationWidth > 0)
-    setDurationMs(list.grainDurationMs.getModParam(
-        list.modSineVal, list.modSquareVal, list.modSawVal, list.modNoiseVal,
-        list.modGrainDurationWidth));
+  if (list.modGrainDurationDepth > 0)
+    setDurationMs(list.grainDurationMs.getModParam(list.modGrainDurationDepth));
   else
     setDurationMs(list.grainDurationMs.getParam());
 
-  if (list.modEnvelopeWidth > 0)
+  if (list.modEnvelopeDepth > 0)
     gEnv.set(mDurationMs / 1000,
-             list.envelope.getModParam(list.modSineVal, list.modSquareVal,
-                                       list.modSawVal, list.modNoiseVal,
-                                       list.modEnvelopeWidth));
+             list.envelope.getModParam(list.modEnvelopeDepth));
   else
     gEnv.set(mDurationMs / 1000, list.envelope.getParam());
 
   this->source = list.source;
 
-  if (list.modTapeHeadWidth >
-      0) // NOTE: the tape head wraps around to the beginning of the buffer when
-         // it exceeds its buffer size.
-    startSample = source->size *
-                  (list.tapeHead.getModParam(list.modSineVal, list.modSquareVal,
-                                             list.modSawVal, list.modNoiseVal,
-                                             list.modTapeHeadWidth));
+  if (list.modTapeHeadDepth > 0)
+    // NOTE: the tape head wraps around to the beginning of the buffer when
+    // it exceeds its buffer size.
+    startSample =
+        source->size * (list.tapeHead.getModParam(list.modTapeHeadDepth));
   else
     startSample = source->size * list.tapeHead.getParam();
 
-  if (list.modTranspositionWidth > 0)
-    endSample = startSample +
-                source->channels *
-                    ((mDurationMs / 1000) * samplingRate *
-                     abs(list.transposition.getModParam(
-                         list.modSineVal, list.modSquareVal, list.modSawVal,
-                         list.modNoiseVal, list.modTranspositionWidth)));
+  if (list.modTranspositionDepth > 0)
+    endSample =
+        startSample +
+        source->channels *
+            ((mDurationMs / 1000) * samplingRate *
+             abs(list.transposition.getModParam(list.modTranspositionDepth)));
   else
     endSample =
         startSample + source->channels * ((mDurationMs / 1000) * samplingRate *
@@ -573,10 +430,8 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     index.set(startSample, endSample, mDurationMs / 1000);
 
   // Store modulated volume value of grain IF it is being modulated.
-  if (list.modVolumeWidth > 0)
-    mAmp = list.volumeDB.getModParam(list.modSineVal, list.modSquareVal,
-                                     list.modSawVal, list.modNoiseVal,
-                                     list.modVolumeWidth);
+  if (list.modVolumeDepth > 0)
+    mAmp = list.volumeDB.getModParam(list.modVolumeDepth);
   else
     mAmp = list.volumeDB.getParam();
 
@@ -584,10 +439,8 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mAmp = powf(10, mAmp / 20);
 
   // Store modulated pan value of grain IF it is being modulated.
-  if (list.modPanWidth > 0)
-    mPan =
-        list.pan.getModParam(list.modSineVal, list.modSquareVal, list.modSawVal,
-                             list.modNoiseVal, list.modPanWidth);
+  if (list.modPanDepth > 0)
+    mPan = list.pan.getModParam(list.modPanDepth);
   else
     mPan = list.pan.getParam();
 
@@ -599,13 +452,9 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // FILTERING SETUP
 
-  float resonance = list.resonance.getModParam(
-      list.modSineVal, list.modSquareVal, list.modSawVal, list.modNoiseVal,
-      list.modResonanceDepth);
+  float resonance = list.resonance.getModParam(list.modResonanceDepth);
 
-  float freq = list.filter.getModParam(list.modSineVal, list.modSquareVal,
-                                       list.modSawVal, list.modNoiseVal,
-                                       list.modFilterDepth);
+  float freq = list.filter.getModParam(list.modFilterDepth);
 
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
   float delta = 0.4; // MIN_LEVEL = -30dB
