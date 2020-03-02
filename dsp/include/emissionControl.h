@@ -200,7 +200,8 @@ private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
-  float mFrequency, mCurrentSample;
+  float mFrequency, mCurrentSample, mHoldNoiseSample;
+  unsigned int lastPhase, currentPhase;
 };
 
 /**
@@ -275,15 +276,6 @@ public:
   ~ecParameter();
 
   /**
-   * @brief Function to set the waveform using an integer value rather than the
-   * mModWaveform type.
-   *
-   * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
-   *
-   */
-  void setWaveformIndex(int index);
-
-  /**
    * @brief Set which external modulation source to use.
    *
    * @param modSource: Pointer to the external ecModulator for this parameter.
@@ -317,23 +309,6 @@ public:
   float getParam() const { return mParameter->get(); }
 
   /**
-   * @brief Function that returns the ecParameter value transformed by AN
-   * EXTERNAL modulation source. (ie independence set to false) This function
-   * assumes that there are four external modulation sources (see ecModulator).
-   * Runs at the Audio/Control rate.
-   *
-   * param[in] The current value of the SINE modulator.
-   * param[in] The current value of the SQUARE modulator.
-   * param[in] The current value of the SAW modulator.
-   * param[in] The current value of the NOISE modulator.
-   * param[in] FROM 0 to 1; The width of the modulation source.
-   *
-   * @return Modified version of the current parameter value.
-   */
-  float getModParam(float modSineValue, float modSquareValue, float modSawValue,
-                    float modNoiseValue, float modWidth);
-
-  /**
    * @brief Function that returns the ecParameter value transformed by its
    * INTERNAL modulation source. (ie independence set to true) Runs at
    * Audio/Control Rate.
@@ -342,7 +317,7 @@ public:
    *
    * @return Modified version of the current parameter value.
    */
-  float getModParam(float modWidth);
+  float getModParam(float modDepth);
 
   /**
    * @brief Draw the parameter range slider.
@@ -407,15 +382,6 @@ public:
   ~ecParameterInt();
 
   /**
-   * @brief Function to set the waveform using an integer value rather than the
-   * mModWaveform type.
-   *
-   * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
-   *
-   */
-  void setWaveformIndex(int index);
-
-  /**
    * @brief Set which external modulation source to use.
    *
    * @param modSource: Pointer to the external ecModulator for this parameter.
@@ -439,23 +405,6 @@ public:
    * @return Parameter value.
    */
   float getParam() { return mParameterInt->get(); }
-
-  /**
-   * @brief Function that returns the ecParameterInt value transformed by AN
-   * EXTERNAL modulation source. (ie independence set to false) This function
-   * assumes that there are four external modulation sources (see ecModulator).
-   * Runs at the Audio/Control rate.
-   *
-   * param[in] The current value of the SINE modulator.
-   * param[in] The current value of the SQUARE modulator.
-   * param[in] The current value of the SAW modulator.
-   * param[in] The current value of the NOISE modulator.
-   * param[in] FROM 0 to 1; The width of the modulation source.
-   *
-   * @return Modified version of the current parameter value.
-   */
-  int getModParam(float modSineValue, float modSquareValue, float modSawValue,
-                  float modNoiseValue, float modWidth);
 
   /**
    * @brief Function that returns the ecParameterInt value transformed by its
