@@ -128,10 +128,7 @@ void ecModulator::setFrequency(float frequency) {
   mFrequency = frequency;
 }
 
-void ecModulator::setWidth(float width) {
-  mWidth = width;
-  mLFO.mod(width);
-}
+void ecModulator::setWidth(float width) { mLFO.mod(width); }
 
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
@@ -547,40 +544,33 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   mPActiveVoices = list.activeVoices;
 
-  if (list.modGrainDurationWidth > 0)
-    setDurationMs(list.grainDurationMs.getModParam(
-        list.modSineVal, list.modSquareVal, list.modSawVal, list.modNoiseVal,
-        list.modGrainDurationWidth));
+  if (list.modGrainDurationDepth > 0)
+    setDurationMs(list.grainDurationMs.getModParam(list.modGrainDurationDepth));
   else
     setDurationMs(list.grainDurationMs.getParam());
 
-  if (list.modEnvelopeWidth > 0)
+  if (list.modEnvelopeDepth > 0)
     gEnv.set(mDurationMs / 1000,
-             list.envelope.getModParam(list.modSineVal, list.modSquareVal,
-                                       list.modSawVal, list.modNoiseVal,
-                                       list.modEnvelopeWidth));
+             list.envelope.getModParam(list.modEnvelopeDepth));
   else
     gEnv.set(mDurationMs / 1000, list.envelope.getParam());
 
   this->source = list.source;
 
-  if (list.modTapeHeadWidth >
-      0) // NOTE: the tape head wraps around to the beginning of the buffer when
-         // it exceeds its buffer size.
-    startSample = source->size *
-                  (list.tapeHead.getModParam(list.modSineVal, list.modSquareVal,
-                                             list.modSawVal, list.modNoiseVal,
-                                             list.modTapeHeadWidth));
+  if (list.modTapeHeadDepth > 0)
+    // NOTE: the tape head wraps around to the beginning of the buffer when
+    // it exceeds its buffer size.
+    startSample =
+        source->size * (list.tapeHead.getModParam(list.modTapeHeadDepth));
   else
     startSample = source->size * list.tapeHead.getParam();
 
-  if (list.modTranspositionWidth > 0)
-    endSample = startSample +
-                source->channels *
-                    ((mDurationMs / 1000) * samplingRate *
-                     abs(list.transposition.getModParam(
-                         list.modSineVal, list.modSquareVal, list.modSawVal,
-                         list.modNoiseVal, list.modTranspositionWidth)));
+  if (list.modTranspositionDepth > 0)
+    endSample =
+        startSample +
+        source->channels *
+            ((mDurationMs / 1000) * samplingRate *
+             abs(list.transposition.getModParam(list.modTranspositionDepth)));
   else
     endSample =
         startSample + source->channels * ((mDurationMs / 1000) * samplingRate *
@@ -595,10 +585,8 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     index.set(startSample, endSample, mDurationMs / 1000);
 
   // Store modulated volume value of grain IF it is being modulated.
-  if (list.modVolumeWidth > 0)
-    mAmp = list.volumeDB.getModParam(list.modSineVal, list.modSquareVal,
-                                     list.modSawVal, list.modNoiseVal,
-                                     list.modVolumeWidth);
+  if (list.modVolumeDepth > 0)
+    mAmp = list.volumeDB.getModParam(list.modVolumeDepth);
   else
     mAmp = list.volumeDB.getParam();
 
@@ -606,10 +594,8 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mAmp = powf(10, mAmp / 20);
 
   // Store modulated pan value of grain IF it is being modulated.
-  if (list.modPanWidth > 0)
-    mPan =
-        list.pan.getModParam(list.modSineVal, list.modSquareVal, list.modSawVal,
-                             list.modNoiseVal, list.modPanWidth);
+  if (list.modPanDepth > 0)
+    mPan = list.pan.getModParam(list.modPanDepth);
   else
     mPan = list.pan.getParam();
 
@@ -621,13 +607,9 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // FILTERING SETUP
 
-  float resonance = list.resonance.getModParam(
-      list.modSineVal, list.modSquareVal, list.modSawVal, list.modNoiseVal,
-      list.modResonanceDepth);
+  float resonance = list.resonance.getModParam(list.modResonanceDepth);
 
-  float freq = list.filter.getModParam(list.modSineVal, list.modSquareVal,
-                                       list.modSawVal, list.modNoiseVal,
-                                       list.modFilterDepth);
+  float freq = list.filter.getModParam(list.modFilterDepth);
 
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
   float delta = 0.4; // MIN_LEVEL = -30dB

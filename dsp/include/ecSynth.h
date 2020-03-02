@@ -39,36 +39,36 @@ public:
   ecParameter asynchronicity{"Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1,
                              consts::SINE};
   al::ParameterMenu asyncLFO{"##asyncLFO"};
-  ecParameter modAsynchronicityWidth{
-      "modAsynchronicityWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modAsynchronicityDepth{
+      "modAsynchronicityDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter intermittency{"Intermittency", "", 0, "", 0, 1, 0, 1};
   al::ParameterMenu intermittencyLFO{"##intermittencyLFO"};
-  ecParameter modIntermittencyWidth{
-      "modIntermittencyWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modIntermittencyDepth{
+      "modIntermittencyDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameterInt streams{"Streams", "", 1, "", 1, 12, 1, 20};
   al::ParameterMenu streamsLFO{"##streamsLFO"};
-  ecParameter modStreamsWidth{"modStreamsWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modStreamsDepth{"modStreamsDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter grainDurationMs{"Grain_Dur_Ms", "",   30,        "",
                               0.01,           1000, 0.0000001, 10000};
   al::ParameterMenu grainDurationLFO{"##grainDurationLFO"};
-  ecParameter modGrainDurationWidth{
-      "modGrainDurationWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modGrainDurationDepth{
+      "modGrainDurationDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter envelope{"Envelope", "", 0.5, "", 0, 1, 0, 1};
   al::ParameterMenu envelopeLFO{"##envelopeLFO"};
-  ecParameter modEnvelopeWidth{"modEnvelopeWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modEnvelopeDepth{"modEnvelopeDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter tapeHead{"Tape_Head", "", 0.5, "", 0, 1, 0, 1};
   al::ParameterMenu tapeHeadLFO{"##tapeHeadLFO"};
-  ecParameter modTapeHeadWidth{"modTapeHeadWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modTapeHeadDepth{"modTapeHeadDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter transposition{"Transposition", "", 1, "", -2, 2, -20, 20};
   al::ParameterMenu transpositionLFO{"##transpositionLFO"};
-  ecParameter modTranspositionWidth{
-      "modTranspositionWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modTranspositionDepth{
+      "modTranspositionDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter filter{"Filter", "", 440, "", 60, 5000, 20, 24000};
   al::ParameterMenu filterLFO{"##filterLFO"};
@@ -80,15 +80,15 @@ public:
 
   ecParameter volumeDB{"Volume_DB", "", -6, "", -60, 6, -180, 24};
   al::ParameterMenu volumeLFO{"##volumeLFO"};
-  ecParameter modVolumeWidth{"modVolumeWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modVolumeDepth{"modVolumeDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter pan{"Pan", "", 0, "", -1, 1, -1, 1};
   al::ParameterMenu panLFO{"##panLFO"};
-  ecParameter modPanWidth{"modPanWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modPanDepth{"modPanDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameterInt soundFile{"Sound_File", "", 1, "", 1, mClipNum, 1, mClipNum};
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
-  ecParameter modSoundFileWidth{"modSoundFileWidth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter modSineFrequency{
       "modSineFrequency", "", 1, "", 0.01, 40, FLT_MIN, 1000};
@@ -194,16 +194,7 @@ private:
   float mAvgCPU;
   int *mPActiveVoices = nullptr;
 
-  /**
-   * Global Modulators for Synth
-   */
-  ecModulator modSine{consts::SINE, 1, 1};
-  ecModulator modSquare{consts::SQUARE};
-  ecModulator modSaw{consts::SAW};
-  ecModulator modNoise{consts::NOISE};
-
   std::vector<std::shared_ptr<ecModulator>> Modulators;
-  float modSineValue, modSquareValue, modSawValue, modNoiseValue;
 };
 
 #endif

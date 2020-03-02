@@ -98,6 +98,7 @@ void ecSynth::init(al::AudioIOData *io) {
 
   grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
+  // FOR LOOP CAUSES CRASHES ???
   LFOparameters[0]->shape->registerChangeCallback(
       [&](int value) { Modulators[0]->setWaveform(value); });
 
@@ -107,34 +108,47 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[0]->duty->registerChangeCallback(
       [&](float value) { Modulators[0]->setWidth(value); });
 
+  LFOparameters[1]->shape->registerChangeCallback(
+      [&](int value) { Modulators[1]->setWaveform(value); });
+
+  LFOparameters[1]->frequency->registerChangeCallback(
+      [&](float value) { Modulators[1]->setFrequency(value); });
+
+  LFOparameters[1]->duty->registerChangeCallback(
+      [&](float value) { Modulators[1]->setWidth(value); });
+
+  LFOparameters[2]->shape->registerChangeCallback(
+      [&](int value) { Modulators[2]->setWaveform(value); });
+
+  LFOparameters[2]->frequency->registerChangeCallback(
+      [&](float value) { Modulators[2]->setFrequency(value); });
+
+  LFOparameters[2]->duty->registerChangeCallback(
+      [&](float value) { Modulators[2]->setWidth(value); });
+
+  LFOparameters[3]->shape->registerChangeCallback(
+      [&](int value) { Modulators[3]->setWaveform(value); });
+
+  LFOparameters[3]->frequency->registerChangeCallback(
+      [&](float value) { Modulators[3]->setFrequency(value); });
+
+  LFOparameters[3]->duty->registerChangeCallback(
+      [&](float value) { Modulators[3]->setWidth(value); });
+
+  /**
+   * WHY DOES THIS CRASH ??
+   */
   // for (int index = 0; index < NUM_MODULATORS; ++index) {
-  // LFOparameters[index]->shape->registerChangeCallback(
-  //     [&](int value) { Modulators[index]->setWaveform(value); });
+  //   std::cout << "INDEX: " << index << std::endl;
+  //   LFOparameters[index]->shape->registerChangeCallback(
+  //       [&](int value) { Modulators[index]->setWaveform(value); });
 
-  // LFOparameters[index]->frequency->registerChangeCallback(
-  //     [&](float value) { Modulators[index]->setFrequency(value); });
+  //   LFOparameters[index]->frequency->registerChangeCallback(
+  //       [&](float value) { Modulators[index]->setFrequency(value); });
 
-  // LFOparameters[index]->duty->registerChangeCallback(
-  //     [&](float value) { Modulators[index]->setWidth(value); });
+  //   LFOparameters[index]->duty->registerChangeCallback(
+  //       [&](float value) { Modulators[index]->setWidth(value); });
   // }
-
-  // modSineFrequency.mParameter->registerChangeCallback([&](float value) {
-  // 	modSine.setFrequency(value);
-  // });
-
-  modSinePhase.mParameter->registerChangeCallback(
-      [&](float value) { modSine.setPhase(value); });
-
-  modSquareFrequency.mParameter->registerChangeCallback(
-      [&](float value) { modSquare.setFrequency(value); });
-
-  modSquareWidth.mParameter->registerChangeCallback(
-      [&](float value) { modSquare.setWidth(value); });
-
-  modSawFrequency.mParameter->registerChangeCallback(
-      [&](float value) { modSaw.setFrequency(value); });
-  modSawWidth.mParameter->registerChangeCallback(
-      [&](float value) { modSaw.setWidth(value); });
 
   grainSynth.allocatePolyphony<Grain>(1024);
   grainSynth.setDefaultUserData(this);
@@ -155,57 +169,38 @@ void ecSynth::onProcess(AudioIOData &io) {
     for (int index = 0; index < NUM_MODULATORS; ++index)
       Modulators[index]->sampleAndStore();
 
-    modSineValue = modSine(); // construct modulation value
-    modSquareValue = modSquare();
-    modSawValue = modSaw();
-    modNoiseValue = modNoise();
-
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
     // NOTE grainRate noise isnt very perceptible
     if (modGrainRateDepth.getParam() > 0) // modulate the grain rate
       grainScheduler.setFrequency(
           grainRate.getModParam(modGrainRateDepth.getParam()));
-    // grainScheduler.setFrequency(grainRate.getModParam(modSineValue,
-    // modSquareValue, modSawValue, modNoiseValue,
-    // modGrainRateDepth.getParam()));
     else
       grainScheduler.setFrequency(grainRate.getParam());
 
-    if (modAsynchronicityWidth.getParam() > 0) // modulate the asynchronicity
-      grainScheduler.setAsynchronicity(asynchronicity.getModParam(
-          modSineValue, modSquareValue, modSawValue, modNoiseValue,
-          modAsynchronicityWidth.getParam()));
+    if (modAsynchronicityDepth.getParam() > 0) // modulate the asynchronicity
+      grainScheduler.setAsynchronicity(
+          asynchronicity.getModParam(modAsynchronicityDepth.getParam()));
     else
       grainScheduler.setAsynchronicity(asynchronicity.getParam());
 
-    if (modIntermittencyWidth.getParam() > 0) // modulate the intermittency
-      grainScheduler.setIntermittence(intermittency.getModParam(
-          modSineValue, modSquareValue, modSawValue, modNoiseValue,
-          modIntermittencyWidth.getParam()));
+    if (modIntermittencyDepth.getParam() > 0) // modulate the intermittency
+      grainScheduler.setIntermittence(
+          intermittency.getModParam(modIntermittencyDepth.getParam()));
     else
       grainScheduler.setIntermittence(intermittency.getParam());
 
-    if (modStreamsWidth.getParam() >
+    if (modStreamsDepth.getParam() >
         0) // Modulate the amount of streams playing.
       grainScheduler.setPolyStream(
-          consts::synchronous,
-          streams.getModParam(modSineValue, modSquareValue, modSawValue,
-                              modNoiseValue, modStreamsWidth.getParam()));
+          consts::synchronous, streams.getModParam(modStreamsDepth.getParam()));
     else
       grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
-
-    // if(modSoundFileWidth.getParam() > 0)
-    //  soundFile.getModParam(modSineValue, modSquareValue, modSawValue,
-    //  modNoiseValue,modSoundFileWidth.getParam());
 
     // CONTROL RATE LOOP (Executes every 4th sample)
     if (controlRateCounter == 4) {
       controlRateCounter = 0;
-      mModClip =
-          soundFile.getModParam(modSineValue, modSquareValue, modSawValue,
-                                modNoiseValue, modSoundFileWidth.getParam()) -
-          1;
+      mModClip = soundFile.getModParam(modSoundFileDepth.getParam()) - 1;
     }
     controlRateCounter++;
     /////
@@ -215,26 +210,22 @@ void ecSynth::onProcess(AudioIOData &io) {
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
         grainParameters list = {grainDurationMs,
-                                modGrainDurationWidth.getParam(),
+                                modGrainDurationDepth.getParam(),
                                 envelope,
-                                modEnvelopeWidth.getParam(),
+                                modEnvelopeDepth.getParam(),
                                 tapeHead,
-                                modTapeHeadWidth.getParam(),
+                                modTapeHeadDepth.getParam(),
                                 transposition,
-                                modTranspositionWidth.getParam(),
+                                modTranspositionDepth.getParam(),
                                 filter,
                                 modFilterDepth.getParam(),
                                 resonance,
                                 modResonanceDepth.getParam(),
                                 volumeDB,
-                                modVolumeWidth.getParam(),
+                                modVolumeDepth.getParam(),
                                 pan,
-                                modPanWidth.getParam(),
+                                modPanDepth.getParam(),
                                 soundClip[mModClip],
-                                modSineValue,
-                                modSquareValue,
-                                modSawValue,
-                                modNoiseValue,
                                 mPActiveVoices};
 
         voice->configureGrain(list, mGlobalSamplingRate);
