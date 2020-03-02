@@ -114,7 +114,7 @@ public:
    */
   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1,
               float width = 1)
-      : mWidth(width) {
+       {
     this->setWaveform(modWaveform);
     mLFO.set(frequency, 0, width);
   }
@@ -158,6 +158,16 @@ public:
   void setWaveform(consts::waveform modWaveform);
 
   /**
+   * @bried Set the waveform using an integer.
+   * @param modwaveformIndex :
+   *                           0 = SINE
+   *                           1 = SQUARE
+   *                           2 = SAW
+   *                           3 = NOISE
+   */
+  void setWaveform(int modwaveformIndex);
+
+  /**
    * @brief Set the frequency of the modulator.
    *
    * @param[in] Frequency in Hz.
@@ -182,7 +192,7 @@ public:
 
   float getFrequency() const { return mLFO.freq(); }
 
-  float getWidth() const { return mWidth; }
+  float getWidth() const { return mLFO.mod(); }
 
   float getPhase() const { return mLFO.phase(); }
 
@@ -190,7 +200,8 @@ private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
-  float mWidth, mFrequency, mCurrentSample;
+  float mFrequency, mCurrentSample, mHoldNoiseSample;
+  unsigned int lastPhase, currentPhase;
 };
 
 /**
@@ -265,15 +276,6 @@ public:
   ~ecParameter();
 
   /**
-   * @brief Function to set the waveform using an integer value rather than the
-   * mModWaveform type.
-   *
-   * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
-   *
-   */
-  void setWaveformIndex(int index);
-
-  /**
    * @brief Set which external modulation source to use.
    *
    * @param modSource: Pointer to the external ecModulator for this parameter.
@@ -307,23 +309,6 @@ public:
   float getParam() const { return mParameter->get(); }
 
   /**
-   * @brief Function that returns the ecParameter value transformed by AN
-   * EXTERNAL modulation source. (ie independence set to false) This function
-   * assumes that there are four external modulation sources (see ecModulator).
-   * Runs at the Audio/Control rate.
-   *
-   * param[in] The current value of the SINE modulator.
-   * param[in] The current value of the SQUARE modulator.
-   * param[in] The current value of the SAW modulator.
-   * param[in] The current value of the NOISE modulator.
-   * param[in] FROM 0 to 1; The width of the modulation source.
-   *
-   * @return Modified version of the current parameter value.
-   */
-  float getModParam(float modSineValue, float modSquareValue, float modSawValue,
-                    float modNoiseValue, float modWidth);
-
-  /**
    * @brief Function that returns the ecParameter value transformed by its
    * INTERNAL modulation source. (ie independence set to true) Runs at
    * Audio/Control Rate.
@@ -332,7 +317,7 @@ public:
    *
    * @return Modified version of the current parameter value.
    */
-  float getModParam(float modWidth);
+  float getModParam(float modDepth);
 
   /**
    * @brief Draw the parameter range slider.
@@ -397,15 +382,6 @@ public:
   ~ecParameterInt();
 
   /**
-   * @brief Function to set the waveform using an integer value rather than the
-   * mModWaveform type.
-   *
-   * param[in] 0 = SINE | 1 = SQUARE | 2 = SAW  | 3 = NOISE
-   *
-   */
-  void setWaveformIndex(int index);
-
-  /**
    * @brief Set which external modulation source to use.
    *
    * @param modSource: Pointer to the external ecModulator for this parameter.
@@ -429,23 +405,6 @@ public:
    * @return Parameter value.
    */
   float getParam() { return mParameterInt->get(); }
-
-  /**
-   * @brief Function that returns the ecParameterInt value transformed by AN
-   * EXTERNAL modulation source. (ie independence set to false) This function
-   * assumes that there are four external modulation sources (see ecModulator).
-   * Runs at the Audio/Control rate.
-   *
-   * param[in] The current value of the SINE modulator.
-   * param[in] The current value of the SQUARE modulator.
-   * param[in] The current value of the SAW modulator.
-   * param[in] The current value of the NOISE modulator.
-   * param[in] FROM 0 to 1; The width of the modulation source.
-   *
-   * @return Modified version of the current parameter value.
-   */
-  int getModParam(float modSineValue, float modSquareValue, float modSawValue,
-                  float modNoiseValue, float modWidth);
 
   /**
    * @brief Function that returns the ecParameterInt value transformed by its
@@ -472,26 +431,22 @@ private:
 
 struct grainParameters {
   ecParameter &grainDurationMs;
-  float modGrainDurationWidth;
+  float modGrainDurationDepth;
   ecParameter &envelope;
-  float modEnvelopeWidth;
+  float modEnvelopeDepth;
   ecParameter &tapeHead;
-  float modTapeHeadWidth;
+  float modTapeHeadDepth;
   ecParameter &transposition;
-  float modTranspositionWidth;
+  float modTranspositionDepth;
   ecParameter &filter;
   float modFilterDepth;
   ecParameter &resonance;
   float modResonanceDepth;
   ecParameter &volumeDB;
-  float modVolumeWidth;
+  float modVolumeDepth;
   ecParameter &pan;
-  float modPanWidth;
+  float modPanDepth;
   util::buffer<float> *source;
-  float modSineVal;
-  float modSquareVal;
-  float modSawVal;
-  float modNoiseVal;
   int *activeVoices;
 };
 
@@ -675,31 +630,31 @@ private:
 /*** GUI ELEMENTS ***/
 
 // a struct to wrap LFO parameters
-  struct LFOstruct {
-  public:
-    al::ParameterMenu *shape = nullptr;
-    al::Parameter *frequency = nullptr;
-    al::Parameter *duty = nullptr;
+struct LFOstruct {
+public:
+  al::ParameterMenu *shape = nullptr;
+  al::Parameter *frequency = nullptr;
+  al::Parameter *duty = nullptr;
 
-    // constructor
-    LFOstruct(int lfoNumber) {
-      std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
-      std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
-      std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
+  // constructor
+  LFOstruct(int lfoNumber) {
+    std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
+    std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
+    std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
 
-      shape = new al::ParameterMenu(menuName);
-      frequency = new al::Parameter(freqName, "", 1, "", 0.01, 1000);
-      duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
+    shape = new al::ParameterMenu(menuName);
+    frequency = new al::Parameter(freqName, "", 1, "", 0.01, 1000);
+    duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
-      shape->setElements({"Sine", "Square", "Saw", "Noise"});
-    }
+    shape->setElements({"Sine", "Square", "Saw", "Noise"});
+  }
 
-    // destructor
-    ~LFOstruct() {
-      delete shape;
-      delete frequency;
-      delete duty;
-    }
-  };
+  // destructor
+  ~LFOstruct() {
+    delete shape;
+    delete frequency;
+    delete duty;
+  }
+};
 
 #endif
