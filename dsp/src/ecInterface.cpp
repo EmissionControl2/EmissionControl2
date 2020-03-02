@@ -75,24 +75,7 @@ void ecInterface::onCreate() {
       << granulator.panLFO << *granulator.modPanDepth.mParameter
       << *granulator.soundFile.mParameterInt << *granulator.soundFile.mLowRange
       << *granulator.soundFile.mHighRange << granulator.soundFileLFO
-      << *granulator.modSoundFileDepth.mParameter
-      << *granulator.modSineFrequency.mParameter
-      << *granulator.modSineFrequency.mLowRange
-      << *granulator.modSineFrequency.mHighRange
-      << *granulator.modSinePhase.mParameter
-      << *granulator.modSinePhase.mLowRange
-      << *granulator.modSinePhase.mHighRange
-      << *granulator.modSquareFrequency.mParameter
-      << *granulator.modSquareFrequency.mLowRange
-      << *granulator.modSquareFrequency.mHighRange
-      << *granulator.modSquareWidth.mParameter
-      << *granulator.modSquareWidth.mLowRange
-      << *granulator.modSquareWidth.mHighRange
-      << *granulator.modSawFrequency.mParameter
-      << *granulator.modSawFrequency.mLowRange
-      << *granulator.modSawFrequency.mHighRange
-      << *granulator.modSawWidth.mParameter << *granulator.modSawWidth.mLowRange
-      << *granulator.modSawWidth.mHighRange;
+      << *granulator.modSoundFileDepth.mParameter;
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
