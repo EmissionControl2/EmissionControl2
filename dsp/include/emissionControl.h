@@ -114,7 +114,7 @@ public:
    */
   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1,
               float width = 1)
-      : mWidth(width) {
+       {
     this->setWaveform(modWaveform);
     mLFO.set(frequency, 0, width);
   }
@@ -192,7 +192,7 @@ public:
 
   float getFrequency() const { return mLFO.freq(); }
 
-  float getWidth() const { return mWidth; }
+  float getWidth() const { return mLFO.mod(); }
 
   float getPhase() const { return mLFO.phase(); }
 
@@ -200,7 +200,7 @@ private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
-  float mWidth, mFrequency, mCurrentSample;
+  float mFrequency, mCurrentSample;
 };
 
 /**
@@ -482,26 +482,22 @@ private:
 
 struct grainParameters {
   ecParameter &grainDurationMs;
-  float modGrainDurationWidth;
+  float modGrainDurationDepth;
   ecParameter &envelope;
-  float modEnvelopeWidth;
+  float modEnvelopeDepth;
   ecParameter &tapeHead;
-  float modTapeHeadWidth;
+  float modTapeHeadDepth;
   ecParameter &transposition;
-  float modTranspositionWidth;
+  float modTranspositionDepth;
   ecParameter &filter;
   float modFilterDepth;
   ecParameter &resonance;
   float modResonanceDepth;
   ecParameter &volumeDB;
-  float modVolumeWidth;
+  float modVolumeDepth;
   ecParameter &pan;
-  float modPanWidth;
+  float modPanDepth;
   util::buffer<float> *source;
-  float modSineVal;
-  float modSquareVal;
-  float modSawVal;
-  float modNoiseVal;
   int *activeVoices;
 };
 
