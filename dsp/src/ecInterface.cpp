@@ -33,49 +33,57 @@ void ecInterface::onInit() {
 void ecInterface::onCreate() {
 
   al::imguiInit();
-  mPresets
-      << *granulator.grainRate.mParameter << *granulator.grainRate.mLowRange
-      << *granulator.grainRate.mHighRange << granulator.grainRateLFO
-      << *granulator.modGrainRateDepth.mParameter
-      << *granulator.asynchronicity.mParameter
-      << *granulator.asynchronicity.mLowRange
-      << *granulator.asynchronicity.mHighRange << granulator.asyncLFO
-      << *granulator.modAsynchronicityDepth.mParameter
-      << *granulator.intermittency.mParameter
-      << *granulator.intermittency.mLowRange
-      << *granulator.intermittency.mHighRange << granulator.intermittencyLFO
-      << *granulator.modIntermittencyDepth.mParameter
-      << *granulator.streams.mParameterInt << *granulator.streams.mLowRange
-      << *granulator.streams.mHighRange << granulator.streamsLFO
-      << *granulator.modStreamsDepth.mParameter
-      << *granulator.grainDurationMs.mParameter
-      << *granulator.grainDurationMs.mLowRange
-      << *granulator.grainDurationMs.mHighRange << granulator.grainDurationLFO
-      << *granulator.modGrainDurationDepth.mParameter
-      << *granulator.envelope.mParameter << *granulator.envelope.mLowRange
-      << *granulator.envelope.mHighRange << granulator.envelopeLFO
-      << *granulator.modEnvelopeDepth.mParameter
-      << *granulator.tapeHead.mParameter << *granulator.tapeHead.mLowRange
-      << *granulator.tapeHead.mHighRange << granulator.tapeHeadLFO
-      << *granulator.modTapeHeadDepth.mParameter
-      << *granulator.transposition.mParameter
-      << *granulator.transposition.mLowRange
-      << *granulator.transposition.mHighRange << granulator.transpositionLFO
-      << *granulator.modTranspositionDepth.mParameter
-      << *granulator.filter.mParameter << *granulator.filter.mLowRange
-      << *granulator.filter.mHighRange << granulator.filterLFO
-      << *granulator.modFilterDepth.mParameter
-      << *granulator.resonance.mParameter << *granulator.resonance.mLowRange
-      << *granulator.resonance.mHighRange << granulator.resonanceLFO
-      << *granulator.modResonanceDepth.mParameter
-      << *granulator.volumeDB.mParameter << *granulator.volumeDB.mLowRange
-      << *granulator.volumeDB.mHighRange << granulator.volumeLFO
-      << *granulator.modVolumeDepth.mParameter << *granulator.pan.mParameter
-      << *granulator.pan.mLowRange << *granulator.pan.mHighRange
-      << granulator.panLFO << *granulator.modPanDepth.mParameter
-      << *granulator.soundFile.mParameterInt << *granulator.soundFile.mLowRange
-      << *granulator.soundFile.mHighRange << granulator.soundFileLFO
-      << *granulator.modSoundFileDepth.mParameter;
+  granulator.grainRate.addToPresetHandler(mPresets);
+  granulator.asynchronicity.addToPresetHandler(mPresets);
+  granulator.intermittency.addToPresetHandler(mPresets);
+  granulator.streams.addToPresetHandler(mPresets);
+  granulator.grainDurationMs.addToPresetHandler(mPresets);
+  granulator.envelope.addToPresetHandler(mPresets);
+  granulator.tapeHead.addToPresetHandler(mPresets);
+  granulator.transposition.addToPresetHandler(mPresets);
+  granulator.filter.addToPresetHandler(mPresets);
+  granulator.resonance.addToPresetHandler(mPresets);
+  granulator.volumeDB.addToPresetHandler(mPresets);
+  granulator.pan.addToPresetHandler(mPresets);
+  granulator.soundFile.addToPresetHandler(mPresets);
+
+  granulator.modGrainRateDepth.addToPresetHandler(mPresets);
+  granulator.modAsynchronicityDepth.addToPresetHandler(mPresets);
+  granulator.modIntermittencyDepth.addToPresetHandler(mPresets);
+  granulator.modStreamsDepth.addToPresetHandler(mPresets);
+  granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
+  granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
+  granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
+  granulator.modTranspositionDepth.addToPresetHandler(mPresets);
+  granulator.modFilterDepth.addToPresetHandler(mPresets);
+  granulator.modResonanceDepth.addToPresetHandler(mPresets);
+  granulator.modVolumeDepth.addToPresetHandler(mPresets);
+  granulator.modPanDepth.addToPresetHandler(mPresets);
+  granulator.modSoundFileDepth.addToPresetHandler(mPresets);
+
+  mPresets << granulator.grainRateLFO << granulator.asyncLFO
+           << granulator.intermittencyLFO << granulator.streamsLFO
+           << granulator.grainDurationLFO << granulator.envelopeLFO
+           << granulator.tapeHeadLFO << granulator.transpositionLFO
+           << granulator.filterLFO << granulator.resonanceLFO
+           << granulator.volumeLFO << granulator.panLFO
+           << granulator.soundFileLFO;
+
+  granulator.LFOparameters[0]->frequency->addToPresetHandler(mPresets);
+  mPresets << *granulator.LFOparameters[0]->shape
+           << *granulator.LFOparameters[0]->duty;
+
+  granulator.LFOparameters[1]->frequency->addToPresetHandler(mPresets);
+  mPresets << *granulator.LFOparameters[1]->shape
+           << *granulator.LFOparameters[1]->duty;
+
+  granulator.LFOparameters[2]->frequency->addToPresetHandler(mPresets);
+  mPresets << *granulator.LFOparameters[2]->shape
+           << *granulator.LFOparameters[2]->duty;
+
+  granulator.LFOparameters[3]->frequency->addToPresetHandler(mPresets);
+  mPresets << *granulator.LFOparameters[3]->shape
+           << *granulator.LFOparameters[3]->duty;
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -410,12 +418,14 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO %i", lfoNumber + 1);
   ImGui::SameLine();
-  ImGui::PushItemWidth(120);
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
-  ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
+
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(true);
+  // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
   ImGui::PopItemWidth();
   ImGui::Indent(200);
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {

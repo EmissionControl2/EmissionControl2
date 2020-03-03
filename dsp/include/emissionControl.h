@@ -17,6 +17,7 @@
 #include "al/math/al_Random.hpp"
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
+#include "al/ui/al_PresetHandler.hpp"
 
 /**** CSTD LIB ****/
 #include <string>
@@ -113,8 +114,7 @@ public:
    * @param[in] The width of the modulator.
    */
   ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1,
-              float width = 1)
-       {
+              float width = 1) {
     this->setWaveform(modWaveform);
     mLFO.set(frequency, 0, width);
   }
@@ -320,9 +320,16 @@ public:
   float getModParam(float modDepth);
 
   /**
+   * @brief Registers all parameters within ecParameter to a preset handler.
+   *
+   * @param[in] presetHandler : A reference to a preset handler.
+   */
+  void addToPresetHandler(al::PresetHandler &presetHandler);
+
+  /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider();
+  void drawRangeSlider(bool isLFOParam = 0);
 
 private:
   consts::waveform mModWaveform;
@@ -416,6 +423,13 @@ public:
    * @return Modified version of the current parameter value.
    */
   int getModParam(float modWidth);
+
+   /**
+   * @brief Registers all parameters within ecParameter to a preset handler.
+   *
+   * @param[in] presetHandler : A reference to a preset handler.
+   */
+  void addToPresetHandler(al::PresetHandler &presetHandler);
 
   /**
    * @brief Draw the parameter range slider.
@@ -633,17 +647,17 @@ private:
 struct LFOstruct {
 public:
   al::ParameterMenu *shape = nullptr;
-  al::Parameter *frequency = nullptr;
+  ecParameter *frequency = nullptr;
   al::Parameter *duty = nullptr;
 
   // constructor
   LFOstruct(int lfoNumber) {
     std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
-    std::string freqName = "Freq##LFOfrequency" + std::to_string(lfoNumber);
+    std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
     std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
 
     shape = new al::ParameterMenu(menuName);
-    frequency = new al::Parameter(freqName, "", 1, "", 0.01, 1000);
+    frequency = new ecParameter(freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Saw", "Noise"});

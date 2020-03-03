@@ -102,7 +102,7 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[0]->shape->registerChangeCallback(
       [&](int value) { Modulators[0]->setWaveform(value); });
 
-  LFOparameters[0]->frequency->registerChangeCallback(
+  LFOparameters[0]->frequency->mParameter->registerChangeCallback(
       [&](float value) { Modulators[0]->setFrequency(value); });
 
   LFOparameters[0]->duty->registerChangeCallback(
@@ -111,7 +111,7 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[1]->shape->registerChangeCallback(
       [&](int value) { Modulators[1]->setWaveform(value); });
 
-  LFOparameters[1]->frequency->registerChangeCallback(
+  LFOparameters[1]->frequency->mParameter->registerChangeCallback(
       [&](float value) { Modulators[1]->setFrequency(value); });
 
   LFOparameters[1]->duty->registerChangeCallback(
@@ -120,7 +120,7 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[2]->shape->registerChangeCallback(
       [&](int value) { Modulators[2]->setWaveform(value); });
 
-  LFOparameters[2]->frequency->registerChangeCallback(
+  LFOparameters[2]->frequency->mParameter->registerChangeCallback(
       [&](float value) { Modulators[2]->setFrequency(value); });
 
   LFOparameters[2]->duty->registerChangeCallback(
@@ -129,7 +129,7 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[3]->shape->registerChangeCallback(
       [&](int value) { Modulators[3]->setWaveform(value); });
 
-  LFOparameters[3]->frequency->registerChangeCallback(
+  LFOparameters[3]->frequency->mParameter->registerChangeCallback(
       [&](float value) { Modulators[3]->setFrequency(value); });
 
   LFOparameters[3]->duty->registerChangeCallback(
