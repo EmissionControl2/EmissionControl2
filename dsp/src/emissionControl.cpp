@@ -87,7 +87,7 @@ float ecModulator::operator()() {
     mLFO.nextPhase();
     lastPhase = currentPhase;
     currentPhase = mLFO.phaseI();
-    if ( lastPhase > currentPhase) {
+    if (lastPhase > currentPhase) {
       mHoldNoiseSample = rand.uniform(-1.0, 1.0);
       return mHoldNoiseSample;
     } else
@@ -146,7 +146,7 @@ ecParameter::ecParameter(std::string parameterName, float defaultValue,
                          bool independentMod) {
   mParameter =
       new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
-  mParameter->displayName("##" + parameterName);
+  // mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
                             absMin, absMax};
   mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
@@ -224,9 +224,16 @@ float ecParameter::getModParam(float modWidth) {
     return temp;
 }
 
-void ecParameter::drawRangeSlider() {
+void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
+  presetHandler.registerParameter(*mParameter);
+  presetHandler.registerParameter(*mLowRange);
+  presetHandler.registerParameter(*mHighRange);
+}
+
+void ecParameter::drawRangeSlider(bool isLFOParam) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
+
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
   valueLow = mLowRange->get();
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
@@ -234,12 +241,14 @@ void ecParameter::drawRangeSlider() {
   ImGui::SameLine();
   if (changed)
     mLowRange->set(valueLow);
-  // if(valueLow > mHighRange->get()) mParameter->min(mMin);
   mParameter->min(valueLow);
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
+  if (isLFOParam)
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.53f);
+  else
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
   valueSlider = mParameter->get();
   changed =
       ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
@@ -261,7 +270,10 @@ void ecParameter::drawRangeSlider() {
 
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
-  ImGui::Text((mParameter->getName()).c_str());
+  if (isLFOParam)
+    ImGui::Text("Hz");
+  else
+    ImGui::Text((mParameter->getName()).c_str());
   ImGui::PopItemWidth();
 }
 
@@ -330,6 +342,12 @@ int ecParameterInt::getModParam(float modWidth) {
     return mLowRange->get();
   else
     return temp;
+}
+
+void ecParameterInt::addToPresetHandler(al::PresetHandler &presetHandler) {
+  presetHandler.registerParameter(*mParameterInt);
+  presetHandler.registerParameter(*mLowRange);
+  presetHandler.registerParameter(*mHighRange);
 }
 
 void ecParameterInt::drawRangeSlider() {
@@ -448,7 +466,10 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
                                     // for equal power using square root.
   /**Set sampling rate of envelope**/
   gEnv.setSamplingRate(samplingRate);
-  mAmp = mAmp * powf(*mPActiveVoices + 1, -0.36787698193); //  1/e
+  mAmp =
+      mAmp *
+      powf(*mPActiveVoices + 1,
+           -0.36787698193); //  1/e PERFECT FOR grain overlap gain compensation
 
   // FILTERING SETUP
 
@@ -461,12 +482,14 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mLowShelf.freq(freq * delta);
   mHighShelf.freq(freq * 1 / delta);
 
-  float res_process = (resonance + 0.25) * 25;
+  float res_process = (resonance + 0.25) * 30; // Resonance goes from 0.25 to 25
   mLowShelf.res(res_process);
   mHighShelf.res(res_process);
 
-  // MIN_LEVEL = -30B
-  res_process = 1 - resonance * 0.85; // Compliment of -30dB
+  // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
+  // dBVal / 20);
+  res_process = 1 - resonance * 0.35; // Compliment of -9dB about. THIS
+                                      // DETERMINES how resonancy it is.
   mLowShelf.level(res_process);
   mHighShelf.level(res_process);
 }
