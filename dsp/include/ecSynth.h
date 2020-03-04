@@ -90,16 +90,6 @@ public:
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
   ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter modSineFrequency{
-      "modSineFrequency", "", 1, "", 0.01, 40, FLT_MIN, 1000};
-  ecParameter modSinePhase{"modSinePhase", "", 0, "", 0, 1, 0, 1};
-  ecParameter modSquareFrequency{
-      "modSquareFrequency", "", 1, "", 0.01, 40, FLT_MIN, 1000};
-  ecParameter modSquareWidth{"modSquareWidth", "", 0.5, "", 0, 1, 0, 1};
-  ecParameter modSawFrequency{"modSawFrequency", "",  1, "", 0.01, 40,
-                              FLT_MIN,           1000};
-  ecParameter modSawWidth{"modSawWidth", "", 1, "", 0, 1, 0, 1};
-
   /**
    * @brief Initilialize the synth.
    */
