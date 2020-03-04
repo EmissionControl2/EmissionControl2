@@ -17,7 +17,7 @@ void ecInterface::onInit() {
 
   granulator.init(&audioIO());
 
-  std::string execPath = util::getExecutablePath();
+  execPath = util::getExecutablePath();
   File f(execPath);
   // Set output directory for presets.
   mPresets.setRootPath(f.directory(execPath) + "presets/");
@@ -27,7 +27,7 @@ void ecInterface::onInit() {
   audioIO().append(mRecorder);
 
   // Load in all files in {ExecutableLocation}/samples/
-  initialDirectory = granulator.loadInitSoundFiles();
+  granulator.loadInitSoundFiles();
 }
 
 void ecInterface::onCreate() {
@@ -90,6 +90,13 @@ void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
+  
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
+      14.0f);
+
+  // Scale font
+  ImGui::GetIO().FontGlobalScale = 1.2;
 
   // Get window height and width
   float windowWidth = width();
@@ -97,13 +104,6 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
-
-  // Load Font
-  ImFont *font1 = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      "./Fonts/Roboto-Medium.ttf", 14.0f);
-
-  // Scale font
-  ImGui::GetIO().FontGlobalScale = 1.2;
 
   // Make window borders not rounded
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); // not working
@@ -256,7 +256,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
     // When the select file button is clicked, the file selector is shown
-    selector.start(initialDirectory);
+    selector.start(f.directory(execPath) + "samples/");
   }
   // The file selector knows internally whether it should be drawn or not,
   // so you should always draw it. Check the return value of the draw function

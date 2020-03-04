@@ -38,60 +38,60 @@ void ecSynth::init(al::AudioIOData *io) {
   mPActiveVoices = &mActiveVoices;
 
   // MUST USE THIS ORDER
-  grainRateLFO.setElements({"One", "Two", "Thee", "Four"});
+  grainRateLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   grainRate.setModulationSource(Modulators[0]); // Default
   grainRateLFO.registerChangeCallback(
       [&](int value) { grainRate.setModulationSource(Modulators[value]); });
-  asyncLFO.setElements({"One", "Two", "Three", "Four"});
+  asyncLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   asynchronicity.setModulationSource(Modulators[0]);
   asyncLFO.registerChangeCallback([&](int value) {
     asynchronicity.setModulationSource(Modulators[value]);
   });
-  intermittencyLFO.setElements({"One", "Two", "Three", "Four"});
+  intermittencyLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   intermittency.setModulationSource(Modulators[0]);
   intermittencyLFO.registerChangeCallback(
       [&](int value) { intermittency.setModulationSource(Modulators[value]); });
-  streamsLFO.setElements({"One", "Two", "Three", "Four"});
+  streamsLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   streams.setModulationSource(Modulators[0]);
   streamsLFO.registerChangeCallback(
       [&](int value) { streams.setModulationSource(Modulators[value]); });
-  grainDurationLFO.setElements({"One", "Two", "Three", "Four"});
+  grainDurationLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   grainDurationMs.setModulationSource(Modulators[0]);
   grainDurationLFO.registerChangeCallback([&](int value) {
     grainDurationMs.setModulationSource(Modulators[value]);
   });
-  envelopeLFO.setElements({"One", "Two", "Three", "Four"});
+  envelopeLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   envelope.setModulationSource(Modulators[0]);
   envelopeLFO.registerChangeCallback(
       [&](int value) { envelope.setModulationSource(Modulators[value]); });
-  tapeHeadLFO.setElements({"One", "Two", "Three", "Four"});
+  tapeHeadLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
       [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
-  transpositionLFO.setElements({"One", "Two", "Three", "Four"});
+  transpositionLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
       [&](int value) { transposition.setModulationSource(Modulators[value]); });
 
-  filterLFO.setElements({"One", "Two", "Three", "Four"});
+  filterLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   filter.setModulationSource(Modulators[0]);
   filterLFO.registerChangeCallback(
       [&](int value) { filter.setModulationSource(Modulators[value]); });
 
-  resonanceLFO.setElements({"One", "Two", "Three", "Four"});
+  resonanceLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   resonance.setModulationSource(Modulators[0]);
   resonanceLFO.registerChangeCallback(
       [&](int value) { resonance.setModulationSource(Modulators[value]); });
 
-  volumeLFO.setElements({"One", "Two", "Three", "Four"});
+  volumeLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   volumeDB.setModulationSource(Modulators[0]);
   volumeLFO.registerChangeCallback(
       [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
-  panLFO.setElements({"One", "Two", "Three", "Four"});
+  panLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   pan.setModulationSource(Modulators[0]);
   panLFO.registerChangeCallback(
       [&](int value) { pan.setModulationSource(Modulators[value]); });
-  soundFileLFO.setElements({"One", "Two", "Three", "Four"});
+  soundFileLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
   soundFile.setModulationSource(Modulators[0]);
   soundFileLFO.registerChangeCallback(
       [&](int value) { soundFile.setModulationSource(Modulators[value]); });

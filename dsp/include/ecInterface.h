@@ -52,7 +52,8 @@ private:
   al::OutputRecorder mRecorder;
   al::FileSelector selector;
   std::string soundOutput;
-  std::string initialDirectory;
+  std::string execPath;
+  al::File f;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |

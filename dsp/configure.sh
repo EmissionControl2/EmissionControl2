@@ -5,13 +5,13 @@
   mkdir -p bin 
   cd bin 
   cp -r ../../samples .
-  cp -r ../../Fonts .
   mkdir -p soundOutput
   cp -r ../external/libraries .
+  cp -r ../../Fonts ./libraries
 	cd ..
 
   # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
-  if ! [-d ./external/libsamplerate/build]; then
+  if [ ! -d ./external/libsamplerate/build ]; then
     cmake -E make_directory external/libsamplerate/build
     cd external/libsamplerate/build
     cmake ..
