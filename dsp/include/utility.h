@@ -178,7 +178,6 @@ public:
   std::string filePath;
 
   virtual ~buffer() {
-    printf("Buffer deleted.\n");
     fflush(stdout);
     if (data)
       delete[] data;
@@ -199,6 +198,7 @@ public:
    * @param[in] New size.
    */
   void resize(unsigned n) {
+
     size = n;
     if (data)
       delete[] data; // or your have a memory leak
@@ -258,7 +258,7 @@ public:
  * @param[in] The filename. An absolute filename is preferred.
  * @param[out] A vector holding the audio buffers.
  */
-bool load(std::string fileName, std::vector<buffer<float> *> &buf,
+bool load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf,
           float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
 
 /**

@@ -424,7 +424,7 @@ public:
    */
   int getModParam(float modWidth);
 
-   /**
+  /**
    * @brief Registers all parameters within ecParameter to a preset handler.
    *
    * @param[in] presetHandler : A reference to a preset handler.
@@ -460,7 +460,7 @@ struct grainParameters {
   float modVolumeDepth;
   ecParameter &pan;
   float modPanDepth;
-  util::buffer<float> *source;
+  std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
 };
 
@@ -470,6 +470,7 @@ struct grainParameters {
  */
 class Grain : public al::SynthVoice {
 public:
+  Grain() { return; }
   /**
    * @brief Initialize voice. This function will only be called once per voice
    */
@@ -506,7 +507,7 @@ public:
   float getDurationMs() const { return mDurationMs; }
 
 private:
-  util::buffer<float> *source = nullptr;
+  std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
   gam::Biquad<> mHighShelf;
   gam::Biquad<> mLowShelf;
