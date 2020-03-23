@@ -84,16 +84,16 @@ void ecInterface::onCreate() {
   granulator.LFOparameters[3]->frequency->addToPresetHandler(mPresets);
   mPresets << *granulator.LFOparameters[3]->shape
            << *granulator.LFOparameters[3]->duty;
+
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+    (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
+    14.0f);
 }
 
-void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
+void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io);}
 
 void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
-  
-  ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
-      14.0f);
 
   // Scale font
   ImGui::GetIO().FontGlobalScale = 1.2;

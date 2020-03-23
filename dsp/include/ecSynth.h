@@ -90,6 +90,8 @@ public:
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
   ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
+  ecSynth() {}
+
   /**
    * @brief Initilialize the synth.
    */
@@ -171,7 +173,7 @@ private:
   al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
                                                callback */
   voiceScheduler grainScheduler; /* Schedule grains */
-  std::vector<util::buffer<float> *>
+  std::vector<std::shared_ptr<util::buffer<float>>>
       soundClip;    /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip;

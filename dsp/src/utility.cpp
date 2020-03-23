@@ -148,7 +148,8 @@ void tukey::set(float seconds) {
 }
 
 /**** Load Soundfile into Memory ****/
-bool util::load(std::string fileName, std::vector<buffer<float> *> &buf,
+bool util::load(std::string fileName,
+                std::vector<std::shared_ptr<buffer<float>>> &buf,
                 float samplingRate, bool resample) {
 
   al::SearchPaths searchPaths;
@@ -167,7 +168,7 @@ bool util::load(std::string fileName, std::vector<buffer<float> *> &buf,
     return 0;
   }
 
-  buffer<float> *a = new buffer<float>();
+  std::shared_ptr<buffer<float>> a (new buffer<float>());
   a->filePath = fileName;
   a->size = soundFile.samples();
   a->data = new float[a->size];
@@ -182,7 +183,7 @@ bool util::load(std::string fileName, std::vector<buffer<float> *> &buf,
      * Comment out if you want to read arbitrary files.
      */
     if (soundFile.frameRate() != samplingRate) {
-      buffer<float> *b = new buffer<float>();
+      std::shared_ptr<buffer<float>> b (new buffer<float>());
       b->filePath = fileName;
       b->size = (a->size) / soundFile.frameRate() * samplingRate;
       b->data = new float[b->size];
@@ -197,7 +198,7 @@ bool util::load(std::string fileName, std::vector<buffer<float> *> &buf,
                  soundFile.channels()); // const value changes quality of sample
                                         // rate conversion
       buf.push_back(b);
-      delete[] a->data;
+      // delete[] a->data;
       delete conversion;
     } else {
       buf.push_back(a);
