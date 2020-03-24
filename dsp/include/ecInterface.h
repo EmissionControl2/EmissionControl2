@@ -18,33 +18,32 @@
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
 
 class ecInterface : public al::App {
-   public:
-    /**
-     * @brief Initilialize the synth interface.
-     */
-    virtual void onInit() override;
+public:
+  /**
+   * @brief Initilialize the synth interface.
+   */
+  virtual void onInit() override;
 
-    /**
-     * @brief Run once on starup.
-     */
-    virtual void onCreate() override;
+  /**
+   * @brief Run once on starup.
+   */
+  virtual void onCreate() override;
 
-    /**
-     * @brief Audio rate processing of synth.
-     */
-    virtual void onSound(al::AudioIOData &io) override;
+  /**
+   * @brief Audio rate processing of synth.
+   */
+  virtual void onSound(al::AudioIOData &io) override;
 
-    /**
-     * @brief Draw rate processing of synth interface.
-     */
-    virtual void onDraw(al::Graphics &g) override;
+  /**
+   * @brief Draw rate processing of synth interface.
+   */
+  virtual void onDraw(al::Graphics &g) override;
 
-    void drawAudioIO(al::AudioIO *io);
+  void drawAudioIO(al::AudioIO *io);
 
-    void drawLFOcontrol(ecSynth &synth, int lfoNumber);
+  void drawLFOcontrol(ecSynth &synth, int lfoNumber);
 
-    void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
-
+  void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
 
 private:
   float background = 0.21;
