@@ -462,14 +462,13 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   else
     mPan = list.pan.getParam();
 
-
   /* PAN PROCESS
-  In radians --- 
-  LeftPan = 2√2(cos𝜃-sin𝜃) 
+  In radians ---
+  LeftPan = 2√2(cos𝜃-sin𝜃)
   RightPan = 2√2(cos𝜃+sin𝜃)
   Where 𝜃 is in the range -pi/4 to pi/4
   */
-  mPan =  mPan * (M_PI) / 4;
+  mPan = mPan * (M_PI) / 4;
   float process_1 = std::cos(mPan);
   float process_2 = std::sin(mPan);
   mLeft = PAN_CONST * (process_1 - process_2);
@@ -499,8 +498,10 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
   // dBVal / 20);
-  res_process = 1 - resonance * 0.995; // 1-Compliment of -120dB about. THIS 0.9999683772233983
-                                      // DETERMINES how resonancy it is.
+  res_process =
+      1 -
+      resonance * 0.995; // 1-Compliment of -120dB about. THIS
+                         // 0.9999683772233983 DETERMINES how resonancy it is.
   mLowShelf.level(res_process);
   mHighShelf.level(res_process);
 }

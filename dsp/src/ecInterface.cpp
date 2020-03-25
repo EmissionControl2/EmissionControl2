@@ -86,11 +86,11 @@ void ecInterface::onCreate() {
            << *granulator.LFOparameters[3]->duty;
 
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
-    14.0f);
+      (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
+      14.0f);
 }
 
-void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io);}
+void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
@@ -110,34 +110,33 @@ void ecInterface::onDraw(Graphics &g) {
 
   al::imguiBeginFrame();
 
-  // colors
   ImGui::PushStyleColor(ImGuiCol_WindowBg,
-                        (ImVec4)ImColor(0.8f, 0.969f, 0.8f, 1.0f));
+                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
   ImGui::PushStyleColor(ImGuiCol_PopupBg,
-                        (ImVec4)ImColor(0.8f, 0.969f, 0.8f, 1.0f));
+                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_FrameBg,
-                        (ImVec4)ImColor(0.651f, 0.933f, 0.651f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ImGui::PushStyleColor(ImGuiCol_MenuBarBg,
-                        (ImVec4)ImColor(0.651f, 0.933f, 0.651f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ImGui::PushStyleColor(ImGuiCol_SliderGrab,
                         (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
   ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
                         (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
   ImGui::PushStyleColor(ImGuiCol_Button,
-                        (ImVec4)ImColor(0.651f, 0.933f, 0.651f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_Header,
-                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
-                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_HeaderActive,
-                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_TitleBg,
-                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive,
-                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed,
-                        (ImVec4)ImColor(0.925f, 0.992f, 0.925f, 1.0f));
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
 
   // Draw GUI
 
