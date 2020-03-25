@@ -514,7 +514,8 @@ private:
   grainEnvelope gEnv;
   float currentSample;
   int *mPActiveVoices;
-  float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mAmp;
+  float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
+  float PAN_CONST = std::sqrt(2)/2;
 };
 
 /**
