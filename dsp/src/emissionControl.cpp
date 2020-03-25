@@ -478,7 +478,7 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   float freq = list.filter.getModParam(list.modFilterDepth);
 
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
-  float delta = 0.4; // MIN_LEVEL = -30dB //0.4
+  float delta = 0.1; // MIN_LEVEL = -30dB //0.4
   mLowShelf.freq(freq * delta);
   mHighShelf.freq(freq * 1 / delta);
 
@@ -488,7 +488,7 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
   // dBVal / 20);
-  res_process = 1 - resonance * 0.99; // 1-Compliment of -120dB about. THIS 0.9999683772233983
+  res_process = 1 - resonance * 0.99995; // 1-Compliment of -120dB about. THIS 0.9999683772233983
                                       // DETERMINES how resonancy it is.
   mLowShelf.level(res_process);
   mHighShelf.level(res_process);

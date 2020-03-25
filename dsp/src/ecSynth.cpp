@@ -38,60 +38,60 @@ void ecSynth::init(al::AudioIOData *io) {
   mPActiveVoices = &mActiveVoices;
 
   // MUST USE THIS ORDER
-  grainRateLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  grainRateLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   grainRate.setModulationSource(Modulators[0]); // Default
   grainRateLFO.registerChangeCallback(
       [&](int value) { grainRate.setModulationSource(Modulators[value]); });
-  asyncLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  asyncLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   asynchronicity.setModulationSource(Modulators[0]);
   asyncLFO.registerChangeCallback([&](int value) {
     asynchronicity.setModulationSource(Modulators[value]);
   });
-  intermittencyLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  intermittencyLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   intermittency.setModulationSource(Modulators[0]);
   intermittencyLFO.registerChangeCallback(
       [&](int value) { intermittency.setModulationSource(Modulators[value]); });
-  streamsLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  streamsLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   streams.setModulationSource(Modulators[0]);
   streamsLFO.registerChangeCallback(
       [&](int value) { streams.setModulationSource(Modulators[value]); });
-  grainDurationLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  grainDurationLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   grainDurationMs.setModulationSource(Modulators[0]);
   grainDurationLFO.registerChangeCallback([&](int value) {
     grainDurationMs.setModulationSource(Modulators[value]);
   });
-  envelopeLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  envelopeLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   envelope.setModulationSource(Modulators[0]);
   envelopeLFO.registerChangeCallback(
       [&](int value) { envelope.setModulationSource(Modulators[value]); });
-  tapeHeadLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  tapeHeadLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
       [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
-  transpositionLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  transpositionLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
       [&](int value) { transposition.setModulationSource(Modulators[value]); });
 
-  filterLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  filterLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   filter.setModulationSource(Modulators[0]);
   filterLFO.registerChangeCallback(
       [&](int value) { filter.setModulationSource(Modulators[value]); });
 
-  resonanceLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  resonanceLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   resonance.setModulationSource(Modulators[0]);
   resonanceLFO.registerChangeCallback(
       [&](int value) { resonance.setModulationSource(Modulators[value]); });
 
-  volumeLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  volumeLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   volumeDB.setModulationSource(Modulators[0]);
   volumeLFO.registerChangeCallback(
       [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
-  panLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  panLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   pan.setModulationSource(Modulators[0]);
   panLFO.registerChangeCallback(
       [&](int value) { pan.setModulationSource(Modulators[value]); });
-  soundFileLFO.setElements({"LFO One", "LFO Two", "LFO Three", "LFO Four"});
+  soundFileLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
   soundFile.setModulationSource(Modulators[0]);
   soundFileLFO.registerChangeCallback(
       [&](int value) { soundFile.setModulationSource(Modulators[value]); });
