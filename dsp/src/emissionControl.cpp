@@ -462,8 +462,18 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   else
     mPan = list.pan.getParam();
 
-  mPan = std::sqrt(mPan + 1) * 0.5; // Normalize the pan parameter and set up
-                                    // for equal power using square root.
+  /* PAN PROCESS
+  In radians ---
+  LeftPan = 2√2(cos𝜃-sin𝜃)
+  RightPan = 2√2(cos𝜃+sin𝜃)
+  Where 𝜃 is in the range -pi/4 to pi/4
+  */
+  mPan = mPan * (M_PI) / 4;
+  float process_1 = std::cos(mPan);
+  float process_2 = std::sin(mPan);
+  mLeft = PAN_CONST * (process_1 - process_2);
+  mRight = PAN_CONST * (process_1 + process_2);
+
   /**Set sampling rate of envelope**/
   gEnv.setSamplingRate(samplingRate);
   mAmp =
@@ -478,18 +488,20 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   float freq = list.filter.getModParam(list.modFilterDepth);
 
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
-  float delta = 0.4; // MIN_LEVEL = -30dB //0.4
+  float delta = 0.1; // MIN_LEVEL = -30dB //0.4
   mLowShelf.freq(freq * delta);
   mHighShelf.freq(freq * 1 / delta);
 
-  float res_process = (resonance + 0.25) * 10; // Resonance goes from 0.25 to 30
+  float res_process = (resonance + 0.25) * 24; // Resonance goes from 0.25 to 30
   mLowShelf.res(res_process);
   mHighShelf.res(res_process);
 
   // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
   // dBVal / 20);
-  res_process = 1 - resonance * 0.99; // 1-Compliment of -120dB about. THIS 0.9999683772233983
-                                      // DETERMINES how resonancy it is.
+  res_process =
+      1 -
+      resonance * 0.995; // 1-Compliment of -120dB about. THIS
+                         // 0.9999683772233983 DETERMINES how resonancy it is.
   mLowShelf.level(res_process);
   mHighShelf.level(res_process);
 }
@@ -505,16 +517,16 @@ void Grain::onProcess(al::AudioIOData &io) {
     if (source->channels == 1) {
       currentSample = mLowShelf(source->get(sourceIndex));
       currentSample = mHighShelf(currentSample);
-      io.out(0) += currentSample * envVal * (1 - mPan) * mAmp;
-      io.out(1) += currentSample * envVal * mPan * mAmp;
+      io.out(0) += currentSample * envVal * mLeft * mAmp;
+      io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
       currentSample = mLowShelf(source->get(sourceIndex));
       currentSample = mHighShelf(currentSample);
-      io.out(0) += currentSample * envVal * (1 - mPan) * mAmp;
+      io.out(0) += currentSample * envVal * mLeft * mAmp;
 
       currentSample = mLowShelf(source->get(sourceIndex + 1));
       currentSample = mHighShelf(currentSample);
-      io.out(1) += currentSample * envVal * mPan * mAmp;
+      io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
     if (gEnv.done()) {
