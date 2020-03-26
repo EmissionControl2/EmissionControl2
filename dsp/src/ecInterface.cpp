@@ -88,15 +88,16 @@ void ecInterface::onCreate() {
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
       (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
       14.0f);
+  // Scale font
+  ImGui::GetIO().FontGlobalScale = 1.2;
+
+  setGUIColors();
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
-
-  // Scale font
-  ImGui::GetIO().FontGlobalScale = 1.2;
 
   // Get window height and width
   float windowWidth = width();
@@ -105,38 +106,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Initialize Audio IO popup to false
   bool displayIO = false;
 
-  // Make window borders not rounded
-  // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); // not working
-
   al::imguiBeginFrame();
-
-  ImGui::PushStyleColor(ImGuiCol_WindowBg,
-                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
-  ImGui::PushStyleColor(ImGuiCol_PopupBg,
-                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
-  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_FrameBg,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  ImGui::PushStyleColor(ImGuiCol_MenuBarBg,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrab,
-                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
-                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_Button,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_Header,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderActive,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBg,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgActive,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed,
-                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
 
   // Draw GUI
 
@@ -244,14 +214,15 @@ void ecInterface::onDraw(Graphics &g) {
                      audioIO().channelsOut(), soundOutput);
   ParameterGUI::endPanel();
 
+  // Draw preset window
   ParameterGUI::beginPanel("Presets", windowWidth / 2, 25, windowWidth / 2,
                            windowHeight / 4, flags);
   ParameterGUI::drawPresetHandler(&mPresets, 12, 4);
   ParameterGUI::endPanel();
 
+  // Draw file selector window.
   ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25,
                            windowWidth / 4, windowHeight / 4, flags);
-
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
     // When the select file button is clicked, the file selector is shown
@@ -267,7 +238,6 @@ void ecInterface::onDraw(Graphics &g) {
       currentFile = selection[0].filepath();
     }
   }
-  // std::cout << currentFile << std::endl;
   if (currentFile != previousFile) {
     granulator.loadSoundFile(currentFile);
     previousFile = currentFile;
@@ -284,7 +254,7 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Pop the colors that were pushed at the start of the draw call
-  ImGui::PopStyleColor(13);
+  // ImGui::PopStyleColor(13);
   // ImGui::PopStyleVar();
 
   ImGui::End();
@@ -444,4 +414,34 @@ void ecInterface::drawModulationControl(al::ParameterMenu &menu,
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
   ParameterGUI::drawParameter(slider);
   ImGui::PopItemWidth();
+}
+
+void ecInterface::setGUIColors() {
+  ImGui::PushStyleColor(ImGuiCol_WindowBg,
+                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
+  ImGui::PushStyleColor(ImGuiCol_PopupBg,
+                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
+  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrab,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_Button,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_Header,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderActive,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBgActive,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
 }

@@ -39,12 +39,6 @@ public:
    */
   virtual void onDraw(al::Graphics &g) override;
 
-  void drawAudioIO(al::AudioIO *io);
-
-  void drawLFOcontrol(ecSynth &synth, int lfoNumber);
-
-  void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
-
 private:
   float background = 0.21;
   ecSynth granulator;
@@ -59,6 +53,14 @@ private:
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoSavedSettings;
+
+  void drawAudioIO(al::AudioIO *io);
+
+  void drawLFOcontrol(ecSynth &synth, int lfoNumber);
+
+  void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
+
+  void setGUIColors();
 };
 
 /**
