@@ -245,16 +245,8 @@ void ecSynth::onProcess(AudioIOData &io) {
 
   /* Manipulate on a stream level */
   while (io()) {
-
-    if (io.out(0) > 1)
-      io.sum(-1 * io.out(0) + 1, 0);
-    if (io.out(1) > 1)
-      io.sum(-1 * io.out(1) + 1, 1);
-
-    if (io.out(0) < -1)
-      io.sum(-1 * io.out(0) - 1, 0);
-    if (io.out(1) < -1)
-      io.sum(-1 * io.out(1) - 1, 1);
+    hardClip(io);
+    // softClip(io);
   }
 }
 
@@ -318,6 +310,34 @@ void ecSynth::resampleSoundFiles() {
   clearSoundFiles();
   for (i = 0; i < filePaths.size(); i++)
     loadSoundFile(filePaths[i]);
+}
+
+void ecSynth::hardClip(al::AudioIOData &io) {
+  for (int i = 0; i < io.channelsOut(); ++i) {
+    if (io.out(i) > 1)
+      io.sum(-1 * io.out(0) + 1, i);
+    if (io.out(i) < -1)
+      io.sum(-1 * io.out(0) - 1, i);
+  }
+}
+
+/**
+ * WIP -- runs at max 2/3 of full power
+ * softClip(currentSample) :
+ *    -2/3    if x < -1
+ *     2/3    if x > 1
+ *     currentSample - (currentSample)**3/3
+ */
+void ecSynth::softClip(al::AudioIOData &io) {
+  for (unsigned int i = 0; i < io.channelsOut(); ++i) {
+    float currentSample = io.out(i);
+    if (currentSample > 1)
+      io.sum(-1 * currentSample + (2.0f / 3), i);
+    else if (currentSample < -1)
+      io.sum(-1 * currentSample - (2.0f / 3), i);
+    else
+      io.sum(-1 * std::powf(currentSample, 3) / 3, i);
+  }
 }
 
 /**** TO DO TO DO TO DO ****/
