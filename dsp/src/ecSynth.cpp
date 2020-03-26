@@ -283,9 +283,6 @@ std::string ecSynth::loadInitSoundFiles() {
 }
 
 void ecSynth::clearSoundFiles() {
-  for (auto i = soundClip.begin(); i != soundClip.end(); i++) {
-    (*i)->deleteBuffer();
-  }
   soundClip.clear();
 
   mClipNum = 0;
