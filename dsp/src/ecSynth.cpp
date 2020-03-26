@@ -242,7 +242,19 @@ void ecSynth::onProcess(AudioIOData &io) {
   grainSynth.render(io);
 
   io.frame(0);
+
+  /* Manipulate on a stream level */
   while (io()) {
+
+    if (io.out(0) > 1)
+      io.sum(-1 * io.out(0) + 1, 0);
+    if (io.out(1) > 1)
+      io.sum(-1 * io.out(1) + 1, 1);
+
+    if (io.out(0) < -1)
+      io.sum(-1 * io.out(0) - 1, 0);
+    if (io.out(1) < -1)
+      io.sum(-1 * io.out(1) - 1, 1);
   }
 }
 
