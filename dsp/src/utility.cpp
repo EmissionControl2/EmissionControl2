@@ -168,7 +168,7 @@ bool util::load(std::string fileName,
     return 0;
   }
 
-  std::shared_ptr<buffer<float>> a (new buffer<float>());
+  std::shared_ptr<buffer<float>> a(new buffer<float>());
   a->filePath = fileName;
   a->size = soundFile.samples();
   a->data = new float[a->size];
@@ -183,7 +183,7 @@ bool util::load(std::string fileName,
      * Comment out if you want to read arbitrary files.
      */
     if (soundFile.frameRate() != samplingRate) {
-      std::shared_ptr<buffer<float>> b (new buffer<float>());
+      std::shared_ptr<buffer<float>> b(new buffer<float>());
       b->filePath = fileName;
       b->size = (a->size) / soundFile.frameRate() * samplingRate;
       b->data = new float[b->size];
