@@ -158,6 +158,20 @@ public:
    */
   int getActiveVoices() { return mActiveVoices; }
 
+  /** WIP -- see cpp file
+   * @brief Nonlinear cubic distortion used for soft clipping.
+   *        Applied to the left and right channels.
+   *        !Run in the process block!
+   */
+  void softClip(al::AudioIOData &io);
+
+  /**
+   * @brief Simple hardclipping to prevent distorting the DAC.
+   *        Applied to the left and right channels.
+   *        !Run in the process block!
+   */
+  void hardClip(al::AudioIOData &io);
+
   /**
    * WORK IN PROGRESS
    * @brief Throttles the amount of grains that can be active at once. TODO
