@@ -1,7 +1,12 @@
 #!/bin/bash
+result=${PWD##*/}
+if [ $result == "scripts" ]; then
+  cd ..
+fi
 (
   # utilizing cmake's parallel build options
   # recommended: -j <number of processor cores + 1>
+  
   cmake --build ./build/release -j 5
   if [ $(uname -s) == "Linux" ]; then
     chmod 644 bin/libraries/libsndfile/* #allow permissions to wewrite load commands of exectuables
@@ -23,7 +28,9 @@
 )
 
 result=$?
+# pwd
 if [ ${result} == 0 ]; then
   cd bin
   ./emissionControl -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1
 fi
+
