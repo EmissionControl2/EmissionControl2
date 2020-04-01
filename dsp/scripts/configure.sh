@@ -1,13 +1,17 @@
 #!/bin/bash
 
 # if needed to create debug or other builds replace 'release' in the following
+result=${PWD##*/}
+if [ $result == "scripts" ]; then
+  cd ..
+fi
 (
-  mkdir -p bin 
-  cd bin 
-  cp -r ../../samples .
+  mkdir -p ./bin 
+  cd ./bin 
+  cp -r ../../externalResources/samples .
   mkdir -p soundOutput
   cp -r ../external/libraries .
-  cp -r ../../Fonts ./libraries
+  cp -r ../../externalResources/Fonts ./libraries
 	cd ..
 
   # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
