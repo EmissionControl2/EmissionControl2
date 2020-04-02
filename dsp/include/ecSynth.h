@@ -129,7 +129,7 @@ public:
    *
    * @return Return the directory path where the files were loaded in from.
    */
-  std::string loadInitSoundFiles();
+  std::string loadInitSoundFiles(std::string directory);
 
   /**
    * @brief Resample all files in SoundClip to match globalSamplingRate.

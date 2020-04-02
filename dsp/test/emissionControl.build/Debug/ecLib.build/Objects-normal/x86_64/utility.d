@@ -1,0 +1,24 @@
+dependencies: \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/src/utility.cpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/utility.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Gamma.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Containers.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Allocator.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Conversion.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Constants.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/pstdint.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/mem.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Access.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/scl.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Config.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Strategy.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/ipl.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Types.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/arr.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/gen.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/tbl.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/rnd.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/io/al_File.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/include/const.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/src/../external/libsamplerate/src/samplerate.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/SoundFile.h

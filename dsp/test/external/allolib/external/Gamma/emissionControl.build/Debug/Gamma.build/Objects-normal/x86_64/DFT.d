@@ -1,0 +1,19 @@
+dependencies: \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/src/DFT.cpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/DFT.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/mem.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Access.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/tbl.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/arr.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/scl.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Config.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Conversion.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Constants.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/pstdint.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Types.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Domain.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Node.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Sync.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Containers.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/Allocator.h \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/Gamma/Gamma/FFT.h

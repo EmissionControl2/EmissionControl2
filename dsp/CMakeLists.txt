@@ -25,17 +25,53 @@ set(srcs
   src/utility.cpp
 )
 
-add_executable(${APP_NAME}
-  src/main.cpp
+set(RESOURCE_LIST
+    "libsndfile"
 )
+
+foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
+  SET(RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/Resources/${RESOURCE_DIR_NAME}")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    file(GLOB CHILDREN RELATIVE "${RESOURCE_DIR}" ${RESOURCE_DIR}/*)
+    foreach(CHILD ${CHILDREN})
+      IF(IS_DIRECTORY "${RESOURCE_DIR}/${CHILD}")
+        # be wary of .DS_Store files. glob them out by using [A-Za-z]*.*
+        FILE(GLOB RESOURCE_DIR_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${RESOURCE_DIR}/${CHILD}/[A-Za-z]*.*")
+        SET_SOURCE_FILES_PROPERTIES(
+          ${RESOURCE_DIR_FILES}
+          PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${RESOURCE_DIR_NAME}/${CHILD}
+        )
+        SET(RESOURCE_FILES ${RESOURCE_FILES} "external/Resources/${RESOURCE_DIR_FILES}")
+      ELSEIF(NOT ${CHILD} MATCHES "\\.DS_Store|.*\\.am")
+        SET_SOURCE_FILES_PROPERTIES(
+          "${RESOURCE_DIR}/${CHILD}"
+          PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${RESOURCE_DIR_NAME}
+        )
+        SET(RESOURCE_FILES ${RESOURCE_FILES} "external/Resources/${RESOURCE_DIR_NAME}/${CHILD}")
+      ENDIF()
+    endforeach()
+  else(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") #WORK ON
+    INSTALL( DIRECTORY ${RESOURCE_DIR} DESTINATION "${DATA_DIR}" PATTERN "*.am" EXCLUDE)
+  endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+endforeach()
+
+
+# if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+# file(GLOB LIBRARIES "${CMAKE_SOURCE_DIR}/bin/libraries/libsndfile/*.dylib")
+# message("LIBRARIES = ${LIBRARIES}")
+# endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+add_executable(${APP_NAME} MACOSX_BUNDLE
+  src/main.cpp
+  ${RESOURCE_FILES}
+)
+
+
 
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 target_link_directories(${APP_NAME} PUBLIC /usr/local/lib)
-
-message(${CMAKE_CURRENT_SOURCE_DIR}/external/allolib/external/Gamma/)
 
 add_library(ecLib
   STATIC 
@@ -59,7 +95,7 @@ get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
 target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a )
 
-target_link_libraries(${APP_NAME} PUBLIC ecLib)
+target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
 
 
 set_target_properties(ecLib PROPERTIES
@@ -83,5 +119,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/buildTest)
 
 add_custom_command(TARGET ${APP_NAME}
     POST_BUILD COMMAND 
-    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/libraries" #libsndfile.1.dylib"
+    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/../Resources/" #libsndfile.1.dylib"
     $<TARGET_FILE:${APP_NAME}>)

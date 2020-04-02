@@ -1,0 +1,20 @@
+dependencies: \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/src/ui/al_PresetSequencer.cpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_PresetSequencer.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/protocol/al_OSC.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/system/al_Thread.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/system/al_Time.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_PresetHandler.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_Parameter.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/math/al_Vec.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/math/al_Constants.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/spatial/al_Pose.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/math/al_Matrix4.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/math/al_Mat.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/math/al_Quat.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/types/al_Color.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_ParameterServer.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_ParameterBundle.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/io/al_File.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_Composition.hpp \
+  /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/include/al/ui/al_SequenceRecorder.hpp

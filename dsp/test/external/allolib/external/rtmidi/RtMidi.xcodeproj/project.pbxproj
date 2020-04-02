@@ -1,0 +1,959 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		4D0A99B875334CD5B51112B6 /* RTMIDI_UNINSTALL */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F4DA656F087D46678B5947C2 /* Build configuration list for PBXAggregateTarget "RTMIDI_UNINSTALL" */;
+			buildPhases = (
+				2BB9588583FB43F4A06D9FBC /* CMake Rules */,
+			);
+			dependencies = (
+				F7394E6457C44C9CA0291E7A /* PBXTargetDependency */,
+			);
+			name = RTMIDI_UNINSTALL;
+			productName = RTMIDI_UNINSTALL;
+		};
+		A0F5BC604A6040E793DB446A /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 48876DD93C4641B3BA146ED1 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				FC9403FA50364D3792447B7F /* CMake Rules */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		B97046D04E2940B58C155468 /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 269C86EB037B45DD96F4C10A /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				CBE4820145A5421D87BAE6BF /* CMake Rules */,
+			);
+			dependencies = (
+				4E2B221B2C5F4093B6B4E8B7 /* PBXTargetDependency */,
+				D983365C0BD64CEBA2C19B5D /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+		E8E2ACE1B91E4FACBF979CB0 /* install */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 5AD0AB98E13D4518870560D5 /* Build configuration list for PBXAggregateTarget "install" */;
+			buildPhases = (
+				81E2F12C142940EDABB1075D /* CMake PostBuild Rules */,
+			);
+			dependencies = (
+				3D5133829F8545BAB9C75CB8 /* PBXTargetDependency */,
+			);
+			name = install;
+			productName = install;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		7A8132C8A026463092E86151 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.h */ = {isa = PBXBuildFile; fileRef = 430D9963EC6C41468C4296AC /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.h */; };
+		951CE41BC71C4C9E9A7354A0 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.h */ = {isa = PBXBuildFile; fileRef = 2D17E38DDD10409EB28DB82D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.h */; };
+		BE1AEDE6EBAF4C9BB2C07274 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.cpp */ = {isa = PBXBuildFile; fileRef = B63545F50619402CAEF15258 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.cpp */; };
+		D8224CB4121B40CF93F6F6CC /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = A154AABEA554419A9679BB16 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */; };
+		D96D6AB293EA4ED897CDD01D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.cpp */ = {isa = PBXBuildFile; fileRef = 7C1605579E2F4BE1B49CC379 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		1D05292E6F0A43708245C493 /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+		57ECD388F97647B28C7AF7C4 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		60B3E3247F6746A8B83FC4B0 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		D6E3D850746A42C4A4789470 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		3CE88EE241884FDBB919C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4152CA946F4B6B825379EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0F5BC604A6040E793DB446A;
+			remoteInfo = ZERO_CHECK;
+		};
+		59CA150BE9064D7BBE3AF4EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4152CA946F4B6B825379EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A4921ABB5D6D45989E8E3A6F;
+			remoteInfo = rtmidi;
+		};
+		C25828EBB3204F299E144294 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4152CA946F4B6B825379EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B97046D04E2940B58C155468;
+			remoteInfo = ALL_BUILD;
+		};
+		DF10891F267641CCA578B4E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4152CA946F4B6B825379EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0F5BC604A6040E793DB446A;
+			remoteInfo = ZERO_CHECK;
+		};
+		F567FBC35388427A96C334BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4152CA946F4B6B825379EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0F5BC604A6040E793DB446A;
+			remoteInfo = ZERO_CHECK;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2D17E38DDD10409EB28DB82D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = rtmidi_c.h; path = rtmidi_c.h; sourceTree = SOURCE_ROOT; };
+		430D9963EC6C41468C4296AC /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = RtMidi.h; path = RtMidi.h; sourceTree = SOURCE_ROOT; };
+		70DB5CDF5B6D4260AC742222 /* rtmidi */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = librtmidi.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C1605579E2F4BE1B49CC379 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = RtMidi.cpp; path = RtMidi.cpp; sourceTree = SOURCE_ROOT; };
+		9AA3DB71475142C49C430E56 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		A154AABEA554419A9679BB16 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		B63545F50619402CAEF15258 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = rtmidi_c.cpp; path = rtmidi_c.cpp; sourceTree = SOURCE_ROOT; };
+		DA12663F92FC45EABA151DFA /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		03F7BF5807A64030B61A24E4 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		414F7425A87D4FE29C014915 /* rtmidi */ = {
+			isa = PBXGroup;
+			children = (
+				4CFCD617D0A54D9595A97E61 /* Source Files */,
+				F7B7DDC847D8490A87E19D4B /* Header Files */,
+				A154AABEA554419A9679BB16 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */,
+			);
+			name = rtmidi;
+			sourceTree = "<group>";
+		};
+		4CFCD617D0A54D9595A97E61 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				7C1605579E2F4BE1B49CC379 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.cpp */,
+				B63545F50619402CAEF15258 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.cpp */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		6EA94F55260348BAACBBD10A = {
+			isa = PBXGroup;
+			children = (
+				D2DBA41A17D4490FB57FAD37 /* RTMIDI_UNINSTALL */,
+				414F7425A87D4FE29C014915 /* rtmidi */,
+				DE1133D8B18F464293E2A626 /* ALL_BUILD */,
+				8F8FA42D73064BC080FFE38F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8F8FA42D73064BC080FFE38F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				70DB5CDF5B6D4260AC742222 /* rtmidi */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B01E7B62255E47E49A0EC5AC /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		D2DBA41A17D4490FB57FAD37 /* RTMIDI_UNINSTALL */ = {
+			isa = PBXGroup;
+			children = (
+				B01E7B62255E47E49A0EC5AC /* CMake Rules */,
+				DA12663F92FC45EABA151DFA /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */,
+			);
+			name = RTMIDI_UNINSTALL;
+			sourceTree = "<group>";
+		};
+		DE1133D8B18F464293E2A626 /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				03F7BF5807A64030B61A24E4 /* CMake Rules */,
+				9AA3DB71475142C49C430E56 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		F7B7DDC847D8490A87E19D4B /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				430D9963EC6C41468C4296AC /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.h */,
+				2D17E38DDD10409EB28DB82D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.h */,
+			);
+			name = "Header Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A4921ABB5D6D45989E8E3A6F /* rtmidi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7A23F261283F4B458BE3AA59 /* Build configuration list for PBXNativeTarget "rtmidi" */;
+			buildPhases = (
+				296934AF46FF4C8FBD325837 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6B9D785E59E14D4E85E741A3 /* PBXTargetDependency */,
+			);
+			name = rtmidi;
+			productName = rtmidi;
+			productReference = 70DB5CDF5B6D4260AC742222 /* rtmidi */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0A4152CA946F4B6B825379EA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1130;
+			};
+			buildConfigurationList = EE8427AA99264007B84B9A41 /* Build configuration list for PBXProject "RtMidi" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				60B3E3247F6746A8B83FC4B0 /* Debug */,
+				57ECD388F97647B28C7AF7C4 /* Release */,
+				D6E3D850746A42C4A4789470 /* MinSizeRel */,
+				1D05292E6F0A43708245C493 /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 6EA94F55260348BAACBBD10A;
+			projectDirPath = ../../../../../external/allolib/external/rtmidi;
+			projectRoot = "";
+			targets = (
+				B97046D04E2940B58C155468 /* ALL_BUILD */,
+				4D0A99B875334CD5B51112B6 /* RTMIDI_UNINSTALL */,
+				A0F5BC604A6040E793DB446A /* ZERO_CHECK */,
+				E8E2ACE1B91E4FACBF979CB0 /* install */,
+				A4921ABB5D6D45989E8E3A6F /* rtmidi */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		125927A836A746EA863424D7 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		1BFF13F28B4D40A686A618EF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		2BB9588583FB43F4A06D9FBC /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/CMakeScripts/RTMIDI_UNINSTALL_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		81E2F12C142940EDABB1075D /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/CMakeScripts/install_postBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		8215868ECFCF451A9077C0A8 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		CBE4820145A5421D87BAE6BF /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		CFAD1ED3DEF948D7BD8D232E = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		FC9403FA50364D3792447B7F /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		296934AF46FF4C8FBD325837 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D96D6AB293EA4ED897CDD01D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/RtMidi.cpp */,
+				BE1AEDE6EBAF4C9BB2C07274 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi/rtmidi_c.cpp */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3D5133829F8545BAB9C75CB8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B97046D04E2940B58C155468 /* ALL_BUILD */;
+			targetProxy = C25828EBB3204F299E144294 /* PBXContainerItemProxy */;
+		};
+		4E2B221B2C5F4093B6B4E8B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A4921ABB5D6D45989E8E3A6F /* rtmidi */;
+			targetProxy = 59CA150BE9064D7BBE3AF4EC /* PBXContainerItemProxy */;
+		};
+		6B9D785E59E14D4E85E741A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0F5BC604A6040E793DB446A /* ZERO_CHECK */;
+			targetProxy = 3CE88EE241884FDBB919C9A3 /* PBXContainerItemProxy */;
+		};
+		D983365C0BD64CEBA2C19B5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0F5BC604A6040E793DB446A /* ZERO_CHECK */;
+			targetProxy = DF10891F267641CCA578B4E4 /* PBXContainerItemProxy */;
+		};
+		F7394E6457C44C9CA0291E7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0F5BC604A6040E793DB446A /* ZERO_CHECK */;
+			targetProxy = F567FBC35388427A96C334BB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		046E16894588466D892EB8A0 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/build;
+			};
+			name = MinSizeRel;
+		};
+		142C11DE90DB4FCCBC0D1585 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = RTMIDI_UNINSTALL;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		1E355951C9524BC4B99C91E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		29468F76B8D14249ADFB14B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/build;
+			};
+			name = Debug;
+		};
+		3499090AD95840F5A08717F8 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		4CCCBC470137467AABC75FE3 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",__UNIX_JACK__,__MACOSX_CORE__,RTMIDI_EXPORT);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi,/usr/local/include);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "       -DNDEBUG  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = rtmidi;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		5073189492AF43049838520D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		56CEEB57952846E290B4403A /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		620A73D6F31045CE9936E32F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",__UNIX_JACK__,__MACOSX_CORE__,RTMIDI_EXPORT);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi,/usr/local/include);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = rtmidi;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		62C82C54921C4685AAACD38F /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/build;
+			};
+			name = RelWithDebInfo;
+		};
+		68156CB160F046668CF33494 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		736E4CFE33A14F4FBD98E07A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",__UNIX_JACK__,__MACOSX_CORE__,RTMIDI_EXPORT);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi,/usr/local/include);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = rtmidi;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		7A74D99D0B96416580112B0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		872D9AFC72FA4D02B406A49B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		8A4D6681C26B49BFB97EE862 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		9478FAF1CE5B40B2B9E01196 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = RTMIDI_UNINSTALL;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		99AD086ACF9A441286AEF69B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		A6365AFBF62A4845A2F14CB0 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",__UNIX_JACK__,__MACOSX_CORE__,RTMIDI_EXPORT);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/rtmidi,/usr/local/include);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CPLUSPLUSFLAGS = "    -DNDEBUG  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = rtmidi;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		A9B843061FA74631BE10F08C /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		BCFE7DA087CE41F5A6206129 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = RTMIDI_UNINSTALL;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		BDD28D5823CA411485840321 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		D43D33CCED6A412EADF5DB92 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		D7332D9B2F6648CA8674EBA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = RTMIDI_UNINSTALL;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		E99D634A8A5D4EE995651201 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/rtmidi/build;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		269C86EB037B45DD96F4C10A /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E355951C9524BC4B99C91E1 /* Debug */,
+				8A4D6681C26B49BFB97EE862 /* Release */,
+				D43D33CCED6A412EADF5DB92 /* MinSizeRel */,
+				68156CB160F046668CF33494 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		48876DD93C4641B3BA146ED1 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				872D9AFC72FA4D02B406A49B /* Debug */,
+				99AD086ACF9A441286AEF69B /* Release */,
+				A9B843061FA74631BE10F08C /* MinSizeRel */,
+				56CEEB57952846E290B4403A /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5AD0AB98E13D4518870560D5 /* Build configuration list for PBXAggregateTarget "install" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7A74D99D0B96416580112B0B /* Debug */,
+				5073189492AF43049838520D /* Release */,
+				BDD28D5823CA411485840321 /* MinSizeRel */,
+				3499090AD95840F5A08717F8 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7A23F261283F4B458BE3AA59 /* Build configuration list for PBXNativeTarget "rtmidi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				736E4CFE33A14F4FBD98E07A /* Debug */,
+				620A73D6F31045CE9936E32F /* Release */,
+				A6365AFBF62A4845A2F14CB0 /* MinSizeRel */,
+				4CCCBC470137467AABC75FE3 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EE8427AA99264007B84B9A41 /* Build configuration list for PBXProject "RtMidi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29468F76B8D14249ADFB14B7 /* Debug */,
+				E99D634A8A5D4EE995651201 /* Release */,
+				046E16894588466D892EB8A0 /* MinSizeRel */,
+				62C82C54921C4685AAACD38F /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F4DA656F087D46678B5947C2 /* Build configuration list for PBXAggregateTarget "RTMIDI_UNINSTALL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7332D9B2F6648CA8674EBA6 /* Debug */,
+				9478FAF1CE5B40B2B9E01196 /* Release */,
+				142C11DE90DB4FCCBC0D1585 /* MinSizeRel */,
+				BCFE7DA087CE41F5A6206129 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0A4152CA946F4B6B825379EA /* Project object */;
+}

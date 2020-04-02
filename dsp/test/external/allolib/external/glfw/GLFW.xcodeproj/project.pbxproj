@@ -1,0 +1,873 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		A0F5BC604A6040E793DB446A /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 124EB88EA0D64380AF1F9BA4 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				723A7D71815A4BCE83816237 /* CMake Rules */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		B97046D04E2940B58C155468 /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = E49ACCB94C9C4155B33CD8D1 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				9EA0D66E8AB847AD83C2F0C9 /* CMake Rules */,
+			);
+			dependencies = (
+				169F78B2285B45C3940C0985 /* PBXTargetDependency */,
+				D879392E870E4BFE99C45F84 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+		E8E2ACE1B91E4FACBF979CB0 /* install */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D9E5D5EFE34641D898C268BA /* Build configuration list for PBXAggregateTarget "install" */;
+			buildPhases = (
+				FB063B919558457DA049413F /* CMake PostBuild Rules */,
+			);
+			dependencies = (
+				D1E4C30C2B58447DA876AE21 /* PBXTargetDependency */,
+			);
+			name = install;
+			productName = install;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		02075E1D6E3843B5B2842451 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.h */ = {isa = PBXBuildFile; fileRef = C04230A86C3E4BB19C46211E /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.h */; };
+		03C80261B76A47D5B383574C /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_monitor.m */ = {isa = PBXBuildFile; fileRef = 25925667CCD84878ACC04CA4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_monitor.m */; };
+		04BDB0BC43814CF296645FC8 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_window.m */ = {isa = PBXBuildFile; fileRef = 47966BF8D12F42D2B18B8A11 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_window.m */; };
+		0EFC0D42913B49639541241D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.h */ = {isa = PBXBuildFile; fileRef = 91643B1796B94310B373FE28 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.h */; };
+		19999C27D1DC43F8A16BB114 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/mappings.h */ = {isa = PBXBuildFile; fileRef = 1F16013D665547E0A046A14B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/mappings.h */; };
+		1E3FF64D09E04FBE917C2687 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.m */ = {isa = PBXBuildFile; fileRef = 6ED58F4C637F4730B1108223 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.m */; };
+		1EF856A133BE49C4807C3213 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/monitor.c */ = {isa = PBXBuildFile; fileRef = BC13FB999F7142FF88F3CD6A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/monitor.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		1F4D00E0781746EB98C86439 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_init.m */ = {isa = PBXBuildFile; fileRef = 1A33D069F8074CA8A2F4CC69 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_init.m */; };
+		3554F2A08F194B43AE95FF25 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_time.c */ = {isa = PBXBuildFile; fileRef = B0D830A51A41469881786440 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_time.c */; };
+		45DD14F910D24049BB47EEE8 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src/glfw_config.h */ = {isa = PBXBuildFile; fileRef = E812451984E441D5812CAEF7 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src/glfw_config.h */; };
+		4DCA4A83D2ED4641AB9983F9 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3native.h */ = {isa = PBXBuildFile; fileRef = 893CF53ED51342C9A57C1854 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3native.h */; };
+		4DFFDE331FEA4FE8B8E1F3F4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.m */ = {isa = PBXBuildFile; fileRef = CA4F85E414C4499688D55737 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.m */; };
+		51D066D510744CC4AB974683 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_platform.h */ = {isa = PBXBuildFile; fileRef = 7875BC838BB04048B0F1A0C4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_platform.h */; };
+		72A2AE7E86A24A3E8F0D454E /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.c */ = {isa = PBXBuildFile; fileRef = 16D2633F37D048C99E66142B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.c */; };
+		7FEB767C540A44F783E38C6A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/internal.h */ = {isa = PBXBuildFile; fileRef = 97BBAC59EB454139A1CE2E0A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/internal.h */; };
+		9AC8F415D63147CBBE990563 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.h */ = {isa = PBXBuildFile; fileRef = 851AD40F293142C1A144CB1C /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.h */; };
+		A2649041931142FDB5ADF9EF /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/context.c */ = {isa = PBXBuildFile; fileRef = 3AFA7A3F2A5E4B4DA50CF988 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/context.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		AAA50AF0F42A4B229355F54C /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 9199BB9E4CC7475EB630449B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/CMakeLists.txt */; };
+		C10919F8EB4E494D95D5DD96 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/vulkan.c */ = {isa = PBXBuildFile; fileRef = 0807DBD7C752429B8F146D1D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/vulkan.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		C64359D5AE324199A5999887 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/input.c */ = {isa = PBXBuildFile; fileRef = 666896F4322A4224A5B7C1A3 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/input.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		E654D899E9FE4CADAD7E0B32 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.h */ = {isa = PBXBuildFile; fileRef = 4682ADC79D1B431EA97C7576 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.h */; };
+		E7A5129DDC014C64BAB45E0D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.c */ = {isa = PBXBuildFile; fileRef = F320F6FF48C44F36A49497F1 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.c */; };
+		EDD0AAA58A3B48CD8777E5BC /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.h */ = {isa = PBXBuildFile; fileRef = C2F701F0AF4F446F8E5549C2 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.h */; };
+		EE543BF04D0648C0A2C47F1F /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/init.c */ = {isa = PBXBuildFile; fileRef = 623083B3293A485D8A8FD6FA /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/init.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+		F3BD78FFBD434EA0B213F75D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.c */ = {isa = PBXBuildFile; fileRef = 26E01CE9CEA9472891FB5897 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.c */; };
+		F6F2D28495234118B941A2CF /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3.h */ = {isa = PBXBuildFile; fileRef = 6ACAC31D4C9C400793BD4FD2 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3.h */; };
+		FEA03787A71A421EAA29DFED /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/window.c */ = {isa = PBXBuildFile; fileRef = DE6A7F77D12441CC8AB88484 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/window.c */; settings = {COMPILER_FLAGS = "-Wdeclaration-after-statement"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		04609ADD39934B988A6C7EAD /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		74CEF49DC33D4CC0AAB04F37 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		A50D9A035DA941C3BD85F4D8 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		A7B206DE398E45D4BF891918 /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		52C8DC1CE95E49CE82BE4AEA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 865085D537AE4E3AB595E891 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B97046D04E2940B58C155468;
+			remoteInfo = ALL_BUILD;
+		};
+		5679B7930C5647BBA5930CAC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 865085D537AE4E3AB595E891 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F452D1857C78482B9BCC1880;
+			remoteInfo = glfw;
+		};
+		DC0DDBE694BF473EB6FAA4E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 865085D537AE4E3AB595E891 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0F5BC604A6040E793DB446A;
+			remoteInfo = ZERO_CHECK;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0807DBD7C752429B8F146D1D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/vulkan.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = vulkan.c; path = src/vulkan.c; sourceTree = SOURCE_ROOT; };
+		16D2633F37D048C99E66142B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = egl_context.c; path = src/egl_context.c; sourceTree = SOURCE_ROOT; };
+		1A33D069F8074CA8A2F4CC69 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_init.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_init.m; path = src/cocoa_init.m; sourceTree = SOURCE_ROOT; };
+		1F16013D665547E0A046A14B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/mappings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = mappings.h; path = src/mappings.h; sourceTree = SOURCE_ROOT; };
+		25925667CCD84878ACC04CA4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_monitor.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_monitor.m; path = src/cocoa_monitor.m; sourceTree = SOURCE_ROOT; };
+		26E01CE9CEA9472891FB5897 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = posix_thread.c; path = src/posix_thread.c; sourceTree = SOURCE_ROOT; };
+		3AFA7A3F2A5E4B4DA50CF988 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = context.c; path = src/context.c; sourceTree = SOURCE_ROOT; };
+		4682ADC79D1B431EA97C7576 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = egl_context.h; path = src/egl_context.h; sourceTree = SOURCE_ROOT; };
+		47966BF8D12F42D2B18B8A11 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_window.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_window.m; path = src/cocoa_window.m; sourceTree = SOURCE_ROOT; };
+		623083B3293A485D8A8FD6FA /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/init.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = init.c; path = src/init.c; sourceTree = SOURCE_ROOT; };
+		666896F4322A4224A5B7C1A3 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/input.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = input.c; path = src/input.c; sourceTree = SOURCE_ROOT; };
+		6ACAC31D4C9C400793BD4FD2 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3.h; path = include/GLFW/glfw3.h; sourceTree = SOURCE_ROOT; };
+		6ED58F4C637F4730B1108223 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_joystick.m; path = src/cocoa_joystick.m; sourceTree = SOURCE_ROOT; };
+		76BBA4DA7E704277ADE2C021 /* glfw */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libglfw3.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7875BC838BB04048B0F1A0C4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_platform.h; path = src/cocoa_platform.h; sourceTree = SOURCE_ROOT; };
+		851AD40F293142C1A144CB1C /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = nsgl_context.h; path = src/nsgl_context.h; sourceTree = SOURCE_ROOT; };
+		893CF53ED51342C9A57C1854 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3native.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3native.h; path = include/GLFW/glfw3native.h; sourceTree = SOURCE_ROOT; };
+		91643B1796B94310B373FE28 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = osmesa_context.h; path = src/osmesa_context.h; sourceTree = SOURCE_ROOT; };
+		9199BB9E4CC7475EB630449B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		944054208B484E43B9E0634D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		97BBAC59EB454139A1CE2E0A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = internal.h; path = src/internal.h; sourceTree = SOURCE_ROOT; };
+		B0D830A51A41469881786440 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_time.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = cocoa_time.c; path = src/cocoa_time.c; sourceTree = SOURCE_ROOT; };
+		BC13FB999F7142FF88F3CD6A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/monitor.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = monitor.c; path = src/monitor.c; sourceTree = SOURCE_ROOT; };
+		C04230A86C3E4BB19C46211E /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = posix_thread.h; path = src/posix_thread.h; sourceTree = SOURCE_ROOT; };
+		C2F701F0AF4F446F8E5549C2 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_joystick.h; path = src/cocoa_joystick.h; sourceTree = SOURCE_ROOT; };
+		CA4F85E414C4499688D55737 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = nsgl_context.m; path = src/nsgl_context.m; sourceTree = SOURCE_ROOT; };
+		DE6A7F77D12441CC8AB88484 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/window.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = window.c; path = src/window.c; sourceTree = SOURCE_ROOT; };
+		E812451984E441D5812CAEF7 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src/glfw_config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw_config.h; path = ../../../../test/external/allolib/external/glfw/src/glfw_config.h; sourceTree = SOURCE_ROOT; };
+		F320F6FF48C44F36A49497F1 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = osmesa_context.c; path = src/osmesa_context.c; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		03D13075DE0041389ECF0541 /* GLFW3 */ = {
+			isa = PBXGroup;
+			children = (
+				635218E270544031A07FD630 /* glfw */,
+			);
+			name = GLFW3;
+			sourceTree = "<group>";
+		};
+		11AC4F9D8B704F488E161958 /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				C34CC66DD8B5444C887ED110 /* CMake Rules */,
+				944054208B484E43B9E0634D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		2C28D22D697F4D309DB49B19 = {
+			isa = PBXGroup;
+			children = (
+				11AC4F9D8B704F488E161958 /* ALL_BUILD */,
+				03D13075DE0041389ECF0541 /* GLFW3 */,
+				54AF8C11D0DC4F1C8CC80D58 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		54AF8C11D0DC4F1C8CC80D58 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				76BBA4DA7E704277ADE2C021 /* glfw */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		635218E270544031A07FD630 /* glfw */ = {
+			isa = PBXGroup;
+			children = (
+				EED0C91544FC45F2B6B2E1DA /* Source Files */,
+				EEDE28326D634FA4A0DBA386 /* Header Files */,
+				9199BB9E4CC7475EB630449B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/CMakeLists.txt */,
+			);
+			name = glfw;
+			sourceTree = "<group>";
+		};
+		C34CC66DD8B5444C887ED110 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		EED0C91544FC45F2B6B2E1DA /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				1A33D069F8074CA8A2F4CC69 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_init.m */,
+				6ED58F4C637F4730B1108223 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.m */,
+				25925667CCD84878ACC04CA4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_monitor.m */,
+				B0D830A51A41469881786440 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_time.c */,
+				47966BF8D12F42D2B18B8A11 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_window.m */,
+				3AFA7A3F2A5E4B4DA50CF988 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/context.c */,
+				16D2633F37D048C99E66142B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.c */,
+				623083B3293A485D8A8FD6FA /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/init.c */,
+				666896F4322A4224A5B7C1A3 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/input.c */,
+				BC13FB999F7142FF88F3CD6A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/monitor.c */,
+				CA4F85E414C4499688D55737 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.m */,
+				F320F6FF48C44F36A49497F1 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.c */,
+				26E01CE9CEA9472891FB5897 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.c */,
+				0807DBD7C752429B8F146D1D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/vulkan.c */,
+				DE6A7F77D12441CC8AB88484 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/window.c */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		EEDE28326D634FA4A0DBA386 /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				6ACAC31D4C9C400793BD4FD2 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3.h */,
+				893CF53ED51342C9A57C1854 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include/GLFW/glfw3native.h */,
+				C2F701F0AF4F446F8E5549C2 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.h */,
+				7875BC838BB04048B0F1A0C4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_platform.h */,
+				4682ADC79D1B431EA97C7576 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.h */,
+				97BBAC59EB454139A1CE2E0A /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/internal.h */,
+				1F16013D665547E0A046A14B /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/mappings.h */,
+				851AD40F293142C1A144CB1C /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.h */,
+				91643B1796B94310B373FE28 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.h */,
+				C04230A86C3E4BB19C46211E /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.h */,
+				E812451984E441D5812CAEF7 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src/glfw_config.h */,
+			);
+			name = "Header Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F452D1857C78482B9BCC1880 /* glfw */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6DBFE2F287214AA781473530 /* Build configuration list for PBXNativeTarget "glfw" */;
+			buildPhases = (
+				48F0639F86F14CD990AAC546 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = glfw;
+			productName = glfw;
+			productReference = 76BBA4DA7E704277ADE2C021 /* glfw */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		865085D537AE4E3AB595E891 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1130;
+			};
+			buildConfigurationList = E6C28A7DA64C4842B76DECFC /* Build configuration list for PBXProject "GLFW" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				04609ADD39934B988A6C7EAD /* Debug */,
+				A50D9A035DA941C3BD85F4D8 /* Release */,
+				74CEF49DC33D4CC0AAB04F37 /* MinSizeRel */,
+				A7B206DE398E45D4BF891918 /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 2C28D22D697F4D309DB49B19;
+			projectDirPath = ../../../../../external/allolib/external/glfw;
+			projectRoot = "";
+			targets = (
+				B97046D04E2940B58C155468 /* ALL_BUILD */,
+				A0F5BC604A6040E793DB446A /* ZERO_CHECK */,
+				F452D1857C78482B9BCC1880 /* glfw */,
+				E8E2ACE1B91E4FACBF979CB0 /* install */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0FB60E93DD3748C09A080D5F = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		723A7D71815A4BCE83816237 /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/CMakeScripts/ZERO_CHECK_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		9B811FBEA86548CEBA4421D8 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		9EA0D66E8AB847AD83C2F0C9 /* CMake Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+		D1FA36F47E6A4435B800AD34 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		FB063B919558457DA049413F /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw -f /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/CMakeScripts/install_postBuildPhase.make$CONFIGURATION OBJDIR=$(basename \"$OBJECT_FILE_DIR_normal\") all";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		48F0639F86F14CD990AAC546 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F4D00E0781746EB98C86439 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_init.m */,
+				1E3FF64D09E04FBE917C2687 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_joystick.m */,
+				03C80261B76A47D5B383574C /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_monitor.m */,
+				3554F2A08F194B43AE95FF25 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_time.c */,
+				04BDB0BC43814CF296645FC8 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/cocoa_window.m */,
+				A2649041931142FDB5ADF9EF /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/context.c */,
+				72A2AE7E86A24A3E8F0D454E /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/egl_context.c */,
+				EE543BF04D0648C0A2C47F1F /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/init.c */,
+				C64359D5AE324199A5999887 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/input.c */,
+				1EF856A133BE49C4807C3213 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/monitor.c */,
+				4DFFDE331FEA4FE8B8E1F3F4 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/nsgl_context.m */,
+				E7A5129DDC014C64BAB45E0D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/osmesa_context.c */,
+				F3BD78FFBD434EA0B213F75D /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/posix_thread.c */,
+				C10919F8EB4E494D95D5DD96 /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/vulkan.c */,
+				FEA03787A71A421EAA29DFED /* /Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src/window.c */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		169F78B2285B45C3940C0985 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F452D1857C78482B9BCC1880 /* glfw */;
+			targetProxy = 5679B7930C5647BBA5930CAC /* PBXContainerItemProxy */;
+		};
+		D1E4C30C2B58447DA876AE21 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B97046D04E2940B58C155468 /* ALL_BUILD */;
+			targetProxy = 52C8DC1CE95E49CE82BE4AEA /* PBXContainerItemProxy */;
+		};
+		D879392E870E4BFE99C45F84 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0F5BC604A6040E793DB446A /* ZERO_CHECK */;
+			targetProxy = DC0DDBE694BF473EB6FAA4E2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1330FDCE303B4F0CAF75F4AE /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/build;
+			};
+			name = MinSizeRel;
+		};
+		1F833A0553FD4B0ABA7240FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		2AEBB3F7C3FD44ECA16DA50C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		3A21CF8B334748BCA73CEC0D /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		408F3FF4476B4A68B66B0721 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include,/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src,/Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = "   -fPIC -Wall  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		4E5DAB03E6A84AE8A306C72C /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include,/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src,/Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = "       -DNDEBUG -fPIC -Wall  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		5D728183A4484FF3B576BC22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/build;
+			};
+			name = Release;
+		};
+		60DA17E72A4F4A5EB7F9E348 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Debug;
+		};
+		640EEE5479C6490FBE18E191 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/build;
+			};
+			name = Debug;
+		};
+		6A7A15D4BC6A4494921258D9 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include,/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src,/Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = "    -DNDEBUG -fPIC -Wall  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		72209897F26940C782E5A887 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		92C384BC1A5B4744B9E847C1 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk;
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/build;
+			};
+			name = RelWithDebInfo;
+		};
+		B8B1CB79D3214A758283AD0F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_USE_CONFIG_H);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/include,/Users/jkilgore/Projects/EmissionControlPort/dsp/external/allolib/external/glfw/src,/Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src);
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = "    -DNDEBUG -fPIC -Wall  ";
+				OTHER_LIBTOOLFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw/src;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		BB668F6808394F8289DD2370 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		C20B60AC8B944277A33F4DE9 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		D74BB68BF78348ABBDDFDF9D /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		D797A33B1AE64283AE167E8A /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		E6D05BDEAE2C43778E456BB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		F235762130B34E6F92613A69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+		F998F92BDC2A42018B6AD360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " ";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = /Users/jkilgore/Projects/EmissionControlPort/dsp/test/external/allolib/external/glfw;
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("-Wmost","-Wno-four-char-constants","-Wno-unknown-pragmas","$(inherited)");
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		124EB88EA0D64380AF1F9BA4 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2AEBB3F7C3FD44ECA16DA50C /* Debug */,
+				F235762130B34E6F92613A69 /* Release */,
+				3A21CF8B334748BCA73CEC0D /* MinSizeRel */,
+				D74BB68BF78348ABBDDFDF9D /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6DBFE2F287214AA781473530 /* Build configuration list for PBXNativeTarget "glfw" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				408F3FF4476B4A68B66B0721 /* Debug */,
+				B8B1CB79D3214A758283AD0F /* Release */,
+				6A7A15D4BC6A4494921258D9 /* MinSizeRel */,
+				4E5DAB03E6A84AE8A306C72C /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D9E5D5EFE34641D898C268BA /* Build configuration list for PBXAggregateTarget "install" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60DA17E72A4F4A5EB7F9E348 /* Debug */,
+				F998F92BDC2A42018B6AD360 /* Release */,
+				D797A33B1AE64283AE167E8A /* MinSizeRel */,
+				BB668F6808394F8289DD2370 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E49ACCB94C9C4155B33CD8D1 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F833A0553FD4B0ABA7240FA /* Debug */,
+				E6D05BDEAE2C43778E456BB1 /* Release */,
+				72209897F26940C782E5A887 /* MinSizeRel */,
+				C20B60AC8B944277A33F4DE9 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E6C28A7DA64C4842B76DECFC /* Build configuration list for PBXProject "GLFW" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				640EEE5479C6490FBE18E191 /* Debug */,
+				5D728183A4484FF3B576BC22 /* Release */,
+				1330FDCE303B4F0CAF75F4AE /* MinSizeRel */,
+				92C384BC1A5B4744B9E847C1 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 865085D537AE4E3AB595E891 /* Project object */;
+}
