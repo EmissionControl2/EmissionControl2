@@ -265,11 +265,8 @@ void ecSynth::loadSoundFile(std::string fileName) {
   }
 }
 
-std::string ecSynth::loadInitSoundFiles() {
-  std::string execPath = util::getExecutablePath();
-  File f(execPath);
-  std::string initDir = f.directory(execPath) + "samples/";
-  FileList initAudioFiles = fileListFromDir(initDir);
+std::string ecSynth::loadInitSoundFiles(std::string directory) {
+  FileList initAudioFiles = fileListFromDir(directory);
   initAudioFiles.sort(util::compareFileNoCase);
   for (auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
     if (i->file().substr(i->file().length() - 4) == ".wav" ||
@@ -279,7 +276,7 @@ std::string ecSynth::loadInitSoundFiles() {
       loadSoundFile(i->filepath());
     }
   }
-  return initDir;
+  return directory;
 }
 
 void ecSynth::clearSoundFiles() {

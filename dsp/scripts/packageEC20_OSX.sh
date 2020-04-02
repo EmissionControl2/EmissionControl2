@@ -5,17 +5,18 @@ if [ $result == "scripts" ]; then
   cd ..
 fi
 
-if [ -d "../packages/EmissionControl20_OSX" ]; then
-  rm -rf ../packages/EmissionControl20_OSX
+if [ -d "../deployment/EmissionControl20_OSX" ]; then
+  rm -rf ../deployment/EmissionControl20_OSX
 fi
 
 chmod 644 bin/libraries/libsndfile/*
-cp -r bin ../packages
-mv ../packages/bin ../packages/EmissionControl20_OSX
-cd ../packages/EmissionControl20_OSX
+cp -r bin ../deployment
+mv ../deployment/bin ../deployment/EmissionControl20_OSX
+cd ../deployment/EmissionControl20_OSX
 mkdir -p EmissionControl20.app/Contents/MacOS
-mv emissionControl EmissionControl20.app/Contents/MacOS/emissionControl
-chmod +x EmissionControl20.app/Contents/MacOS/emissionControl
-# mv libraries EmissionControl20.app/Contents/Resources
+mkdir EmissionControl20.app/Contents/Resources
+mv runPackage_OSX.sh EmissionControl20.app/Contents/MacOS/
+mv * EmissionControl20.app/Contents/Resources
+chmod +x EmissionControl20.app/Contents/MacOS/runPackage_OSX.sh
 chmod 444 ../../dsp/bin/libraries/libsndfile/*
-chmod 444 libraries/libsndfile/*
+# chmod 444 libraries/libsndfile/*
