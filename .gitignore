@@ -1,6 +1,6 @@
 ec_2019/
 bin/
-packages/
+deployment/*
 build/
 .DS_STORE
 imgui.ini
