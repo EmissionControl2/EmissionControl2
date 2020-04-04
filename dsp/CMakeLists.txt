@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 # name of application. replace 'app' with desired app name
-set(APP_NAME emissionControl)
+set(APP_NAME EmissionControl20)
 project(${APP_NAME} VERSION 0.5
                     DESCRIPTION "Granular Scheduler for Arbitrary Sound Files"
                     LANGUAGES CXX)
