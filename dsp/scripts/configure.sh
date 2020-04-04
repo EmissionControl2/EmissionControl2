@@ -5,7 +5,6 @@ result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
 fi
-chmod 644 bin/Resources/libsndfile/*
 (
   mkdir -p ./bin 
   cd ./bin 
@@ -38,7 +37,6 @@ chmod 644 bin/Resources/libsndfile/*
   if [ $(uname -s) == "Darwin" ]; then
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   fi
+  
 )
-chmod 444 bin/Resources/libsndfile/*
-
 
