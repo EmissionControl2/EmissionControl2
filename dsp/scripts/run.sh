@@ -33,12 +33,12 @@ if [ ${result} == 0 ]; then
 
   if [ $(uname -s) == "Linux" ]; then
     cd bin
-    ./emissionControl20 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1
+    ./EmissionControl20 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1
   fi
 
   if [ $(uname -s) == "Darwin" ]; then
     cd bin
-    open emissionControl20.app
+    open EmissionControl20.app
   fi
 
 fi
