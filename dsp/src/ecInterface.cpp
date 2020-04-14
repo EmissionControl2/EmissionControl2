@@ -6,6 +6,7 @@
 
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
+#
 
 using namespace al;
 
@@ -19,15 +20,26 @@ void ecInterface::onInit() {
 
   execPath = util::getExecutablePath();
   File f(execPath);
+
+  
+  // Load in all files in at specified directory.
   // Set output directory for presets.
-  mPresets.setRootPath(f.directory(execPath) + "presets/");
   // Set output directory of recorded files.
-  soundOutput = f.directory(execPath) + "soundOutput/";
+  #ifdef __APPLE__
+    granulator.loadInitSoundFiles(f.directory(execPath)+ "../../../samples/");
+    soundOutput = f.directory(execPath) + "../../../soundOutput/";
+    mPresets.setRootPath(f.directory(execPath) + "../../../presets/");
+  #endif
+
+  #ifdef __linux__
+    granulator.loadInitSoundFiles(f.directory(execPath)+ "samples/");
+    soundOutput = f.directory(execPath) + "soundOutput/";
+    mPresets.setRootPath(f.directory(execPath) + "presets/");
+  #endif
 
   audioIO().append(mRecorder);
 
-  // Load in all files in {ExecutableLocation}/samples/
-  granulator.loadInitSoundFiles();
+
 }
 
 void ecInterface::onCreate() {
@@ -85,13 +97,21 @@ void ecInterface::onCreate() {
   mPresets << *granulator.LFOparameters[3]->shape
            << *granulator.LFOparameters[3]->duty;
 
-  ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (f.directory(execPath) + "libraries/Fonts/Roboto-Medium.ttf").c_str(),
-      14.0f);
-  // Scale font
-  ImGui::GetIO().FontGlobalScale = 1.2;
+  #ifdef __APPLE__
+    ImGui::GetIO().Fonts->AddFontFromFileTTF(
+        (f.directory(execPath) + "../Resources/Fonts/Roboto-Medium.ttf").c_str(),
+        14.0f);
+  #endif
 
-  setGUIColors();
+  #ifdef __linux__
+    ImGui::GetIO().Fonts->AddFontFromFileTTF(
+        (f.directory(execPath) + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
+        14.0f);
+  #endif
+
+    // Scale font
+    ImGui::GetIO().FontGlobalScale = 1.2;
+    setGUIColors();
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -226,7 +246,12 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
     // When the select file button is clicked, the file selector is shown
-    selector.start(f.directory(execPath) + "samples/");
+    #ifdef __APPLE__
+      selector.start(f.directory(execPath)+ "../../../samples");
+    #endif
+    #ifdef __linux__
+      selector.start(f.directory(execPath) + "samples/");
+    #endif
   }
   // The file selector knows internally whether it should be drawn or not,
   // so you should always draw it. Check the return value of the draw function
