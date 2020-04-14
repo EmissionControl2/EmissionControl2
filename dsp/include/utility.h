@@ -6,6 +6,7 @@
 #include "const.h"
 #include <cmath>
 #include <memory>
+#include <mutex>
 
 namespace util {
 
@@ -271,6 +272,64 @@ std::string getExecutablePath();
  * @brief a comparator function for sorting the filePaths (case insensitive).
  */
 bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
+
+
+class RingBuffer {
+public:
+
+  RingBuffer(std::size_t maxSize) : mMaxSize(maxSize) {
+    mBuffer.resize(mMaxSize);
+    mTail = -1;
+    mPrevSample = 0;
+  }  
+
+  std::size_t getMaxSize() const {return mMaxSize;}
+
+  void resize(std::size_t maxSize) {
+    mMaxSize = maxSize;
+    mBuffer.resize(mMaxSize);
+  }
+
+  void push_back(float value) {
+    mMutex.lock();
+    mTail = (mTail+1)%mMaxSize;
+    mBuffer[mTail] = value;
+    mMutex.unlock();
+  }
+
+  std::size_t getTail() const {return mTail;}
+
+  float at(size_t index) {
+    if ( index >= mMaxSize ) { 
+      std::cerr << "RingBuffer index out of range." << std::endl;
+      index = index % mMaxSize;
+    }
+    if(mMutex.try_lock()) {
+      mPrevSample =  mBuffer.at(index);
+      mMutex.unlock();
+      return mPrevSample;
+    }
+    return mPrevSample;
+  }
+
+  float operator[](size_t index) {
+    return this->at(index);
+  }
+
+  void print() const {
+    for(auto i = mBuffer.begin(); i != mBuffer.end(); ++i)
+      std::cout << *i << " ";
+    std::cout << "\n";
+  }
+
+private:
+  std::vector<float> mBuffer;
+  std::size_t mMaxSize;
+  int mTail;
+  float mPrevSample;
+  
+  std::mutex mMutex;
+};
 
 } // namespace util
 
