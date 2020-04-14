@@ -6,7 +6,7 @@ fi
 (
   # utilizing cmake's parallel build options
   # recommended: -j <number of processor cores + 1>
-  cmake --build ./build/release -j 5
+  cmake --build ./build/debug -j 5
   if [ $(uname -s) == "Linux" ]; then
     chmod 644 bin/Resources/libsndfile/* #allow permissions to wewrite load commands of exectuables
     #rewrite load commands for dynamic libraries
@@ -42,4 +42,3 @@ if [ ${result} == 0 ]; then
   fi
 
 fi
-
