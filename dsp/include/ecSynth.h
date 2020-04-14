@@ -17,6 +17,7 @@
 
 /**** CSTD LIB ****/
 #include <memory>
+#include <math.h> 
 
 class ecSynth : public al::SynthVoice {
 public:
