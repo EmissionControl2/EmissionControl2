@@ -1,13 +1,13 @@
 ec_2019/
 bin/
-packages/
+deployment/*
 build/
 .DS_STORE
 imgui.ini
 *.aiff
 *.wav
-!samples/*.aiff
-!samples/*.wav
+!externalResources/samples/*.aiff
+!externalResources/samples/*.wav
 *.o
 .vscode/
 sc/

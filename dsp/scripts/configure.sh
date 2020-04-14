@@ -10,8 +10,11 @@ fi
   cd ./bin 
   cp -r ../../externalResources/samples .
   mkdir -p soundOutput
-  cp -r ../external/libraries .
-  cp -r ../../externalResources/Fonts ./libraries
+  mkdir -p presets
+  if [ $(uname -s) == "Linux" ]; then
+    cp -r ../external/Resources .
+    cp -r ../../externalResources/Fonts ./Resources
+  fi
 	cd ..
 
   # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
@@ -34,5 +37,6 @@ fi
   if [ $(uname -s) == "Darwin" ]; then
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   fi
+  
 )
 
