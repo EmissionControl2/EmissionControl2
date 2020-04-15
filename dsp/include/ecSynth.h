@@ -23,10 +23,10 @@ class ecSynth : public al::SynthVoice {
    public:
     /**
      * Ringbuffers for oscilloscope
-     */
-    int oscBufferSize = consts::SAMPLE_RATE * 10;
-    util::RingBuffer oscBufferL{oscBufferSize};
-    util::RingBuffer oscBufferR{oscBufferSize};
+    //  */
+    // int oscBufferSize = consts::SAMPLE_RATE * 10;
+    // util::RingBuffer oscBufferL{oscBufferSize};
+    // util::RingBuffer oscBufferR{oscBufferSize};
 
     /**
      * The number of modulators in ecSynth.

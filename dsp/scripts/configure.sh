@@ -28,10 +28,10 @@ fi
 
   mkdir -p build
   cd build
-  mkdir -p debug
-  cd debug
+  mkdir -p release
+  cd release
   if [ $(uname -s) == "Linux" ]; then
-    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../..
+    cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../..
   fi
 
   if [ $(uname -s) == "Darwin" ]; then

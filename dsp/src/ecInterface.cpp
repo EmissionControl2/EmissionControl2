@@ -259,15 +259,15 @@ void ecInterface::onDraw(Graphics &g) {
     // ImGui::SameLine();
     // ImGui::SetCursorPosY(5);
     // ImGui::Text("-20");
-    int tail = granulator.oscBufferL.getTail();
-    int start = tail - oscSize;
-    if (start < 0) start = granulator.oscBufferL.getMaxSize() + start;
+    // int tail = granulator.oscBufferL.getTail();
+    // int start = tail - oscSize;
+    // if (start < 0) start = granulator.oscBufferL.getMaxSize() + start;
     // float tempOscBufferL[oscSize];
     // for (int i = tail - oscSize; i < tail; i++)
     //     tempOscBufferL[i] = granulator.oscBufferL[i]
 
     // MIGHT NEED TO JUST DRAW THE DAMN THING MYSELF
-    std::cout << start << std::endl;
+    // std::cout << start << std::endl;
 
     // ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 1.0f);
     // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
