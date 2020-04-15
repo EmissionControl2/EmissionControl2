@@ -55,7 +55,7 @@ class ecInterface : public al::App {
     int framecounter = 0;
     std::vector<float> streamHistory = std::vector<float>(100, 0);
     int streamHistoryIndex = 0;
-    int oscSize = 48000;
+    // int oscSize = 48000;
 
     void drawAudioIO(al::AudioIO *io);
 
