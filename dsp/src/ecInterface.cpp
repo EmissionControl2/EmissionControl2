@@ -275,14 +275,12 @@ void ecInterface::onDraw(Graphics &g) {
     ParameterGUI::beginPanel("Scope", windowWidth / 4, windowHeight * 3 / 4 + 25, windowWidth / 2,
                              windowHeight / 4, flags);
     ImGui::Text("Number of Active Grains: %.1i ", granulator.getActiveVoices());
-    ImGui::SameLine();
     if (framecounter % 10 == 0) {
         streamHistory.erase(streamHistory.begin());
         streamHistory.push_back(granulator.getActiveVoices());
     }
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.8f);
-    ImGui::SetCursorPosY(5);
     ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
                          20, ImVec2(0, 80), sizeof(int));
 
