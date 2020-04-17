@@ -53,8 +53,7 @@ class ecInterface : public al::App {
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
                              ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
     int framecounter = 0;
-    std::vector<float> streamHistory = std::vector<float>(100, 0);
-    int streamHistoryIndex = 0;
+    std::vector<float> streamHistory = std::vector<float>(120, 0);
     // int oscSize = 48000;
 
     void drawAudioIO(al::AudioIO *io);
@@ -64,6 +63,8 @@ class ecInterface : public al::App {
     void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
 
     void setGUIColors();
+
+    void setPlotConfig();
 };
 
 /**

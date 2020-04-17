@@ -39,57 +39,57 @@ class ecSynth : public al::SynthVoice {
     /**
      * PUBLIC PARAMETERS OF SYNTH
      */
-    ecParameter grainRate{"Grain_Rate", "", 1, "", 0.1, 100, 0, 500, consts::SINE, 0};
+    ecParameter grainRate{"1. Grain rate", "", 1, "", 0.1, 100, 0, 500, consts::SINE, 0};
     al::ParameterMenu grainRateLFO{"##grainRateLFO"};
     ecParameter modGrainRateDepth{"modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter asynchronicity{"Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1, consts::SINE};
+    ecParameter asynchronicity{"2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1, consts::SINE};
     al::ParameterMenu asyncLFO{"##asyncLFO"};
     ecParameter modAsynchronicityDepth{"modAsynchronicityDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter intermittency{"Intermittency", "", 0, "", 0, 1, 0, 1};
+    ecParameter intermittency{"3. Intermittancy", "", 0, "", 0, 1, 0, 1};
     al::ParameterMenu intermittencyLFO{"##intermittencyLFO"};
     ecParameter modIntermittencyDepth{"modIntermittencyDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameterInt streams{"Streams", "", 1, "", 1, 12, 1, 20};
+    ecParameterInt streams{"4. Streams", "", 1, "", 1, 12, 1, 20};
     al::ParameterMenu streamsLFO{"##streamsLFO"};
     ecParameter modStreamsDepth{"modStreamsDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter grainDurationMs{"Grain_Dur_Ms", "", 30, "", 0.01, 1000, 0.0000001, 10000};
+    ecParameter grainDurationMs{"5. Grain Dur (ms)", "", 30, "", 0.01, 1000, 0.0000001, 10000};
     al::ParameterMenu grainDurationLFO{"##grainDurationLFO"};
     ecParameter modGrainDurationDepth{"modGrainDurationDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter envelope{"Envelope", "", 0.5, "", 0, 1, 0, 1};
+    ecParameter envelope{"6. Envelope shape", "", 0.5, "", 0, 1, 0, 1};
     al::ParameterMenu envelopeLFO{"##envelopeLFO"};
     ecParameter modEnvelopeDepth{"modEnvelopeDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter tapeHead{"Tape_Head", "", 0.5, "", 0, 1, 0, 1};
-    al::ParameterMenu tapeHeadLFO{"##tapeHeadLFO"};
-    ecParameter modTapeHeadDepth{"modTapeHeadDepth", "", 0, "", 0, 1, 0, 1};
-
-    ecParameter transposition{"Transposition", "", 1, "", -2, 2, -20, 20};
+    ecParameter transposition{"7. Pitch shift", "", 1, "", -2, 2, -20, 20};
     al::ParameterMenu transpositionLFO{"##transpositionLFO"};
     ecParameter modTranspositionDepth{"modTranspositionDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter filter{"Filter", "", 440, "", 60, 5000, 20, 24000};
+    ecParameter filter{"8. Filter freq", "", 440, "", 60, 5000, 20, 24000};
     al::ParameterMenu filterLFO{"##filterLFO"};
     ecParameter modFilterDepth{"modFilterDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter resonance{"Resonance", "", 0, "", 0, 1, 0, 1};
+    ecParameter resonance{"9. Resonance", "", 0, "", 0, 1, 0, 1};
     al::ParameterMenu resonanceLFO{"##resonanceLFO"};
     ecParameter modResonanceDepth{"modResonanceDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter volumeDB{"Volume_DB", "", -6, "", -60, 6, -180, 24};
-    al::ParameterMenu volumeLFO{"##volumeLFO"};
-    ecParameter modVolumeDepth{"modVolumeDepth", "", 0, "", 0, 1, 0, 1};
+    ecParameterInt soundFile{"10. Sound file", "", 1, "", 1, mClipNum, 1, mClipNum};
+    al::ParameterMenu soundFileLFO{"##soundFileLFO"};
+    ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter pan{"Pan", "", 0, "", -1, 1, -1, 1};
+    ecParameter tapeHead{"11. Playback point", "", 0.5, "", 0, 1, 0, 1};
+    al::ParameterMenu tapeHeadLFO{"##tapeHeadLFO"};
+    ecParameter modTapeHeadDepth{"modTapeHeadDepth", "", 0, "", 0, 1, 0, 1};
+
+    ecParameter pan{"12. Pan", "", 0, "", -1, 1, -1, 1};
     al::ParameterMenu panLFO{"##panLFO"};
     ecParameter modPanDepth{"modPanDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameterInt soundFile{"Sound_File", "", 1, "", 1, mClipNum, 1, mClipNum};
-    al::ParameterMenu soundFileLFO{"##soundFileLFO"};
-    ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
+    ecParameter volumeDB{"13. Amplitude (dB)", "", -6, "", -60, 6, -180, 24};
+    al::ParameterMenu volumeLFO{"##volumeLFO"};
+    ecParameter modVolumeDepth{"modVolumeDepth", "", 0, "", 0, 1, 0, 1};
 
     ecSynth() {}
 
