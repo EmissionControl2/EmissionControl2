@@ -10,6 +10,14 @@ add_subdirectory(external/allolib)
 add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
+if(APPLE)
+  find_library(AppKit Appkit)
+endif()
+
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE) 
+endif()
+
 set(includes
   include/emissionControl.h
   include/ecInterface.h
@@ -55,20 +63,14 @@ foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endforeach()
 
-
-# if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-# file(GLOB LIBRARIES "${CMAKE_SOURCE_DIR}/bin/libraries/libsndfile/*.dylib")
-# message("LIBRARIES = ${LIBRARIES}")
-# endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 add_executable(${APP_NAME} MACOSX_BUNDLE
   src/main.cpp
   ${RESOURCE_FILES}
 )
 
-
-
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
+target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/nativefiledialog/src/include)
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 target_link_directories(${APP_NAME} PUBLIC /usr/local/lib)
@@ -93,7 +95,12 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a )
+target_link_libraries(ecLib PUBLIC 
+  al 
+  "${AL_EXT_LIBRARIES}" 
+  ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a 
+  # ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/Debug/x64/libnfd_d.a WIP WIP
+) 
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
 
