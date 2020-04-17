@@ -10,6 +10,6 @@
 [submodule "al_ext"]
 	path = al_ext
 	url = https://github.com/AlloSphere-Research-Group/al_ext
-[submodule "dsp/dsp/external/nativefiledialog"]
-	path = dsp/dsp/external/nativefiledialog
+[submodule "dsp/external/nativefiledialog"]
+	path = dsp/external/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog
