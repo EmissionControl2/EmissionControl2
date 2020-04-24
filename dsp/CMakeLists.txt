@@ -121,6 +121,16 @@ set_target_properties(${APP_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
 )
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(${APP_NAME} PROPERTIES
+  MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
+  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
+  )
+
+
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
 set(${CMAKE_CURRENT_LIST_DIR}bin/resources/libsndfile.dylib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/buildTest)
 

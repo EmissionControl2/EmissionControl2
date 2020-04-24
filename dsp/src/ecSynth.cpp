@@ -240,7 +240,7 @@ void ecSynth::onProcess(AudioIOData &io) {
       }
     }
   }
-
+  
   grainSynth.render(io);
 
   io.frame(0);
