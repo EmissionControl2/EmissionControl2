@@ -20,28 +20,28 @@ jobs:
       run: ./dsp/scripts/run.sh
       shell: bash
   
-  build-osx:
+#   build-osx:
 
-    runs-on: macos-latest
+#     runs-on: macos-latest
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: configure
-      run: ./dsp/scripts/configure.sh
-      shell: bash
-    - name: make
-      run: ./dsp/scripts/run.sh
-      shell: bash
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: configure
+#       run: ./dsp/scripts/configure.sh
+#       shell: bash
+#     - name: make
+#       run: ./dsp/scripts/run.sh
+#       shell: bash
       
-  build-windows:
+#   build-windows:
 
-    runs-on: windows-latest
+#     runs-on: windows-latest
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: configure
-      run: ./dsp/scripts/configure.sh
-      shell: bash
-    - name: make
-      run: ./dsp/scripts/run.sh
-      shell: bash
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: configure
+#       run: ./dsp/scripts/configure.sh
+#       shell: bash
+#     - name: make
+#       run: ./dsp/scripts/run.sh
+#       shell: bash
