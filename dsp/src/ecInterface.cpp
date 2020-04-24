@@ -29,8 +29,14 @@ void ecInterface::onInit() {
 #ifdef __APPLE__
   execDir = util::getAppPath(execDir);
   granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = execDir + "soundOutput/";
-  mPresets.setRootPath(execDir + "presets/");
+  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
+  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+#endif
+
+#ifdef _WIN32
+  granulator.loadInitSoundFiles(execDir + "samples/");
+  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
+  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
 #endif
 
 #ifdef __linux__
