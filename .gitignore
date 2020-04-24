@@ -2,7 +2,7 @@
 ec_2019/
 bin/
 deployment/OSX/*
-deployement/Linux/*
+deployment/Linux/*
 build/
 .DS_STORE
 imgui.ini
