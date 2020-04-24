@@ -52,8 +52,9 @@ float expo::operator()() {
       mY = powf(M_E, 100 * mX - mThresholdX); // bias needed to reach that
       mX += mIncrementX;                      // value in time (SEE DESMOS)
     } else if (mX < mThresholdX) {
-      mY = powf(M_E, -1 * mX + (mThresholdX *
-                                0.01)); // this compensates for initial ramp up
+      mY = powf(M_E,
+                -1 * mX + (mThresholdX *
+                           0.01)); // this compensates for initial ramp up
       mX += mIncrementX;
     } else {
       mY = mThresholdY;
@@ -61,10 +62,10 @@ float expo::operator()() {
     }
   } else { // reversed Logic
     if (mX < mThresholdX * 0.92761758634) {
-      mY =
-          powf(M_E, 0.9 * (mX - mThresholdX +
-                           0.5)); // (mx - thresh + bias ) where bias determines
-      mX += mIncrementX;          // the ratio of envelope (mThresholdX * ratio)
+      mY = powf(M_E,
+                0.9 * (mX - mThresholdX +
+                       0.5)); // (mx - thresh + bias ) where bias determines
+      mX += mIncrementX;      // the ratio of envelope (mThresholdX * ratio)
     } else if (mX <
                mThresholdX * 0.95) { // small sustain to makeup for percieved
                                      // volume loss (in relation to expodec).
@@ -228,7 +229,7 @@ std::string util::getExecutablePath() {
   if (len == -1 || len == sizeof(exePath))
     len = 0;
   exePath[len] = '\0';
-#else
+#else // THIS MEANS YOU ARE USING A >
   char exePath[PATH_MAX];
   uint32_t len = sizeof(exePath);
   if (_NSGetExecutablePath(exePath, &len) != 0) {
@@ -243,6 +244,18 @@ std::string util::getExecutablePath() {
   }
 #endif
   return std::string(exePath);
+}
+
+std::string util::getAppPath(std::string s) {
+  char delim = '/';
+  size_t counter = 0;
+  size_t i = s.size() - 1;
+  while (counter < 4) {
+    if (s[i] == delim)
+      counter++;
+    i--;
+  }
+  return s.substr(0, i + 2);
 }
 
 bool util::compareFileNoCase(al::FilePath s1, al::FilePath s2) {

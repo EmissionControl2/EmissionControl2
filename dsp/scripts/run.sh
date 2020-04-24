@@ -35,9 +35,14 @@ if [ ${result} == 0 ]; then
     ./EmissionControl20 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1
   fi
 
+  DEBUG=${1:-DEFAULT}
   if [ $(uname -s) == "Darwin" ]; then
     cd bin
-    open EmissionControl20.app
+    if [ ${DEBUG} == "-g" ]; then
+      ./EmissionControl20.app/Contents/MacOS/EmissionControl20
+    else
+      open EmissionControl20.app
+    fi 
   fi
 
 fi
