@@ -16,8 +16,8 @@
 #include "al/ui/al_Parameter.hpp"
 
 /**** CSTD LIB ****/
-#include <memory>
 #include <math.h> 
+#include <memory>
 
 class ecSynth : public al::SynthVoice {
 public:

@@ -6,7 +6,9 @@
 
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
-#
+
+/**** External LIB ****/
+// #include <nfd.h>
 
 using namespace al;
 
@@ -18,28 +20,32 @@ void ecInterface::onInit() {
 
   granulator.init(&audioIO());
 
-  execPath = util::getExecutablePath();
-  File f(execPath);
+  execDir = f.directory(util::getExecutablePath());
+  execPath = execDir;
 
-  
-  // Load in all files in at specified directory.
-  // Set output directory for presets.
-  // Set output directory of recorded files.
-  #ifdef __APPLE__
-    granulator.loadInitSoundFiles(f.directory(execPath)+ "../../../samples/");
-    soundOutput = f.directory(execPath) + "../../../soundOutput/";
-    mPresets.setRootPath(f.directory(execPath) + "../../../presets/");
-  #endif
+// Load in all files in at specified directory.
+// Set output directory for presets.
+// Set output directory of recorded files.
+#ifdef __APPLE__
+  execDir = util::getAppPath(execDir);
+  granulator.loadInitSoundFiles(execDir + "samples/");
+  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
+  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+#endif
 
-  #ifdef __linux__
-    granulator.loadInitSoundFiles(f.directory(execPath)+ "samples/");
-    soundOutput = f.directory(execPath) + "soundOutput/";
-    mPresets.setRootPath(f.directory(execPath) + "presets/");
-  #endif
+#ifdef _WIN32
+  granulator.loadInitSoundFiles(execDir + "samples/");
+  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
+  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+#endif
+
+#ifdef __linux__
+  granulator.loadInitSoundFiles(execDir + "samples/");
+  soundOutput = execDir + "soundOutput/";
+  mPresets.setRootPath(execDir + "presets/");
+#endif
 
   audioIO().append(mRecorder);
-
-
 }
 
 void ecInterface::onCreate() {
@@ -97,21 +103,21 @@ void ecInterface::onCreate() {
   mPresets << *granulator.LFOparameters[3]->shape
            << *granulator.LFOparameters[3]->duty;
 
-  #ifdef __APPLE__
-    ImGui::GetIO().Fonts->AddFontFromFileTTF(
-        (f.directory(execPath) + "../Resources/Fonts/Roboto-Medium.ttf").c_str(),
-        14.0f);
-  #endif
+#ifdef __APPLE__
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(),
+      14.0f);
+#endif
 
-  #ifdef __linux__
-    ImGui::GetIO().Fonts->AddFontFromFileTTF(
-        (f.directory(execPath) + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-        14.0f);
-  #endif
+#ifdef __linux__
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
+      14.0f);
+#endif
 
-    // Scale font
-    ImGui::GetIO().FontGlobalScale = 1.2;
-    setGUIColors();
+  // Scale font
+  ImGui::GetIO().FontGlobalScale = 1.2;
+  setGUIColors();
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -245,13 +251,13 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth / 4, windowHeight / 4, flags);
   ImGui::Text("%s", currentFile.c_str());
   if (ImGui::Button("Select File")) {
-    // When the select file button is clicked, the file selector is shown
-    #ifdef __APPLE__
-      selector.start(f.directory(execPath)+ "../../../samples");
-    #endif
-    #ifdef __linux__
-      selector.start(f.directory(execPath) + "samples/");
-    #endif
+// When the select file button is clicked, the file selector is shown
+#ifdef __APPLE__
+    selector.start(execDir + "samples/");
+#endif
+#ifdef __linux__
+    selector.start(execDir + "samples/");
+#endif
   }
   // The file selector knows internally whether it should be drawn or not,
   // so you should always draw it. Check the return value of the draw function

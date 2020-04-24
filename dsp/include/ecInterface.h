@@ -45,8 +45,7 @@ private:
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
   al::FileSelector selector;
-  std::string soundOutput;
-  std::string execPath;
+  std::string soundOutput, execDir, execPath;
   al::File f;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";

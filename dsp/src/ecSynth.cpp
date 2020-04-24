@@ -22,6 +22,7 @@ void ecSynth::setIO(al::AudioIOData *io) {
 }
 
 void ecSynth::init(al::AudioIOData *io) {
+
   int index;
 
   for (index = 0; index < NUM_MODULATORS; index++) {
@@ -164,6 +165,7 @@ void ecSynth::init(al::AudioIOData *io) {
 
 void ecSynth::onProcess(AudioIOData &io) {
   //        updateFromParameters();
+  /* Manipulate on a Grain Level */
   while (io()) {
 
     for (int index = 0; index < NUM_MODULATORS; ++index)
@@ -238,7 +240,7 @@ void ecSynth::onProcess(AudioIOData &io) {
       }
     }
   }
-  
+
   grainSynth.render(io);
 
   io.frame(0);
@@ -246,6 +248,10 @@ void ecSynth::onProcess(AudioIOData &io) {
   /* Manipulate on a stream level */
   while (io()) {
     hardClip(io);
+    /*
+      Write to Ring Buffer HERE
+    */
+
     // softClip(io);
   }
 }
