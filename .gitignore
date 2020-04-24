@@ -1,3 +1,4 @@
+*.dmg
 ec_2019/
 bin/
 deployment/*
