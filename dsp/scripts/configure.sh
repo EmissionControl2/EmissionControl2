@@ -4,6 +4,8 @@
 result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
+elif [ $result == "EmissionControlPort" ]; then
+  cd dsp/
 fi
 (
   mkdir -p ./bin 
