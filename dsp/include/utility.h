@@ -269,21 +269,26 @@ bool load(std::string fileName,
 std::string getExecutablePath();
 
 /**
+ * @brief If you are using an apple package, you might went the directory of the
+ * .app rather than the actual executable.
+ * param[in] The directory containing the ACTUAL UNIX EXECUTABLE.
+ */
+std::string getAppPath(std::string s);
+
+/**
  * @brief a comparator function for sorting the filePaths (case insensitive).
  */
 bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
-
 class RingBuffer {
 public:
-
   RingBuffer(std::size_t maxSize) : mMaxSize(maxSize) {
     mBuffer.resize(mMaxSize);
     mTail = -1;
     mPrevSample = 0;
-  }  
+  }
 
-  std::size_t getMaxSize() const {return mMaxSize;}
+  std::size_t getMaxSize() const { return mMaxSize; }
 
   void resize(std::size_t maxSize) {
     mMaxSize = maxSize;
@@ -292,32 +297,30 @@ public:
 
   void push_back(float value) {
     mMutex.lock();
-    mTail = (mTail+1)%mMaxSize;
+    mTail = (mTail + 1) % mMaxSize;
     mBuffer[mTail] = value;
     mMutex.unlock();
   }
 
-  std::size_t getTail() const {return mTail;}
+  std::size_t getTail() const { return mTail; }
 
   float at(size_t index) {
-    if ( index >= mMaxSize ) { 
+    if (index >= mMaxSize) {
       std::cerr << "RingBuffer index out of range." << std::endl;
       index = index % mMaxSize;
     }
-    if(mMutex.try_lock()) {
-      mPrevSample =  mBuffer.at(index);
+    if (mMutex.try_lock()) {
+      mPrevSample = mBuffer.at(index);
       mMutex.unlock();
       return mPrevSample;
     }
     return mPrevSample;
   }
 
-  float operator[](size_t index) {
-    return this->at(index);
-  }
+  float operator[](size_t index) { return this->at(index); }
 
   void print() const {
-    for(auto i = mBuffer.begin(); i != mBuffer.end(); ++i)
+    for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i)
       std::cout << *i << " ";
     std::cout << "\n";
   }
@@ -327,7 +330,7 @@ private:
   std::size_t mMaxSize;
   int mTail;
   float mPrevSample;
-  
+
   std::mutex mMutex;
 };
 
