@@ -8,7 +8,7 @@
 #include "al/io/al_File.hpp"
 
 /**** External LIB ****/
-// #include <nfd.h>
+#include "../external/nativefiledialog/src/include/nfd.h"
 
 using namespace al;
 
@@ -46,6 +46,9 @@ void ecInterface::onInit() {
 #endif
 
   audioIO().append(mRecorder);
+
+  // nfdchar_t *outPath = NULL;
+  // nfdresult_t result = NFD_OpenDialog( "png,jpg;pdf", NULL, &outPath );
 }
 
 void ecInterface::onCreate() {

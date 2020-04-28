@@ -74,6 +74,7 @@ target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/nati
 target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 target_link_directories(${APP_NAME} PUBLIC /usr/local/lib)
+target_link_directories(${APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64)
 
 add_library(ecLib
   STATIC 
@@ -99,8 +100,12 @@ target_link_libraries(ecLib PUBLIC
   al 
   "${AL_EXT_LIBRARIES}" 
   ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a 
-  # ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/Debug/x64/libnfd_d.a WIP WIP
+  libnfd.a
 ) 
+
+if(APPLE)
+  target_link_libraries(ecLib PUBLIC ${Appkit})
+endif()
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
 
