@@ -8,7 +8,6 @@
 #include "al/io/al_File.hpp"
 
 /**** External LIB ****/
-#include "../external/nativefiledialog/src/include/nfd.h"
 
 using namespace al;
 
@@ -46,9 +45,6 @@ void ecInterface::onInit() {
 #endif
 
   audioIO().append(mRecorder);
-
-  // nfdchar_t *outPath = NULL;
-  // nfdresult_t result = NFD_OpenDialog( "png,jpg;pdf", NULL, &outPath );
 }
 
 void ecInterface::onCreate() {
@@ -108,14 +104,12 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(),
-      14.0f);
+      (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
 #endif
 
 #ifdef __linux__
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-      14.0f);
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
 #endif
 
   // Scale font
@@ -253,26 +247,23 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25,
                            windowWidth / 4, windowHeight / 4, flags);
   ImGui::Text("%s", currentFile.c_str());
+
   if (ImGui::Button("Select File")) {
 // When the select file button is clicked, the file selector is shown
 #ifdef __APPLE__
-    selector.start(execDir + "samples/");
+
+    result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+    if (result == 1)
+      currentFile = outPath;
 #endif
 #ifdef __linux__
-    selector.start(execDir + "samples/");
+    result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+    if (result == 1)
+      currentFile = outPath;
 #endif
   }
-  // The file selector knows internally whether it should be drawn or not,
-  // so you should always draw it. Check the return value of the draw function
-  // to know if the user has selected a file through the file selector
-  if (selector.drawFileSelector()) {
-    auto selection = selector.getSelection();
-    if (selection.count() > 0) {
-      previousFile = currentFile;
-      currentFile = selection[0].filepath();
-    }
-  }
-  if (currentFile != previousFile) {
+
+  if ((currentFile != previousFile) && (result == 1)) {
     granulator.loadSoundFile(currentFile);
     previousFile = currentFile;
   }

@@ -12,10 +12,12 @@
 
 /**** AlloLib LIB ****/
 #include "al/app/al_App.hpp"
-#include "al/ui/al_FileSelector.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
+
+/**** External LIB ****/
+#include "../external/nativefiledialog/src/include/nfd.h"
 
 class ecInterface : public al::App {
 public:
@@ -44,7 +46,6 @@ private:
   ecSynth granulator;
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
-  al::FileSelector selector;
   std::string soundOutput, execDir, execPath;
   al::File f;
   std::string currentFile = "No file selected";
@@ -52,6 +53,9 @@ private:
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoSavedSettings;
+
+  nfdchar_t *outPath = NULL;
+  nfdresult_t result;
 
   void drawAudioIO(al::AudioIO *io);
 
