@@ -424,9 +424,9 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
     startSample =
-        source->size * (list.tapeHead.getModParam(list.modTapeHeadDepth));
+        source->size / source->channels * (list.tapeHead.getModParam(list.modTapeHeadDepth));
   else
-    startSample = source->size * list.tapeHead.getParam();
+    startSample = source->size / source->channels * list.tapeHead.getParam();
 
   endSample =
       startSample +  ((mDurationMs / 1000) * samplingRate);
