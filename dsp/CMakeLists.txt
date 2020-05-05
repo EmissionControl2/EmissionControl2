@@ -68,13 +68,17 @@ add_executable(${APP_NAME} MACOSX_BUNDLE
   ${RESOURCE_FILES}
 )
 
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/nativefiledialog/src/include)
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(${APP_NAME} PRIVATE 
+  ${CMAKE_SOURCE_DIR}/external
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/external/nativefiledialog/src/include
+  ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/
+)
 
-target_link_directories(${APP_NAME} PUBLIC /usr/local/lib)
-target_link_directories(${APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64)
+target_link_directories(${APP_NAME} PUBLIC 
+  /usr/local/lib
+  ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
+)
 
 add_library(ecLib
   STATIC 
@@ -82,8 +86,10 @@ add_library(ecLib
     ${srcs}
 )
 
-target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/external)
-target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(ecLib PRIVATE 
+  ${CMAKE_SOURCE_DIR}/external
+  ${CMAKE_SOURCE_DIR}/include
+)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # On macOS if jack is present, RtMidi will link to jack but not provide the
