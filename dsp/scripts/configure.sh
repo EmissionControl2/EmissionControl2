@@ -20,12 +20,25 @@ fi
 	cd ..
 
   # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
-  if [ ! -d ./external/libsamplerate/build ]; then
+  if [ ! -d "./external/libsamplerate/build" ]; then
     cmake -E make_directory external/libsamplerate/build
     cd external/libsamplerate/build
     cmake ..
     make
     cd ../../../
+  fi
+
+    # Build nativefiledialog if it doesnt exist../external/libsamplerate/build
+  if [ ! -d "./external/nativefiledialog/build/lib" ]; then
+    cd external/nativefiledialog/build/
+    if [ $(uname -s) == "Linux" ]; then
+      cd gmake_linux
+      make config=release_x64 
+    elif [ $(uname -s) == "Darwin" ]; then
+      cd gmake_macosx
+      make config=release_x64
+    fi
+    cd ../../../../
   fi
 
   mkdir -p build
