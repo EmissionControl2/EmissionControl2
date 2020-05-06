@@ -7,15 +7,11 @@
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
 
-/**** External LIB ****/
-// #include <nfd.h>
-
 using namespace al;
 
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
-
   dimensions(1920, 1080);
 
   granulator.init(&audioIO());
@@ -105,14 +101,12 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(),
-      14.0f);
+      (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
 #endif
 
 #ifdef __linux__
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-      14.0f);
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
 #endif
 
   // Scale font
@@ -123,6 +117,7 @@ void ecInterface::onCreate() {
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
+  framecounter++;
   g.clear(background);
 
   // Get window height and width
@@ -172,50 +167,105 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2,
                            windowHeight / 4 + 25, windowWidth / 2,
                            windowHeight / 2, flags);
-
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.grainRate.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.asynchronicity.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.intermittency.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.streams.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.grainDurationMs.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.envelope.drawRangeSlider();
-  granulator.tapeHead.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.transposition.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.filter.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.resonance.drawRangeSlider();
-  granulator.volumeDB.drawRangeSlider();
-  granulator.pan.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.soundFile.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  granulator.tapeHead.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  granulator.pan.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  granulator.volumeDB.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ParameterGUI::endPanel();
 
   // Draw modulation window
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
                            windowWidth / 2, windowHeight / 2, flags);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   drawModulationControl(granulator.grainRateLFO,
                         granulator.modGrainRateDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   drawModulationControl(granulator.asyncLFO,
                         granulator.modAsynchronicityDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   drawModulationControl(granulator.intermittencyLFO,
                         granulator.modIntermittencyDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   drawModulationControl(granulator.streamsLFO,
                         granulator.modStreamsDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   drawModulationControl(granulator.grainDurationLFO,
                         granulator.modGrainDurationDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   drawModulationControl(granulator.envelopeLFO,
                         granulator.modEnvelopeDepth.mParameter);
-  drawModulationControl(granulator.tapeHeadLFO,
-                        granulator.modTapeHeadDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   drawModulationControl(granulator.transpositionLFO,
                         granulator.modTranspositionDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   drawModulationControl(granulator.filterLFO,
                         granulator.modFilterDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   drawModulationControl(granulator.resonanceLFO,
                         granulator.modResonanceDepth.mParameter);
-  drawModulationControl(granulator.volumeLFO,
-                        granulator.modVolumeDepth.mParameter);
-  drawModulationControl(granulator.panLFO, granulator.modPanDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   drawModulationControl(granulator.soundFileLFO,
                         granulator.modSoundFileDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  drawModulationControl(granulator.tapeHeadLFO,
+                        granulator.modTapeHeadDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  drawModulationControl(granulator.panLFO, granulator.modPanDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  drawModulationControl(granulator.volumeLFO,
+                        granulator.modVolumeDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ParameterGUI::endPanel();
 
   // Draw an interface to Audio IO.
@@ -225,6 +275,7 @@ void ecInterface::onDraw(Graphics &g) {
   if (displayIO == true) {
     ImGui::OpenPopup("Audio IO");
   }
+
   bool open = true;
   if (ImGui::BeginPopupModal("Audio IO", &open)) {
     drawAudioIO(&audioIO());
@@ -250,42 +301,78 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25,
                            windowWidth / 4, windowHeight / 4, flags);
   ImGui::Text("%s", currentFile.c_str());
+
   if (ImGui::Button("Select File")) {
 // When the select file button is clicked, the file selector is shown
 #ifdef __APPLE__
-    selector.start(execDir + "samples/");
+
+    result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+    if (result == 1)
+      currentFile = outPath;
 #endif
 #ifdef __linux__
-    selector.start(execDir + "samples/");
+    result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+    if (result == 1)
+      currentFile = outPath;
 #endif
   }
-  // The file selector knows internally whether it should be drawn or not,
-  // so you should always draw it. Check the return value of the draw function
-  // to know if the user has selected a file through the file selector
-  if (selector.drawFileSelector()) {
-    auto selection = selector.getSelection();
-    if (selection.count() > 0) {
-      previousFile = currentFile;
-      currentFile = selection[0].filepath();
-    }
-  }
-  if (currentFile != previousFile) {
+
+  if ((currentFile != previousFile) && (result == 1)) {
     granulator.loadSoundFile(currentFile);
     previousFile = currentFile;
   }
   ParameterGUI::endPanel();
 
   // Draw Scope window
-  ParameterGUI::beginPanel("Scope", windowWidth / 4, windowHeight * 3 / 4 + 25,
+  ParameterGUI::beginPanel("Scopes", windowWidth / 4, windowHeight * 3 / 4 + 25,
                            windowWidth / 2, windowHeight / 4, flags);
-  ImGui::Text("Number of Active Grains: %.1i ", granulator.getActiveVoices());
+  ImGui::Text("Active Grains: %.1i ", granulator.getActiveVoices());
+  if (framecounter % 10 == 0) {
+    streamHistory.erase(streamHistory.begin());
+    streamHistory.push_back(granulator.getActiveVoices());
+  }
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.8f);
+  ImGui::PlotHistogram("##Active Streams", &streamHistory[0],
+                       streamHistory.size(), 0, nullptr, 0, 100, ImVec2(0, 80),
+                       sizeof(int));
+
+  ImGui::PopItemWidth();
+  ImGui::Text("Oscilloscope Timeframe (s):");
+  ImGui::SameLine();
+  if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
+    oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
+    oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+  }
+
+  oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
+  oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
+
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 1.0f);
+  ImGui::SetCursorPosY(160);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
+                   ImVec2(0, 100), sizeof(float));
+
+  ImGui::SetCursorPosY(160);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
+                   ImVec2(0, 100), sizeof(float));
+
+  ImGui::PopItemWidth();
+
   // ImGui::PlotHistogram("Number of Active Grains: %.1i
   // ",granulator.getActiveVoices() );
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
 
   ParameterGUI::endPanel();
 
   // Pop the colors that were pushed at the start of the draw call
-  // ImGui::PopStyleColor(13);
+  // ImGui::PopStyleColor(14);
   // ImGui::PopStyleVar();
 
   ImGui::End();
@@ -355,7 +442,6 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
                                uint32_t numChannels, std::string directory,
                                uint32_t bufferSize) {
-
   struct SoundfileRecorderState {
     bool recordButton;
     bool overwriteButton;
@@ -475,4 +561,11 @@ void ecInterface::setGUIColors() {
                         (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed,
                         (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
+                        (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
