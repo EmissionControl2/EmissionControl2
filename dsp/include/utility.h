@@ -307,15 +307,15 @@ class RingBuffer {
 
     const float *data() { return mBuffer.data(); }
 
-    // const float *getArray(size_t lookBack) {
-    //     std::cout << "got here!" << std::endl;
-    //     float array[lookBack];
-    //     int start = mTail - lookBack;
-    //     if (start < 0) start = mMaxSize + start;
-    //     for (int i = 0; i < lookBack; i++) array[i] = mBuffer[(start + lookBack) % mMaxSize];
-    //     std::cout << "got here too!" << std::endl;
-    //     return array;
-    // }
+    std::vector<float> getArray(size_t lookBack) {
+        // std::cout << "got here!" << std::endl;
+        std::vector<float> array(lookBack, 0);
+        int start = mTail - lookBack;
+        if (start < 0) start = mMaxSize + start;
+        for (int i = 0; i < lookBack; i++) array[i] = mBuffer[(start + i) % mMaxSize];
+        // std::cout << "got here too!" << std::endl;
+        return array;
+    }
 
     void print() const {
         for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i) std::cout << *i << " ";

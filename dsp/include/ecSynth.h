@@ -24,9 +24,9 @@ class ecSynth : public al::SynthVoice {
     /**
      * Ringbuffers for oscilloscope
     //  */
-    // int oscBufferSize = consts::SAMPLE_RATE * 10;
-    // util::RingBuffer oscBufferL{oscBufferSize};
-    // util::RingBuffer oscBufferR{oscBufferSize};
+    int oscBufferSize = consts::SAMPLE_RATE * 5;
+    util::RingBuffer oscBufferL{oscBufferSize};
+    util::RingBuffer oscBufferR{oscBufferSize};
 
     /**
      * The number of modulators in ecSynth.
@@ -79,7 +79,7 @@ class ecSynth : public al::SynthVoice {
     al::ParameterMenu soundFileLFO{"##soundFileLFO"};
     ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
-    ecParameter tapeHead{"11. Playback point", "", 0.5, "", 0, 1, 0, 1};
+    ecParameter tapeHead{"11. Scan", "", 0.5, "", 0, 1, 0, 1};
     al::ParameterMenu tapeHeadLFO{"##tapeHeadLFO"};
     ecParameter modTapeHeadDepth{"modTapeHeadDepth", "", 0, "", 0, 1, 0, 1};
 
