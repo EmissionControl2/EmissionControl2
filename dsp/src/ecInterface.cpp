@@ -272,9 +272,9 @@ void ecInterface::onDraw(Graphics &g) {
     ParameterGUI::endPanel();
 
     // Draw Scope window
-    ParameterGUI::beginPanel("Scope", windowWidth / 4, windowHeight * 3 / 4 + 25, windowWidth / 2,
+    ParameterGUI::beginPanel("Scopes", windowWidth / 4, windowHeight * 3 / 4 + 25, windowWidth / 2,
                              windowHeight / 4, flags);
-    ImGui::Text("Number of Active Grains: %.1i ", granulator.getActiveVoices());
+    ImGui::Text("Active Grains: %.1i ", granulator.getActiveVoices());
     if (framecounter % 10 == 0) {
         streamHistory.erase(streamHistory.begin());
         streamHistory.push_back(granulator.getActiveVoices());
@@ -282,34 +282,31 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.8f);
     ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
-                         20, ImVec2(0, 80), sizeof(int));
+                         100, ImVec2(0, 80), sizeof(int));
 
     ImGui::PopItemWidth();
-    ImGui::SetCursorPos(ImVec2(0, 5));
-    ImGui::Text("20");
+    ImGui::Text("Oscilloscope Timeframe (s):");
+    ImGui::SameLine();
+    if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
+        oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
+        oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+    }
 
-    // int tail = granulator.oscBufferL.getTail();
-    // int start = tail - oscSize;
-    // if (start < 0) start = granulator.oscBufferL.getMaxSize() + start;
-    // float tempOscBufferL[oscSize];
-    // for (int i = tail - oscSize; i < tail; i++)
-    //     tempOscBufferL[i] = granulator.oscBufferL[i]
+    oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
+    oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
 
-    // MIGHT NEED TO JUST DRAW THE DAMN THING MYSELF
-    // std::cout << start << std::endl;
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 1.0f);
+    ImGui::SetCursorPosY(160);
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+    ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1, ImVec2(0, 100),
+                     sizeof(float));
 
-    // ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 1.0f);
-    // ImGui::SetCursorPosY(100);
-    // ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
-    // ImGui::PlotLines("Scope", granulator.oscBufferL.data(), granulator.oscBufferL.getMaxSize(),
-    //                  start, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 120), 1 * sizeof(float));
+    ImGui::SetCursorPosY(160);
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
+    ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1, ImVec2(0, 100),
+                     sizeof(float));
 
-    // ImGui::SetCursorPosY(100);
-    // ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
-    // ImGui::PlotLines("Scope", audioIO().outBuffer(0), consts::BLOCK_SIZE / 2, 1024, nullptr,
-    //                  FLT_MAX, FLT_MAX, ImVec2(0, 120), 2 * sizeof(float));
-
-    // ImGui::PopItemWidth();
+    ImGui::PopItemWidth();
 
     // ImGui::PlotHistogram("Number of Active Grains: %.1i
     // ",granulator.getActiveVoices() );
@@ -493,6 +490,7 @@ void ecInterface::setGUIColors() {
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
 
 void ecInterface::setPlotConfig() { ImGui::PlotConfig histConf; }

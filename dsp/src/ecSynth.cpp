@@ -240,8 +240,8 @@ void ecSynth::onProcess(AudioIOData &io) {
     /* Manipulate on a stream level */
     while (io()) {
         hardClip(io);
-        // oscBufferL.push_back(io.out(0));
-        // oscBufferR.push_back(io.out(1));
+        oscBufferL.push_back(io.out(0));
+        oscBufferR.push_back(io.out(1));
         // softClip(io);
     }
 }

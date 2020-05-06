@@ -54,7 +54,9 @@ class ecInterface : public al::App {
                              ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
     int framecounter = 0;
     std::vector<float> streamHistory = std::vector<float>(120, 0);
-    // int oscSize = 48000;
+    float oscFrame = 1;
+    std::vector<float> oscDataL = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+    std::vector<float> oscDataR = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
 
     void drawAudioIO(al::AudioIO *io);
 
