@@ -8,8 +8,8 @@ elif [ $result == "EmissionControlPort" ]; then
   cd dsp/
 fi
 (
-  mkdir -p ./bin 
-  cd ./bin 
+  mkdir -p ./bin
+  cd ./bin
   cp -r ../../externalResources/samples .
   mkdir -p soundOutput
   mkdir -p presets
@@ -17,7 +17,7 @@ fi
     cp -r ../external/Resources .
     cp -r ../../externalResources/Fonts ./Resources
   fi
-	cd ..
+  cd ..
 
   # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
   if [ ! -d "./external/libsamplerate/build" ]; then
@@ -52,6 +52,5 @@ fi
   if [ $(uname -s) == "Darwin" ]; then
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   fi
-  
-)
 
+)
