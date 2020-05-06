@@ -15,7 +15,11 @@ if(APPLE)
 endif()
 
 if(UNIX AND NOT APPLE)
-  set(LINUX TRUE) 
+  set(LINUX TRUE)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+  include_directories(${GTK3_INCLUDE_DIRS})
+  link_directories(${GTK3_LIBRARY_DIRS})
 endif()
 
 set(includes
@@ -111,6 +115,10 @@ target_link_libraries(ecLib PUBLIC
 
 if(APPLE)
   target_link_libraries(ecLib PUBLIC ${Appkit})
+endif()
+
+if(LINUX)
+  target_link_libraries(ecLib PUBLIC ${GTK3_LIBRARIES})
 endif()
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
