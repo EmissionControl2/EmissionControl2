@@ -435,9 +435,9 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
             ((mDurationMs / 1000) * samplingRate *
              abs(list.transposition.getModParam(list.modTranspositionDepth)));
   else
-    endSample =
-        startSample + source->channels * ((mDurationMs / 1000) * samplingRate *
-                                          abs(list.transposition.getParam()));
+    endSample = startSample +
+                source->channels * ((mDurationMs / 1000) * samplingRate *
+                                    abs(list.transposition.getParam()));
 
   index.setSamplingRate(samplingRate); // Set sampling rate of line function
                                        // moving through audio buffer.
@@ -498,10 +498,8 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
   // dBVal / 20);
-  res_process =
-      1 -
-      resonance * 0.995; // 1-Compliment of -120dB about. THIS
-                         // 0.9999683772233983 DETERMINES how resonancy it is.
+  res_process = 1 - resonance * 0.995; // 1-Compliment of -120dB about. THIS
+  // 0.9999683772233983 DETERMINES how resonancy it is.
   mLowShelf.level(res_process);
   mHighShelf.level(res_process);
 }

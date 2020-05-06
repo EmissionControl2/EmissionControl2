@@ -10,6 +10,18 @@ add_subdirectory(external/allolib)
 add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
+if(APPLE)
+  find_library(AppKit Appkit)
+endif()
+
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+  include_directories(${GTK3_INCLUDE_DIRS})
+  link_directories(${GTK3_LIBRARY_DIRS})
+endif()
+
 set(includes
   include/emissionControl.h
   include/ecInterface.h
@@ -55,23 +67,22 @@ foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endforeach()
 
-
-# if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-# file(GLOB LIBRARIES "${CMAKE_SOURCE_DIR}/bin/libraries/libsndfile/*.dylib")
-# message("LIBRARIES = ${LIBRARIES}")
-# endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 add_executable(${APP_NAME} MACOSX_BUNDLE
   src/main.cpp
   ${RESOURCE_FILES}
 )
 
+target_include_directories(${APP_NAME} PRIVATE 
+  ${CMAKE_SOURCE_DIR}/external
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/external/nativefiledialog/src/include
+  ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/
+)
 
-
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/)
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external)
-target_include_directories(${APP_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
-target_link_directories(${APP_NAME} PUBLIC /usr/local/lib)
+target_link_directories(${APP_NAME} PUBLIC 
+  /usr/local/lib
+  ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
+)
 
 add_library(ecLib
   STATIC 
@@ -79,8 +90,10 @@ add_library(ecLib
     ${srcs}
 )
 
-target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/external)
-target_include_directories(ecLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(ecLib PRIVATE 
+  ${CMAKE_SOURCE_DIR}/external
+  ${CMAKE_SOURCE_DIR}/include
+)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # On macOS if jack is present, RtMidi will link to jack but not provide the
@@ -93,7 +106,20 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
-target_link_libraries(ecLib PUBLIC al "${AL_EXT_LIBRARIES}" ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a )
+target_link_libraries(ecLib PUBLIC 
+  al 
+  "${AL_EXT_LIBRARIES}" 
+  ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a 
+  libnfd.a
+) 
+
+if(APPLE)
+  target_link_libraries(ecLib PUBLIC ${Appkit})
+endif()
+
+if(LINUX)
+  target_link_libraries(ecLib PUBLIC ${GTK3_LIBRARIES})
+endif()
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
 
@@ -113,6 +139,16 @@ set_target_properties(${APP_NAME} PROPERTIES
  	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_LIST_DIR}/bin
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
 )
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(${APP_NAME} PROPERTIES
+  MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
+  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
+  )
+
+
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 set(${CMAKE_CURRENT_LIST_DIR}bin/resources/libsndfile.dylib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/buildTest)

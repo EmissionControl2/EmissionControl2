@@ -4,6 +4,8 @@
 result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
+elif [ $result == "EmissionControlPort" ]; then
+  cd dsp/
 fi
 (
 #  rm -r -f ./external/libsamplerate/build/

@@ -263,72 +263,79 @@ bool load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf
 std::string getExecutablePath();
 
 /**
+ * @brief If you are using an apple package, you might went the directory of the
+ * .app rather than the actual executable.
+ * param[in] The directory containing the ACTUAL UNIX EXECUTABLE.
+ */
+std::string getAppPath(std::string s);
+
+/**
  * @brief a comparator function for sorting the filePaths (case insensitive).
  */
 bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
 class RingBuffer {
-   public:
-    RingBuffer(std::size_t maxSize) : mMaxSize(maxSize) {
-        mBuffer.resize(mMaxSize);
-        mTail = -1;
-        mPrevSample = 0;
-    }
+  public:
+  RingBuffer(std::size_t maxSize) : mMaxSize(maxSize) {
+      mBuffer.resize(mMaxSize);
+      mTail = -1;
+      mPrevSample = 0;
+  }
 
-    std::size_t getMaxSize() const { return mMaxSize; }
+  std::size_t getMaxSize() const { return mMaxSize; }
 
-    void resize(std::size_t maxSize) {
-        mMaxSize = maxSize;
-        mBuffer.resize(mMaxSize);
-    }
+  void resize(std::size_t maxSize) {
+      mMaxSize = maxSize;
+      mBuffer.resize(mMaxSize);
+  }
 
-    void push_back(float value) {
-        mMutex.lock();
-        mTail = (mTail + 1) % mMaxSize;
-        mBuffer[mTail] = value;
-        mMutex.unlock();
-    }
+  void push_back(float value) {
+      mMutex.lock();
+      mTail = (mTail + 1) % mMaxSize;
+      mBuffer[mTail] = value;
+      mMutex.unlock();
+  }
 
-    std::size_t getTail() const { return mTail; }
+  std::size_t getTail() const { return mTail; }
 
-    float at(size_t index) {
-        if (index >= mMaxSize) {
-            std::cerr << "RingBuffer index out of range." << std::endl;
-            index = index % mMaxSize;
-        }
-        if (mMutex.try_lock()) {
-            mPrevSample = mBuffer.at(index);
-            mMutex.unlock();
-        }
-        return mPrevSample;
-    }
+  float at(size_t index) {
+      if (index >= mMaxSize) {
+          std::cerr << "RingBuffer index out of range." << std::endl;
+          index = index % mMaxSize;
+      }
+      if (mMutex.try_lock()) {
+          mPrevSample = mBuffer.at(index);
+          mMutex.unlock();
+      }
+      return mPrevSample;
+  }
 
-    float operator[](size_t index) { return this->at(index); }
+  float operator[](size_t index) { return this->at(index); }
 
-    const float *data() { return mBuffer.data(); }
+  const float *data() { return mBuffer.data(); }
 
-    std::vector<float> getArray(size_t lookBack) {
-        // std::cout << "got here!" << std::endl;
-        std::vector<float> array(lookBack, 0);
-        int start = mTail - lookBack;
-        if (start < 0) start = mMaxSize + start;
-        for (int i = 0; i < lookBack; i++) array[i] = mBuffer[(start + i) % mMaxSize];
-        // std::cout << "got here too!" << std::endl;
-        return array;
-    }
+  std::vector<float> getArray(size_t lookBack) {
+      // std::cout << "got here!" << std::endl;
+      std::vector<float> array(lookBack, 0);
+      int start = mTail - lookBack;
+      if (start < 0) start = mMaxSize + start;
+      for (int i = 0; i < lookBack; i++) array[i] = mBuffer[(start + i) % mMaxSize];
+      // std::cout << "got here too!" << std::endl;
+      return array;
+  }
 
-    void print() const {
-        for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i) std::cout << *i << " ";
-        std::cout << "\n";
-    }
+  void print() const {
+      for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i) std::cout << *i << " ";
+      std::cout << "\n";
+  }
 
-   private:
-    std::vector<float> mBuffer;
-    std::size_t mMaxSize;
-    int mTail;
-    float mPrevSample;
+ private:
+  std::vector<float> mBuffer;
+  std::size_t mMaxSize;
+  int mTail;
+  float mPrevSample;
 
-    std::mutex mMutex;
+  std::mutex mMutex;
 };
 
 }  // namespace util

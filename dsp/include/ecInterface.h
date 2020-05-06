@@ -12,10 +12,12 @@
 
 /**** AlloLib LIB ****/
 #include "al/app/al_App.hpp"
-#include "al/ui/al_FileSelector.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
+
+/**** External LIB ****/
+#include "../external/nativefiledialog/src/include/nfd.h"
 
 class ecInterface : public al::App {
    public:
@@ -38,35 +40,39 @@ class ecInterface : public al::App {
      * @brief Draw rate processing of synth interface.
      */
     virtual void onDraw(al::Graphics &g) override;
+  
+private:
+  float background = 0.21;
+  ecSynth granulator;
+  al::PresetHandler mPresets;
+  al::OutputRecorder mRecorder;
+  
+  std::string soundOutput, execDir, execPath;
+  al::File f;
+  nfdchar_t *outPath = NULL;
+  nfdresult_t result;
+  std::string currentFile = "No file selected";
+  std::string previousFile = "No file selected";
+  
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
+                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                           ImGuiWindowFlags_NoSavedSettings;
+  
+  int framecounter = 0;
+  std::vector<float> streamHistory = std::vector<float>(120, 0);
+  float oscFrame = 1;
+  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
 
-   private:
-    float background = 0.21;
-    ecSynth granulator;
-    al::PresetHandler mPresets;
-    al::OutputRecorder mRecorder;
-    al::FileSelector selector;
-    std::string soundOutput;
-    std::string execPath;
-    al::File f;
-    std::string currentFile = "No file selected";
-    std::string previousFile = "No file selected";
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
-                             ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
-    int framecounter = 0;
-    std::vector<float> streamHistory = std::vector<float>(120, 0);
-    float oscFrame = 1;
-    std::vector<float> oscDataL = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
-    std::vector<float> oscDataR = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+  void drawAudioIO(al::AudioIO *io);
 
-    void drawAudioIO(al::AudioIO *io);
+  void drawLFOcontrol(ecSynth &synth, int lfoNumber);
 
-    void drawLFOcontrol(ecSynth &synth, int lfoNumber);
+  void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
 
-    void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
+  void setGUIColors();
 
-    void setGUIColors();
-
-    void setPlotConfig();
+  void setPlotConfig();
 };
 
 /**
