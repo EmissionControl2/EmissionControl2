@@ -284,15 +284,15 @@ bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
 class RingBuffer {
 public:
-  RingBuffer(std::size_t maxSize) : mMaxSize(maxSize) {
+  RingBuffer(unsigned maxSize) : mMaxSize(maxSize) {
     mBuffer.resize(mMaxSize);
     mTail = -1;
     mPrevSample = 0;
   }
 
-  std::size_t getMaxSize() const { return mMaxSize; }
+  unsigned getMaxSize() const { return mMaxSize; }
 
-  void resize(std::size_t maxSize) {
+  void resize(unsigned maxSize) {
     mMaxSize = maxSize;
     mBuffer.resize(mMaxSize);
   }
@@ -304,9 +304,9 @@ public:
     mMutex.unlock();
   }
 
-  std::size_t getTail() const { return mTail; }
+  unsigned getTail() const { return mTail; }
 
-  float at(size_t index) {
+  float at(unsigned index) {
     if (index >= mMaxSize) {
       std::cerr << "RingBuffer index out of range." << std::endl;
       index = index % mMaxSize;
@@ -314,12 +314,25 @@ public:
     if (mMutex.try_lock()) {
       mPrevSample = mBuffer.at(index);
       mMutex.unlock();
-      return mPrevSample;
     }
     return mPrevSample;
   }
 
-  float operator[](size_t index) { return this->at(index); }
+  float operator[](unsigned index) { return this->at(index); }
+
+  const float *data() { return mBuffer.data(); }
+
+  std::vector<float> getArray(unsigned lookBack) {
+    // std::cout << "got here!" << std::endl;
+    std::vector<float> array(lookBack, 0);
+    int start = mTail - lookBack;
+    if (start < 0)
+      start = mMaxSize + start;
+    for (int i = 0; i < lookBack; i++)
+      array[i] = mBuffer[(start + i) % mMaxSize];
+    // std::cout << "got here too!" << std::endl;
+    return array;
+  }
 
   void print() const {
     for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i)
@@ -329,7 +342,7 @@ public:
 
 private:
   std::vector<float> mBuffer;
-  std::size_t mMaxSize;
+  unsigned mMaxSize;
   int mTail;
   float mPrevSample;
 

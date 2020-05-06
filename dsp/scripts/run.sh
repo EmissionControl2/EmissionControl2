@@ -48,4 +48,3 @@ if [ ${result} == 0 ]; then
   fi
 
 fi
-

@@ -22,7 +22,6 @@ void ecSynth::setIO(al::AudioIOData *io) {
 }
 
 void ecSynth::init(al::AudioIOData *io) {
-
   int index;
 
   for (index = 0; index < NUM_MODULATORS; index++) {
@@ -167,7 +166,6 @@ void ecSynth::onProcess(AudioIOData &io) {
   //        updateFromParameters();
   /* Manipulate on a Grain Level */
   while (io()) {
-
     for (int index = 0; index < NUM_MODULATORS; ++index)
       Modulators[index]->sampleAndStore();
 
@@ -248,10 +246,8 @@ void ecSynth::onProcess(AudioIOData &io) {
   /* Manipulate on a stream level */
   while (io()) {
     hardClip(io);
-    /*
-      Write to Ring Buffer HERE
-    */
-
+    oscBufferL.push_back(io.out(0));
+    oscBufferR.push_back(io.out(1));
     // softClip(io);
   }
 }
@@ -336,7 +332,7 @@ void ecSynth::softClip(al::AudioIOData &io) {
     else if (currentSample < -1)
       io.sum(-1 * currentSample - (2.0f / 3), i);
     else
-      io.sum(-1 * std::powf(currentSample, 3) / 3, i);
+      io.sum(-1 * powf(currentSample, 3) / 3, i);
   }
 }
 
@@ -357,7 +353,6 @@ void ecSynth::throttle(float time, float ratio) {
   if (mPeakCPU > adaptThresh) {
   }
   if (mAvgCPU > adaptThresh) {
-
   } else {
   }
 }
