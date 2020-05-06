@@ -1,5 +1,5 @@
-#ifndef CONST_H 
-#define CONST_H
+#ifndef CONSTS_H 
+#define CONSTS_H
 
 namespace consts {
 
