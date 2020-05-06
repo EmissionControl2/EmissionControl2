@@ -12,9 +12,9 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
-    dimensions(1920, 1080);
+  dimensions(1920, 1080);
 
-    granulator.init(&audioIO());
+  granulator.init(&audioIO());
 
   execDir = f.directory(util::getExecutablePath());
   execPath = execDir;
@@ -134,96 +134,138 @@ void ecInterface::onDraw(Graphics &g) {
   // draw menu bar
   static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
-      if (ImGui::BeginMenu("File")) {
-          ImGui::EndMenu();
+    if (ImGui::BeginMenu("File")) {
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("View")) {
+      if (ImGui::MenuItem("blah", "CTRL+1")) {
       }
-      if (ImGui::BeginMenu("View")) {
-          if (ImGui::MenuItem("blah", "CTRL+1")) {
-          }
-          if (ImGui::MenuItem("blah", "", false, false)) {
-          }  // Disabled item
-          ImGui::EndMenu();
+      if (ImGui::MenuItem("blah", "", false, false)) {
+      } // Disabled item
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Preferences")) {
+      if (ImGui::MenuItem("Audio IO", "")) {
+        displayIO = true;
       }
-      if (ImGui::BeginMenu("Preferences")) {
-          if (ImGui::MenuItem("Audio IO", "")) {
-              displayIO = true;
-          }
-          if (ImGui::MenuItem("blah", "", false, false)) {
-          }  // Disabled item
-          ImGui::EndMenu();
-      }
-      ImGui::EndMainMenuBar();
+      if (ImGui::MenuItem("blah", "", false, false)) {
+      } // Disabled item
+      ImGui::EndMenu();
+    }
+    ImGui::EndMainMenuBar();
   }
 
   // Draw LFO parameters window
-  ParameterGUI::beginPanel("LFO Controls", 0, 25, windowWidth / 2, windowHeight / 4, flags);
+  ParameterGUI::beginPanel("LFO Controls", 0, 25, windowWidth / 2,
+                           windowHeight / 4, flags);
   drawLFOcontrol(granulator, 0);
   drawLFOcontrol(granulator, 1);
   drawLFOcontrol(granulator, 2);
   drawLFOcontrol(granulator, 3);
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2, windowHeight / 4 + 25,
-                           windowWidth / 2, windowHeight / 2, flags);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2,
+                           windowHeight / 4 + 25, windowWidth / 2,
+                           windowHeight / 2, flags);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.grainRate.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.asynchronicity.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.intermittency.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.streams.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.grainDurationMs.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.envelope.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.transposition.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.filter.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.resonance.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.soundFile.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   granulator.tapeHead.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   granulator.pan.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
   granulator.volumeDB.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ParameterGUI::endPanel();
 
   // Draw modulation window
-  ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25, windowWidth / 2,
-                           windowHeight / 2, flags);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
-  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
-  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.filterLFO, granulator.modFilterDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
-  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
+                           windowWidth / 2, windowHeight / 2, flags);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  drawModulationControl(granulator.grainRateLFO,
+                        granulator.modGrainRateDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  drawModulationControl(granulator.asyncLFO,
+                        granulator.modAsynchronicityDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  drawModulationControl(granulator.intermittencyLFO,
+                        granulator.modIntermittencyDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  drawModulationControl(granulator.streamsLFO,
+                        granulator.modStreamsDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  drawModulationControl(granulator.grainDurationLFO,
+                        granulator.modGrainDurationDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  drawModulationControl(granulator.envelopeLFO,
+                        granulator.modEnvelopeDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  drawModulationControl(granulator.transpositionLFO,
+                        granulator.modTranspositionDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  drawModulationControl(granulator.filterLFO,
+                        granulator.modFilterDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
+  drawModulationControl(granulator.resonanceLFO,
+                        granulator.modResonanceDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  drawModulationControl(granulator.soundFileLFO,
+                        granulator.modSoundFileDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  drawModulationControl(granulator.tapeHeadLFO,
+                        granulator.modTapeHeadDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.612f, 0.690f, 0.647f));
   drawModulationControl(granulator.panLFO, granulator.modPanDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  drawModulationControl(granulator.volumeLFO,
+                        granulator.modVolumeDepth.mParameter);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ParameterGUI::endPanel();
 
   // Draw an interface to Audio IO.
@@ -231,13 +273,13 @@ void ecInterface::onDraw(Graphics &g) {
   // Audio device and its parameters
   // if statement opens Audio IO popup if chosen from menu
   if (displayIO == true) {
-      ImGui::OpenPopup("Audio IO");
+    ImGui::OpenPopup("Audio IO");
   }
 
   bool open = true;
   if (ImGui::BeginPopupModal("Audio IO", &open)) {
-      drawAudioIO(&audioIO());
-      ImGui::EndPopup();
+    drawAudioIO(&audioIO());
+    ImGui::EndPopup();
   }
 
   // Draw recorder window
@@ -282,24 +324,26 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Draw Scope window
-  ParameterGUI::beginPanel("Scopes", windowWidth / 4, windowHeight * 3 / 4 + 25, windowWidth / 2,
-                           windowHeight / 4, flags);
+  ParameterGUI::beginPanel("Scopes", windowWidth / 4, windowHeight * 3 / 4 + 25,
+                           windowWidth / 2, windowHeight / 4, flags);
   ImGui::Text("Active Grains: %.1i ", granulator.getActiveVoices());
   if (framecounter % 10 == 0) {
-      streamHistory.erase(streamHistory.begin());
-      streamHistory.push_back(granulator.getActiveVoices());
+    streamHistory.erase(streamHistory.begin());
+    streamHistory.push_back(granulator.getActiveVoices());
   }
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.8f);
-  ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
-                       100, ImVec2(0, 80), sizeof(int));
+  ImGui::PlotHistogram("##Active Streams", &streamHistory[0],
+                       streamHistory.size(), 0, nullptr, 0, 100, ImVec2(0, 80),
+                       sizeof(int));
 
   ImGui::PopItemWidth();
   ImGui::Text("Oscilloscope Timeframe (s):");
   ImGui::SameLine();
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
-      oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
-      oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+    oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
+    oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
   }
 
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
@@ -307,20 +351,23 @@ void ecInterface::onDraw(Graphics &g) {
 
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 1.0f);
   ImGui::SetCursorPosY(160);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
-  ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1, ImVec2(0, 100),
-                   sizeof(float));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
+                   ImVec2(0, 100), sizeof(float));
 
   ImGui::SetCursorPosY(160);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
-  ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1, ImVec2(0, 100),
-                   sizeof(float));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
+                   ImVec2(0, 100), sizeof(float));
 
   ImGui::PopItemWidth();
 
   // ImGui::PlotHistogram("Number of Active Grains: %.1i
   // ",granulator.getActiveVoices() );
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
 
   ParameterGUI::endPanel();
 
@@ -336,117 +383,120 @@ void ecInterface::onDraw(Graphics &g) {
 
 void ecInterface::drawAudioIO(AudioIO *io) {
   struct AudioIOState {
-      int currentSr = 1;
-      int currentBufSize = 3;
-      int currentDevice = 0;
-      std::vector<std::string> devices;
+    int currentSr = 1;
+    int currentBufSize = 3;
+    int currentDevice = 0;
+    std::vector<std::string> devices;
   };
   auto updateDevices = [&](AudioIOState &state) {
-      state.devices.clear();
-      int numDevices = AudioDevice::numDevices();
-      for (int i = 0; i < numDevices; i++) {
-          state.devices.push_back(AudioDevice(i).name());
-      }
+    state.devices.clear();
+    int numDevices = AudioDevice::numDevices();
+    for (int i = 0; i < numDevices; i++) {
+      state.devices.push_back(AudioDevice(i).name());
+    }
   };
   static std::map<AudioIO *, AudioIOState> stateMap;
   if (stateMap.find(io) == stateMap.end()) {
-      stateMap[io] = AudioIOState();
-      updateDevices(stateMap[io]);
+    stateMap[io] = AudioIOState();
+    updateDevices(stateMap[io]);
   }
   AudioIOState &state = stateMap[io];
   ImGui::PushID(std::to_string((unsigned long)io).c_str());
 
   if (io->isOpen()) {
-      std::string text;
-      text += "Sampling Rate: " + std::to_string(int(io->fps()));
-      text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
-      text += "\nInput Channels: " + std::to_string(io->channelsIn());
-      text += "\nOutput Channels:" + std::to_string(io->channelsOut());
-      ImGui::Text("%s", text.c_str());
-      if (ImGui::Button("Stop")) {
-          io->stop();
-          io->close();
-      }
+    std::string text;
+    text += "Sampling Rate: " + std::to_string(int(io->fps()));
+    text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
+    text += "\nInput Channels: " + std::to_string(io->channelsIn());
+    text += "\nOutput Channels:" + std::to_string(io->channelsOut());
+    ImGui::Text("%s", text.c_str());
+    if (ImGui::Button("Stop")) {
+      io->stop();
+      io->close();
+    }
   } else {
-      if (ImGui::Button("Update Devices")) {
-          updateDevices(state);
-      }
-      if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
-                       static_cast<void *>(&state.devices), state.devices.size())) {
-          // TODO adjust valid number of channels.
-      }
-      std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
-      ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
-                   static_cast<void *>(&samplingRates), samplingRates.size());
-      if (ImGui::Button("Start")) {
-          io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
-          io->framesPerBuffer(consts::BLOCK_SIZE);
-          io->device(AudioDevice(state.currentDevice));
-          granulator.setIO(io);
-          granulator.resampleSoundFiles();
-          io->open();
-          io->start();
-      }
+    if (ImGui::Button("Update Devices")) {
+      updateDevices(state);
+    }
+    if (ImGui::Combo(
+            "Device", &state.currentDevice, ParameterGUI::vector_getter,
+            static_cast<void *>(&state.devices), state.devices.size())) {
+      // TODO adjust valid number of channels.
+    }
+    std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
+    ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
+                 static_cast<void *>(&samplingRates), samplingRates.size());
+    if (ImGui::Button("Start")) {
+      io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
+      io->framesPerBuffer(consts::BLOCK_SIZE);
+      io->device(AudioDevice(state.currentDevice));
+      granulator.setIO(io);
+      granulator.resampleSoundFiles();
+      io->open();
+      io->start();
+    }
   }
   ImGui::PopID();
 }
 
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory, uint32_t bufferSize) {
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                               uint32_t numChannels, std::string directory,
+                               uint32_t bufferSize) {
   struct SoundfileRecorderState {
-      bool recordButton;
-      bool overwriteButton;
+    bool recordButton;
+    bool overwriteButton;
   };
   static std::map<SoundFileBufferedRecord *, SoundfileRecorderState> stateMap;
   if (stateMap.find(recorder) == stateMap.end()) {
-      stateMap[recorder] = SoundfileRecorderState{0, false};
+    stateMap[recorder] = SoundfileRecorderState{0, false};
   }
   SoundfileRecorderState &state = stateMap[recorder];
   ImGui::PushID(std::to_string((unsigned long)recorder).c_str());
-  if (ImGui::CollapsingHeader(
-          "Record Audio", ImGuiTreeNodeFlags_CollapsingHeader | ImGuiTreeNodeFlags_DefaultOpen)) {
-      static char buf1[64] = "test.wav";
-      ImGui::InputText("Record Name", buf1, 63);
+  if (ImGui::CollapsingHeader("Record Audio",
+                              ImGuiTreeNodeFlags_CollapsingHeader |
+                                  ImGuiTreeNodeFlags_DefaultOpen)) {
+    static char buf1[64] = "test.wav";
+    ImGui::InputText("Record Name", buf1, 63);
+    if (state.recordButton) {
+      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
+      ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0, 0.5, 0.5, 1.0));
+    }
+    std::string buttonText = state.recordButton ? "Stop" : "Record";
+    bool recordButtonClicked = ImGui::Button(buttonText.c_str());
+    if (state.recordButton) {
+      ImGui::PopStyleColor();
+      ImGui::PopStyleColor();
+    }
+    if (recordButtonClicked) {
+      state.recordButton = !state.recordButton;
       if (state.recordButton) {
-          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0, 0.5, 0.5, 1.0));
-      }
-      std::string buttonText = state.recordButton ? "Stop" : "Record";
-      bool recordButtonClicked = ImGui::Button(buttonText.c_str());
-      if (state.recordButton) {
-          ImGui::PopStyleColor();
-          ImGui::PopStyleColor();
-      }
-      if (recordButtonClicked) {
-          state.recordButton = !state.recordButton;
-          if (state.recordButton) {
-              uint32_t ringBufferSize;
-              if (bufferSize == 0) {
-                  ringBufferSize = 8192;
-              } else {
-                  ringBufferSize = bufferSize * numChannels * 4;
-              }
-              std::string filename;
-              if (!state.overwriteButton) {
-                  filename = buf1;
-                  int counter = 0;
-                  while (File::exists(directory + filename) && counter < 9999) {
-                      filename = buf1;
-                      int lastDot = filename.find_last_of(".");
-                      filename = filename.substr(0, lastDot) + std::to_string(counter++) +
-                                 filename.substr(lastDot);
-                  }
-              }
-              if (!recorder->start(directory + filename, frameRate, numChannels,
-                                   ringBufferSize)) {
-                  std::cerr << "Error opening file for record" << std::endl;
-              }
-          } else {
-              recorder->close();
+        uint32_t ringBufferSize;
+        if (bufferSize == 0) {
+          ringBufferSize = 8192;
+        } else {
+          ringBufferSize = bufferSize * numChannels * 4;
+        }
+        std::string filename;
+        if (!state.overwriteButton) {
+          filename = buf1;
+          int counter = 0;
+          while (File::exists(directory + filename) && counter < 9999) {
+            filename = buf1;
+            int lastDot = filename.find_last_of(".");
+            filename = filename.substr(0, lastDot) + std::to_string(counter++) +
+                       filename.substr(lastDot);
           }
+        }
+        if (!recorder->start(directory + filename, frameRate, numChannels,
+                             ringBufferSize)) {
+          std::cerr << "Error opening file for record" << std::endl;
+        }
+      } else {
+        recorder->close();
       }
-      ImGui::SameLine();
-      ImGui::Checkbox("Overwrite", &state.overwriteButton);
+    }
+    ImGui::SameLine();
+    ImGui::Checkbox("Overwrite", &state.overwriteButton);
   }
   ImGui::PopID();
 }
@@ -465,14 +515,15 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::PopItemWidth();
   ImGui::Indent(200);
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
-      ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
-      ImGui::PopItemWidth();
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
+    ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
+    ImGui::PopItemWidth();
   }
   ImGui::Unindent(200);
 }
 
-void ecInterface::drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider) {
+void ecInterface::drawModulationControl(al::ParameterMenu &menu,
+                                        al::Parameter *slider) {
   ImGui::PushItemWidth(120);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
@@ -483,24 +534,38 @@ void ecInterface::drawModulationControl(al::ParameterMenu &menu, al::Parameter *
 }
 
 void ecInterface::setGUIColors() {
-  ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
-  ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
+  ImGui::PushStyleColor(ImGuiCol_WindowBg,
+                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
+  ImGui::PushStyleColor(ImGuiCol_PopupBg,
+                        (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrab,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_Button,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_Header,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderActive,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBg,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBgActive,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed,
+                        (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
+                        (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
-
-void ecInterface::setPlotConfig() { ImGui::PlotConfig histConf; }
