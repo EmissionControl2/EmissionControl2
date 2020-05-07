@@ -165,6 +165,7 @@ void ecSynth::init(al::AudioIOData *io) {
 void ecSynth::onProcess(AudioIOData &io) {
   //        updateFromParameters();
   /* Manipulate on a Grain Level */
+/*
   while (io()) {
     for (int index = 0; index < NUM_MODULATORS; ++index)
       Modulators[index]->sampleAndStore();
@@ -243,13 +244,14 @@ void ecSynth::onProcess(AudioIOData &io) {
 
   io.frame(0);
 
-  /* Manipulate on a stream level */
+  // Manipulate on a stream level 
   while (io()) {
     hardClip(io);
     oscBufferL.push_back(io.out(0));
     oscBufferR.push_back(io.out(1));
     // softClip(io);
   }
+  */
 }
 
 void ecSynth::onTriggerOn() {}
