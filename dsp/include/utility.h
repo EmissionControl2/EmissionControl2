@@ -326,7 +326,7 @@ public:
     int start = mTail - lookBack;
     if (start < 0)
       start = mMaxSize + start;
-    for (int i = 0; i < lookBack; i++)
+    for (unsigned i = 0; i < lookBack; i++)
       array[i] = mBuffer[(start + i) % mMaxSize];
     // std::cout << "got here too!" << std::endl;
     return array;
