@@ -42,6 +42,7 @@ class ecInterface : public al::App {
   virtual void onDraw(al::Graphics &g) override;
 
  private:
+  bool noSoundFiles;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
