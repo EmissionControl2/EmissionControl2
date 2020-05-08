@@ -136,9 +136,9 @@ public:
   /**
    * @brief Load sound files from designated sample folder.
    *
-   * @return Return the directory path where the files were loaded in from.
+   * @return Return false if the directory is empty.
    */
-  std::string loadInitSoundFiles(std::string directory);
+  bool loadInitSoundFiles(std::string directory);
 
   /**
    * @brief Resample all files in SoundClip to match globalSamplingRate.
@@ -190,6 +190,8 @@ public:
    */
   void throttle(float time, float ratio);
 
+  int getNumberOfAudioFiles() const {return soundClip.size();}
+
 private:
   float mGlobalSamplingRate, mPrevSR;
 
@@ -199,7 +201,7 @@ private:
   std::vector<std::shared_ptr<util::buffer<float>>>
       soundClip;    /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
-  int mModClip;
+  int mModClip = 0;
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;

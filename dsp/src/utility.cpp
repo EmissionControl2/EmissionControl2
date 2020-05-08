@@ -12,6 +12,7 @@
 #include <unistd.h>
 #else
 #include <mach-o/dyld.h>
+#include <stdlib.h>
 #endif
 
 #include <stdio.h> /* defines FILENAME_MAX */
