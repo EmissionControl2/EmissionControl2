@@ -140,17 +140,18 @@ void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
 /******* ecParameter *******/
 
-ecParameter::ecParameter(std::string parameterName, float defaultValue,
-                         float defaultMin, float defaultMax, float absMin,
-                         float absMax, consts::waveform modWaveform,
-                         bool independentMod) {
+ecParameter::ecParameter(std::string parameterName, std::string displayName,
+                         float defaultValue, float defaultMin, float defaultMax,
+                         float absMin, float absMax,
+                         consts::waveform modWaveform, bool independentMod) {
   mParameter =
       new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
-  // mParameter->displayName("##" + parameterName);
+  mDisplayName = displayName;
+  mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
                             absMin, absMax};
-  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
-                             defaultMax, absMin, absMax};
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(), defaultMax,
+                             absMin, absMax};
   mMin = defaultMin;
   mMax = defaultMax;
   mModWaveform = modWaveform;
@@ -159,13 +160,14 @@ ecParameter::ecParameter(std::string parameterName, float defaultValue,
     mModulator = new ecModulator{mModWaveform, 1, 1};
 }
 
-ecParameter::ecParameter(std::string parameterName, std::string Group,
-                         float defaultValue, std::string prefix,
-                         float defaultMin, float defaultMax, float absMin,
-                         float absMax, consts::waveform modWaveform,
-                         bool independentMod) {
+ecParameter::ecParameter(std::string parameterName, std::string displayName,
+                         std::string Group, float defaultValue,
+                         std::string prefix, float defaultMin, float defaultMax,
+                         float absMin, float absMax,
+                         consts::waveform modWaveform, bool independentMod) {
   mParameter = new Parameter{parameterName, Group,      defaultValue,
                              prefix,        defaultMin, defaultMax};
+  mDisplayName = displayName;
   mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(),
                             Group,
@@ -213,7 +215,7 @@ float ecParameter::getModParam(float modWidth) {
                                 (mHighRange->get() - mLowRange->get()));
   else {
     std::cerr << "No Valid Modulation source for ecParameter instance: "
-              << mParameter->getName() << std::endl;
+              << mParameter->displayName() << std::endl;
     std::exit(1);
   }
   if (temp > mHighRange->get())
@@ -273,19 +275,21 @@ void ecParameter::drawRangeSlider(bool isLFOParam) {
   if (isLFOParam)
     ImGui::Text("Hz");
   else
-    ImGui::Text((mParameter->getName()).c_str());
+    ImGui::Text((getDisplayName()).c_str());
   ImGui::PopItemWidth();
 }
 
 /******* ecParameterInt *******/
 
-ecParameterInt::ecParameterInt(std::string parameterName, std::string Group,
+ecParameterInt::ecParameterInt(std::string parameterName,
+                               std::string displayName, std::string Group,
                                int defaultValue, std::string prefix,
                                int defaultMin, int defaultMax, int absMin,
                                int absMax, consts::waveform modWaveform,
                                bool independentMod) {
   mParameterInt = new ParameterInt{parameterName, Group,      defaultValue,
                                    prefix,        defaultMin, defaultMax};
+  mDisplayName = displayName;
   mParameterInt->displayName("##" + parameterName);
   mLowRange = new ParameterInt{("##" + parameterName + "Low").c_str(),
                                Group,
@@ -333,7 +337,7 @@ int ecParameterInt::getModParam(float modWidth) {
                                    (mHighRange->get() - mLowRange->get()));
   else {
     std::cerr << "No Valid Modulation source for ecParameterInt instance: "
-              << mParameterInt->getName() << std::endl;
+              << mParameterInt->displayName() << std::endl;
     std::exit(1);
   }
   if (temp > mHighRange->get())
@@ -390,7 +394,7 @@ void ecParameterInt::drawRangeSlider() {
 
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
-  ImGui::Text((mParameterInt->getName()).c_str());
+  ImGui::Text((getDisplayName()).c_str());
   ImGui::PopItemWidth();
 }
 
@@ -617,15 +621,15 @@ bool flowControl::throttle(float time, float ratio, int activeVoices) {
     mAvgActiveVoices /= mCounter;
     mCounter = 0;
   }
+  return true;
+  // float adaptThresh;
 
-  float adaptThresh;
-
-  if (getPeakCPU() > adaptThresh) {
-    return true;
-  }
-  if (getAvgCPU() > adaptThresh) {
-    return true;
-  } else {
-    return false;
-  }
+  // if (getPeakCPU() > adaptThresh) {
+  //   return true;
+  // }
+  // if (getAvgCPU() > adaptThresh) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
 }

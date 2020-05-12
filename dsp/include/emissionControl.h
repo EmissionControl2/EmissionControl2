@@ -229,6 +229,7 @@ public:
    * @brief ecParameter Constructor.
    *
    * @param[in] parameterName The name of the parameter
+   * @param[in] displayName The displayed name of the parameter
    * @param[in] defaultValue The initial value for the parameter
    * @param[in] Default minimum value for the parameter.
    * @param[in] Default maximum value for the parameter.
@@ -239,9 +240,10 @@ public:
    *            If false, must input data on an outside modulator when calling
    * getParamMod().
    */
-  ecParameter(std::string parameterName, float defaultValue = 0,
-              float defaultMin = -99999.0, float defaultMax = 99999.0,
-              float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
+  ecParameter(std::string parameterName, std::string displayName,
+              float defaultValue = 0, float defaultMin = -99999.0,
+              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
+              float absMax = FLT_MAX,
               consts::waveform modWaveform = consts::SINE,
               bool independentMod = 0);
 
@@ -249,6 +251,7 @@ public:
    * @brief ecParameter Constructor.
    *
    * @param[in] parameterName The name of the parameter
+   * @param[in] displayName The displayed name of the parameter
    * @param[in] Group The group the parameter belongs to
    * @param[in] defaultValue The initial value for the parameter
    * @param[in] prefix An address prefix that is prepended to the parameter's
@@ -263,10 +266,11 @@ public:
    * getParamMod().
    *
    */
-  ecParameter(std::string parameterName, std::string Group,
-              float defaultValue = 0, std::string prefix = "",
-              float defaultMin = -99999.0, float defaultMax = 99999.0,
-              float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
+  ecParameter(std::string parameterName, std::string displayName,
+              std::string Group, float defaultValue = 0,
+              std::string prefix = "", float defaultMin = -99999.0,
+              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
+              float absMax = FLT_MAX,
               consts::waveform modWaveform = consts::SINE,
               bool independentMod = 0);
 
@@ -331,7 +335,12 @@ public:
    */
   void drawRangeSlider(bool isLFOParam = 0);
 
+  std::string getDisplayName() const { return mDisplayName; }
+
+  void setDisplayName(std::string name) { mDisplayName = name; }
+
 private:
+  std::string mDisplayName;
   consts::waveform mModWaveform;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
@@ -362,6 +371,7 @@ public:
    * @brief ecParameterInt Constructor.
    *
    * @param[in] parameterName The name of the parameter
+   * @param[in] displayName The displayed name of the parameter
    * @param[in] Group The group the parameter belongs to
    * @param[in] defaultValue The initial value for the parameter
    * @param[in] prefix An address prefix that is prepended to the parameter's
@@ -376,10 +386,11 @@ public:
    * getParamMod().
    *
    */
-  ecParameterInt(std::string parameterName, std::string Group,
-                 int defaultValue = 0, std::string prefix = "",
-                 int defaultMin = -99999, int defaultMax = 99999,
-                 int absMin = -1 * INT_MAX, int absMax = INT_MAX,
+  ecParameterInt(std::string parameterName, std::string displayName,
+                 std::string Group, int defaultValue = 0,
+                 std::string prefix = "", int defaultMin = -99999,
+                 int defaultMax = 99999, int absMin = -1 * INT_MAX,
+                 int absMax = INT_MAX,
                  consts::waveform modWaveform = consts::SINE,
                  bool independentMod = 0);
 
@@ -436,7 +447,12 @@ public:
    */
   void drawRangeSlider();
 
+  std::string getDisplayName() const { return mDisplayName; }
+
+  void setDisplayName(std::string name) { mDisplayName = name; }
+
 private:
+  std::string mDisplayName;
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
   int mMax, mMin;
@@ -663,7 +679,8 @@ public:
     std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
 
     shape = new al::ParameterMenu(menuName);
-    frequency = new ecParameter(freqName, "", 1, "", 0.01, 30, 0.001, 10000);
+    frequency =
+        new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Saw", "Noise"});
