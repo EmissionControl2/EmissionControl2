@@ -8,16 +8,17 @@ elif [ $result == "EmissionControlPort" ]; then
   cd dsp/
 fi
 (
-  mkdir -p ./bin
-  cd ./bin
-  cp -r ../../externalResources/samples .
-  mkdir -p soundOutput
-  mkdir -p presets
+ 
   if [ $(uname -s) == "Linux" ]; then
+    mkdir -p ./bin
+    cd ./bin
+    cp -r ../../externalResources/samples .
+    mkdir -p soundOutput
+    mkdir -p presets
     cp -r ../external/Resources .
     cp -r ../../externalResources/Fonts ./Resources
+    cd ..
   fi
-  cd ..
 
   # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
   if [ ! -d "./external/libsamplerate/build" ]; then

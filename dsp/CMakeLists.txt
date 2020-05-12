@@ -36,36 +36,39 @@ set(srcs
   src/ecSynth.cpp
   src/utility.cpp
 )
+if(APPLE)
+  set(RESOURCE_LIST
+      "libsndfile"
+      "samples"
+      "Fonts"
+  )
 
-set(RESOURCE_LIST
-    "libsndfile"
-)
-
-foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
-  SET(RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/Resources/${RESOURCE_DIR_NAME}")
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    file(GLOB CHILDREN RELATIVE "${RESOURCE_DIR}" ${RESOURCE_DIR}/*)
-    foreach(CHILD ${CHILDREN})
-      IF(IS_DIRECTORY "${RESOURCE_DIR}/${CHILD}")
-        # be wary of .DS_Store files. glob them out by using [A-Za-z]*.*
-        FILE(GLOB RESOURCE_DIR_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${RESOURCE_DIR}/${CHILD}/[A-Za-z]*.*")
-        SET_SOURCE_FILES_PROPERTIES(
-          ${RESOURCE_DIR_FILES}
-          PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${RESOURCE_DIR_NAME}/${CHILD}
-        )
-        SET(RESOURCE_FILES ${RESOURCE_FILES} "external/Resources/${RESOURCE_DIR_FILES}")
-      ELSEIF(NOT ${CHILD} MATCHES "\\.DS_Store|.*\\.am")
-        SET_SOURCE_FILES_PROPERTIES(
-          "${RESOURCE_DIR}/${CHILD}"
-          PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${RESOURCE_DIR_NAME}
-        )
-        SET(RESOURCE_FILES ${RESOURCE_FILES} "external/Resources/${RESOURCE_DIR_NAME}/${CHILD}")
-      ENDIF()
-    endforeach()
-  else(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") #WORK ON
-    INSTALL( DIRECTORY ${RESOURCE_DIR} DESTINATION "${DATA_DIR}" PATTERN "*.am" EXCLUDE)
-  endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-endforeach()
+  foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
+    SET(RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/${RESOURCE_DIR_NAME}")
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+      file(GLOB CHILDREN RELATIVE "${RESOURCE_DIR}" ${RESOURCE_DIR}/*)
+      foreach(CHILD ${CHILDREN})
+        IF(IS_DIRECTORY "${RESOURCE_DIR}/${CHILD}")
+          # be wary of .DS_Store files. glob them out by using [A-Za-z]*.*
+          FILE(GLOB RESOURCE_DIR_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${RESOURCE_DIR}/${CHILD}/[A-Za-z]*.*")
+          SET_SOURCE_FILES_PROPERTIES(
+            ${RESOURCE_DIR_FILES}
+            PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${RESOURCE_DIR_NAME}/${CHILD}
+          )
+          SET(RESOURCE_FILES ${RESOURCE_FILES} "../externalResources/${RESOURCE_DIR_FILES}")
+        ELSEIF(NOT ${CHILD} MATCHES "\\.DS_Store|.*\\.am")
+          SET_SOURCE_FILES_PROPERTIES(
+            "${RESOURCE_DIR}/${CHILD}"
+            PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${RESOURCE_DIR_NAME}
+          )
+          SET(RESOURCE_FILES ${RESOURCE_FILES} "../externalResources/${RESOURCE_DIR_NAME}/${CHILD}")
+        ENDIF()
+      endforeach()
+    else(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") #WORK ON
+      INSTALL( DIRECTORY ${RESOURCE_DIR} DESTINATION "${DATA_DIR}" PATTERN "*.am" EXCLUDE)
+    endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  endforeach()
+endif(APPLE)
 
 add_executable(${APP_NAME} MACOSX_BUNDLE
   src/main.cpp
@@ -140,20 +143,62 @@ set_target_properties(${APP_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
 )
 
+## POST BUILD COMMANDS
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
 
+  set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/EmissionControl20.app/Contents/Resources/")
+  add_custom_command (TARGET ${APP_NAME}
+    POST_BUILD 
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/libsndfile/lib/libsndfile.1.dylib" 
+      "@rpath/libsndfile/libsndfile.1.dylib"
+      "$<TARGET_FILE:${APP_NAME}>" 
 
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/libvorbis/lib/libvorbis.0.dylib" 
+      "@rpath/libsndfile/libvorbis.0.dylib"
+      "${RESOURCE_PATH}/libsndfile/libsndfile.1.dylib"
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/flac/lib/libFLAC.8.dylib" 
+      "@rpath/libsndfile/libFLAC.8.dylib"
+      "${RESOURCE_PATH}/libsndfile/libsndfile.1.dylib"
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/libogg/lib/libogg.0.dylib" 
+      "@rpath/libsndfile/libogg.0.dylib"
+      "${RESOURCE_PATH}/libsndfile/libsndfile.1.dylib"
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/libvorbis/lib/libvorbisenc.2.dylib" 
+      "@rpath/libsndfile/libvorbisenc.2.dylib"
+      "${RESOURCE_PATH}/libsndfile/libsndfile.1.dylib" 
+
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+    "-change" "/usr/local/opt/libogg/lib/libogg.0.dylib" 
+    "@rpath/libsndfile/libogg.0.dylib"
+    "${RESOURCE_PATH}/libsndfile/libFLAC.8.dylib"
+
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/libogg/lib/libogg.0.dylib" 
+      "@rpath/libsndfile/libogg.0.dylib"
+      "${RESOURCE_PATH}/libsndfile/libvorbis.0.dylib"
+
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/opt/libogg/lib/libogg.0.dylib" 
+      "@rpath/libsndfile/libogg.0.dylib"
+      "${RESOURCE_PATH}/libsndfile/libvorbisenc.2.dylib" 
+    COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
+      "-change" "/usr/local/Cellar/libvorbis/1.3.6/lib/libvorbis.0.dylib" 
+      "@rpath/libsndfile/libvorbis.0.dylib"
+      "${RESOURCE_PATH}/libsndfile/libvorbisenc.2.dylib" 
+    VERBATIM
+  )
+
+  file(MAKE_DIRECTORY "${RESOURCE_PATH}/presets")
+  file(MAKE_DIRECTORY "${RESOURCE_PATH}/soundOutput")
+  
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
-set(${CMAKE_CURRENT_LIST_DIR}bin/resources/libsndfile.dylib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/buildTest)
-
-add_custom_command(TARGET ${APP_NAME}
-    POST_BUILD COMMAND 
-    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path/../Resources/" #libsndfile.1.dylib"
-    $<TARGET_FILE:${APP_NAME}>)
