@@ -12,6 +12,7 @@
 #include <unistd.h>
 #else
 #include <mach-o/dyld.h>
+#include <stdlib.h>
 #endif
 
 #include <stdio.h> /* defines FILENAME_MAX */
@@ -246,11 +247,11 @@ std::string util::getExecutablePath() {
   return std::string(exePath);
 }
 
-std::string util::getAppPath(std::string s) {
+std::string util::getContentPath(std::string s) {
   char delim = '/';
   size_t counter = 0;
   size_t i = s.size() - 1;
-  while (counter < 4) {
+  while (counter < 2) {
     if (s[i] == delim)
       counter++;
     i--;

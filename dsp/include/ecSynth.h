@@ -39,65 +39,93 @@ public:
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
-  ecParameter grainRate{"1. Grain rate", "", 1, "", 0.1, 100, 0, 500,
-                        consts::SINE,    0};
+  ecParameter grainRate{"Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0,
+                        500,           consts::SINE,    0};
   al::ParameterMenu grainRateLFO{"##grainRateLFO"};
-  ecParameter modGrainRateDepth{"modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modGrainRateDepth{
+      "modGrainRateDepth", "modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter asynchronicity{"2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1,
-                             consts::SINE};
+  ecParameter asynchronicity{
+      "Asynchronicity", "2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1,
+      consts::SINE};
   al::ParameterMenu asyncLFO{"##asyncLFO"};
-  ecParameter modAsynchronicityDepth{
-      "modAsynchronicityDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modAsynchronicityDepth{"modAsynchronicityDepth",
+                                     "modAsynchronicityDepth",
+                                     "",
+                                     0,
+                                     "",
+                                     0,
+                                     1,
+                                     0,
+                                     1};
 
-  ecParameter intermittency{"3. Intermittancy", "", 0, "", 0, 1, 0, 1};
+  ecParameter intermittency{
+      "Intermittancy", "3. Intermittancy", "", 0, "", 0, 1, 0, 1};
   al::ParameterMenu intermittencyLFO{"##intermittencyLFO"};
   ecParameter modIntermittencyDepth{
-      "modIntermittencyDepth", "", 0, "", 0, 1, 0, 1};
+      "modIntermittencyDepth", "modIntermittencyDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameterInt streams{"4. Streams", "", 1, "", 1, 12, 1, 20};
+  ecParameterInt streams{"Streams", "4. Streams", "", 1, "", 1, 12, 1, 20};
   al::ParameterMenu streamsLFO{"##streamsLFO"};
-  ecParameter modStreamsDepth{"modStreamsDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modStreamsDepth{
+      "modStreamsDepth", "modStreamsDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter grainDurationMs{"5. Grain Dur (ms)", "",   30, "", 0.01, 1000,
-                              0.0000001,           10000};
+  ecParameter grainDurationMs{"GrainDurms",
+                              "5. Grain Dur (ms)",
+                              "",
+                              30,
+                              "",
+                              0.01,
+                              1000,
+                              0.0000001,
+                              10000};
   al::ParameterMenu grainDurationLFO{"##grainDurationLFO"};
   ecParameter modGrainDurationDepth{
-      "modGrainDurationDepth", "", 0, "", 0, 1, 0, 1};
+      "modGrainDurationDepth", "modGrainDurationDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter envelope{"6. Envelope shape", "", 0.5, "", 0, 1, 0, 1};
+  ecParameter envelope{
+      "Envelopeshape", "6. Envelope shape", "", 0.5, "", 0, 1, 0, 1};
   al::ParameterMenu envelopeLFO{"##envelopeLFO"};
-  ecParameter modEnvelopeDepth{"modEnvelopeDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modEnvelopeDepth{
+      "modEnvelopeDepth", "modEnvelopeDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter transposition{"7. Pitch shift", "", 1, "", -2, 2, -20, 20};
+  ecParameter transposition{
+      "Pitchshift", "7. Pitch shift", "", 1, "", -2, 2, -20, 20};
   al::ParameterMenu transpositionLFO{"##transpositionLFO"};
   ecParameter modTranspositionDepth{
-      "modTranspositionDepth", "", 0, "", 0, 1, 0, 1};
+      "modTranspositionDepth", "modTranspositionDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter filter{"8. Filter freq", "", 440, "", 60, 5000, 20, 24000};
+  ecParameter filter{
+      "Filterfreq", "8. Filter freq", "", 440, "", 60, 5000, 20, 24000};
   al::ParameterMenu filterLFO{"##filterLFO"};
-  ecParameter modFilterDepth{"modFilterDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modFilterDepth{
+      "modFilterDepth", "modFilterDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter resonance{"9. Resonance", "", 0, "", 0, 1, 0, 1};
+  ecParameter resonance{"Resonance", "9. Resonance", "", 0, "", 0, 1, 0, 1};
   al::ParameterMenu resonanceLFO{"##resonanceLFO"};
-  ecParameter modResonanceDepth{"modResonanceDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modResonanceDepth{
+      "modResonanceDepth", "modResonanceDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameterInt soundFile{"10. Sound file", "", 1,       "", 1,
-                           mClipNum,         1,  mClipNum};
+  ecParameterInt soundFile{
+      "Soundfile", "10. Sound file", "", 1, "", 1, mClipNum, 1, mClipNum};
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
-  ecParameter modSoundFileDepth{"modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modSoundFileDepth{
+      "modSoundFileDepth", "modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter tapeHead{"11. Scan", "", 0.5, "", 0, 1, 0, 1};
-  al::ParameterMenu tapeHeadLFO{"##tapeHeadLFO"};
-  ecParameter modTapeHeadDepth{"modTapeHeadDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter tapeHead{"Scan", "11. Scan", "", 0.5, "", 0, 1, 0, 1};
+  al::ParameterMenu tapeHeadLFO{"##scanLFO"};
+  ecParameter modTapeHeadDepth{
+      "modScanDepth", "modScanDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter pan{"12. Pan", "", 0, "", -1, 1, -1, 1};
+  ecParameter pan{"Pan", "12. Pan", "", 0, "", -1, 1, -1, 1};
   al::ParameterMenu panLFO{"##panLFO"};
-  ecParameter modPanDepth{"modPanDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modPanDepth{"modPanDepth", "modPanDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter volumeDB{"13. Amplitude (dB)", "", -6, "", -60, 6, -180, 24};
+  ecParameter volumeDB{
+      "AmplitudedB", "13. Amplitude (dB)", "", -6, "", -60, 6, -180, 24};
   al::ParameterMenu volumeLFO{"##volumeLFO"};
-  ecParameter modVolumeDepth{"modVolumeDepth", "", 0, "", 0, 1, 0, 1};
+  ecParameter modVolumeDepth{
+      "modVolumeDepth", "modVolumeDepth", "", 0, "", 0, 1, 0, 1};
 
   ecSynth() {}
 
@@ -136,9 +164,9 @@ public:
   /**
    * @brief Load sound files from designated sample folder.
    *
-   * @return Return the directory path where the files were loaded in from.
+   * @return Return false if the directory is empty.
    */
-  std::string loadInitSoundFiles(std::string directory);
+  bool loadInitSoundFiles(std::string directory);
 
   /**
    * @brief Resample all files in SoundClip to match globalSamplingRate.
@@ -190,6 +218,8 @@ public:
    */
   void throttle(float time, float ratio);
 
+  int getNumberOfAudioFiles() const { return soundClip.size(); }
+
 private:
   float mGlobalSamplingRate, mPrevSR;
 
@@ -199,7 +229,7 @@ private:
   std::vector<std::shared_ptr<util::buffer<float>>>
       soundClip;    /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
-  int mModClip;
+  int mModClip = 0;
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;
