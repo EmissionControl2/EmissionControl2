@@ -14,17 +14,17 @@ using namespace al;
 void ecInterface::onInit() {
   dimensions(1920, 1080);
   execDir = f.directory(util::getExecutablePath());
-  execPath = execDir;
   granulator.init(&audioIO());
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
-  execDir = util::getAppPath(execDir);
-  granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
-  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+  execDir = util::getContentPath(execDir);
+  std::cout << execDir << std::endl;
+  granulator.loadInitSoundFiles(execDir + "Resources/samples/");
+  soundOutput = f.conformPathToOS(execDir + "Resources/soundOutput/");
+  mPresets.setRootPath(f.conformPathToOS(execDir + "Resources/presets/"));
 #endif
 
 #ifdef _WIN32_
@@ -34,7 +34,6 @@ void ecInterface::onInit() {
 #endif
 
 #ifdef __linux__
-  DEBUG = "here";
   granulator.loadInitSoundFiles(execDir + "samples/");
   soundOutput = execDir + "soundOutput/";
   mPresets.setRootPath(execDir + "presets/");
@@ -98,7 +97,7 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
 #endif
 
 #ifdef __linux__
@@ -367,7 +366,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Throw popup to remind user to load in sound files if none are present.
   if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
     ImGui::Text("Files can be loaded in from the top left menu.\nAudio will turn on once a file has been loaded.");
-    ImGui::Text(execDir.c_str());
+    ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
 
