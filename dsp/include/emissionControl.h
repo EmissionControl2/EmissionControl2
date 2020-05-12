@@ -335,7 +335,12 @@ public:
    */
   void drawRangeSlider(bool isLFOParam = 0);
 
+  std::string getDisplayName() const { return mDisplayName; }
+
+  void setDisplayName(std::string name) { mDisplayName = name; }
+
 private:
+  std::string mDisplayName;
   consts::waveform mModWaveform;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
@@ -442,7 +447,12 @@ public:
    */
   void drawRangeSlider();
 
+  std::string getDisplayName() const { return mDisplayName; }
+
+  void setDisplayName(std::string name) { mDisplayName = name; }
+
 private:
+  std::string mDisplayName;
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
   int mMax, mMin;
@@ -665,7 +675,8 @@ public:
     std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
 
     shape = new al::ParameterMenu(menuName);
-    frequency = new ecParameter(freqName,freqName, "", 1, "", 0.01, 30, 0.001, 10000);
+    frequency =
+        new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Saw", "Noise"});
