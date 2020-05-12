@@ -163,8 +163,10 @@ void ecSynth::init(al::AudioIOData *io) {
 }
 
 void ecSynth::onProcess(AudioIOData &io) {
+
   //        updateFromParameters();
   /* Manipulate on a Grain Level */
+
   while (io()) {
     for (int index = 0; index < NUM_MODULATORS; ++index)
       Modulators[index]->sampleAndStore();
@@ -242,8 +244,7 @@ void ecSynth::onProcess(AudioIOData &io) {
   grainSynth.render(io);
 
   io.frame(0);
-
-  /* Manipulate on a stream level */
+  // Manipulate on a stream level
   while (io()) {
     hardClip(io);
     oscBufferL.push_back(io.out(0));
@@ -267,18 +268,22 @@ void ecSynth::loadSoundFile(std::string fileName) {
   }
 }
 
-std::string ecSynth::loadInitSoundFiles(std::string directory) {
+bool ecSynth::loadInitSoundFiles(std::string directory) {
   FileList initAudioFiles = fileListFromDir(directory);
   initAudioFiles.sort(util::compareFileNoCase);
+
+  bool success = false;
   for (auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
     if (i->file().substr(i->file().length() - 4) == ".wav" ||
         i->file().substr(i->file().length() - 4) == ".aif") {
       loadSoundFile(i->filepath());
+      success = true;
     } else if (i->file().substr(i->file().length() - 5) == ".aiff") {
       loadSoundFile(i->filepath());
+      success = true;
     }
   }
-  return directory;
+  return success;
 }
 
 void ecSynth::clearSoundFiles() {
@@ -295,21 +300,20 @@ void ecSynth::resampleSoundFiles() {
   // If sampling rate is the same as before, no need for resampling.
   if (static_cast<int>(mPrevSR) == static_cast<int>(mGlobalSamplingRate))
     return;
-
-  int i;
   std::vector<std::string> filePaths;
+  long unsigned i;
   // Collect filepaths of audio buffers.
   for (i = 0; i < soundClip.size(); i++) {
     filePaths.push_back(soundClip[i]->filePath);
   }
 
   clearSoundFiles();
-  for (i = 0; i < filePaths.size(); i++)
+  for (long unsigned i = 0; i < filePaths.size(); i++)
     loadSoundFile(filePaths[i]);
 }
 
 void ecSynth::hardClip(al::AudioIOData &io) {
-  for (int i = 0; i < io.channelsOut(); ++i) {
+  for (unsigned i = 0; i < io.channelsOut(); ++i) {
     if (io.out(i) > 1)
       io.sum(-1 * io.out(0) + 1, i);
     if (io.out(i) < -1)
@@ -348,11 +352,11 @@ void ecSynth::throttle(float time, float ratio) {
     mCounter = 0;
   }
 
-  float adaptThresh;
+  // float adaptThresh;
 
-  if (mPeakCPU > adaptThresh) {
-  }
-  if (mAvgCPU > adaptThresh) {
-  } else {
-  }
+  // if (mPeakCPU > adaptThresh) {
+  // }
+  // if (mAvgCPU > adaptThresh) {
+  // } else {
+  // }
 }
