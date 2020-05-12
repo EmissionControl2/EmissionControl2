@@ -146,10 +146,11 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          consts::waveform modWaveform, bool independentMod) {
   mParameter =
       new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
-  mParameter->displayName("##" + displayName);
-  mLowRange = new Parameter{("##" + displayName + "Low").c_str(), defaultMin,
+  mDisplayName = displayName;
+  mParameter->displayName("##" + parameterName);
+  mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
                             absMin, absMax};
-  mHighRange = new Parameter{("##" + displayName + "High").c_str(), defaultMax,
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(), defaultMax,
                              absMin, absMax};
   mMin = defaultMin;
   mMax = defaultMax;
@@ -166,14 +167,15 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          consts::waveform modWaveform, bool independentMod) {
   mParameter = new Parameter{parameterName, Group,      defaultValue,
                              prefix,        defaultMin, defaultMax};
-  mParameter->displayName("##" + displayName);
-  mLowRange = new Parameter{("##" + displayName + "Low").c_str(),
+  mDisplayName = displayName;
+  mParameter->displayName("##" + parameterName);
+  mLowRange = new Parameter{("##" + parameterName + "Low").c_str(),
                             Group,
                             defaultMin,
                             prefix,
                             absMin,
                             absMax};
-  mHighRange = new Parameter{("##" + displayName + "High").c_str(),
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
                              Group,
                              defaultMax,
                              prefix,
@@ -273,7 +275,7 @@ void ecParameter::drawRangeSlider(bool isLFOParam) {
   if (isLFOParam)
     ImGui::Text("Hz");
   else
-    ImGui::Text((mParameter->displayName()).c_str());
+    ImGui::Text((getDisplayName()).c_str());
   ImGui::PopItemWidth();
 }
 
@@ -287,14 +289,15 @@ ecParameterInt::ecParameterInt(std::string parameterName,
                                bool independentMod) {
   mParameterInt = new ParameterInt{parameterName, Group,      defaultValue,
                                    prefix,        defaultMin, defaultMax};
-  mParameterInt->displayName("##" + displayName);
-  mLowRange = new ParameterInt{("##" + displayName + "Low").c_str(),
+  mDisplayName = displayName;
+  mParameterInt->displayName("##" + parameterName);
+  mLowRange = new ParameterInt{("##" + parameterName + "Low").c_str(),
                                Group,
                                defaultMin,
                                prefix,
                                absMin,
                                absMax};
-  mHighRange = new ParameterInt{("##" + displayName + "High").c_str(),
+  mHighRange = new ParameterInt{("##" + parameterName + "High").c_str(),
                                 Group,
                                 defaultMax,
                                 prefix,
@@ -391,7 +394,7 @@ void ecParameterInt::drawRangeSlider() {
 
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
-  ImGui::Text((mParameterInt->displayName()).c_str());
+  ImGui::Text((getDisplayName()).c_str());
   ImGui::PopItemWidth();
 }
 
