@@ -16,12 +16,18 @@ void ecInterface::onInit() {
   execDir = f.directory(util::getExecutablePath());
   granulator.init(&audioIO());
 
+// #ifdef __APPLE__
+
+//   result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+//   if (result == 1)
+//     execPath = outPath;
+// #endif
+
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);
-  std::cout << execDir << std::endl;
   granulator.loadInitSoundFiles(execDir + "Resources/samples/");
   soundOutput = f.conformPathToOS(execDir + "Resources/soundOutput/");
   mPresets.setRootPath(f.conformPathToOS(execDir + "Resources/presets/"));
@@ -366,7 +372,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Throw popup to remind user to load in sound files if none are present.
   if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
     ImGui::Text("Files can be loaded in from the top left menu.\nAudio will turn on once a file has been loaded.");
-    ImGui::Text(execDir.c_str()); //DEBUG
+    // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
 

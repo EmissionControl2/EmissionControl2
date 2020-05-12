@@ -37,6 +37,9 @@ set(srcs
   src/utility.cpp
 )
 if(APPLE)
+  set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/EmissionControl20.app/Contents/Resources")
+  set(CMAKE_MACOSX_RPATH 1)
+  set(CMAKE_INSTALL_RPATH "@executable_path/../Resources/")
   set(RESOURCE_LIST
       "libsndfile"
       "samples"
@@ -144,15 +147,12 @@ set_target_properties(${APP_NAME} PROPERTIES
 )
 
 ## POST BUILD COMMANDS
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
-
-  set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/EmissionControl20.app/Contents/Resources/")
+  message("")
   add_custom_command (TARGET ${APP_NAME}
     POST_BUILD 
     COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
@@ -201,4 +201,4 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   file(MAKE_DIRECTORY "${RESOURCE_PATH}/presets")
   file(MAKE_DIRECTORY "${RESOURCE_PATH}/soundOutput")
   
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+endif(APPLE)
