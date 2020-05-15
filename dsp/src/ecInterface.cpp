@@ -171,6 +171,9 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Audio IO", "")) {
         displayIO = true;
       }
+      if (ImGui::MenuItem("Remove Current Sound File", "")) {
+        granulator.removeCurrentSoundFile();
+      }
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();

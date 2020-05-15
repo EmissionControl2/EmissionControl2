@@ -520,7 +520,7 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     counter++;
     if(counter % 2048 == 0)
-      std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " << source->get(sourceIndex + 1)  << std::endl;
+      // std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " << source->get(sourceIndex + 1)  << std::endl;
 
     if (sourceIndex > source->size)
       sourceIndex -= source->size;
