@@ -286,6 +286,26 @@ bool ecSynth::loadInitSoundFiles(std::string directory) {
   return success;
 }
 
+bool ecSynth::removeSoundFile(int index) {
+  std::cout << mClipNum << std::endl;
+  if (mClipNum == 0)
+    return false;
+  soundClip.erase(soundClip.begin() + index);
+  mClipNum--;
+  soundFile.mParameterInt->max(mClipNum);
+  soundFile.mLowRange->max(mClipNum);
+  soundFile.mHighRange->max(mClipNum);
+  soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
+
+  if (soundFile.mParameterInt->get() >= index)
+    soundFile.mParameterInt->set(soundFile.mParameterInt->get() - 1);
+  return true;
+}
+
+bool ecSynth::removeCurrentSoundFile() {
+  removeSoundFile(soundFile.mParameterInt->get() - 1);
+}
+
 void ecSynth::clearSoundFiles() {
   soundClip.clear();
 
