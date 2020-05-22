@@ -428,23 +428,22 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
     startSample =
-        source->size * (list.tapeHead.getModParam(list.modTapeHeadDepth));
+        source->size / source->channels * (list.tapeHead.getModParam(list.modTapeHeadDepth));
   else
-    startSample = source->size * list.tapeHead.getParam();
+    startSample = source->size / source->channels * list.tapeHead.getParam();
+
+  endSample =
+      startSample +  ((mDurationMs / 1000) * samplingRate);
 
   if (list.modTranspositionDepth > 0)
-    endSample =
-        startSample +
-        source->channels *
-            ((mDurationMs / 1000) * samplingRate *
-             abs(list.transposition.getModParam(list.modTranspositionDepth)));
+    index.setSamplingRate(samplingRate / abs(list.transposition.getModParam(
+                                             list.modTranspositionDepth)));
   else
-    endSample = startSample +
-                source->channels * ((mDurationMs / 1000) * samplingRate *
-                                    abs(list.transposition.getParam()));
-
-  index.setSamplingRate(samplingRate); // Set sampling rate of line function
-                                       // moving through audio buffer.
+    index.setSamplingRate(
+        samplingRate /
+        abs(list.transposition
+                .getParam())); // Set sampling rate of line function
+                               // moving through audio buffer.
 
   if (list.transposition.getParam() < 0)
     index.set(endSample, startSample, mDurationMs / 1000);
@@ -491,6 +490,11 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   float freq = list.filter.getModParam(list.modFilterDepth);
 
+  if (resonance >= 0 && resonance < 0.00001)
+    bypassFilter = true;
+  else
+    bypassFilter = false;
+
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
   float delta = 0.1; // MIN_LEVEL = -30dB //0.4
   mLowShelf.freq(freq * delta);
@@ -508,26 +512,31 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mHighShelf.level(res_process);
 }
 
+unsigned int counter = 0;
 void Grain::onProcess(al::AudioIOData &io) {
   while (io()) {
     envVal = gEnv();
     sourceIndex = index();
 
+    counter++;
+    if(counter % 2048 == 0)
+      // std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " << source->get(sourceIndex + 1)  << std::endl;
+
     if (sourceIndex > source->size)
       sourceIndex -= source->size;
 
     if (source->channels == 1) {
-      currentSample = mLowShelf(source->get(sourceIndex));
-      currentSample = mHighShelf(currentSample);
+      currentSample = source->get(sourceIndex);
+      currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
-      currentSample = mLowShelf(source->get(sourceIndex));
-      currentSample = mHighShelf(currentSample);
+      currentSample = source->get(sourceIndex * 2);
+      currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
-      currentSample = mLowShelf(source->get(sourceIndex + 1));
-      currentSample = mHighShelf(currentSample);
+      currentSample = source->get(sourceIndex*2 + 1);
+      currentSample = filterSample(currentSample, bypassFilter);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
@@ -540,6 +549,24 @@ void Grain::onProcess(al::AudioIOData &io) {
 }
 
 void Grain::onTriggerOn() {}
+
+float Grain::linInterpSample(float s_index, int num_channels) {
+  int offset = num_channels - 1;
+  float index_1 = s_index + index.getIncrement();
+  float baseSample = source->get(s_index);
+  float interp_sample =
+      ((source->get(s_index + index.getIncrement()) - baseSample) *
+       (s_index - (int)(s_index))) /
+      ((int)(s_index + index.getIncrement()) - (int)(s_index));
+  return baseSample + interp_sample;
+}
+
+float Grain::filterSample(float sample, bool isBypass) {
+  if (isBypass)
+    return sample;
+  else
+    return mHighShelf(mLowShelf(sample));
+}
 
 /******* voiceScheduler *******/
 

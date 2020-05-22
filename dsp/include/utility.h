@@ -48,6 +48,8 @@ public:
 
   float getSamplingRate() const { return mSamplingRate; }
 
+  float getIncrement() const {return increment;}
+
   /**
    * @brief Check if the line function is complete.
    *
@@ -231,7 +233,7 @@ public:
   T raw(const float index) const {
     const unsigned i = floor(index);
     const T x0 = data[i];
-    const T x1 = data[(i == (size - 1)) ? 0 : i + 1]; // looping semantics
+    const T x1 = data[(i == (size - 1)) ? 0 : i + channels]; // looping semantics
     const T t = index - i;
     return x1 * t + x0 * (1 - t);
   }
@@ -246,7 +248,7 @@ public:
    */
   void add(const float index, const T value) {
     const unsigned i = floor(index);
-    const unsigned j = (i == (size - 1)) ? 0 : i + 1; // looping semantics
+    const unsigned j = (i == (size - 1)) ? 0 : i + channels; // looping semantics
     const float t = index - i;
     data[i] += value * (1 - t);
     data[j] += value * t;
