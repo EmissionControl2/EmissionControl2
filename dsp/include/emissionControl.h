@@ -528,10 +528,14 @@ private:
   gam::Biquad<> mHighShelf;
   gam::Biquad<> mLowShelf;
   grainEnvelope gEnv;
+  bool bypassFilter = true;
   float currentSample;
   int *mPActiveVoices;
   float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
+
+  float linInterpSample(float index, int num_channels);
+  float filterSample(float sample, bool isBypass);
 };
 
 /**

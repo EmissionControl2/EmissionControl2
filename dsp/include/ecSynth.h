@@ -40,7 +40,7 @@ public:
    * PUBLIC PARAMETERS OF SYNTH
    */
   ecParameter grainRate{"Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0,
-                        500,           consts::SINE,    0};
+                        500,         consts::SINE,    0};
   al::ParameterMenu grainRateLFO{"##grainRateLFO"};
   ecParameter modGrainRateDepth{
       "modGrainRateDepth", "modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
@@ -70,15 +70,9 @@ public:
   ecParameter modStreamsDepth{
       "modStreamsDepth", "modStreamsDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter grainDurationMs{"GrainDurms",
-                              "5. Grain Dur (ms)",
-                              "",
-                              30,
-                              "",
-                              0.01,
-                              1000,
-                              0.0000001,
-                              10000};
+  ecParameter grainDurationMs{
+      "GrainDurms", "5. Grain Dur (ms)", "",   30, "", 0.01,
+      1000,         0.0000001,           10000};
   al::ParameterMenu grainDurationLFO{"##grainDurationLFO"};
   ecParameter modGrainDurationDepth{
       "modGrainDurationDepth", "modGrainDurationDepth", "", 0, "", 0, 1, 0, 1};
@@ -95,8 +89,8 @@ public:
   ecParameter modTranspositionDepth{
       "modTranspositionDepth", "modTranspositionDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter filter{
-      "Filterfreq", "8. Filter freq", "", 440, "", 60, 5000, 20, 24000};
+  ecParameter filter{"Filterfreq", "8. Filter freq", "", 440, "", 60, 5000, 20,
+                     24000};
   al::ParameterMenu filterLFO{"##filterLFO"};
   ecParameter modFilterDepth{
       "modFilterDepth", "modFilterDepth", "", 0, "", 0, 1, 0, 1};
@@ -106,8 +100,8 @@ public:
   ecParameter modResonanceDepth{
       "modResonanceDepth", "modResonanceDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameterInt soundFile{
-      "Soundfile", "10. Sound file", "", 1, "", 1, mClipNum, 1, mClipNum};
+  ecParameterInt soundFile{"Soundfile", "10. Sound file", "", 1,       "",
+                           1,           mClipNum,         1,  mClipNum};
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
   ecParameter modSoundFileDepth{
       "modSoundFileDepth", "modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
@@ -178,6 +172,18 @@ public:
    *
    */
   void clearSoundFiles();
+
+  /**
+   * @brief Remove soundfile at a specified index.
+   *
+   */
+  bool removeSoundFile(int index);
+
+  /**
+    * @brief Remove soundfile at the index determinded by the soundFile
+    * parameters.
+    */
+  bool removeCurrentSoundFile();
 
   /**
    * @brief Print out what the synth is doing at runtime.
