@@ -150,6 +150,8 @@ set_target_properties(${APP_NAME} PROPERTIES
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
+  MACOSX_BUNDLE_EXECUTABLE_NAME "${APP_NAME}"
+  MACOSX_BUNDLE_GUI_IDENTIFIER "ECDevTeam"
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
   message("")
