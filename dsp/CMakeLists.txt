@@ -44,6 +44,7 @@ if(APPLE)
       "libsndfile"
       "samples"
       "Fonts"
+      "config_scripts"
   )
 
   foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
@@ -153,7 +154,6 @@ if(APPLE)
   MACOSX_BUNDLE_GUI_IDENTIFIER "EmissionControl20"
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
-  message("")
   add_custom_command (TARGET ${APP_NAME}
     POST_BUILD 
     COMMAND "${CMAKE_INSTALL_NAME_TOOL}"

@@ -13,7 +13,6 @@ fi
     chmod 644 bin/EmissionControl20.app/Contents/Resources/libsndfile/*
     cmake --build ./build/release -j 5
     chmod 444 bin/EmissionControl20.app/Contents/Resources/libsndfile/*
-    cp ../externalResources/osx/launchEmissionControl20.sh bin/EmissionControl20.app/Contents/MacOS/
   fi
 )
 
