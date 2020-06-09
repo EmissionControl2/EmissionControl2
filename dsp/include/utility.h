@@ -271,6 +271,11 @@ bool load(std::string fileName,
 std::string getExecutablePath();
 
 /**
+ * @brief Get users home folder.
+ */
+std::string getUserHomePath();
+
+/**
  * @brief If you are using an apple package, you might went the directory of the
  * Content folder rather than the actual executable.
  * param[in] The directory containing the ACTUAL UNIX EXECUTABLE.

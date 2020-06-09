@@ -11,26 +11,23 @@ using namespace al;
 
 /**** ecInterface Implementation ****/
 
-void ecInterface::onInit() {
+void ecInterface::onInit() {  
   dimensions(1920, 1080);
   execDir = f.directory(util::getExecutablePath());
   granulator.init(&audioIO());
 
-// #ifdef __APPLE__
 
-//   result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-//   if (result == 1)
-//     execPath = outPath;
-// #endif
-
+std::string userPath = util::getUserHomePath();
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);
-  granulator.loadInitSoundFiles(execDir + "Resources/samples/");
-  soundOutput = f.conformPathToOS(execDir + "Resources/soundOutput/");
-  mPresets.setRootPath(f.conformPathToOS(execDir + "Resources/presets/"));
+  system((execDir+consts::OSX_CONFIG_DIR_SCRIPT_PATH).c_str());
+
+  granulator.loadInitSoundFiles(userPath+consts::OSX_DEFAULT_SAMPLE_PATH);
+  soundOutput = f.conformPathToOS(userPath + consts::OSX_DEFAULT_SOUND_OUTPUT_PATH);
+  mPresets.setRootPath(f.conformPathToOS(userPath + consts::OSX_DEFAULT_PRESETS_PATH));
 #endif
 
 #ifdef _WIN32_
