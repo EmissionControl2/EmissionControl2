@@ -6,39 +6,45 @@
 
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
+/**** CSTD LIBS ****/
+#include <fstream>
 
 using namespace al;
 
 /**** ecInterface Implementation ****/
 
-void ecInterface::onInit() {  
+void ecInterface::onInit() {
   dimensions(1920, 1080);
+
   execDir = f.directory(util::getExecutablePath());
+  userPath = util::getUserHomePath();
+
   granulator.init(&audioIO());
 
+  initFileIOPaths();
 
-std::string userPath = util::getUserHomePath();
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);
-  system((execDir+consts::OSX_CONFIG_DIR_SCRIPT_PATH).c_str());
+  system((execDir + consts::OSX_CONFIG_DIR_SCRIPT_PATH).c_str());
 
-  granulator.loadInitSoundFiles(userPath+consts::OSX_DEFAULT_SAMPLE_PATH);
-  soundOutput = f.conformPathToOS(userPath + consts::OSX_DEFAULT_SOUND_OUTPUT_PATH);
-  mPresets.setRootPath(f.conformPathToOS(userPath + consts::OSX_DEFAULT_PRESETS_PATH));
+  granulator.loadInitSoundFiles(userPath + consts::OSX_DEFAULT_SAMPLE_PATH);
+  mPresets.setRootPath(
+      f.conformPathToOS(userPath + consts::OSX_DEFAULT_PRESETS_PATH));
 #endif
 
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
   mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
 #endif
 
 #ifdef __linux__
   granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = execDir + "soundOutput/";
   mPresets.setRootPath(execDir + "presets/");
 #endif
   audioIO().append(mRecorder);
@@ -144,6 +150,18 @@ void ecInterface::onDraw(Graphics &g) {
   static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
+      if (ImGui::MenuItem("Audio IO", "")) {
+        displayIO = true;
+      }
+      if (ImGui::MenuItem("Set Sound Output Folder", "")) {
+        result = NFD_PickFolder(NULL, &outPath);
+
+        if (result == 1) {
+          std::string temp = outPath;
+          jsonWriteSoundOutputPath(temp);
+          jsonReadAndSetSoundOutputPath();
+        }
+      }
       if (ImGui::MenuItem("Load Sound File", "")) {
         ImGui::Text("%s", currentFile.c_str());
 
@@ -153,8 +171,9 @@ void ecInterface::onDraw(Graphics &g) {
         result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
         if (result == 1)
           currentFile = outPath;
+        std::cout << currentFile << std::endl;
 #endif
-#ifdef __linux__ 
+#ifdef __linux__
         result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
         if (result == 1)
           currentFile = outPath;
@@ -164,9 +183,6 @@ void ecInterface::onDraw(Graphics &g) {
           granulator.loadSoundFile(currentFile);
           previousFile = currentFile;
         }
-      }
-      if (ImGui::MenuItem("Audio IO", "")) {
-        displayIO = true;
       }
       if (ImGui::MenuItem("Remove Current Sound File", "")) {
         granulator.removeCurrentSoundFile();
@@ -371,7 +387,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Throw popup to remind user to load in sound files if none are present.
   if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
-    ImGui::Text("Files can be loaded in from the top left menu.\nAudio will turn on once a file has been loaded.");
+    ImGui::Text("Files can be loaded in from the top left menu.\nAudio will "
+                "turn on once a file has been loaded.");
     // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
@@ -569,4 +586,63 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
                         (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+}
+
+/**** Configuration File Stuff -- Implementation****/
+
+bool ecInterface::initJsonConfig() {
+
+  json config;
+  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open())
+    return true;
+
+  config["USER_SOUND_OUTPUT_PATH"] =
+      f.conformPathToOS(userPath + consts::OSX_DEFAULT_SOUND_OUTPUT_PATH);
+
+  std::ofstream file((userPath + consts::OSX_DEFAULT_CONFIG_FILE).c_str());
+  if (file.is_open())
+    file << config;
+
+  return false;
+}
+
+void ecInterface::initFileIOPaths() {
+  initJsonConfig();
+  jsonReadAndSetSoundOutputPath();
+}
+
+bool ecInterface::jsonWriteSoundOutputPath(std::string path) {
+
+  json config;
+
+  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+
+  config["USER_SOUND_OUTPUT_PATH"] = path;
+
+  std::ofstream file((userPath + consts::OSX_DEFAULT_CONFIG_FILE).c_str());
+
+  if (file.is_open()) {
+    file << config;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void ecInterface::jsonReadAndSetSoundOutputPath() {
+  json config;
+
+  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  soundOutput = f.conformPathToOS(config.at("USER_SOUND_OUTPUT_PATH"));
 }
