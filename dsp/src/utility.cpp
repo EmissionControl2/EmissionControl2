@@ -267,7 +267,8 @@ bool util::compareFileNoCase(al::FilePath s1, al::FilePath s2) {
 std::string util::getUserHomePath() {
   char homedir[PATH_MAX];
 #ifdef _WIN32
-  snprintf(homedir, sizeof(homedir), "%s%s", getenv("HOMEDRIVE"), getenv("HOMEPATH"));
+  snprintf(homedir, sizeof(homedir), "%s%s", getenv("HOMEDRIVE"),
+           getenv("HOMEPATH"));
 #else
   snprintf(homedir, sizeof(homedir), "%s", getenv("HOME"));
 #endif
