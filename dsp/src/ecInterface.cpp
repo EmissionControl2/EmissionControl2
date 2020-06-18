@@ -6,6 +6,11 @@
 
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
+/**** CSTD LIBS ****/
+#include <fstream>
 
 using namespace al;
 
@@ -14,33 +19,33 @@ using namespace al;
 void ecInterface::onInit() {
   dimensions(1920, 1080);
 
+  execDir = f.directory(util::getExecutablePath());
+  userPath = util::getUserHomePath();
+
   granulator.init(&audioIO());
 
-  execDir = f.directory(util::getExecutablePath());
-  execPath = execDir;
+  initFileIOPaths();
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
-  execDir = util::getAppPath(execDir);
-  granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
-  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+  execDir = util::getContentPath(execDir);
+  system((execDir + consts::OSX_CONFIG_DIR_SCRIPT_PATH).c_str());
+
+  granulator.loadInitSoundFiles(userPath + consts::OSX_DEFAULT_SAMPLE_PATH);
+  mPresets.setRootPath(f.conformPathToOS(userPath + consts::OSX_DEFAULT_PRESETS_PATH));
 #endif
 
-#ifdef _WIN32
+#ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = f.conformPathToOS(execDir + "soundOutput/");
   mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
 #endif
 
 #ifdef __linux__
   granulator.loadInitSoundFiles(execDir + "samples/");
-  soundOutput = execDir + "soundOutput/";
   mPresets.setRootPath(execDir + "presets/");
 #endif
-
   audioIO().append(mRecorder);
 }
 
@@ -93,8 +98,8 @@ void ecInterface::onCreate() {
   mPresets << *granulator.LFOparameters[3]->shape << *granulator.LFOparameters[3]->duty;
 
 #ifdef __APPLE__
-  ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execPath + "../Resources/Fonts/Roboto-Medium.ttf").c_str(), 14.0f);
+  ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
+                                           14.0f);
 #endif
 
 #ifdef __linux__
@@ -122,30 +127,74 @@ void ecInterface::onDraw(Graphics &g) {
 
   al::imguiBeginFrame();
 
+  if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
+    ImGui::OpenPopup("Load soundfiles please :,)");
+    audioIO().stop();
+    noSoundFiles = true;
+  }
+
+  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning()) {
+    audioIO().start();
+    noSoundFiles = false;
+  }
   // Draw GUI
 
   // draw menu bar
   static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
-      ImGui::EndMenu();
-    }
-    if (ImGui::BeginMenu("View")) {
-      if (ImGui::MenuItem("blah", "CTRL+1")) {
-      }
-      if (ImGui::MenuItem("blah", "", false, false)) {
-      }  // Disabled item
-      ImGui::EndMenu();
-    }
-    if (ImGui::BeginMenu("Preferences")) {
       if (ImGui::MenuItem("Audio IO", "")) {
         displayIO = true;
       }
-      if (ImGui::MenuItem("blah", "", false, false)) {
-      }  // Disabled item
+      if (ImGui::MenuItem("Set Sound Output Folder", "")) {
+        result = NFD_PickFolder(NULL, &outPath);
+
+        if (result == 1) {
+          std::string temp = outPath;
+          jsonWriteSoundOutputPath(temp);
+          jsonReadAndSetSoundOutputPath();
+        }
+      }
+      if (ImGui::MenuItem("Load Sound File", "")) {
+        ImGui::Text("%s", currentFile.c_str());
+
+// When the select file button is clicked, the file selector is shown
+#ifdef __APPLE__
+
+        result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+        if (result == 1) currentFile = outPath;
+        std::cout << currentFile << std::endl;
+#endif
+#ifdef __linux__
+        result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+        if (result == 1) currentFile = outPath;
+#endif
+
+        if ((currentFile != previousFile) && (result == 1)) {
+          granulator.loadSoundFile(currentFile);
+          previousFile = currentFile;
+        }
+      }
+      if (ImGui::MenuItem("Remove Current Sound File", "")) {
+        granulator.removeCurrentSoundFile();
+      }
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
+  }
+
+  // Draw an interface to Audio IO.
+  // This enables starting and stopping audio as well as selecting
+  // Audio device and its parameters
+  // if statement opens Audio IO popup if chosen from menu
+  if (displayIO == true) {
+    ImGui::OpenPopup("Audio IO");
+  }
+
+  bool open = true;
+  if (ImGui::BeginPopupModal("Audio IO", &open)) {
+    drawAudioIO(&audioIO());
+    ImGui::EndPopup();
   }
 
   // Draw LFO parameters window
@@ -219,20 +268,6 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ParameterGUI::endPanel();
 
-  // Draw an interface to Audio IO.
-  // This enables starting and stopping audio as well as selecting
-  // Audio device and its parameters
-  // if statement opens Audio IO popup if chosen from menu
-  if (displayIO == true) {
-    ImGui::OpenPopup("Audio IO");
-  }
-
-  bool open = true;
-  if (ImGui::BeginPopupModal("Audio IO", &open)) {
-    drawAudioIO(&audioIO());
-    ImGui::EndPopup();
-  }
-
   // Draw recorder window
   ParameterGUI::beginPanel("Recorder", windowWidth * 3 / 4, windowHeight * 3 / 4 + 25,
                            windowWidth / 4, windowHeight / 4, flags);
@@ -246,81 +281,59 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::drawPresetHandler(&mPresets, 12, 4);
   ParameterGUI::endPanel();
 
-  // Draw file selector window.
-  ParameterGUI::beginPanel("File Selector", 0, windowHeight * 3 / 4 + 25, windowWidth / 4,
+  // Draw grain histogram window
+  ParameterGUI::beginPanel("Active Grains", 0, windowHeight * 3 / 4 + 25, windowWidth / 4,
                            windowHeight / 4, flags);
-  ImGui::Text("%s", currentFile.c_str());
-
-  if (ImGui::Button("Select File")) {
-// When the select file button is clicked, the file selector is shown
-#ifdef __APPLE__
-
-    result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-    if (result == 1) currentFile = outPath;
-#endif
-#ifdef __linux__
-    result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-    if (result == 1) currentFile = outPath;
-#endif
-  }
-
-  if ((currentFile != previousFile) && (result == 1)) {
-    granulator.loadSoundFile(currentFile);
-    previousFile = currentFile;
-  }
-  ParameterGUI::endPanel();
-
-  // Draw Scope window
-  ParameterGUI::beginPanel("Scopes", windowWidth / 4, windowHeight * 3 / 4 + 25, windowWidth / 2,
-                           windowHeight / 4, flags);
-  ImGui::Text("Active Grains: %.1i ", granulator.getActiveVoices());
+  ImGui::Text("Current Active Grains: %.1i ", granulator.getActiveVoices());
   if (framecounter % 10 == 0) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
   }
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.8f);
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+  ImGui::SetCursorPosY(70);
   ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
-                       100, ImVec2(0, 80), sizeof(int));
+                       100, ImVec2(0, (windowHeight / 4) - 120), sizeof(int));
+  ParameterGUI::endPanel();
 
-  ImGui::PopItemWidth();
+  // Draw Oscilloscope window
+  ParameterGUI::beginPanel("Oscilloscope", windowWidth / 4, windowHeight * 3 / 4 + 25,
+                           windowWidth / 2, windowHeight / 4, flags);
   ImGui::Text("Oscilloscope Timeframe (s):");
   ImGui::SameLine();
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
-    oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
-    oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+    if (oscFrame <= 3.0) {
+      oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
+      oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+    }
   }
-
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
   oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
-
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 1.0f);
-  ImGui::SetCursorPosY(160);
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+  ImGui::SetCursorPosY(70);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
-  ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1, ImVec2(0, 100),
-                   sizeof(float));
-
-  ImGui::SetCursorPosY(160);
+  ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
+                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+  ImGui::SetCursorPosY(70);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
-  ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1, ImVec2(0, 100),
-                   sizeof(float));
-
-  // ImGui::SetCursorPosY(210);
-  // ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
-  // ImGui::PlotLines("black_line", new float(0), 1, 0, nullptr, -1, 1, ImVec2(0, 100),
-  // sizeof(float));
-
+  ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
+                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
   ImGui::PopItemWidth();
-
-  // ImGui::PlotHistogram("Number of Active Grains: %.1i
-  // ",granulator.getActiveVoices() );
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-
   ParameterGUI::endPanel();
 
   // Pop the colors that were pushed at the start of the draw call
   // ImGui::PopStyleColor(14);
   // ImGui::PopStyleVar();
+
+  // Throw popup to remind user to load in sound files if none are present.
+  if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
+    ImGui::Text(
+      "Files can be loaded in from the top left menu.\nAudio will "
+      "turn on once a file has been loaded.");
+    // ImGui::Text(execDir.c_str()); //DEBUG
+    ImGui::EndPopup();
+  }
 
   ImGui::End();
   al::imguiEndFrame();
@@ -496,4 +509,56 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
 
-void ecInterface::setPlotConfig() { ImGui::PlotConfig histConf; }
+/**** Configuration File Stuff -- Implementation****/
+
+bool ecInterface::initJsonConfig() {
+  json config;
+  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open()) return true;
+
+  config["USER_SOUND_OUTPUT_PATH"] =
+    f.conformPathToOS(userPath + consts::OSX_DEFAULT_SOUND_OUTPUT_PATH);
+
+  std::ofstream file((userPath + consts::OSX_DEFAULT_CONFIG_FILE).c_str());
+  if (file.is_open()) file << config;
+
+  return false;
+}
+
+void ecInterface::initFileIOPaths() {
+  initJsonConfig();
+  jsonReadAndSetSoundOutputPath();
+}
+
+bool ecInterface::jsonWriteSoundOutputPath(std::string path) {
+  json config;
+
+  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open()) config = json::parse(ifs);
+
+  config["USER_SOUND_OUTPUT_PATH"] = path;
+
+  std::ofstream file((userPath + consts::OSX_DEFAULT_CONFIG_FILE).c_str());
+
+  if (file.is_open()) {
+    file << config;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void ecInterface::jsonReadAndSetSoundOutputPath() {
+  json config;
+
+  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  soundOutput = f.conformPathToOS(config.at("USER_SOUND_OUTPUT_PATH"));
+}

@@ -140,17 +140,18 @@ void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
 /******* ecParameter *******/
 
-ecParameter::ecParameter(std::string parameterName, float defaultValue,
-                         float defaultMin, float defaultMax, float absMin,
-                         float absMax, consts::waveform modWaveform,
-                         bool independentMod) {
+ecParameter::ecParameter(std::string parameterName, std::string displayName,
+                         float defaultValue, float defaultMin, float defaultMax,
+                         float absMin, float absMax,
+                         consts::waveform modWaveform, bool independentMod) {
   mParameter =
       new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
-  // mParameter->displayName("##" + parameterName);
+  mDisplayName = displayName;
+  mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
                             absMin, absMax};
-  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
-                             defaultMax, absMin, absMax};
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(), defaultMax,
+                             absMin, absMax};
   mMin = defaultMin;
   mMax = defaultMax;
   mModWaveform = modWaveform;
@@ -159,13 +160,14 @@ ecParameter::ecParameter(std::string parameterName, float defaultValue,
     mModulator = new ecModulator{mModWaveform, 1, 1};
 }
 
-ecParameter::ecParameter(std::string parameterName, std::string Group,
-                         float defaultValue, std::string prefix,
-                         float defaultMin, float defaultMax, float absMin,
-                         float absMax, consts::waveform modWaveform,
-                         bool independentMod) {
+ecParameter::ecParameter(std::string parameterName, std::string displayName,
+                         std::string Group, float defaultValue,
+                         std::string prefix, float defaultMin, float defaultMax,
+                         float absMin, float absMax,
+                         consts::waveform modWaveform, bool independentMod) {
   mParameter = new Parameter{parameterName, Group,      defaultValue,
                              prefix,        defaultMin, defaultMax};
+  mDisplayName = displayName;
   mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(),
                             Group,
@@ -213,7 +215,7 @@ float ecParameter::getModParam(float modWidth) {
                                 (mHighRange->get() - mLowRange->get()));
   else {
     std::cerr << "No Valid Modulation source for ecParameter instance: "
-              << mParameter->getName() << std::endl;
+              << mParameter->displayName() << std::endl;
     std::exit(1);
   }
   if (temp > mHighRange->get())
@@ -273,19 +275,21 @@ void ecParameter::drawRangeSlider(bool isLFOParam) {
   if (isLFOParam)
     ImGui::Text("Hz");
   else
-    ImGui::Text((mParameter->getName()).c_str());
+    ImGui::Text((getDisplayName()).c_str());
   ImGui::PopItemWidth();
 }
 
 /******* ecParameterInt *******/
 
-ecParameterInt::ecParameterInt(std::string parameterName, std::string Group,
+ecParameterInt::ecParameterInt(std::string parameterName,
+                               std::string displayName, std::string Group,
                                int defaultValue, std::string prefix,
                                int defaultMin, int defaultMax, int absMin,
                                int absMax, consts::waveform modWaveform,
                                bool independentMod) {
   mParameterInt = new ParameterInt{parameterName, Group,      defaultValue,
                                    prefix,        defaultMin, defaultMax};
+  mDisplayName = displayName;
   mParameterInt->displayName("##" + parameterName);
   mLowRange = new ParameterInt{("##" + parameterName + "Low").c_str(),
                                Group,
@@ -333,7 +337,7 @@ int ecParameterInt::getModParam(float modWidth) {
                                    (mHighRange->get() - mLowRange->get()));
   else {
     std::cerr << "No Valid Modulation source for ecParameterInt instance: "
-              << mParameterInt->getName() << std::endl;
+              << mParameterInt->displayName() << std::endl;
     std::exit(1);
   }
   if (temp > mHighRange->get())
@@ -390,7 +394,7 @@ void ecParameterInt::drawRangeSlider() {
 
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
-  ImGui::Text((mParameterInt->getName()).c_str());
+  ImGui::Text((getDisplayName()).c_str());
   ImGui::PopItemWidth();
 }
 
@@ -424,23 +428,22 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
     startSample =
-        source->size * (list.tapeHead.getModParam(list.modTapeHeadDepth));
+        source->size / source->channels * (list.tapeHead.getModParam(list.modTapeHeadDepth));
   else
-    startSample = source->size * list.tapeHead.getParam();
+    startSample = source->size / source->channels * list.tapeHead.getParam();
+
+  endSample =
+      startSample +  ((mDurationMs / 1000) * samplingRate);
 
   if (list.modTranspositionDepth > 0)
-    endSample =
-        startSample +
-        source->channels *
-            ((mDurationMs / 1000) * samplingRate *
-             abs(list.transposition.getModParam(list.modTranspositionDepth)));
+    index.setSamplingRate(samplingRate / abs(list.transposition.getModParam(
+                                             list.modTranspositionDepth)));
   else
-    endSample = startSample +
-                source->channels * ((mDurationMs / 1000) * samplingRate *
-                                    abs(list.transposition.getParam()));
-
-  index.setSamplingRate(samplingRate); // Set sampling rate of line function
-                                       // moving through audio buffer.
+    index.setSamplingRate(
+        samplingRate /
+        abs(list.transposition
+                .getParam())); // Set sampling rate of line function
+                               // moving through audio buffer.
 
   if (list.transposition.getParam() < 0)
     index.set(endSample, startSample, mDurationMs / 1000);
@@ -487,6 +490,11 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   float freq = list.filter.getModParam(list.modFilterDepth);
 
+  if (resonance >= 0 && resonance < 0.00001)
+    bypassFilter = true;
+  else
+    bypassFilter = false;
+
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
   float delta = 0.1; // MIN_LEVEL = -30dB //0.4
   mLowShelf.freq(freq * delta);
@@ -504,26 +512,31 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mHighShelf.level(res_process);
 }
 
+unsigned int counter = 0;
 void Grain::onProcess(al::AudioIOData &io) {
   while (io()) {
     envVal = gEnv();
     sourceIndex = index();
 
+    counter++;
+    if(counter % 2048 == 0)
+      // std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " << source->get(sourceIndex + 1)  << std::endl;
+
     if (sourceIndex > source->size)
       sourceIndex -= source->size;
 
     if (source->channels == 1) {
-      currentSample = mLowShelf(source->get(sourceIndex));
-      currentSample = mHighShelf(currentSample);
+      currentSample = source->get(sourceIndex);
+      currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
-      currentSample = mLowShelf(source->get(sourceIndex));
-      currentSample = mHighShelf(currentSample);
+      currentSample = source->get(sourceIndex * 2);
+      currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
-      currentSample = mLowShelf(source->get(sourceIndex + 1));
-      currentSample = mHighShelf(currentSample);
+      currentSample = source->get(sourceIndex*2 + 1);
+      currentSample = filterSample(currentSample, bypassFilter);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
@@ -536,6 +549,24 @@ void Grain::onProcess(al::AudioIOData &io) {
 }
 
 void Grain::onTriggerOn() {}
+
+float Grain::linInterpSample(float s_index, int num_channels) {
+  int offset = num_channels - 1;
+  float index_1 = s_index + index.getIncrement();
+  float baseSample = source->get(s_index);
+  float interp_sample =
+      ((source->get(s_index + index.getIncrement()) - baseSample) *
+       (s_index - (int)(s_index))) /
+      ((int)(s_index + index.getIncrement()) - (int)(s_index));
+  return baseSample + interp_sample;
+}
+
+float Grain::filterSample(float sample, bool isBypass) {
+  if (isBypass)
+    return sample;
+  else
+    return mHighShelf(mLowShelf(sample));
+}
 
 /******* voiceScheduler *******/
 
@@ -590,15 +621,15 @@ bool flowControl::throttle(float time, float ratio, int activeVoices) {
     mAvgActiveVoices /= mCounter;
     mCounter = 0;
   }
+  return true;
+  // float adaptThresh;
 
-  float adaptThresh;
-
-  if (getPeakCPU() > adaptThresh) {
-    return true;
-  }
-  if (getAvgCPU() > adaptThresh) {
-    return true;
-  } else {
-    return false;
-  }
+  // if (getPeakCPU() > adaptThresh) {
+  //   return true;
+  // }
+  // if (getAvgCPU() > adaptThresh) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
 }
