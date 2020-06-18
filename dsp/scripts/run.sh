@@ -33,7 +33,7 @@ if [ ${result} == 0 ]; then
 
   if [ $(uname -s) == "Linux" ]; then
     cd bin
-    ./EmissionControl20 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1
+    ./EmissionControl20 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=0
   fi
 
   if [ $(uname -s) == "Darwin" ]; then
