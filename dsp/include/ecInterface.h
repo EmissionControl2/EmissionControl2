@@ -51,6 +51,7 @@ private:
   std::string soundOutput, execDir, execPath, userPath;
   al::File f;
   nfdchar_t *outPath = NULL;
+  nfdpathset_t pathSet;
   nfdresult_t result;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
