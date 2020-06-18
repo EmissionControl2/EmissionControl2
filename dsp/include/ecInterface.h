@@ -20,49 +20,52 @@
 #include "../external/nativefiledialog/src/include/nfd.h"
 
 class ecInterface : public al::App {
-   public:
-    /**
-     * @brief Initilialize the synth interface.
-     */
-    virtual void onInit() override;
+public:
+  /**
+   * @brief Initilialize the synth interface.
+   */
+  virtual void onInit() override;
 
-    /**
-     * @brief Run once on starup.
-     */
-    virtual void onCreate() override;
+  /**
+   * @brief Run once on starup.
+   */
+  virtual void onCreate() override;
 
-    /**
-     * @brief Audio rate processing of synth.
-     */
-    virtual void onSound(al::AudioIOData &io) override;
+  /**
+   * @brief Audio rate processing of synth.
+   */
+  virtual void onSound(al::AudioIOData &io) override;
 
-    /**
-     * @brief Draw rate processing of synth interface.
-     */
-    virtual void onDraw(al::Graphics &g) override;
-  
+  /**
+   * @brief Draw rate processing of synth interface.
+   */
+  virtual void onDraw(al::Graphics &g) override;
+
 private:
+  bool noSoundFiles;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
-  
-  std::string soundOutput, execDir, execPath;
+
+  std::string soundOutput, execDir, execPath, userPath;
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdresult_t result;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
-  
+
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoSavedSettings;
-  
+
   int framecounter = 0;
-  std::vector<float> streamHistory = std::vector<float>(120, 0);
+  std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
-  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
-  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+  std::vector<float> oscDataL =
+      std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+  std::vector<float> oscDataR =
+      std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
 
   void drawAudioIO(al::AudioIO *io);
 
@@ -73,6 +76,26 @@ private:
   void setGUIColors();
 
   void setPlotConfig();
+
+  /**** Configuration File Stuff****/
+  // TO DO TO DO -- Make Linux cross platform with Rodney
+
+  void initFileIOPaths();
+
+
+  bool initJsonConfig();
+
+
+  // These will have dependencies on the userPath member, MAKE SURE TO INIT IT
+  // FIRST.˝
+  bool jsonWriteSoundOutputPath(std::string path);
+
+  /**
+   * @brief Read json config file and write output path to soundOutput member variable.
+   *
+   *
+   */
+  void jsonReadAndSetSoundOutputPath();
 };
 
 /**
@@ -88,7 +111,8 @@ private:
  *
  * @param[in] Amount of space allocated for sound.
  */
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory = "", uint32_t bufferSize = 0);
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                               uint32_t numChannels, std::string directory = "",
+                               uint32_t bufferSize = 0);
 
 #endif
