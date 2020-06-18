@@ -1,8 +1,9 @@
 #!/bin/bash
-
 result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
+elif [ $result == "EmissionControlPort" ]; then
+  cd dsp/
 fi
 
 if [ -d "../deployment/EmissionControl20_Linux" ]; then
@@ -10,7 +11,7 @@ if [ -d "../deployment/EmissionControl20_Linux" ]; then
 fi
 
 chmod 644 bin/Resources/libsndfile/*
-cp -r bin ../deployment
-mv ../deployment/bin ../deployment/EmissionControl20_Linux
+cp -r bin ../deployment/Linux
+mv ../deployment/Linux/bin ../deployment/Linux/EmissionControl20_Linux
 chmod 444 bin/Resources/libsndfile/*
-chmod 444 ../deployment/EmissionControl20_Linux/Resources/libsndfile/*
+chmod 444 ../deployment/Linux/EmissionControl20_Linux/Resources/libsndfile/*
