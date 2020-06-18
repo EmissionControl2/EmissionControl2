@@ -311,6 +311,7 @@ bool ecSynth::removeCurrentSoundFile() {
 
 void ecSynth::clearSoundFiles() {
   soundClip.clear();
+  soundClipFileName.clear();
 
   mClipNum = 0;
   soundFile.mParameterInt->max(mClipNum);

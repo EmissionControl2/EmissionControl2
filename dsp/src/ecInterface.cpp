@@ -465,10 +465,10 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.currentDevice));
       granulator.setIO(io);
-      granulator.resampleSoundFiles();
-
       if (writeSampleRate)
         jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+
+      granulator.resampleSoundFiles();
 
       io->open();
       io->start();
