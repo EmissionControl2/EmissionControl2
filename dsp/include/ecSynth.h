@@ -234,7 +234,8 @@ private:
                                                callback */
   voiceScheduler grainScheduler; /* Schedule grains */
   std::vector<std::shared_ptr<util::buffer<float>>>
-      soundClip;    /* Store audio buffers in memory */
+      soundClip; /* Store audio buffers in memory */
+  std::vector<std::string> soundClipFileName;
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip = 0;
 

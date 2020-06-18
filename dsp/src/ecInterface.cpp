@@ -158,7 +158,7 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Set Sound Output Folder", "")) {
         result = NFD_PickFolder(NULL, &outPath);
 
-        if (result == 1) {
+        if (result == NFD_OKAY) {
           std::string temp = outPath;
           jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
           jsonReadAndSetSoundOutputPath();
@@ -170,20 +170,32 @@ void ecInterface::onDraw(Graphics &g) {
 // When the select file button is clicked, the file selector is shown
 #ifdef __APPLE__
 
-        result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-        if (result == 1)
-          currentFile = outPath;
+        // result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
+        // if (result == NFD_OKAY)
+        //   currentFile = outPath;
+
+        result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
+
 #endif
 #ifdef __linux__
         result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-        if (result == 1)
+        if (result == NFD_OKAY)
           currentFile = outPath;
 #endif
 
-        if ((currentFile != previousFile) && (result == 1)) {
-          granulator.loadSoundFile(currentFile);
-          previousFile = currentFile;
+        if (result == NFD_OKAY) {
+          size_t i;
+          for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
+            nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
+            granulator.loadSoundFile(path);
+          }
+          NFD_PathSet_Free(&pathSet);
         }
+
+        // if ((currentFile != previousFile) && (NFD_OKAY == 1)) {
+        //   granulator.loadSoundFile(currentFile);
+        //   previousFile = currentFile;
+        // }
       }
       if (ImGui::MenuItem("Remove Current Sound File", "")) {
         granulator.removeCurrentSoundFile();
