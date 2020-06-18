@@ -42,7 +42,7 @@ public:
   virtual void onDraw(al::Graphics &g) override;
 
 private:
-  bool noSoundFiles;
+  bool noSoundFiles, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
@@ -55,17 +55,20 @@ private:
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
 
+  double globalSamplingRate = consts::SAMPLE_RATE;
+
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoSavedSettings;
+
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
   std::vector<float> oscDataL =
-      std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+      std::vector<float>(int(oscFrame * globalSamplingRate), 0);
   std::vector<float> oscDataR =
-      std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+      std::vector<float>(int(oscFrame * globalSamplingRate), 0);
 
   void drawAudioIO(al::AudioIO *io);
 
@@ -76,6 +79,8 @@ private:
   void setGUIColors();
 
   void setPlotConfig();
+
+  int getSampleRateIndex();
 
   /**** Configuration File Stuff****/
   // TO DO TO DO -- Make Linux cross platform with Rodney
@@ -90,12 +95,16 @@ private:
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
+  template<typename T>
+  bool jsonWriteToConfig(T value, std::string key);
+
   /**
    * @brief Read json config file and write output path to soundOutput member variable.
    *
    *
    */
   void jsonReadAndSetSoundOutputPath();
+  void jsonReadAndSetAudioSettings();
 };
 
 /**

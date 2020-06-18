@@ -362,7 +362,7 @@ void ecSynth::softClip(al::AudioIOData &io) {
 
 /**** TO DO TO DO TO DO ****/
 void ecSynth::throttle(float time, float ratio) {
-  if (mCounter < time * consts::SAMPLE_RATE) {
+  if (mCounter < time * mGlobalSamplingRate) {
     mCounter++;
     mAvgActiveVoices += mActiveVoices;
     return;

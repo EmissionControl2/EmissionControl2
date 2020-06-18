@@ -22,20 +22,20 @@ void ecInterface::onInit() {
   execDir = f.directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
 
-  granulator.init(&audioIO());
-
   initFileIOPaths();
+  jsonReadAndSetAudioSettings();
+  granulator.init(&audioIO());
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);
-  system((execDir + consts::OSX_CONFIG_DIR_SCRIPT_PATH).c_str());
+  system((execDir + consts::CONFIG_DIR_SCRIPT_PATH).c_str());
 
-  granulator.loadInitSoundFiles(userPath + consts::OSX_DEFAULT_SAMPLE_PATH);
+  granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(
-      f.conformPathToOS(userPath + consts::OSX_DEFAULT_PRESETS_PATH));
+      f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
 
 #ifdef _WIN32_
@@ -122,6 +122,7 @@ void ecInterface::onCreate() {
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
+
   framecounter++;
   g.clear(background);
 
@@ -140,7 +141,8 @@ void ecInterface::onDraw(Graphics &g) {
     noSoundFiles = true;
   }
 
-  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning()) {
+  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning() &&
+      !isPaused) {
     audioIO().start();
     noSoundFiles = false;
   }
@@ -158,7 +160,7 @@ void ecInterface::onDraw(Graphics &g) {
 
         if (result == 1) {
           std::string temp = outPath;
-          jsonWriteSoundOutputPath(temp);
+          jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
           jsonReadAndSetSoundOutputPath();
         }
       }
@@ -171,7 +173,6 @@ void ecInterface::onDraw(Graphics &g) {
         result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
         if (result == 1)
           currentFile = outPath;
-        std::cout << currentFile << std::endl;
 #endif
 #ifdef __linux__
         result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
@@ -359,8 +360,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SameLine();
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
     if (oscFrame <= 3.0) {
-      oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
-      oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+      oscDataL.resize(int(oscFrame * globalSamplingRate));
+      oscDataR.resize(int(oscFrame * globalSamplingRate));
     }
   }
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
@@ -429,8 +430,10 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     text += "\nOutput Channels:" + std::to_string(io->channelsOut());
     ImGui::Text("%s", text.c_str());
     if (ImGui::Button("Stop")) {
+      isPaused = true;
       io->stop();
       io->close();
+      state.currentSr = getSampleRateIndex();
     }
   } else {
     if (ImGui::Button("Update Devices")) {
@@ -445,14 +448,22 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
                  static_cast<void *>(&samplingRates), samplingRates.size());
     if (ImGui::Button("Start")) {
-      io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
+      globalSamplingRate = std::stof(samplingRates[state.currentSr]);
+      io->framesPerSecond(globalSamplingRate);
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.currentDevice));
       granulator.setIO(io);
       granulator.resampleSoundFiles();
+
+      if (writeSampleRate)
+        jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+
       io->open();
       io->start();
+      isPaused = false;
     }
+    ImGui::SameLine();
+    ImGui::Checkbox("Set as Default", &writeSampleRate);
   }
   ImGui::PopID();
 }
@@ -588,20 +599,38 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
 
+int ecInterface::getSampleRateIndex() {
+  unsigned s_r = (unsigned)globalSamplingRate;
+  switch (s_r) {
+  case 44100:
+    return 0;
+  case 48000:
+    return 1;
+  case 88100:
+    return 2;
+  case 96000:
+    return 3;
+  default:
+    return 0;
+  }
+}
+
 /**** Configuration File Stuff -- Implementation****/
 
 bool ecInterface::initJsonConfig() {
 
   json config;
-  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
 
   if (ifs.is_open())
     return true;
 
-  config["USER_SOUND_OUTPUT_PATH"] =
-      f.conformPathToOS(userPath + consts::OSX_DEFAULT_SOUND_OUTPUT_PATH);
+  config[consts::SOUND_OUTPUT_PATH_KEY] =
+      f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
-  std::ofstream file((userPath + consts::OSX_DEFAULT_CONFIG_FILE).c_str());
+  config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
+
+  std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
   if (file.is_open())
     file << config;
 
@@ -613,18 +642,19 @@ void ecInterface::initFileIOPaths() {
   jsonReadAndSetSoundOutputPath();
 }
 
-bool ecInterface::jsonWriteSoundOutputPath(std::string path) {
+template <typename T>
+bool ecInterface::jsonWriteToConfig(T value, std::string key) {
 
   json config;
 
-  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
 
   if (ifs.is_open())
     config = json::parse(ifs);
 
-  config["USER_SOUND_OUTPUT_PATH"] = path;
+  config[key] = value;
 
-  std::ofstream file((userPath + consts::OSX_DEFAULT_CONFIG_FILE).c_str());
+  std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
 
   if (file.is_open()) {
     file << config;
@@ -637,12 +667,30 @@ bool ecInterface::jsonWriteSoundOutputPath(std::string path) {
 void ecInterface::jsonReadAndSetSoundOutputPath() {
   json config;
 
-  std::ifstream ifs(userPath + consts::OSX_DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
 
   if (ifs.is_open())
     config = json::parse(ifs);
   else
     return;
 
-  soundOutput = f.conformPathToOS(config.at("USER_SOUND_OUTPUT_PATH"));
+  soundOutput = f.conformPathToOS(config.at(consts::SOUND_OUTPUT_PATH_KEY));
+}
+
+void ecInterface::jsonReadAndSetAudioSettings() {
+  json config;
+
+  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  globalSamplingRate = config.at(consts::SAMPLE_RATE_KEY);
+
+  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS,
+                 consts::DEVICE_NUM);
+
+  granulator.setIO(&audioIO());
 }

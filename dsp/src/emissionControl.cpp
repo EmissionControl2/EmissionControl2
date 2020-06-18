@@ -612,7 +612,7 @@ void voiceScheduler::setPolyStream(consts::streamType type, int numStreams) {
 /******* flowControl *******/
 
 bool flowControl::throttle(float time, float ratio, int activeVoices) {
-  if (mCounter < time * consts::SAMPLE_RATE) {
+  if (mCounter < time * mSamplingRate) {
     mCounter++;
     mAvgActiveVoices += activeVoices;
     return false;
