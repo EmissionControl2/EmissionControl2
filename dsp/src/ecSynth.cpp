@@ -258,8 +258,11 @@ void ecSynth::onTriggerOn() {}
 void ecSynth::onTriggerOff() {}
 
 void ecSynth::loadSoundFile(std::string fileName) {
+  if( std::find(soundClipFileName.begin(),soundClipFileName.end(), fileName) != soundClipFileName.end())
+    return;
   bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true);
   if (temp) {
+    soundClipFileName.push_back(fileName);
     mClipNum++;
     soundFile.mParameterInt->max(mClipNum);
     soundFile.mLowRange->max(mClipNum);
@@ -286,8 +289,29 @@ bool ecSynth::loadInitSoundFiles(std::string directory) {
   return success;
 }
 
+bool ecSynth::removeSoundFile(int index) {
+  if (mClipNum == 0)
+    return false;
+  soundClip.erase(soundClip.begin() + index);
+  soundClipFileName.erase(soundClipFileName.begin() + index);
+  mClipNum--;
+  soundFile.mParameterInt->max(mClipNum);
+  soundFile.mLowRange->max(mClipNum);
+  soundFile.mHighRange->max(mClipNum);
+  soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
+
+  if (soundFile.mParameterInt->get() >= index)
+    soundFile.mParameterInt->set(soundFile.mParameterInt->get() - 1);
+  return true;
+}
+
+bool ecSynth::removeCurrentSoundFile() {
+  removeSoundFile(soundFile.mParameterInt->get() - 1);
+}
+
 void ecSynth::clearSoundFiles() {
   soundClip.clear();
+  soundClipFileName.clear();
 
   mClipNum = 0;
   soundFile.mParameterInt->max(mClipNum);
@@ -342,7 +366,7 @@ void ecSynth::softClip(al::AudioIOData &io) {
 
 /**** TO DO TO DO TO DO ****/
 void ecSynth::throttle(float time, float ratio) {
-  if (mCounter < time * consts::SAMPLE_RATE) {
+  if (mCounter < time * mGlobalSamplingRate) {
     mCounter++;
     mAvgActiveVoices += mActiveVoices;
     return;

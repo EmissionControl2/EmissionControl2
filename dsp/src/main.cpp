@@ -1,6 +1,7 @@
 #include "ecInterface.h"
 
 int main() { // Create app instance
+
   ecInterface app;
   // Set up audio
   app.configureAudio(consts::SAMPLE_RATE, consts::BLOCK_SIZE,
