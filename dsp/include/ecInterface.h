@@ -20,7 +20,7 @@
 #include "../external/nativefiledialog/src/include/nfd.h"
 
 class ecInterface : public al::App {
-public:
+ public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -41,7 +41,7 @@ public:
    */
   virtual void onDraw(al::Graphics &g) override;
 
-private:
+ private:
   bool noSoundFiles;
   float background = 0.21;
   ecSynth granulator;
@@ -55,17 +55,18 @@ private:
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
-                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-                           ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
+                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
-  std::vector<float> oscDataL =
-      std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
-  std::vector<float> oscDataR =
-      std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+  float currentSR = consts::SAMPLE_RATE;
+  float lastSR = currentSR;
+
+  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *currentSR), 0);
+  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *currentSR), 0);
+  std::vector<float> blackLine = std::vector<float>(2, 0);
 
   void drawAudioIO(al::AudioIO *io);
 
@@ -82,9 +83,7 @@ private:
 
   void initFileIOPaths();
 
-
   bool initJsonConfig();
-
 
   // These will have dependencies on the userPath member, MAKE SURE TO INIT IT
   // FIRST.˝
@@ -111,8 +110,7 @@ private:
  *
  * @param[in] Amount of space allocated for sound.
  */
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
-                               uint32_t numChannels, std::string directory = "",
-                               uint32_t bufferSize = 0);
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
+                               std::string directory = "", uint32_t bufferSize = 0);
 
 #endif
