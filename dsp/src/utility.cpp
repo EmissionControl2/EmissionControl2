@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <unistd.h>
 #else
+#include <limits.h>
 #include <mach-o/dyld.h>
 #include <stdlib.h>
 #endif
@@ -261,4 +262,16 @@ std::string util::getContentPath(std::string s) {
 
 bool util::compareFileNoCase(al::FilePath s1, al::FilePath s2) {
   return strcasecmp(s1.file().c_str(), s2.file().c_str()) <= 0;
+}
+
+std::string util::getUserHomePath() {
+  char homedir[PATH_MAX];
+#ifdef _WIN32
+  snprintf(homedir, sizeof(homedir), "%s%s", getenv("HOMEDRIVE"),
+           getenv("HOMEPATH"));
+#else
+  snprintf(homedir, sizeof(homedir), "%s", getenv("HOME"));
+#endif
+  std::string result = strdup(homedir);
+  return result;
 }

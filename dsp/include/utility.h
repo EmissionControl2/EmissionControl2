@@ -48,7 +48,7 @@ public:
 
   float getSamplingRate() const { return mSamplingRate; }
 
-  float getIncrement() const {return increment;}
+  float getIncrement() const { return increment; }
 
   /**
    * @brief Check if the line function is complete.
@@ -232,8 +232,14 @@ public:
 
   T raw(const float index) const {
     const unsigned i = floor(index);
+<<<<<<< HEAD
     const T x0 = data[i]
     const T x1 = data[(i == (size - 1)) ? 0 : i + channels]; // looping semantics
+=======
+    const T x0 = data[i];
+    const T x1 =
+        data[(i == (size - 1)) ? 0 : i + channels]; // looping semantics
+>>>>>>> 09330e316d4a2af7cbd93769a3783651e245b90d
     const T t = index - i;
     return x1 * t + x0 * (1 - t);
   }
@@ -248,39 +254,13 @@ public:
    */
   void add(const float index, const T value) {
     const unsigned i = floor(index);
-    const unsigned j = (i == (size - 1)) ? 0 : i + channels; // looping semantics
+    const unsigned j =
+        (i == (size - 1)) ? 0 : i + channels; // looping semantics
     const float t = index - i;
     data[i] += value * (1 - t);
     data[j] += value * t;
   }
 };
-
-/**
- * @brief Load soundfile into a buffer in memory.
- *
- * @param[in] The filename. An absolute filename is preferred.
- * @param[out] A vector holding the audio buffers.
- */
-bool load(std::string fileName,
-          std::vector<std::shared_ptr<buffer<float>>> &buf,
-          float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
-
-/**
- * @brief Get absolute path of executable.
- */
-std::string getExecutablePath();
-
-/**
- * @brief If you are using an apple package, you might went the directory of the
- * Content folder rather than the actual executable.
- * param[in] The directory containing the ACTUAL UNIX EXECUTABLE.
- */
-std::string getContentPath(std::string s);
-
-/**
- * @brief a comparator function for sorting the filePaths (case insensitive).
- */
-bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
 class RingBuffer {
 public:
@@ -348,6 +328,38 @@ private:
 
   std::mutex mMutex;
 };
+
+/**
+ * @brief Load soundfile into a buffer in memory.
+ *
+ * @param[in] The filename. An absolute filename is preferred.
+ * @param[out] A vector holding the audio buffers.
+ */
+bool load(std::string fileName,
+          std::vector<std::shared_ptr<buffer<float>>> &buf,
+          float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
+
+/**
+ * @brief Get absolute path of executable.
+ */
+std::string getExecutablePath();
+
+/**
+ * @brief Get users home folder.
+ */
+std::string getUserHomePath();
+
+/**
+ * @brief If you are using an apple package, you might went the directory of the
+ * Content folder rather than the actual executable.
+ * param[in] The directory containing the ACTUAL UNIX EXECUTABLE.
+ */
+std::string getContentPath(std::string s);
+
+/**
+ * @brief a comparator function for sorting the filePaths (case insensitive).
+ */
+bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
 } // namespace util
 
