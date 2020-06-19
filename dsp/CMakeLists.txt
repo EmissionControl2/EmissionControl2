@@ -42,8 +42,9 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@executable_path/../Resources/")
   set(RESOURCE_LIST
       "libsndfile"
-      "samples"
       "Fonts"
+      "config_scripts"
+      "samples"
   )
 
   foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
@@ -150,9 +151,9 @@ set_target_properties(${APP_NAME} PROPERTIES
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
+  MACOSX_BUNDLE_GUI_IDENTIFIER "EmissionControl20"
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
-  message("")
   add_custom_command (TARGET ${APP_NAME}
     POST_BUILD 
     COMMAND "${CMAKE_INSTALL_NAME_TOOL}"
@@ -197,8 +198,5 @@ if(APPLE)
       "${RESOURCE_PATH}/libsndfile/libvorbisenc.2.dylib" 
     VERBATIM
   )
-
-  file(MAKE_DIRECTORY "${RESOURCE_PATH}/presets")
-  file(MAKE_DIRECTORY "${RESOURCE_PATH}/soundOutput")
   
 endif(APPLE)
