@@ -303,21 +303,36 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SameLine();
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
     if (oscFrame <= 3.0) {
-      oscDataL.resize(int(oscFrame * consts::SAMPLE_RATE));
-      oscDataR.resize(int(oscFrame * consts::SAMPLE_RATE));
+      oscDataL.resize(int(oscFrame * currentSR));
+      oscDataR.resize(int(oscFrame * currentSR));
     }
   }
+  if (currentSR != lastSR) {
+    oscDataL.resize(int(oscFrame * currentSR));
+    oscDataR.resize(int(oscFrame * currentSR));
+  }
+  lastSR = currentSR;
+
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
   oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+
   ImGui::SetCursorPosY(70);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.467, 0.529, 0.561, 1.0f));
   ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+
   ImGui::SetCursorPosY(70);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.886, 0.761, 0.729, 1.0f));
   ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+
+  ImGui::SetCursorPosY(70);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PlotLines("black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+
   ImGui::PopItemWidth();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ParameterGUI::endPanel();
@@ -387,6 +402,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
                  static_cast<void *>(&samplingRates), samplingRates.size());
     if (ImGui::Button("Start")) {
       io->framesPerSecond(std::stof(samplingRates[state.currentSr]));
+      currentSR = std::stof(samplingRates[state.currentSr]);
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.currentDevice));
       granulator.setIO(io);
