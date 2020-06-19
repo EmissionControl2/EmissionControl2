@@ -21,7 +21,6 @@ void ecInterface::onInit() {
 
   execDir = f.directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
-  std::cout << "\"" + execDir + consts::CONFIG_DIR_SCRIPT_PATH + "\"" << std::endl;
 
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);

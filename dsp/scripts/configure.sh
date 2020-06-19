@@ -14,6 +14,7 @@ fi
     cd ./bin
     mkdir -p ./Resources
     cp -r ../../externalResources/Fonts ./Resources
+    cp -r ../../externalResources/samples ./Resources
     mkdir -p Resources/config_scripts
     cp -p ../../externalResources/config_scripts/configAbsoDirectories-linux.sh ./Resources/config_scripts/
     cd ..
