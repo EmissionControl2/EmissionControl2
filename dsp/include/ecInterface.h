@@ -20,7 +20,7 @@
 #include "../external/nativefiledialog/src/include/nfd.h"
 
 class ecInterface : public al::App {
- public:
+public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -41,28 +41,35 @@ class ecInterface : public al::App {
    */
   virtual void onDraw(al::Graphics &g) override;
 
- private:
-  bool noSoundFiles;
+private:
+  bool noSoundFiles, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
 
-  std::string soundOutput, execDir, execPath;
+  std::string soundOutput, execDir, execPath, userPath;
   al::File f;
   nfdchar_t *outPath = NULL;
+  nfdpathset_t pathSet;
   nfdresult_t result;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
-                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+  double globalSamplingRate = consts::SAMPLE_RATE;
+
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
+                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                           ImGuiWindowFlags_NoSavedSettings;
+
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
-  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
-  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *consts::SAMPLE_RATE), 0);
+  std::vector<float> oscDataL =
+      std::vector<float>(int(oscFrame * globalSamplingRate), 0);
+  std::vector<float> oscDataR =
+      std::vector<float>(int(oscFrame * globalSamplingRate), 0);
 
   void drawAudioIO(al::AudioIO *io);
 
@@ -73,6 +80,32 @@ class ecInterface : public al::App {
   void setGUIColors();
 
   void setPlotConfig();
+
+  int getSampleRateIndex();
+
+  /**** Configuration File Stuff****/
+  // TO DO TO DO -- Make Linux cross platform with Rodney
+
+  void initFileIOPaths();
+
+
+  bool initJsonConfig();
+
+
+  // These will have dependencies on the userPath member, MAKE SURE TO INIT IT
+  // FIRST.˝
+  bool jsonWriteSoundOutputPath(std::string path);
+
+  template<typename T>
+  bool jsonWriteToConfig(T value, std::string key);
+
+  /**
+   * @brief Read json config file and write output path to soundOutput member variable.
+   *
+   *
+   */
+  void jsonReadAndSetSoundOutputPath();
+  void jsonReadAndSetAudioSettings();
 };
 
 /**
@@ -88,7 +121,8 @@ class ecInterface : public al::App {
  *
  * @param[in] Amount of space allocated for sound.
  */
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory = "", uint32_t bufferSize = 0);
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                               uint32_t numChannels, std::string directory = "",
+                               uint32_t bufferSize = 0);
 
 #endif

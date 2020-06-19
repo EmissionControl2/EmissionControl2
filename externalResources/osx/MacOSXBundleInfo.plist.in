@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+	<string>EmissionControl20</string>
 	<key>CFBundleGetInfoString</key>
 	<string>${MACOSX_BUNDLE_INFO_STRING}</string>
 	<key>CFBundleIconFile</key>
@@ -22,11 +22,24 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+  <key>CFBundleSupportedPlatforms</key>
+  <array>
+      <string>MacOSX</string>
+  </array>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
+	<key>BundleIsRelocatable</key>
+	<false/>
+	<key>APFiles</key>
+	<array>
+	<dict>
+		<key>APFileDestinationPath</key>
+			<string>~/Library/Application\ Support/EmissionControl20/presets/</string>
+	</dict>
+	</array>
 </dict>
 </plist>

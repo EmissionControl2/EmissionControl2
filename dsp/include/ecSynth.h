@@ -23,8 +23,8 @@ class ecSynth : public al::SynthVoice {
 public:
   /**
    * Ringbuffers for oscilloscope
-  //  */
-  unsigned oscBufferSize = consts::SAMPLE_RATE * 5;
+   */
+  unsigned int oscBufferSize = 96000 * 5;
   util::RingBuffer oscBufferL{oscBufferSize};
   util::RingBuffer oscBufferR{oscBufferSize};
 
@@ -227,13 +227,15 @@ public:
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
 private:
-  float mGlobalSamplingRate, mPrevSR;
+  double mGlobalSamplingRate = consts::SAMPLE_RATE,
+         mPrevSR = consts::SAMPLE_RATE;
 
   al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
                                                callback */
   voiceScheduler grainScheduler; /* Schedule grains */
   std::vector<std::shared_ptr<util::buffer<float>>>
-      soundClip;    /* Store audio buffers in memory */
+      soundClip; /* Store audio buffers in memory */
+  std::vector<std::string> soundClipFileName;
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip = 0;
 
