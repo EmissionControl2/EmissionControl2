@@ -16,3 +16,7 @@ fi
 if [ ! -d "$HOME/Library/Application Support/EmissionControl20/samples" ]; then
   mkdir "$HOME/Library/Application Support/EmissionControl20/samples"
 fi
+
+if [ ! -d "$HOME/Library/Application Support/EmissionControl20/configs" ]; then
+  mkdir "$HOME/Library/Application Support/EmissionControl20/configs"
+fi
