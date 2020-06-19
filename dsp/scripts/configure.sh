@@ -12,11 +12,10 @@ fi
   if [ $(uname -s) == "Linux" ]; then
     mkdir -p ./bin
     cd ./bin
-    cp -r ../../externalResources/samples .
-    mkdir -p soundOutput
-    mkdir -p presets
     cp -r ../external/Resources .
     cp -r ../../externalResources/Fonts ./Resources
+    mkdir -p Resources/config_scripts
+    cp -p ../../externalResources/config_scripts/configAbsoDirectories-linux.sh ./Resources/config_scripts/
     cd ..
   fi
 
