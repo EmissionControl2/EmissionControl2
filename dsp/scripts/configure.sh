@@ -8,11 +8,11 @@ elif [ $result == "EmissionControlPort" ]; then
   cd dsp/
 fi
 (
- 
+
   if [ $(uname -s) == "Linux" ]; then
     mkdir -p ./bin
     cd ./bin
-    cp -r ../external/Resources .
+    mkdir -p ./Resources
     cp -r ../../externalResources/Fonts ./Resources
     mkdir -p Resources/config_scripts
     cp -p ../../externalResources/config_scripts/configAbsoDirectories-linux.sh ./Resources/config_scripts/
@@ -28,12 +28,12 @@ fi
     cd ../../../
   fi
 
-    # Build nativefiledialog if it doesnt exist../external/libsamplerate/build
+  # Build nativefiledialog if it doesnt exist../external/libsamplerate/build
   if [ ! -d "./external/nativefiledialog/build/lib" ]; then
     cd external/nativefiledialog/build/
     if [ $(uname -s) == "Linux" ]; then
       cd gmake_linux
-      make config=release_x64 
+      make config=release_x64
     elif [ $(uname -s) == "Darwin" ]; then
       cd gmake_macosx
       make config=release_x64

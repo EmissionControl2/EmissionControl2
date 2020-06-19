@@ -25,43 +25,34 @@ const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
  */
 
 #ifdef __APPLE__
-const std::string CONFIG_DIR_SCRIPT_PATH =
-    "Resources/config_scripts/configAbsoDirectories-osx.sh";
-const std::string DEFAULT_SAMPLE_PATH =
-    "/Library/Application Support/EmissionControl20/samples/";
+const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
+const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl20/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
-    "/Library/Application Support/EmissionControl20/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH =
-    "/Library/Application Support/EmissionControl20/presets/";
-const std::string DEFAULT_CONFIG_PATH =
-    "/Library/Application Support/EmissionControl20/configs/";
+  "/Library/Application Support/EmissionControl20/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl20/presets/";
+const std::string DEFAULT_CONFIG_PATH = "/Library/Application Support/EmissionControl20/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 
 #ifdef __linux__
 const std::string CONFIG_DIR_SCRIPT_PATH =
-    "Resources/config_scripts/configAbsoDirectories-linux.sh";
-const std::string DEFAULT_SAMPLE_PATH = "/opt/EmissionControl20/samples";
-const std::string DEFAULT_SOUND_OUTPUT_PATH =
-    "/opt/EmissionControl20/soundOutput";
-const std::string DEFAULT_PRESETS_PATH = "/opt/EmissionControl20/presets";
-const std::string DEFAULT_CONFIG_PATH = "/opt/EmissionControl20/configs";
+  "Resources/config_scripts/configAbsoDirectories-linux.sh";
+const std::string DEFAULT_SAMPLE_PATH = "/opt/EmissionControl20/samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = "/opt/EmissionControl20/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = "/opt/EmissionControl20/presets/";
+const std::string DEFAULT_CONFIG_PATH = "/opt/EmissionControl20/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 const std::string DEFAULT_RESOURCE_PATH = "/opt/EmissionControl20/Resources/";
 #endif
 
 #ifdef _WIN32_
-const std::string CONFIG_DIR_SCRIPT_PATH =
-    "Resources/config_scripts/configAbsoDirectories-osx.sh";
-const std::string DEFAULT_SAMPLE_PATH =
-    "/Library/Application Support/EmissionControl20/samples/";
+const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
+const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl20/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
-    "/Library/Application Support/EmissionControl20/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH =
-    "/Library/Application Support/EmissionControl20/presets/";
-const std::string DEFAULT_CONFIG_PATH =
-    "/Library/Application Support/EmissionControl20/configs/";
+  "/Library/Application Support/EmissionControl20/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl20/presets/";
+const std::string DEFAULT_CONFIG_PATH = "/Library/Application Support/EmissionControl20/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
-}
+}  // namespace consts
 #endif
