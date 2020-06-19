@@ -22,6 +22,15 @@ void ecInterface::onInit() {
   execDir = f.directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
 
+#ifdef __APPLE__
+  execDir = util::getContentPath(execDir);
+  system((execDir + consts::CONFIG_DIR_SCRIPT_PATH).c_str());
+#endif
+
+#ifdef __linux__
+  system((execDir + consts::CONFIG_DIR_SCRIPT_PATH).c_str());
+#endif
+
   initFileIOPaths();
   jsonReadAndSetAudioSettings();
   granulator.init(&audioIO());
@@ -30,9 +39,6 @@ void ecInterface::onInit() {
 // Set output directory for presets.
 // Set output directory of recorded files.
 #ifdef __APPLE__
-  execDir = util::getContentPath(execDir);
-  system((execDir + consts::CONFIG_DIR_SCRIPT_PATH).c_str());
-
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(
       f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
@@ -44,8 +50,9 @@ void ecInterface::onInit() {
 #endif
 
 #ifdef __linux__
-  granulator.loadInitSoundFiles(execDir + "samples/");
-  mPresets.setRootPath(execDir + "presets/");
+  granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
+  mPresets.setRootPath(
+      f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
   audioIO().append(mRecorder);
 }
@@ -167,21 +174,9 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Load Sound File", "")) {
         ImGui::Text("%s", currentFile.c_str());
 
-// When the select file button is clicked, the file selector is shown
-#ifdef __APPLE__
-
-        // result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-        // if (result == NFD_OKAY)
-        //   currentFile = outPath;
+        // When the select file button is clicked, the file selector is shown
 
         result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
-
-#endif
-#ifdef __linux__
-        result = NFD_OpenDialog("wav;aiff;aif", NULL, &outPath);
-        if (result == NFD_OKAY)
-          currentFile = outPath;
-#endif
 
         if (result == NFD_OKAY) {
           size_t i;

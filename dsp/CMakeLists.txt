@@ -42,7 +42,6 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@executable_path/../Resources/")
   set(RESOURCE_LIST
       "libsndfile"
-      "samples"
       "Fonts"
       "config_scripts"
   )

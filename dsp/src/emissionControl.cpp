@@ -150,8 +150,8 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
   mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
                             absMin, absMax};
-  mHighRange = new Parameter{("##" + parameterName + "High").c_str(), defaultMax,
-                             absMin, absMax};
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
+                             defaultMax, absMin, absMax};
   mMin = defaultMin;
   mMax = defaultMax;
   mModWaveform = modWaveform;
@@ -427,13 +427,12 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   if (list.modTapeHeadDepth > 0)
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
-    startSample =
-        source->size / source->channels * (list.tapeHead.getModParam(list.modTapeHeadDepth));
+    startSample = source->size / source->channels *
+                  (list.tapeHead.getModParam(list.modTapeHeadDepth));
   else
     startSample = source->size / source->channels * list.tapeHead.getParam();
 
-  endSample =
-      startSample +  ((mDurationMs / 1000) * samplingRate);
+  endSample = startSample + ((mDurationMs / 1000) * samplingRate);
 
   if (list.modTranspositionDepth > 0)
     index.setSamplingRate(samplingRate / abs(list.transposition.getModParam(
@@ -519,11 +518,12 @@ void Grain::onProcess(al::AudioIOData &io) {
     sourceIndex = index();
 
     counter++;
-    if(counter % 2048 == 0)
-      // std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " << source->get(sourceIndex + 1)  << std::endl;
+    if (counter % 2048 == 0)
+      // std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " <<
+      // source->get(sourceIndex + 1)  << std::endl;
 
-    if (sourceIndex > source->size)
-      sourceIndex -= source->size;
+      if (sourceIndex > source->size)
+        sourceIndex -= source->size;
 
     if (source->channels == 1) {
       currentSample = source->get(sourceIndex);
@@ -535,7 +535,7 @@ void Grain::onProcess(al::AudioIOData &io) {
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
-      currentSample = source->get(sourceIndex*2 + 1);
+      currentSample = source->get(sourceIndex * 2 + 1);
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
