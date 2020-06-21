@@ -289,7 +289,7 @@ void ecInterface::onDraw(Graphics &g) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
   }
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
   ImGui::SetCursorPosY(70);
   ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
@@ -505,21 +505,20 @@ void ecInterface::drawModulationControl(al::ParameterMenu &menu, al::Parameter *
 }
 
 void ecInterface::setGUIColors() {
-  ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
-  ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)ImColor(0.474f, 0.568f, 0.513f));
+  ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)PrimaryColor);
+  ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)Shade2);
   ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
   ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)Shade2);
+  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)Shade2);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
