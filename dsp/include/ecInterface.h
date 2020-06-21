@@ -68,6 +68,13 @@ class ecInterface : public al::App {
   std::vector<float> oscDataR = std::vector<float>(int(oscFrame *currentSR), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
+  ImColor PrimaryColor = ImColor(0.474f, 0.568f, 0.513f);
+  ImColor SecondaryColor = ImColor(0.467f, 0.529f, 0.561f);
+  ImColor TertiaryColor = ImColor(0.886f, 0.761f, 0.729f);
+  ImColor Shade1 = ImColor(0.612f, 0.690f, 0.647f);
+  ImColor Shade2 = ImColor(0.772f, 0.807f, 0.788f);
+  ImColor Shade3 = ImColor(0.929f, 0.933f, 0.929f);
+
   void drawAudioIO(al::AudioIO *io);
 
   void drawLFOcontrol(ecSynth &synth, int lfoNumber);
