@@ -66,16 +66,36 @@ class ecInterface : public al::App {
   float oscFrame = 1;
   double lastSamplingRate = globalSamplingRate;
 
-  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *currentSR), 0);
-  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *currentSR), 0);
+  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
-  ImColor PrimaryColor = ImColor(0.474f, 0.568f, 0.513f);
-  ImColor SecondaryColor = ImColor(0.467f, 0.529f, 0.561f);
-  ImColor TertiaryColor = ImColor(0.886f, 0.761f, 0.729f);
-  ImColor Shade1 = ImColor(0.612f, 0.690f, 0.647f);
-  ImColor Shade2 = ImColor(0.772f, 0.807f, 0.788f);
-  ImColor Shade3 = ImColor(0.929f, 0.933f, 0.929f);
+  // Colors
+
+  // light color scheme
+  ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);
+  ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);
+  ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);
+  ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);
+  ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);
+  ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);
+
+  // dark color scheme
+  ImColor PrimaryDark = ImColor(0.384f, 0.443f, 0.463f);
+  ImColor SecondaryDark = ImColor(0.569f, 0.388f, 0.459f);
+  ImColor TertiaryDark = ImColor(0.655f, 0.561f, 0.451f);
+  ImColor Shade1Dark = ImColor(0.537f, 0.643f, 0.675f);
+  ImColor Shade2Dark = ImColor(0.772f, 0.807f, 0.788f);
+  ImColor Shade3Dark = ImColor(0.929f, 0.933f, 0.929f);
+
+  ImColor *PrimaryColor = &PrimaryLight;
+  ImColor *SecondaryColor = &SecondaryLight;
+  ImColor *TertiaryColor = &TertiaryLight;
+  ImColor *Shade1 = &Shade1Light;
+  ImColor *Shade2 = &Shade2Light;
+  ImColor *Shade3 = &Shade3Light;
+
+  bool light = true;
 
   void drawAudioIO(al::AudioIO *io);
 
