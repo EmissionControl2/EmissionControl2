@@ -42,7 +42,7 @@ class ecInterface : public al::App {
   virtual void onDraw(al::Graphics &g) override;
 
  private:
-  bool noSoundFiles;
+  bool noSoundFiles, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
@@ -51,9 +51,12 @@ class ecInterface : public al::App {
   std::string soundOutput, execDir, execPath, userPath;
   al::File f;
   nfdchar_t *outPath = NULL;
+  nfdpathset_t pathSet;
   nfdresult_t result;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
+
+  double globalSamplingRate = consts::SAMPLE_RATE;
 
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
                            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
@@ -61,8 +64,7 @@ class ecInterface : public al::App {
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
-  float currentSR = consts::SAMPLE_RATE;
-  float lastSR = currentSR;
+  double lastSamplingRate = globalSamplingRate;
 
   std::vector<float> oscDataL = std::vector<float>(int(oscFrame *currentSR), 0);
   std::vector<float> oscDataR = std::vector<float>(int(oscFrame *currentSR), 0);
@@ -85,6 +87,8 @@ class ecInterface : public al::App {
 
   void setPlotConfig();
 
+  int getSampleRateIndex();
+
   /**** Configuration File Stuff****/
   // TO DO TO DO -- Make Linux cross platform with Rodney
 
@@ -96,12 +100,16 @@ class ecInterface : public al::App {
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
+  template <typename T>
+  bool jsonWriteToConfig(T value, std::string key);
+
   /**
    * @brief Read json config file and write output path to soundOutput member variable.
    *
    *
    */
   void jsonReadAndSetSoundOutputPath();
+  void jsonReadAndSetAudioSettings();
 };
 
 /**

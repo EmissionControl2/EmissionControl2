@@ -42,9 +42,9 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@executable_path/../Resources/")
   set(RESOURCE_LIST
       "libsndfile"
-      "samples"
       "Fonts"
       "config_scripts"
+      "samples"
   )
 
   foreach(RESOURCE_DIR_NAME ${RESOURCE_LIST})
@@ -198,8 +198,5 @@ if(APPLE)
       "${RESOURCE_PATH}/libsndfile/libvorbisenc.2.dylib" 
     VERBATIM
   )
-
-  file(MAKE_DIRECTORY "${RESOURCE_PATH}/presets")
-  file(MAKE_DIRECTORY "${RESOURCE_PATH}/soundOutput")
   
 endif(APPLE)

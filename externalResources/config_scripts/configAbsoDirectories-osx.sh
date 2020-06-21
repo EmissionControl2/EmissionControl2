@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [ ! -d "$HOME/Library/Application Support/EmissionControl20/" ]; then
   mkdir "$HOME/Library/Application Support/EmissionControl20/"
 fi
@@ -14,5 +13,9 @@ if [ ! -d "$HOME/Library/Application Support/EmissionControl20/soundOutput" ]; t
 fi
 
 if [ ! -d "$HOME/Library/Application Support/EmissionControl20/samples" ]; then
-  mkdir "$HOME/Library/Application Support/EmissionControl20/samples"
+  cp -r "samples" "$HOME/Library/Application Support/EmissionControl20/"
+fi
+
+if [ ! -d "$HOME/Library/Application Support/EmissionControl20/configs" ]; then
+  mkdir "$HOME/Library/Application Support/EmissionControl20/configs"
 fi
