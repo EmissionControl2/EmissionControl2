@@ -655,6 +655,7 @@ public:
   float getAvgCPU() { return -11992.1; }
 
 private:
+  float mSamplingRate;
   int mCounter;
   float targetDuration;
   float targetRate;
