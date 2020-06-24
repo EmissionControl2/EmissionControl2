@@ -105,7 +105,7 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           14.0f);
+                                           18.0f);
 #endif
 
 #ifdef __linux__
