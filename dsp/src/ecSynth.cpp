@@ -102,6 +102,9 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[0]->shape->registerChangeCallback(
       [&](int value) { Modulators[0]->setWaveform(value); });
 
+  LFOparameters[0]->polarity->registerChangeCallback(
+      [&](int value) { Modulators[0]->setPolarity(value); });
+
   LFOparameters[0]->frequency->mParameter->registerChangeCallback(
       [&](float value) { Modulators[0]->setFrequency(value); });
 
@@ -258,7 +261,8 @@ void ecSynth::onTriggerOn() {}
 void ecSynth::onTriggerOff() {}
 
 void ecSynth::loadSoundFile(std::string fileName) {
-  if( std::find(soundClipFileName.begin(),soundClipFileName.end(), fileName) != soundClipFileName.end())
+  if (std::find(soundClipFileName.begin(), soundClipFileName.end(), fileName) !=
+      soundClipFileName.end())
     return;
   bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true);
   if (temp) {

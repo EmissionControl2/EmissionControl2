@@ -39,12 +39,13 @@ class ecSynth : public al::SynthVoice {
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
-  ecParameter grainRate{"Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0, 500, consts::SINE, 0};
+  ecParameter grainRate{
+      "Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0, 500, 0};
   al::ParameterMenu grainRateLFO{"##grainRateLFO"};
   ecParameter modGrainRateDepth{"modGrainRateDepth", "modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter asynchronicity{"Asynchronicity", "2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1,
-                             consts::SINE};
+  ecParameter asynchronicity{
+      "Asynchronicity", "2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1};
   al::ParameterMenu asyncLFO{"##asyncLFO"};
   ecParameter modAsynchronicityDepth{
     "modAsynchronicityDepth", "modAsynchronicityDepth", "", 0, "", 0, 1, 0, 1};

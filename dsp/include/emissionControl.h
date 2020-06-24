@@ -109,13 +109,15 @@ public:
    * @brief Constructor for ecModulator.
    *
    * @param[in] An enum type defined in consts.h.
-   *            SINE, SQUARE, SAW, or NOISE.
+   *            SINE, SQUARE, ASCEND, DESCEND, or NOISE.
    * @param[in] The frequency of the modulator.
    * @param[in] The width of the modulator.
    */
-  ecModulator(consts::waveform modWaveform = consts::SINE, float frequency = 1,
+  ecModulator(consts::waveform modWaveform = consts::SINE,
+              consts::polarity modPolarity = consts::BI, float frequency = 1,
               float width = 1) {
     this->setWaveform(modWaveform);
+    this->setPolarity(modPolarity);
     mLFO.set(frequency, 0, width);
   }
 
@@ -153,19 +155,43 @@ public:
    * @brief Set the waveform of the modulator.
    *
    * @param[in] An enum type defined in consts.h.
-   *            SINE, SQUARE, SAW, or NOISE.
+   *            SINE, SQUARE, ASCEND, DESCEND, or NOISE.
+   *
    */
   void setWaveform(consts::waveform modWaveform);
 
   /**
-   * @bried Set the waveform using an integer.
-   * @param modwaveformIndex :
+   * @brief Set the waveform using an integer.
+   * @param[in] modwaveformIndex :
    *                           0 = SINE
    *                           1 = SQUARE
-   *                           2 = SAW
-   *                           3 = NOISE
+   *                           2 = ASCEND
+   *                           3 = DESCEND
+   *                           4 = NOISE
+   *
+   * @param[in] mod
    */
-  void setWaveform(int modwaveformIndex);
+  void setWaveform(unsigned modwaveformIndex);
+
+  /**
+   * @brief Set the polarity of the modulator.
+   *
+   * @param[in] An enum type defined in consts.h.
+   *            BI, UNI_POS, UNI_NEG.
+   *
+   */
+  void setPolarity(consts::polarity modPolarity);
+
+  /**
+   * @brief Set the waveform using an integer.
+   * @param[in] modwaveformIndex :
+   *                           0 = BI
+   *                           1 = UNI_POS
+   *                           2 = UNI_NEG
+   *
+   * @param[in] Polarity index.
+   */
+  void setPolarity(unsigned modPolarityIndex);
 
   /**
    * @brief Set the frequency of the modulator.
@@ -200,8 +226,12 @@ private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
+  consts::polarity mPolarity;
+  int mSign;
   float mFrequency, mCurrentSample, mHoldNoiseSample;
   unsigned int lastPhase, currentPhase;
+
+  float sampleAndHoldUniform(float low, float high);
 };
 
 /**
@@ -243,9 +273,7 @@ public:
   ecParameter(std::string parameterName, std::string displayName,
               float defaultValue = 0, float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX,
-              consts::waveform modWaveform = consts::SINE,
-              bool independentMod = 0);
+              float absMax = FLT_MAX, bool independentMod = 0);
 
   /**
    * @brief ecParameter Constructor.
@@ -270,9 +298,7 @@ public:
               std::string Group, float defaultValue = 0,
               std::string prefix = "", float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX,
-              consts::waveform modWaveform = consts::SINE,
-              bool independentMod = 0);
+              float absMax = FLT_MAX, bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -341,7 +367,6 @@ public:
 
 private:
   std::string mDisplayName;
-  consts::waveform mModWaveform;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
   bool mIndependentMod;
@@ -390,9 +415,7 @@ public:
                  std::string Group, int defaultValue = 0,
                  std::string prefix = "", int defaultMin = -99999,
                  int defaultMax = 99999, int absMin = -1 * INT_MAX,
-                 int absMax = INT_MAX,
-                 consts::waveform modWaveform = consts::SINE,
-                 bool independentMod = 0);
+                 int absMax = INT_MAX, bool independentMod = 0);
 
   /**
    * @bried ecParameterInt destructor.
@@ -456,7 +479,6 @@ private:
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
   int mMax, mMin;
-  consts::waveform mModWaveform;
 };
 
 struct grainParameters {
@@ -655,13 +677,13 @@ public:
   float getAvgCPU() { return -11992.1; }
 
 private:
-  float mSamplingRate;
-  int mCounter;
-  float targetDuration;
-  float targetRate;
-  float mAvgActiveVoices;
-  float mPeakCPU;
-  float mAvgCPU;
+  // float mSamplingRate;
+  // int mCounter;
+  // float targetDuration;
+  // float targetRate;
+  // float mAvgActiveVoices;
+  // float mPeakCPU;
+  // float mAvgCPU;
 };
 
 /*** GUI ELEMENTS ***/
@@ -670,21 +692,25 @@ private:
 struct LFOstruct {
 public:
   al::ParameterMenu *shape = nullptr;
+  al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
   al::Parameter *duty = nullptr;
 
   // constructor
   LFOstruct(int lfoNumber) {
     std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
+    std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
     std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
     std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
 
     shape = new al::ParameterMenu(menuName);
+    polarity = new al::ParameterMenu(polarityName);
     frequency =
         new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
-    shape->setElements({"Sine", "Square", "Saw", "Noise"});
+    shape->setElements({"Sine", "Square", "Ascend", "Descend", "Noise"});
+    polarity->setElements({"BI", "UNI+", "UNI-"});
   }
 
   // destructor

@@ -77,38 +77,51 @@ bool grainEnvelope::done() { return mTurkeyEnv.done(); }
 
 /******* ecModulator *******/
 float ecModulator::operator()() {
+  float result;
   if (mModWaveform == consts::SINE) {
-    return mLFO.cos();
-  } else if (mModWaveform == consts::SAW) {
-    return mLFO.up2();
+    if (mPolarity == consts::BI)
+      result = mLFO.cos();
+    else {
+      result = mLFO.cosU() * mSign;
+    }
   } else if (mModWaveform == consts::SQUARE) {
-    return mLFO.stair();
+    if (mPolarity == consts::BI)
+      result = mLFO.stair();
+    else
+      result = mLFO.stairU() * mSign;
+  } else if (mModWaveform == consts::ASCEND) {
+    if (mPolarity == consts::BI)
+      result = mLFO.upU();
+    else
+      result = mLFO.upU() * mSign;
+  } else if (mModWaveform == consts::DESCEND) {
+    if (mPolarity == consts::BI)
+      result = mLFO.downU();
+    else
+      result = mLFO.downU() * mSign;
   } else if (mModWaveform == consts::NOISE) {
-    mLFO.nextPhase();
-    lastPhase = currentPhase;
-    currentPhase = mLFO.phaseI();
-    if (lastPhase > currentPhase) {
-      mHoldNoiseSample = rand.uniform(-1.0, 1.0);
-      return mHoldNoiseSample;
-    } else
-      return mHoldNoiseSample;
-
+    if (mPolarity == consts::BI)
+      result = sampleAndHoldUniform(-1.0f, 1.0f);
+    else
+      result = mSign * sampleAndHoldUniform(0.f, 1.0f);
   } else {
-    return mLFO.cos();
+    result = mLFO.cos();
   }
+  return result;
 }
 
 void ecModulator::setWaveform(consts::waveform modWaveform) {
-  if (modWaveform != consts::SINE && modWaveform != consts::SAW &&
-      modWaveform != consts::SQUARE && modWaveform != consts::NOISE) {
+  if (modWaveform != consts::SINE && modWaveform != consts::ASCEND &&
+      modWaveform != consts::DESCEND && modWaveform != consts::SQUARE &&
+      modWaveform != consts::NOISE) {
     std::cerr << "invalid waveform" << std::endl;
     return;
   }
   mModWaveform = modWaveform;
 }
 
-void ecModulator::setWaveform(int modWaveformIndex) {
-  if (modWaveformIndex > 3) {
+void ecModulator::setWaveform(unsigned modWaveformIndex) {
+  if (modWaveformIndex > 4) {
     std::cerr << "invalid waveform" << std::endl;
     return;
   }
@@ -121,10 +134,53 @@ void ecModulator::setWaveform(int modWaveformIndex) {
     mModWaveform = consts::SQUARE;
     break;
   case 2:
-    mModWaveform = consts::SAW;
+    mModWaveform = consts::ASCEND;
     break;
   case 3:
+    mModWaveform = consts::DESCEND;
+    break;
+  case 4:
     mModWaveform = consts::NOISE;
+    break;
+  }
+}
+
+void ecModulator::setPolarity(consts::polarity modPolarity) {
+  if (modPolarity != consts::BI && modPolarity != consts::UNI_NEG &&
+      modPolarity != consts::UNI_POS) {
+    std::cerr << "invalid polarity" << std::endl;
+    return;
+  }
+  if (modPolarity == consts::UNI_POS) {
+    mPolarity = consts::UNI;
+    mSign = 1;
+  } else if (modPolarity == consts::UNI_NEG) {
+    mPolarity = consts::UNI;
+    mSign = -1;
+  } else {
+    mPolarity = modPolarity;
+    mSign = 1; // THIS IS A DONT CARE
+  }
+}
+
+void ecModulator::setPolarity(unsigned modPolarityIndex) {
+  if (modPolarityIndex > 2) {
+    std::cerr << "invalid waveform" << std::endl;
+    return;
+  }
+
+  switch (modPolarityIndex) {
+  case 0:
+    setPolarity(consts::BI);
+    break;
+  case 1:
+    setPolarity(consts::UNI_POS);
+    break;
+  case 2:
+    setPolarity(consts::UNI_NEG);
+    break;
+  default:
+    setPolarity(consts::BI);
     break;
   }
 }
@@ -138,12 +194,22 @@ void ecModulator::setWidth(float width) { mLFO.mod(width); }
 
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
+float ecModulator::sampleAndHoldUniform(float low, float high) {
+  mLFO.nextPhase();
+  lastPhase = currentPhase;
+  currentPhase = mLFO.phaseI();
+  if (lastPhase > currentPhase) {
+    mHoldNoiseSample = rand.uniform(low, high);
+    return mHoldNoiseSample;
+  } else
+    return mHoldNoiseSample;
+}
+
 /******* ecParameter *******/
 
 ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          float defaultValue, float defaultMin, float defaultMax,
-                         float absMin, float absMax,
-                         consts::waveform modWaveform, bool independentMod) {
+                         float absMin, float absMax, bool independentMod) {
   mParameter =
       new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
   mDisplayName = displayName;
@@ -154,17 +220,15 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
                              defaultMax, absMin, absMax};
   mMin = defaultMin;
   mMax = defaultMax;
-  mModWaveform = modWaveform;
   mIndependentMod = independentMod;
   if (mIndependentMod) // if true, this parameter will have its own modulator
-    mModulator = new ecModulator{mModWaveform, 1, 1};
+    mModulator = new ecModulator();
 }
 
 ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          std::string Group, float defaultValue,
                          std::string prefix, float defaultMin, float defaultMax,
-                         float absMin, float absMax,
-                         consts::waveform modWaveform, bool independentMod) {
+                         float absMin, float absMax, bool independentMod) {
   mParameter = new Parameter{parameterName, Group,      defaultValue,
                              prefix,        defaultMin, defaultMax};
   mDisplayName = displayName;
@@ -183,10 +247,9 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
                              absMax};
   mMin = defaultMin;
   mMax = defaultMax;
-  mModWaveform = modWaveform;
   mIndependentMod = independentMod;
   if (mIndependentMod) // if true, this parameter will have its own modulator
-    mModulator = new ecModulator{mModWaveform, 1, 1};
+    mModulator = new ecModulator();
 }
 
 ecParameter::~ecParameter() {
@@ -200,7 +263,7 @@ ecParameter::~ecParameter() {
 void ecParameter::setIndependentMod(bool independentMod) {
   mIndependentMod = independentMod;
   if (mIndependentMod && mModulator == nullptr)
-    mModulator = new ecModulator{mModWaveform, 1, 1};
+    mModulator = new ecModulator();
   else
     delete mModulator;
 }
@@ -285,8 +348,7 @@ ecParameterInt::ecParameterInt(std::string parameterName,
                                std::string displayName, std::string Group,
                                int defaultValue, std::string prefix,
                                int defaultMin, int defaultMax, int absMin,
-                               int absMax, consts::waveform modWaveform,
-                               bool independentMod) {
+                               int absMax, bool independentMod) {
   mParameterInt = new ParameterInt{parameterName, Group,      defaultValue,
                                    prefix,        defaultMin, defaultMax};
   mDisplayName = displayName;
@@ -305,10 +367,9 @@ ecParameterInt::ecParameterInt(std::string parameterName,
                                 absMax};
   mMin = defaultMin;
   mMax = defaultMax;
-  mModWaveform = modWaveform;
   mIndependentMod = independentMod;
   if (mIndependentMod) // if true, this parameter will have its own modulator
-    mModulator = new ecModulator{mModWaveform, 1, 1};
+    mModulator = new ecModulator();
 }
 
 ecParameterInt::~ecParameterInt() {
@@ -322,7 +383,7 @@ ecParameterInt::~ecParameterInt() {
 void ecParameterInt::setIndependentMod(bool independentMod) {
   mIndependentMod = independentMod;
   if (mIndependentMod && mModulator == nullptr)
-    mModulator = new ecModulator{mModWaveform, 1, 1};
+    mModulator = new ecModulator();
   else
     delete mModulator;
 }
@@ -612,16 +673,16 @@ void voiceScheduler::setPolyStream(consts::streamType type, int numStreams) {
 /******* flowControl *******/
 
 bool flowControl::throttle(float time, float ratio, int activeVoices) {
-  if (mCounter < time * mSamplingRate) {
-    mCounter++;
-    mAvgActiveVoices += activeVoices;
-    return false;
-  } else {
-    mCounter++;
-    mAvgActiveVoices /= mCounter;
-    mCounter = 0;
-  }
-  return true;
+  // if (mCounter < time * mSamplingRate) {
+  //   mCounter++;
+  //   mAvgActiveVoices += activeVoices;
+  //   return false;
+  // } else {
+  //   mCounter++;
+  //   mAvgActiveVoices /= mCounter;
+  //   mCounter = 0;
+  // }
+  // return true;
   // float adaptThresh;
 
   // if (getPeakCPU() > adaptThresh) {
@@ -632,4 +693,5 @@ bool flowControl::throttle(float time, float ratio, int activeVoices) {
   // } else {
   //   return false;
   // }
+  return false;
 }
