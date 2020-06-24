@@ -110,11 +110,11 @@ void ecInterface::onCreate() {
 
 #ifdef __linux__
   ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           14.0f);
+                                           18.0f);
 #endif
 
   // Scale font
-  ImGui::GetIO().FontGlobalScale = 1.2;
+  // ImGui::GetIO().FontGlobalScale = 1.2;
   setGUIColors();
 }
 
@@ -125,9 +125,12 @@ void ecInterface::onDraw(Graphics &g) {
   framecounter++;
   g.clear(background);
 
-  // Get window height and width
+  // Get window height and width (for responsive sizing)
   float windowWidth = width();
   float windowHeight = height();
+
+  // Compare window size to fb size to account for HIDPI Display issues
+  // ImGui::SetWindowFontScale(getCurrentWindowPixelDensity());
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
@@ -312,6 +315,7 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Active Grains", 0, windowHeight * 3 / 4 + 25, windowWidth / 4,
                            windowHeight / 4, flags);
   ImGui::Text("Current Active Grains: %.1i ", granulator.getActiveVoices());
+
   if (framecounter % 10 == 0) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
