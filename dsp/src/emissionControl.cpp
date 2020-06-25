@@ -295,7 +295,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameter::drawRangeSlider(bool isLFOParam) {
+void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
 
@@ -310,9 +310,11 @@ void ecParameter::drawRangeSlider(bool isLFOParam) {
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  if (isLFOParam)
+  if (slideType == consts::LFO)
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.53f);
-  else
+  else if (slideType == consts::MOD)
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f); // RODNEY - CHANGE value to change width of mod slider.
+  else if (slideType == consts::PARAM)
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
   valueSlider = mParameter->get();
   changed =
@@ -335,10 +337,13 @@ void ecParameter::drawRangeSlider(bool isLFOParam) {
 
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
-  if (isLFOParam)
+  if (slideType == consts::LFO)
     ImGui::Text("Hz");
-  else
+  else if (slideType == consts::MOD)
+    ImGui::Text("");
+  else if (slideType == consts::PARAM)
     ImGui::Text((getDisplayName()).c_str());
+  
   ImGui::PopItemWidth();
 }
 

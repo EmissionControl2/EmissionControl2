@@ -105,12 +105,12 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           18.0f);
+                                           16.0f);
 #endif
 
 #ifdef __linux__
   ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           18.0f);
+                                           16.0f);
 #endif
 
   // Scale font
@@ -270,31 +270,31 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25, windowWidth / 2,
                            windowHeight / 2, flags);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth.mParameter);
+  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth.mParameter);
+  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth.mParameter);
+  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth.mParameter);
+  drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth.mParameter);
+  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth.mParameter);
+  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth.mParameter);
+  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.filterLFO, granulator.modFilterDepth.mParameter);
+  drawModulationControl(granulator.filterLFO, granulator.modFilterDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth.mParameter);
+  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth.mParameter);
+  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth.mParameter);
+  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.panLFO, granulator.modPanDepth.mParameter);
+  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth.mParameter);
+  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
@@ -509,14 +509,14 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
 }
 
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
-  ImGui::Text("LFO %i", lfoNumber + 1);
+  ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.075f);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.875);
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(true);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
   // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
   ImGui::PopItemWidth();
   ImGui::SameLine();
@@ -532,13 +532,14 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Unindent(200);
 }
 
-void ecInterface::drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider) {
-  ImGui::PushItemWidth(120);
+void ecInterface::drawModulationControl(al::ParameterMenu &menu, ecParameter &slider) {
+  ImGui::PushItemWidth(90);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
-  ParameterGUI::drawParameter(slider);
+  slider.drawRangeSlider(consts::MOD);
+  // ParameterGUI::drawParameter(slider);
   ImGui::PopItemWidth();
 }
 
