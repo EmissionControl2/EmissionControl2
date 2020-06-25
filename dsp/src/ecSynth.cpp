@@ -38,60 +38,60 @@ void ecSynth::init(al::AudioIOData *io) {
   mPActiveVoices = &mActiveVoices;
 
   // MUST USE THIS ORDER
-  grainRateLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   grainRate.setModulationSource(Modulators[0]); // Default
   grainRateLFO.registerChangeCallback(
       [&](int value) { grainRate.setModulationSource(Modulators[value]); });
-  asyncLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  asyncLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   asynchronicity.setModulationSource(Modulators[0]);
   asyncLFO.registerChangeCallback([&](int value) {
     asynchronicity.setModulationSource(Modulators[value]);
   });
-  intermittencyLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  intermittencyLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   intermittency.setModulationSource(Modulators[0]);
   intermittencyLFO.registerChangeCallback(
       [&](int value) { intermittency.setModulationSource(Modulators[value]); });
-  streamsLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  streamsLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   streams.setModulationSource(Modulators[0]);
   streamsLFO.registerChangeCallback(
       [&](int value) { streams.setModulationSource(Modulators[value]); });
-  grainDurationLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  grainDurationLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   grainDurationMs.setModulationSource(Modulators[0]);
   grainDurationLFO.registerChangeCallback([&](int value) {
     grainDurationMs.setModulationSource(Modulators[value]);
   });
-  envelopeLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  envelopeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   envelope.setModulationSource(Modulators[0]);
   envelopeLFO.registerChangeCallback(
       [&](int value) { envelope.setModulationSource(Modulators[value]); });
-  tapeHeadLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  tapeHeadLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
       [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
-  transpositionLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
       [&](int value) { transposition.setModulationSource(Modulators[value]); });
 
-  filterLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  filterLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   filter.setModulationSource(Modulators[0]);
   filterLFO.registerChangeCallback(
       [&](int value) { filter.setModulationSource(Modulators[value]); });
 
-  resonanceLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  resonanceLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   resonance.setModulationSource(Modulators[0]);
   resonanceLFO.registerChangeCallback(
       [&](int value) { resonance.setModulationSource(Modulators[value]); });
 
-  volumeLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  volumeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   volumeDB.setModulationSource(Modulators[0]);
   volumeLFO.registerChangeCallback(
       [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
-  panLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  panLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   pan.setModulationSource(Modulators[0]);
   panLFO.registerChangeCallback(
       [&](int value) { pan.setModulationSource(Modulators[value]); });
-  soundFileLFO.setElements({"LFO_One", "LFO_Two", "LFO_Three", "LFO_Four"});
+  soundFileLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   soundFile.setModulationSource(Modulators[0]);
   soundFileLFO.registerChangeCallback(
       [&](int value) { soundFile.setModulationSource(Modulators[value]); });

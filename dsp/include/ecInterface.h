@@ -73,20 +73,20 @@ class ecInterface : public al::App {
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);
-  ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);
-  ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);
-  ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);
-  ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);
-  ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);
+  ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);    // Background
+  ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);  // Oscilloscope L 
+  ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);   // Oscilloscope R
+  ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);     // Slider Color 1
+  ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
+  ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(0.384f, 0.443f, 0.463f);
-  ImColor SecondaryDark = ImColor(0.569f, 0.388f, 0.459f);
-  ImColor TertiaryDark = ImColor(0.655f, 0.561f, 0.451f);
-  ImColor Shade1Dark = ImColor(0.537f, 0.643f, 0.675f);
-  ImColor Shade2Dark = ImColor(0.772f, 0.807f, 0.788f);
-  ImColor Shade3Dark = ImColor(0.929f, 0.933f, 0.929f);
+  ImColor PrimaryDark = ImColor(0.384f, 0.443f, 0.463f);    // Background
+  ImColor SecondaryDark = ImColor(0.569f, 0.388f, 0.459f);  // Oscilloscope L
+  ImColor TertiaryDark = ImColor(0.655f, 0.561f, 0.451f);   // Oscilloscope R
+  ImColor Shade1Dark = ImColor(0.537f, 0.643f, 0.675f);     // Slider Color 1
+  ImColor Shade2Dark = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
+  ImColor Shade3Dark = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
 
   ImColor *PrimaryColor = &PrimaryLight;
   ImColor *SecondaryColor = &SecondaryLight;
@@ -101,7 +101,7 @@ class ecInterface : public al::App {
 
   void drawLFOcontrol(ecSynth &synth, int lfoNumber);
 
-  void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
+  void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider);
 
   void setGUIColors();
 

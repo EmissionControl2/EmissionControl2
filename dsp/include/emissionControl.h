@@ -359,7 +359,7 @@ public:
   /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(bool isLFOParam = 0);
+  void drawRangeSlider(consts::sliderType slideType = consts::PARAM);
 
   std::string getDisplayName() const { return mDisplayName; }
 

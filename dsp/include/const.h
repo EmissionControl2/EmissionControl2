@@ -13,6 +13,7 @@ enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
 enum bound { MIN, MAX };
+enum sliderType {PARAM, MOD,LFO};
 
 /**
  *  JSON KEYS
