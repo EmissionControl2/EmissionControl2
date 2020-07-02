@@ -20,7 +20,7 @@
 #include "../external/nativefiledialog/src/include/nfd.h"
 
 class ecInterface : public al::App {
-public:
+ public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -41,7 +41,7 @@ public:
    */
   virtual void onDraw(al::Graphics &g) override;
 
-private:
+ private:
   bool noSoundFiles, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
@@ -58,24 +58,50 @@ private:
 
   double globalSamplingRate = consts::SAMPLE_RATE;
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
-                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-                           ImGuiWindowFlags_NoSavedSettings;
-
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
+                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
-  std::vector<float> oscDataL =
-      std::vector<float>(int(oscFrame * globalSamplingRate), 0);
-  std::vector<float> oscDataR =
-      std::vector<float>(int(oscFrame * globalSamplingRate), 0);
+  double lastSamplingRate = globalSamplingRate;
+
+  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> blackLine = std::vector<float>(2, 0);
+
+  // Colors
+
+  // light color scheme
+  ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);    // Background
+  ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);  // Oscilloscope L 
+  ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);   // Oscilloscope R
+  ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);     // Slider Color 1
+  ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
+  ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
+
+  // dark color scheme
+  ImColor PrimaryDark = ImColor(0.384f, 0.443f, 0.463f);    // Background
+  ImColor SecondaryDark = ImColor(0.569f, 0.388f, 0.459f);  // Oscilloscope L
+  ImColor TertiaryDark = ImColor(0.655f, 0.561f, 0.451f);   // Oscilloscope R
+  ImColor Shade1Dark = ImColor(0.537f, 0.643f, 0.675f);     // Slider Color 1
+  ImColor Shade2Dark = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
+  ImColor Shade3Dark = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
+
+  ImColor *PrimaryColor = &PrimaryLight;
+  ImColor *SecondaryColor = &SecondaryLight;
+  ImColor *TertiaryColor = &TertiaryLight;
+  ImColor *Shade1 = &Shade1Light;
+  ImColor *Shade2 = &Shade2Light;
+  ImColor *Shade3 = &Shade3Light;
+
+  bool light = true;
 
   void drawAudioIO(al::AudioIO *io);
 
   void drawLFOcontrol(ecSynth &synth, int lfoNumber);
 
-  void drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider);
+  void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider);
 
   void setGUIColors();
 
@@ -88,15 +114,13 @@ private:
 
   void initFileIOPaths();
 
-
   bool initJsonConfig();
-
 
   // These will have dependencies on the userPath member, MAKE SURE TO INIT IT
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template<typename T>
+  template <typename T>
   bool jsonWriteToConfig(T value, std::string key);
 
   /**
@@ -121,8 +145,7 @@ private:
  *
  * @param[in] Amount of space allocated for sound.
  */
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
-                               uint32_t numChannels, std::string directory = "",
-                               uint32_t bufferSize = 0);
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
+                               std::string directory = "", uint32_t bufferSize = 0);
 
 #endif

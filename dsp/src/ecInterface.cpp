@@ -105,28 +105,32 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           14.0f);
+                                           16.0f);
 #endif
 
 #ifdef __linux__
   ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           14.0f);
+                                           16.0f);
 #endif
 
   // Scale font
-  ImGui::GetIO().FontGlobalScale = 1.2;
+  // ImGui::GetIO().FontGlobalScale = 1.2;
   setGUIColors();
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
+  setGUIColors();
   framecounter++;
   g.clear(background);
 
-  // Get window height and width
+  // Get window height and width (for responsive sizing)
   float windowWidth = width();
   float windowHeight = height();
+
+  // Compare window size to fb size to account for HIDPI Display issues
+  // ImGui::SetWindowFontScale(getCurrentWindowPixelDensity());
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
@@ -185,6 +189,25 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Remove Current Sound File", "")) {
         granulator.removeCurrentSoundFile();
       }
+      if (ImGui::MenuItem("Toggle Light/Dark", "")) {
+        if (light) {
+          PrimaryColor = &PrimaryDark;
+          SecondaryColor = &SecondaryDark;
+          TertiaryColor = &TertiaryDark;
+          Shade1 = &Shade1Dark;
+          Shade2 = &Shade2Dark;
+          Shade3 = &Shade3Dark;
+          light = false;
+        } else {
+          PrimaryColor = &PrimaryLight;
+          SecondaryColor = &SecondaryLight;
+          TertiaryColor = &TertiaryLight;
+          Shade1 = &Shade1Light;
+          Shade2 = &Shade2Light;
+          Shade3 = &Shade3Light;
+          light = true;
+        }
+      }
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
@@ -214,65 +237,65 @@ void ecInterface::onDraw(Graphics &g) {
 
   ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2, windowHeight / 4 + 25,
                            windowWidth / 2, windowHeight / 2, flags);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   granulator.grainRate.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.asynchronicity.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.intermittency.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   granulator.streams.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.grainDurationMs.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.envelope.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   granulator.transposition.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.filter.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.resonance.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   granulator.soundFile.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.tapeHead.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.pan.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   granulator.volumeDB.drawRangeSlider();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
   // Draw modulation window
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25, windowWidth / 2,
                            windowHeight / 2, flags);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
-  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
-  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.filterLFO, granulator.modFilterDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
-  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.537f,0.643f,0.675f));
-  drawModulationControl(granulator.panLFO, granulator.modPanDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.929f, 0.933f, 0.929f));
-  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth.mParameter);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  drawModulationControl(granulator.filterLFO, granulator.modFilterDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
   // Draw recorder window
@@ -292,11 +315,12 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Active Grains", 0, windowHeight * 3 / 4 + 25, windowWidth / 4,
                            windowHeight / 4, flags);
   ImGui::Text("Current Active Grains: %.1i ", granulator.getActiveVoices());
+
   if (framecounter % 10 == 0) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
   }
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.1f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
   ImGui::SetCursorPosY(70);
   ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
@@ -309,24 +333,35 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::Text("Oscilloscope Timeframe (s):");
   ImGui::SameLine();
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
-    if (oscFrame <= 3.0) {
+    if (oscFrame <= 3.0 || globalSamplingRate != lastSamplingRate) {
       oscDataL.resize(int(oscFrame * globalSamplingRate));
       oscDataR.resize(int(oscFrame * globalSamplingRate));
     }
   }
+  lastSamplingRate = globalSamplingRate;
+
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
   oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+
   ImGui::SetCursorPosY(70);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*SecondaryColor);
   ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+
   ImGui::SetCursorPosY(70);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(1.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*TertiaryColor);
   ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+
+  ImGui::SetCursorPosY(70);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PlotLines("black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+
   ImGui::PopItemWidth();
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
   // Pop the colors that were pushed at the start of the draw call
@@ -474,17 +509,20 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
 }
 
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
-  ImGui::Text("LFO %i", lfoNumber + 1);
+  ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.075f);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
-
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(true);
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.875);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
   // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
   ImGui::PopItemWidth();
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.05f);
+  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
+
   ImGui::Indent(200);
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
@@ -494,34 +532,34 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Unindent(200);
 }
 
-void ecInterface::drawModulationControl(al::ParameterMenu &menu, al::Parameter *slider) {
-  ImGui::PushItemWidth(120);
+void ecInterface::drawModulationControl(al::ParameterMenu &menu, ecParameter &slider) {
+  ImGui::PushItemWidth(90);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
-  ParameterGUI::drawParameter(slider);
+  slider.drawRangeSlider(consts::MOD);
+  // ParameterGUI::drawParameter(slider);
   ImGui::PopItemWidth();
 }
 
 void ecInterface::setGUIColors() {
-  ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.384f,0.443f,0.463f));
-  ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)ImColor(0.384f,0.443f,0.463f));
+  ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)*PrimaryColor);
+  ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
-  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
   ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)ImColor(0.772f, 0.807f, 0.788f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 1.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(0.0f, 0.3f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.7f));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
 
