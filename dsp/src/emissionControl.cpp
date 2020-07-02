@@ -313,7 +313,9 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   if (slideType == consts::LFO)
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.53f);
   else if (slideType == consts::MOD)
-    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f); // RODNEY - CHANGE value to change width of mod slider.
+    ImGui::PushItemWidth(
+        ImGui::GetWindowWidth() *
+        0.6f); // RODNEY - CHANGE value to change width of mod slider.
   else if (slideType == consts::PARAM)
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
   valueSlider = mParameter->get();
@@ -343,7 +345,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
     ImGui::Text("");
   else if (slideType == consts::PARAM)
     ImGui::Text((getDisplayName()).c_str());
-  
+
   ImGui::PopItemWidth();
 }
 
@@ -493,12 +495,12 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   if (list.modTapeHeadDepth > 0)
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
-    startSample = source->size / source->channels *
-                  (list.tapeHead.getModParam(list.modTapeHeadDepth));
+    startSample = floor(source->size / source->channels *
+                  (list.tapeHead.getModParam(list.modTapeHeadDepth)));
   else
-    startSample = source->size / source->channels * list.tapeHead.getParam();
+    startSample = floor(source->size / source->channels * list.tapeHead.getParam());
 
-  endSample = startSample + ((mDurationMs / 1000) * samplingRate);
+  endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate));
 
   if (list.modTranspositionDepth > 0)
     index.setSamplingRate(samplingRate / abs(list.transposition.getModParam(
@@ -584,24 +586,36 @@ void Grain::onProcess(al::AudioIOData &io) {
     sourceIndex = index();
 
     counter++;
-    if (counter % 2048 == 0)
-      // std::cout << "1st: " << source->get(sourceIndex)  << "--- 2nd: " <<
-      // source->get(sourceIndex + 1)  << std::endl;
+    if (counter % 2048 == -1) {
+      std::cout << "start: " << index.getStart()
+                << " end: " << index.getTarget() << " Size: " << source->size
+                << " sr: " << index.getSamplingRate()
+                << " value: " << index.getValue()
+                << std::endl;
+    }
 
-      if (sourceIndex > source->size)
-        sourceIndex -= source->size;
+    if (sourceIndex > source->size)
+      sourceIndex -= source->size;
 
     if (source->channels == 1) {
+      // std::cout <<  source->get(sourceIndex) << std::endl;
       currentSample = source->get(sourceIndex);
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
-      currentSample = source->get(sourceIndex * 2);
+
+      float before = source->get(floor(sourceIndex)*2.0);
+      float after = source->get(floor(sourceIndex)*2.0 + 2);
+      float dec = sourceIndex - floor(sourceIndex);
+      currentSample = before * (1-dec) + after * dec;
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
-      currentSample = source->get(sourceIndex * 2 + 1);
+      before = source->get(floor(sourceIndex+1)*2.0);
+      after = source->get(floor(sourceIndex+1)*2.0 + 2);
+      dec = (sourceIndex+1) - floor(sourceIndex+1);
+      currentSample = before * (1-dec) + after * dec;
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }

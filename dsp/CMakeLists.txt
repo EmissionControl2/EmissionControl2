@@ -151,12 +151,7 @@ set_target_properties(${APP_NAME} PROPERTIES
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
-<<<<<<< HEAD
-  MACOSX_BUNDLE_EXECUTABLE_NAME "${APP_NAME}"
-  MACOSX_BUNDLE_GUI_IDENTIFIER "ECDevTeam"
-=======
   MACOSX_BUNDLE_GUI_IDENTIFIER "EmissionControl20"
->>>>>>> 09330e316d4a2af7cbd93769a3783651e245b90d
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
   add_custom_command (TARGET ${APP_NAME}
