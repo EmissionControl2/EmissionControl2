@@ -50,6 +50,12 @@ public:
 
   float getIncrement() const { return increment; }
 
+  float getStart() const { return start; }
+
+  float getValue() const { return value; }
+
+  float getTarget() const { return target; }
+
   /**
    * @brief Check if the line function is complete.
    *
@@ -58,7 +64,7 @@ public:
   bool const done() { return value == target; }
 
 private:
-  float value = 0, target = 0, seconds = 1, increment = 0;
+  float value = 0, start = 0, target = 0, seconds = 1, increment = 0;
   float mSamplingRate;
 };
 
@@ -232,14 +238,9 @@ public:
 
   T raw(const float index) const {
     const unsigned i = floor(index);
-<<<<<<< HEAD
-    const T x0 = data[i]
-    const T x1 = data[(i == (size - 1)) ? 0 : i + channels]; // looping semantics
-=======
     const T x0 = data[i];
     const T x1 =
-        data[(i == (size - 1)) ? 0 : i + channels]; // looping semantics
->>>>>>> 09330e316d4a2af7cbd93769a3783651e245b90d
+        data[(i >= (size - channels)) ? 0 : i + channels]; // looping semantics
     const T t = index - i;
     return x1 * t + x0 * (1 - t);
   }
