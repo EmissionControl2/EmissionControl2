@@ -41,6 +41,21 @@ class ecInterface : public al::App {
    */
   virtual void onDraw(al::Graphics &g) override;
 
+  // struct pulled from al_ParameterGUI.hpp for custom preset draw function
+  struct PresetHandlerState {
+    std::string currentBank;
+    int currentBankIndex = 0;
+    std::vector<std::string> mapList;
+    int presetHandlerBank = 0;
+    bool newMap = false;
+    std::string enteredText;
+    std::string newMapText;
+    bool storeButtonState{false};
+  };
+  // Custom preset draw function (copied and modified from al_ParameterGUI.hpp)
+  static PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
+                                                 int presetColumns, int presetRows);
+
  private:
   bool noSoundFiles, isPaused = false, writeSampleRate = false;
   float background = 0.21;
@@ -73,20 +88,22 @@ class ecInterface : public al::App {
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);    // Background
-  ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);  // Oscilloscope L 
-  ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);   // Oscilloscope R
-  ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);     // Slider Color 1
-  ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
-  ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
+  ImColor PrimaryLight = ImColor(98, 113, 118);   // Background
+  ImColor SecondaryLight = ImColor(85, 114, 95);  // Oscilloscope L
+  ImColor TertiaryLight = ImColor(82, 87, 106);   // Oscilloscope R
+  ImColor Shade1Light = ImColor(133, 144, 148);   // Slider Color 1
+  ImColor Shade2Light = ImColor(167, 175, 178);   // Slider Color 2
+  ImColor Shade3Light = ImColor(202, 207, 208);   // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(0.384f, 0.443f, 0.463f);    // Background
-  ImColor SecondaryDark = ImColor(0.569f, 0.388f, 0.459f);  // Oscilloscope L
-  ImColor TertiaryDark = ImColor(0.655f, 0.561f, 0.451f);   // Oscilloscope R
-  ImColor Shade1Dark = ImColor(0.537f, 0.643f, 0.675f);     // Slider Color 1
-  ImColor Shade2Dark = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
-  ImColor Shade3Dark = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
+  ImColor PrimaryDark = ImColor(33, 38, 40);     // Background
+  ImColor SecondaryDark = ImColor(85, 114, 95);  // Oscilloscope L
+  ImColor TertiaryDark = ImColor(82, 87, 106);   // Oscilloscope R
+  ImColor Shade1Dark = ImColor(55, 63, 66);      // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);      // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);    // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);     // Text Color
 
   ImColor *PrimaryColor = &PrimaryLight;
   ImColor *SecondaryColor = &SecondaryLight;
@@ -94,8 +111,18 @@ class ecInterface : public al::App {
   ImColor *Shade1 = &Shade1Light;
   ImColor *Shade2 = &Shade2Light;
   ImColor *Shade3 = &Shade3Light;
+  ImColor *Text = &TextLight;
 
   bool light = true;
+
+  // // old green color scheme
+  // ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);    // Background
+  // ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);  // Oscilloscope L
+  // ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);   // Oscilloscope R
+  // ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);     // Slider Color 1
+  // ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color 2
+  // ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color 3
+  // ImColor TextLight = ImColor(0.929f, 0.933f, 0.929f);       // Text Color
 
   void drawAudioIO(al::AudioIO *io);
 

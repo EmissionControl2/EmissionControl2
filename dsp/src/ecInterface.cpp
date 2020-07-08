@@ -8,6 +8,7 @@
 #include "al/io/al_File.hpp"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
+#include "al/ui/al_ParameterGUI.hpp"
 
 /**** CSTD LIBS ****/
 #include <fstream>
@@ -197,6 +198,7 @@ void ecInterface::onDraw(Graphics &g) {
           Shade1 = &Shade1Dark;
           Shade2 = &Shade2Dark;
           Shade3 = &Shade3Dark;
+          Text = &TextDark;
           light = false;
         } else {
           PrimaryColor = &PrimaryLight;
@@ -205,6 +207,7 @@ void ecInterface::onDraw(Graphics &g) {
           Shade1 = &Shade1Light;
           Shade2 = &Shade2Light;
           Shade3 = &Shade3Light;
+          Text = &TextLight;
           light = true;
         }
       }
@@ -308,7 +311,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw preset window
   ParameterGUI::beginPanel("Presets", windowWidth / 2, 25, windowWidth / 2, windowHeight / 4,
                            flags);
-  ParameterGUI::drawPresetHandler(&mPresets, 12, 4);
+  ecInterface::ECdrawPresetHandler(&mPresets, 12, 4);
   ParameterGUI::endPanel();
 
   // Draw grain histogram window
@@ -320,7 +323,6 @@ void ecInterface::onDraw(Graphics &g) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
   }
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
   ImGui::SetCursorPosY(70);
   ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
@@ -511,46 +513,45 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.075f);
+  ImGui::SetCursorPosX(50);
+  ImGui::PushItemWidth(70);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.875);
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
-  // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
+  ImGui::PushItemWidth(60);
+  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.05f);
-  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
+  // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
 
-  ImGui::Indent(200);
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
+    ImGui::Text("Duty");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(50);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 22);
     ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
     ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::Text("Hz");
   }
-  ImGui::Unindent(200);
 }
 
 void ecInterface::drawModulationControl(al::ParameterMenu &menu, ecParameter &slider) {
-  ImGui::PushItemWidth(90);
+  ImGui::PushItemWidth(70);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
   slider.drawRangeSlider(consts::MOD);
-  // ParameterGUI::drawParameter(slider);
-  ImGui::PopItemWidth();
 }
 
 void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)*PrimaryColor);
-  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.5f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.6f));
   ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)*Shade2);
@@ -558,8 +559,9 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.6f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.6f));
+  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
 
@@ -651,4 +653,180 @@ void ecInterface::jsonReadAndSetAudioSettings() {
   configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
 
   granulator.setIO(&audioIO());
+}
+
+/**** Custom Preset Drawer -- Implementation****/
+/**** borrowed and modified from al_ParameterGUI.cpp****/
+ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
+                                                                  int presetColumns,
+                                                                  int presetRows) {
+  static std::map<PresetHandler *, ecInterface::PresetHandlerState> stateMap;
+  if (stateMap.find(presetHandler) == stateMap.end()) {
+    //        std::cout << "Created state for " << (unsigned long)
+    //        presetHandler
+    //        << std::endl;
+    stateMap[presetHandler] =
+      ecInterface::PresetHandlerState{"", 0, presetHandler->availablePresetMaps()};
+    if (stateMap[presetHandler].mapList.size() > 0) {
+      stateMap[presetHandler].currentBank = stateMap[presetHandler].mapList[0];
+      stateMap[presetHandler].currentBankIndex = 0;
+    }
+    presetHandler->registerPresetMapCallback(
+      [&](std::string mapName) { stateMap[presetHandler].currentBank = mapName; });
+  }
+  ecInterface::PresetHandlerState &state = stateMap[presetHandler];
+  float fontSize = ImGui::GetFontSize();
+
+  std::string id = std::to_string((unsigned long)presetHandler);
+  std::string suffix = "##PresetHandler" + id;
+  ImGui::PushID(suffix.c_str());
+
+  int selection = presetHandler->getCurrentPresetIndex();
+  std::string currentPresetName = presetHandler->getCurrentPresetName();
+  if (currentPresetName.length() == 0) currentPresetName = "none";
+  ImGui::Text("Current Preset: %s", currentPresetName.c_str());
+  int counter = state.presetHandlerBank * (presetColumns * presetRows);
+  if (state.storeButtonState) {
+    ImGui::PushStyleColor(ImGuiCol_Text, 0xff0000ff);
+  }
+  for (int row = 0; row < presetRows; row++) {
+    for (int column = 0; column < presetColumns; column++) {
+      std::string name = std::to_string(counter);
+      ImGui::PushID(counter);
+
+      bool is_selected = selection == counter;
+      if (is_selected) {
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+      }
+      if (ImGui::Selectable(name.c_str(), is_selected, 0, ImVec2(fontSize * 1.4, fontSize * 1.2))) {
+        if (state.storeButtonState) {
+          std::string saveName = state.enteredText;
+          if (saveName.size() == 0) {
+            saveName = name;
+          }
+          presetHandler->storePreset(counter, saveName.c_str());
+          selection = counter;
+          state.storeButtonState = false;
+          ImGui::PopStyleColor();
+          state.enteredText.clear();
+        } else {
+          if (presetHandler->recallPreset(counter) != "") {  // Preset is available
+            selection = counter;
+          }
+        }
+      }
+      if (is_selected) {
+        ImGui::PopStyleColor(1);
+      }
+      //                if (ImGui::IsItemHovered()) {
+      //                    ImGui::SetTooltip("I am a tooltip");
+      //                }
+      if (column < presetColumns - 1) ImGui::SameLine();
+      counter++;
+      ImGui::PopID();
+    }
+  }
+  if (state.storeButtonState) {
+    ImGui::PopStyleColor();
+  }
+  if (ImGui::Button("<-")) {
+    state.presetHandlerBank -= 1;
+    if (state.presetHandlerBank < 0) {
+      state.presetHandlerBank = 4;
+    }
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("->")) {
+    state.presetHandlerBank += 1;
+    if (state.presetHandlerBank > 4) {
+      state.presetHandlerBank = 0;
+    }
+  }
+  ImGui::SameLine(0.0f, 40.0f);
+
+  if (state.storeButtonState) {
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
+  }
+  std::string storeText = state.storeButtonState ? "Cancel" : "Store";
+  bool storeButtonPressed = ImGui::Button(storeText.c_str(), ImVec2(100, 0));
+  if (state.storeButtonState) {
+    ImGui::PopStyleColor();
+  }
+  if (storeButtonPressed) {
+    state.storeButtonState = !state.storeButtonState;
+    //          if (state.storeButtonState) {
+    //            state.enteredText = currentPresetName;
+    //          }
+  }
+  if (state.storeButtonState) {
+    char buf1[64];
+    strncpy(buf1, state.enteredText.c_str(), 63);
+    ImGui::Text("Store preset as:");
+    ImGui::SameLine();
+    if (ImGui::InputText("preset", buf1, 64)) {
+      state.enteredText = buf1;
+    }
+    ImGui::Text("Click on a preset number to store.");
+  } else {
+    std::vector<std::string> mapList = presetHandler->availablePresetMaps();
+    //          ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
+    if (ImGui::BeginCombo("Preset Map", state.currentBank.data())) {
+      stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();
+      for (auto mapName : stateMap[presetHandler].mapList) {
+        bool isSelected = (state.currentBank == mapName);
+        if (ImGui::Selectable(mapName.data(), isSelected)) {
+          state.currentBank = mapName;
+          presetHandler->setCurrentPresetMap(mapName);
+        }
+        if (isSelected) {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+    if (!state.newMap) {
+      ImGui::SameLine();
+      if (ImGui::Button("+")) {
+        state.newMap = true;
+      }
+    } else {
+      char buf2[64];
+      strncpy(buf2, state.newMapText.c_str(), 63);
+      ImGui::Text("New map:");
+      //              ImGui::SameLine();
+      ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
+      if (ImGui::InputText("", buf2, 64)) {
+        state.newMapText = buf2;
+      }
+      ImGui::PopItemWidth();
+      ImGui::SameLine();
+      if (ImGui::Button("Create")) {
+        auto path =
+          File::conformDirectory(presetHandler->getCurrentPath()) + state.newMapText + ".presetMap";
+        // Create an empty file
+        std::ofstream file;
+        file.open(path, std::ios::out);
+        file.close();
+        state.newMap = false;
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Cancel")) {
+        state.newMapText = "";
+        state.newMap = false;
+      }
+    }
+    // TODO options to create new bank
+    //        ImGui::SameLine();
+    //          ImGui::PopItemWidth();
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+    float morphTime = presetHandler->getMorphTime();
+    if (ImGui::InputFloat("morph time", &morphTime, 0.0f, 20.0f)) {
+      presetHandler->setMorphTime(morphTime);
+    }
+    ImGui::PopItemWidth();
+  }
+
+  //            ImGui::Text("%s", currentPresetName.c_str());
+  ImGui::PopID();
+  return state;
 }
