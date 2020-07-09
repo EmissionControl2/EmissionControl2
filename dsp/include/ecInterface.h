@@ -57,7 +57,7 @@ class ecInterface : public al::App {
                                                  int presetColumns, int presetRows);
 
  private:
-  bool noSoundFiles, isPaused = false, writeSampleRate = false;
+  bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
@@ -105,15 +105,13 @@ class ecInterface : public al::App {
   ImColor Shade3Dark = ImColor(98, 113, 118);    // Slider Color 3
   ImColor TextDark = ImColor(255, 255, 255);     // Text Color
 
-  ImColor *PrimaryColor = &PrimaryLight;
-  ImColor *SecondaryColor = &SecondaryLight;
-  ImColor *TertiaryColor = &TertiaryLight;
-  ImColor *Shade1 = &Shade1Light;
-  ImColor *Shade2 = &Shade2Light;
-  ImColor *Shade3 = &Shade3Light;
-  ImColor *Text = &TextLight;
-
-  bool light = true;
+  ImColor *PrimaryColor;
+  ImColor *SecondaryColor;
+  ImColor *TertiaryColor;
+  ImColor *Shade1;
+  ImColor *Shade2;
+  ImColor *Shade3;
+  ImColor *Text;
 
   // // old green color scheme
   // ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);    // Background
@@ -157,6 +155,7 @@ class ecInterface : public al::App {
    */
   void jsonReadAndSetSoundOutputPath();
   void jsonReadAndSetAudioSettings();
+  void jsonReadAndSetColorSchemeMode();
 };
 
 /**
