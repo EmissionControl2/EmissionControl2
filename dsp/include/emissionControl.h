@@ -556,8 +556,10 @@ private:
   float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
 
-  float linInterpSample(float index, int num_channels);
   float filterSample(float sample, bool isBypass);
+
+  // Temporary variables
+  float before, after, dec;
 };
 
 /**
@@ -701,7 +703,7 @@ public:
     std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
     std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
     std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
-    std::string dutyName = "Duty##LFOduty" + std::to_string(lfoNumber);
+    std::string dutyName = "##LFOduty" + std::to_string(lfoNumber);
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
@@ -709,7 +711,7 @@ public:
         new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
-    shape->setElements({"Sine", "Square", "Ascend", "Descend", "Noise"});
+    shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
     polarity->setElements({"BI", "UNI+", "UNI-"});
   }
 
