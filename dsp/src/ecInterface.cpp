@@ -8,6 +8,7 @@
 #include "al/io/al_File.hpp"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
+#include "al/ui/al_ParameterGUI.hpp"
 
 /**** CSTD LIBS ****/
 #include <fstream>
@@ -40,7 +41,8 @@ void ecInterface::onInit() {
 // Set output directory of recorded files.
 #ifdef __APPLE__
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
-  mPresets.setRootPath(f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
+  mPresets.setRootPath(
+      f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
 
 #ifdef _WIN32_
@@ -85,32 +87,29 @@ void ecInterface::onCreate() {
   granulator.modPanDepth.addToPresetHandler(mPresets);
   granulator.modSoundFileDepth.addToPresetHandler(mPresets);
 
-  mPresets << granulator.grainRateLFO << granulator.asyncLFO << granulator.intermittencyLFO
-           << granulator.streamsLFO << granulator.grainDurationLFO << granulator.envelopeLFO
-           << granulator.tapeHeadLFO << granulator.transpositionLFO << granulator.filterLFO
-           << granulator.resonanceLFO << granulator.volumeLFO << granulator.panLFO
+  mPresets << granulator.grainRateLFO << granulator.asyncLFO
+           << granulator.intermittencyLFO << granulator.streamsLFO
+           << granulator.grainDurationLFO << granulator.envelopeLFO
+           << granulator.tapeHeadLFO << granulator.transpositionLFO
+           << granulator.filterLFO << granulator.resonanceLFO
+           << granulator.volumeLFO << granulator.panLFO
            << granulator.soundFileLFO;
 
-  granulator.LFOparameters[0]->frequency->addToPresetHandler(mPresets);
-  mPresets << *granulator.LFOparameters[0]->shape << *granulator.LFOparameters[0]->duty;
-
-  granulator.LFOparameters[1]->frequency->addToPresetHandler(mPresets);
-  mPresets << *granulator.LFOparameters[1]->shape << *granulator.LFOparameters[1]->duty;
-
-  granulator.LFOparameters[2]->frequency->addToPresetHandler(mPresets);
-  mPresets << *granulator.LFOparameters[2]->shape << *granulator.LFOparameters[2]->duty;
-
-  granulator.LFOparameters[3]->frequency->addToPresetHandler(mPresets);
-  mPresets << *granulator.LFOparameters[3]->shape << *granulator.LFOparameters[3]->duty;
+  for (int i = 0; i < granulator.NUM_MODULATORS; i++) {
+    granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
+    mPresets << *granulator.LFOparameters[i]->shape
+             << *granulator.LFOparameters[i]->duty
+             << *granulator.LFOparameters[i]->polarity;
+  }
 
 #ifdef __APPLE__
-  ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           16.0f);
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
 #endif
 
 #ifdef __linux__
-  ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           16.0f);
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
 #endif
 
   // Scale font
@@ -143,7 +142,8 @@ void ecInterface::onDraw(Graphics &g) {
     noSoundFiles = true;
   }
 
-  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning() && !isPaused) {
+  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning() &&
+      !isPaused) {
     audioIO().start();
     noSoundFiles = false;
   }
@@ -197,6 +197,7 @@ void ecInterface::onDraw(Graphics &g) {
           Shade1 = &Shade1Dark;
           Shade2 = &Shade2Dark;
           Shade3 = &Shade3Dark;
+          Text = &TextDark;
           light = false;
         } else {
           PrimaryColor = &PrimaryLight;
@@ -205,6 +206,7 @@ void ecInterface::onDraw(Graphics &g) {
           Shade1 = &Shade1Light;
           Shade2 = &Shade2Light;
           Shade3 = &Shade3Light;
+          Text = &TextLight;
           light = true;
         }
       }
@@ -228,15 +230,17 @@ void ecInterface::onDraw(Graphics &g) {
   }
 
   // Draw LFO parameters window
-  ParameterGUI::beginPanel("LFO Controls", 0, 25, windowWidth / 2, windowHeight / 4, flags);
+  ParameterGUI::beginPanel("LFO Controls", 0, 25, windowWidth / 2,
+                           windowHeight / 4, flags);
   drawLFOcontrol(granulator, 0);
   drawLFOcontrol(granulator, 1);
   drawLFOcontrol(granulator, 2);
   drawLFOcontrol(granulator, 3);
   ParameterGUI::endPanel();
 
-  ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2, windowHeight / 4 + 25,
-                           windowWidth / 2, windowHeight / 2, flags);
+  ParameterGUI::beginPanel("Granulator Controls", windowWidth / 2,
+                           windowHeight / 4 + 25, windowWidth / 2,
+                           windowHeight / 2, flags);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   granulator.grainRate.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
@@ -267,22 +271,25 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Draw modulation window
-  ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25, windowWidth / 2,
-                           windowHeight / 2, flags);
+  ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
+                           windowWidth / 2, windowHeight / 2, flags);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth);
+  drawModulationControl(granulator.intermittencyLFO,
+                        granulator.modIntermittencyDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth);
+  drawModulationControl(granulator.grainDurationLFO,
+                        granulator.modGrainDurationDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth);
+  drawModulationControl(granulator.transpositionLFO,
+                        granulator.modTranspositionDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.filterLFO, granulator.modFilterDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
@@ -299,37 +306,40 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Draw recorder window
-  ParameterGUI::beginPanel("Recorder", windowWidth * 3 / 4, windowHeight * 3 / 4 + 25,
-                           windowWidth / 4, windowHeight / 4, flags);
+  ParameterGUI::beginPanel("Recorder", windowWidth * 3 / 4,
+                           windowHeight * 3 / 4 + 25, windowWidth / 4,
+                           windowHeight / 4, flags);
 
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
+                     audioIO().channelsOut(), soundOutput);
   ParameterGUI::endPanel();
 
   // Draw preset window
-  ParameterGUI::beginPanel("Presets", windowWidth / 2, 25, windowWidth / 2, windowHeight / 4,
-                           flags);
-  ParameterGUI::drawPresetHandler(&mPresets, 12, 4);
+  ParameterGUI::beginPanel("Presets", windowWidth / 2, 25, windowWidth / 2,
+                           windowHeight / 4, flags);
+  ecInterface::ECdrawPresetHandler(&mPresets, 12, 4);
   ParameterGUI::endPanel();
 
   // Draw grain histogram window
-  ParameterGUI::beginPanel("Active Grains", 0, windowHeight * 3 / 4 + 25, windowWidth / 4,
-                           windowHeight / 4, flags);
+  ParameterGUI::beginPanel("Active Grains", 0, windowHeight * 3 / 4 + 25,
+                           windowWidth / 4, windowHeight / 4, flags);
   ImGui::Text("Current Active Grains: %.1i ", granulator.getActiveVoices());
 
   if (framecounter % 10 == 0) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
   }
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
   ImGui::SetCursorPosY(70);
-  ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
-                       100, ImVec2(0, (windowHeight / 4) - 120), sizeof(int));
+  ImGui::PlotHistogram("##Active Streams", &streamHistory[0],
+                       streamHistory.size(), 0, nullptr, 0, 100,
+                       ImVec2(0, (windowHeight / 4) - 120), sizeof(int));
   ParameterGUI::endPanel();
 
   // Draw Oscilloscope window
-  ParameterGUI::beginPanel("Oscilloscope", windowWidth / 4, windowHeight * 3 / 4 + 25,
-                           windowWidth / 2, windowHeight / 4, flags);
+  ParameterGUI::beginPanel("Oscilloscope", windowWidth / 4,
+                           windowHeight * 3 / 4 + 25, windowWidth / 2,
+                           windowHeight / 4, flags);
   ImGui::Text("Oscilloscope Timeframe (s):");
   ImGui::SameLine();
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
@@ -350,13 +360,15 @@ void ecInterface::onDraw(Graphics &g) {
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
 
   ImGui::SetCursorPosY(70);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.0f));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                        (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.0f));
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*TertiaryColor);
   ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
 
   ImGui::SetCursorPosY(70);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
   ImGui::PlotLines("black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
                    ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
 
@@ -370,9 +382,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Throw popup to remind user to load in sound files if none are present.
   if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
-    ImGui::Text(
-      "Files can be loaded in from the top left menu.\nAudio will "
-      "turn on once a file has been loaded.");
+    ImGui::Text("Files can be loaded in from the top left menu.\nAudio will "
+                "turn on once a file has been loaded.");
     // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
@@ -422,8 +433,9 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     if (ImGui::Button("Update Devices")) {
       updateDevices(state);
     }
-    if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
-                     static_cast<void *>(&state.devices), state.devices.size())) {
+    if (ImGui::Combo(
+            "Device", &state.currentDevice, ParameterGUI::vector_getter,
+            static_cast<void *>(&state.devices), state.devices.size())) {
       // TODO adjust valid number of channels.
     }
     std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
@@ -435,7 +447,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.currentDevice));
       granulator.setIO(io);
-      if (writeSampleRate) jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+      if (writeSampleRate)
+        jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
 
       granulator.resampleSoundFiles();
 
@@ -449,8 +462,9 @@ void ecInterface::drawAudioIO(AudioIO *io) {
   ImGui::PopID();
 }
 
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory, uint32_t bufferSize) {
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                               uint32_t numChannels, std::string directory,
+                               uint32_t bufferSize) {
   struct SoundfileRecorderState {
     bool recordButton;
     bool overwriteButton;
@@ -461,8 +475,9 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
   }
   SoundfileRecorderState &state = stateMap[recorder];
   ImGui::PushID(std::to_string((unsigned long)recorder).c_str());
-  if (ImGui::CollapsingHeader(
-        "Record Audio", ImGuiTreeNodeFlags_CollapsingHeader | ImGuiTreeNodeFlags_DefaultOpen)) {
+  if (ImGui::CollapsingHeader("Record Audio",
+                              ImGuiTreeNodeFlags_CollapsingHeader |
+                                  ImGuiTreeNodeFlags_DefaultOpen)) {
     static char buf1[64] = "test.wav";
     ImGui::InputText("Record Name", buf1, 63);
     if (state.recordButton) {
@@ -491,11 +506,12 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
           while (File::exists(directory + filename) && counter < 9999) {
             filename = buf1;
             int lastDot = filename.find_last_of(".");
-            filename =
-              filename.substr(0, lastDot) + std::to_string(counter++) + filename.substr(lastDot);
+            filename = filename.substr(0, lastDot) + std::to_string(counter++) +
+                       filename.substr(lastDot);
           }
         }
-        if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize)) {
+        if (!recorder->start(directory + filename, frameRate, numChannels,
+                             ringBufferSize)) {
           std::cerr << "Error opening file for record" << std::endl;
         }
       } else {
@@ -511,46 +527,48 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.075f);
+  ImGui::SetCursorPosX(50);
+  ImGui::PushItemWidth(70);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.875);
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
-  // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
+  ImGui::PushItemWidth(60);
+  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.05f);
-  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
+  // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
 
-  ImGui::Indent(200);
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.9);
+    ImGui::Text("Duty");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(50);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 22);
     ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
     ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::Text("Hz");
   }
-  ImGui::Unindent(200);
 }
 
-void ecInterface::drawModulationControl(al::ParameterMenu &menu, ecParameter &slider) {
-  ImGui::PushItemWidth(90);
+void ecInterface::drawModulationControl(al::ParameterMenu &menu,
+                                        ecParameter &slider) {
+  ImGui::PushItemWidth(70);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.99);
   slider.drawRangeSlider(consts::MOD);
-  // ParameterGUI::drawParameter(slider);
-  ImGui::PopItemWidth();
 }
 
 void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)*PrimaryColor);
-  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 1.0f));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrab,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.5f));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.6f));
   ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)*Shade2);
@@ -558,24 +576,27 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.7f));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.7f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
+                        (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.6f));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
+                        (ImVec4)ImColor(1.0f, 1.0f, 1.0f, 0.6f));
+  ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
 
 int ecInterface::getSampleRateIndex() {
   unsigned s_r = (unsigned)globalSamplingRate;
   switch (s_r) {
-    case 44100:
-      return 0;
-    case 48000:
-      return 1;
-    case 88100:
-      return 2;
-    case 96000:
-      return 3;
-    default:
-      return 0;
+  case 44100:
+    return 0;
+  case 48000:
+    return 1;
+  case 88100:
+    return 2;
+  case 96000:
+    return 3;
+  default:
+    return 0;
   }
 }
 
@@ -585,15 +606,17 @@ bool ecInterface::initJsonConfig() {
   json config;
   std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
 
-  if (ifs.is_open()) return true;
+  if (ifs.is_open())
+    return true;
 
   config[consts::SOUND_OUTPUT_PATH_KEY] =
-    f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+      f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
   config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
   std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
-  if (file.is_open()) file << config;
+  if (file.is_open())
+    file << config;
 
   return false;
 }
@@ -609,7 +632,8 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
 
   std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
 
-  if (ifs.is_open()) config = json::parse(ifs);
+  if (ifs.is_open())
+    config = json::parse(ifs);
 
   config[key] = value;
 
@@ -648,7 +672,189 @@ void ecInterface::jsonReadAndSetAudioSettings() {
 
   globalSamplingRate = config.at(consts::SAMPLE_RATE_KEY);
 
-  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
+  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS,
+                 consts::DEVICE_NUM);
 
   granulator.setIO(&audioIO());
+}
+
+/**** Custom Preset Drawer -- Implementation****/
+/**** borrowed and modified from al_ParameterGUI.cpp****/
+ecInterface::PresetHandlerState &
+ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
+                                 int presetColumns, int presetRows) {
+  static std::map<PresetHandler *, ecInterface::PresetHandlerState> stateMap;
+  if (stateMap.find(presetHandler) == stateMap.end()) {
+    //        std::cout << "Created state for " << (unsigned long)
+    //        presetHandler
+    //        << std::endl;
+    stateMap[presetHandler] = ecInterface::PresetHandlerState{
+        "", 0, presetHandler->availablePresetMaps()};
+    if (stateMap[presetHandler].mapList.size() > 0) {
+      stateMap[presetHandler].currentBank = stateMap[presetHandler].mapList[0];
+      stateMap[presetHandler].currentBankIndex = 0;
+    }
+    presetHandler->registerPresetMapCallback([&](std::string mapName) {
+      stateMap[presetHandler].currentBank = mapName;
+    });
+  }
+  ecInterface::PresetHandlerState &state = stateMap[presetHandler];
+  float fontSize = ImGui::GetFontSize();
+
+  std::string id = std::to_string((unsigned long)presetHandler);
+  std::string suffix = "##PresetHandler" + id;
+  ImGui::PushID(suffix.c_str());
+
+  int selection = presetHandler->getCurrentPresetIndex();
+  std::string currentPresetName = presetHandler->getCurrentPresetName();
+  if (currentPresetName.length() == 0)
+    currentPresetName = "none";
+  ImGui::Text("Current Preset: %s", currentPresetName.c_str());
+  int counter = state.presetHandlerBank * (presetColumns * presetRows);
+  if (state.storeButtonState) {
+    ImGui::PushStyleColor(ImGuiCol_Text, 0xff0000ff);
+  }
+  for (int row = 0; row < presetRows; row++) {
+    for (int column = 0; column < presetColumns; column++) {
+      std::string name = std::to_string(counter);
+      ImGui::PushID(counter);
+
+      bool is_selected = selection == counter;
+      if (is_selected) {
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+      }
+      if (ImGui::Selectable(name.c_str(), is_selected, 0,
+                            ImVec2(fontSize * 1.4, fontSize * 1.2))) {
+        if (state.storeButtonState) {
+          std::string saveName = state.enteredText;
+          if (saveName.size() == 0) {
+            saveName = name;
+          }
+          presetHandler->storePreset(counter, saveName.c_str());
+          selection = counter;
+          state.storeButtonState = false;
+          ImGui::PopStyleColor();
+          state.enteredText.clear();
+        } else {
+          if (presetHandler->recallPreset(counter) !=
+              "") { // Preset is available
+            selection = counter;
+          }
+        }
+      }
+      if (is_selected) {
+        ImGui::PopStyleColor(1);
+      }
+      //                if (ImGui::IsItemHovered()) {
+      //                    ImGui::SetTooltip("I am a tooltip");
+      //                }
+      if (column < presetColumns - 1)
+        ImGui::SameLine();
+      counter++;
+      ImGui::PopID();
+    }
+  }
+  if (state.storeButtonState) {
+    ImGui::PopStyleColor();
+  }
+  if (ImGui::Button("<-")) {
+    state.presetHandlerBank -= 1;
+    if (state.presetHandlerBank < 0) {
+      state.presetHandlerBank = 4;
+    }
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("->")) {
+    state.presetHandlerBank += 1;
+    if (state.presetHandlerBank > 4) {
+      state.presetHandlerBank = 0;
+    }
+  }
+  ImGui::SameLine(0.0f, 40.0f);
+
+  if (state.storeButtonState) {
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
+  }
+  std::string storeText = state.storeButtonState ? "Cancel" : "Store";
+  bool storeButtonPressed = ImGui::Button(storeText.c_str(), ImVec2(100, 0));
+  if (state.storeButtonState) {
+    ImGui::PopStyleColor();
+  }
+  if (storeButtonPressed) {
+    state.storeButtonState = !state.storeButtonState;
+    //          if (state.storeButtonState) {
+    //            state.enteredText = currentPresetName;
+    //          }
+  }
+  if (state.storeButtonState) {
+    char buf1[64];
+    strncpy(buf1, state.enteredText.c_str(), 63);
+    ImGui::Text("Store preset as:");
+    ImGui::SameLine();
+    if (ImGui::InputText("preset", buf1, 64)) {
+      state.enteredText = buf1;
+    }
+    ImGui::Text("Click on a preset number to store.");
+  } else {
+    std::vector<std::string> mapList = presetHandler->availablePresetMaps();
+    //          ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
+    if (ImGui::BeginCombo("Preset Map", state.currentBank.data())) {
+      stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();
+      for (auto mapName : stateMap[presetHandler].mapList) {
+        bool isSelected = (state.currentBank == mapName);
+        if (ImGui::Selectable(mapName.data(), isSelected)) {
+          state.currentBank = mapName;
+          presetHandler->setCurrentPresetMap(mapName);
+        }
+        if (isSelected) {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+    if (!state.newMap) {
+      ImGui::SameLine();
+      if (ImGui::Button("+")) {
+        state.newMap = true;
+      }
+    } else {
+      char buf2[64];
+      strncpy(buf2, state.newMapText.c_str(), 63);
+      ImGui::Text("New map:");
+      //              ImGui::SameLine();
+      ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
+      if (ImGui::InputText("", buf2, 64)) {
+        state.newMapText = buf2;
+      }
+      ImGui::PopItemWidth();
+      ImGui::SameLine();
+      if (ImGui::Button("Create")) {
+        auto path = File::conformDirectory(presetHandler->getCurrentPath()) +
+                    state.newMapText + ".presetMap";
+        // Create an empty file
+        std::ofstream file;
+        file.open(path, std::ios::out);
+        file.close();
+        state.newMap = false;
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Cancel")) {
+        state.newMapText = "";
+        state.newMap = false;
+      }
+    }
+    // TODO options to create new bank
+    //        ImGui::SameLine();
+    //          ImGui::PopItemWidth();
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+    float morphTime = presetHandler->getMorphTime();
+    if (ImGui::InputFloat("morph time", &morphTime, 0.0f, 20.0f)) {
+      presetHandler->setMorphTime(morphTime);
+    }
+    ImGui::PopItemWidth();
+  }
+
+  //            ImGui::Text("%s", currentPresetName.c_str());
+  ImGui::PopID();
+  return state;
 }

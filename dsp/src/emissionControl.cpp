@@ -299,7 +299,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
 
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  ImGui::PushItemWidth(70);
   valueLow = mLowRange->get();
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
                              mLowRange->min(), mLowRange->max());
@@ -311,13 +311,11 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.53f);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 100);
   else if (slideType == consts::MOD)
-    ImGui::PushItemWidth(
-        ImGui::GetWindowWidth() *
-        0.6f); // RODNEY - CHANGE value to change width of mod slider.
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 70);
   else if (slideType == consts::PARAM)
-    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 200);
   valueSlider = mParameter->get();
   changed =
       ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
@@ -327,7 +325,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  ImGui::PushItemWidth(70);
   valueHigh = mHighRange->get();
   changed = ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHigh,
                              0.1, mHighRange->min(), mHighRange->max());
@@ -338,7 +336,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
   if (slideType == consts::LFO)
     ImGui::Text("Hz");
   else if (slideType == consts::MOD)
@@ -425,7 +423,7 @@ void ecParameterInt::addToPresetHandler(al::PresetHandler &presetHandler) {
 void ecParameterInt::drawRangeSlider() {
   int valueSlider, valueLow, valueHigh;
   bool changed;
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  ImGui::PushItemWidth(70);
   valueLow = mLowRange->get();
   changed = ImGui::DragInt((mLowRange->displayName()).c_str(), &valueLow, 0.1,
                            mLowRange->min(), mLowRange->max());
@@ -438,7 +436,7 @@ void ecParameterInt::drawRangeSlider() {
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 200);
   valueSlider = mParameterInt->get();
   changed =
       ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
@@ -448,7 +446,7 @@ void ecParameterInt::drawRangeSlider() {
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
+  ImGui::PushItemWidth(70);
   valueHigh = mHighRange->get();
   changed = ImGui::DragInt((mHighRange->displayName()).c_str(), &valueHigh, 0.1,
                            mHighRange->min(), mHighRange->max());
@@ -496,21 +494,20 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
     startSample = floor(source->size / source->channels *
-                  (list.tapeHead.getModParam(list.modTapeHeadDepth)));
+                        (list.tapeHead.getModParam(list.modTapeHeadDepth)));
   else
-    startSample = floor(source->size / source->channels * list.tapeHead.getParam());
-
-  endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate));
+    startSample =
+        floor(source->size / source->channels * list.tapeHead.getParam());
 
   if (list.modTranspositionDepth > 0)
-    index.setSamplingRate(samplingRate / abs(list.transposition.getModParam(
-                                             list.modTranspositionDepth)));
+    endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
+                                     abs(list.transposition.getModParam(
+                                         list.modTranspositionDepth))));
   else
-    index.setSamplingRate(
-        samplingRate /
-        abs(list.transposition
-                .getParam())); // Set sampling rate of line function
-                               // moving through audio buffer.
+    endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
+                                     abs(list.transposition.getParam())));
+
+  index.setSamplingRate(samplingRate);
 
   if (list.transposition.getParam() < 0)
     index.set(endSample, startSample, mDurationMs / 1000);
@@ -579,43 +576,32 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mHighShelf.level(res_process);
 }
 
-unsigned int counter = 0;
 void Grain::onProcess(al::AudioIOData &io) {
   while (io()) {
     envVal = gEnv();
     sourceIndex = index();
 
-    counter++;
-    if (counter % 2048 == -1) {
-      std::cout << "start: " << index.getStart()
-                << " end: " << index.getTarget() << " Size: " << source->size
-                << " sr: " << index.getSamplingRate()
-                << " value: " << index.getValue()
-                << std::endl;
-    }
-
     if (sourceIndex > source->size)
       sourceIndex -= source->size;
 
     if (source->channels == 1) {
-      // std::cout <<  source->get(sourceIndex) << std::endl;
       currentSample = source->get(sourceIndex);
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
 
-      float before = source->get(floor(sourceIndex)*2.0);
-      float after = source->get(floor(sourceIndex)*2.0 + 2);
-      float dec = sourceIndex - floor(sourceIndex);
-      currentSample = before * (1-dec) + after * dec;
+      before = source->data[(int)floor(sourceIndex) * 2];
+      after = source->data[(int)floor(sourceIndex) * 2 + 2];
+      dec = sourceIndex - floor(sourceIndex);
+      currentSample = before * (1 - dec) + after * dec;
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
-      before = source->get(floor(sourceIndex+1)*2.0);
-      after = source->get(floor(sourceIndex+1)*2.0 + 2);
-      dec = (sourceIndex+1) - floor(sourceIndex+1);
-      currentSample = before * (1-dec) + after * dec;
+      before = source->get(floor(sourceIndex + 1) * 2.0);
+      after = source->get(floor(sourceIndex + 1) * 2.0 + 2);
+      dec = (sourceIndex + 1) - floor(sourceIndex + 1);
+      currentSample = before * (1 - dec) + after * dec;
       currentSample = filterSample(currentSample, bypassFilter);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
@@ -629,17 +615,6 @@ void Grain::onProcess(al::AudioIOData &io) {
 }
 
 void Grain::onTriggerOn() {}
-
-float Grain::linInterpSample(float s_index, int num_channels) {
-  int offset = num_channels - 1;
-  float index_1 = s_index + index.getIncrement();
-  float baseSample = source->get(s_index);
-  float interp_sample =
-      ((source->get(s_index + index.getIncrement()) - baseSample) *
-       (s_index - (int)(s_index))) /
-      ((int)(s_index + index.getIncrement()) - (int)(s_index));
-  return baseSample + interp_sample;
-}
 
 float Grain::filterSample(float sample, bool isBypass) {
   if (isBypass)
