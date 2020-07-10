@@ -547,8 +547,11 @@ public:
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
-  gam::Biquad<> mHighShelf;
-  gam::Biquad<> mLowShelf;
+  gam::Biquad<> mHighShelf_1;
+  gam::Biquad<> mLowShelf_1;
+  gam::Biquad<> mHighShelf_2;
+  gam::Biquad<> mLowShelf_2;
+  gam::Biquad<> bpf_1, bpf_2;
   grainEnvelope gEnv;
   bool bypassFilter = true;
   float currentSample;

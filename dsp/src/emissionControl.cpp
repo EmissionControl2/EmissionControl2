@@ -468,8 +468,13 @@ void ecParameterInt::drawRangeSlider() {
 
 void Grain::init() {
   gEnv.reset();
-  mLowShelf.type(gam::LOW_SHELF);
-  mHighShelf.type(gam::HIGH_SHELF);
+  mLowShelf_1.type(gam::LOW_SHELF);
+  mHighShelf_1.type(gam::HIGH_SHELF);
+  mLowShelf_2.type(gam::LOW_SHELF);
+  mHighShelf_2.type(gam::HIGH_SHELF);
+
+  bpf_1.type(gam::BAND_PASS);
+  bpf_2.type(gam::BAND_PASS);
 }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
@@ -561,19 +566,37 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
   float delta = 0.1; // MIN_LEVEL = -30dB //0.4
-  mLowShelf.freq(freq * delta);
-  mHighShelf.freq(freq * 1 / delta);
+  // mLowShelf_1.freq(freq * delta);
+  // mHighShelf_1.freq(freq * 1 / delta);
+  // mLowShelf_2.freq(freq * delta);
+  // mHighShelf_2.freq(freq * 1 / delta);
 
-  float res_process = (resonance + 0.25) * 24; // Resonance goes from 0.25 to 30
-  mLowShelf.res(res_process);
-  mHighShelf.res(res_process);
+  bpf_1.freq(freq);
+  bpf_2.freq(freq);
+
+  // float res_process = (resonance + 0.025) * 40; // Resonance goes from 0.25 to 30
+  float res_process;
+  if(resonance < 0.5 && resonance >= 0)
+    res_process = log2(resonance+1.000125);
+  else
+    res_process =  (50 * log10(2*(resonance-0.5)+1.000125))+0.584121;
+  // std::cout << res_process << std::endl;
+  // res_process = (40 * std::log10(1.025 + resonance));
+  // mLowShelf_1.res(res_process);
+  // mHighShelf_1.res(res_process);
+  // mLowShelf_2.res(res_process);
+  // mHighShelf_2.res(res_process);
+  bpf_1.res(res_process);
+  bpf_2.res(res_process);
 
   // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
   // dBVal / 20);
   res_process = 1 - resonance * 0.995; // 1-Compliment of -120dB about. THIS
   // 0.9999683772233983 DETERMINES how resonancy it is.
-  mLowShelf.level(res_process);
-  mHighShelf.level(res_process);
+  // mLowShelf_1.level(res_process);
+  // mHighShelf_1.level(res_process);
+  // mLowShelf_2.level(res_process);
+  // mHighShelf_2.level(res_process);
 }
 
 void Grain::onProcess(al::AudioIOData &io) {
@@ -620,7 +643,8 @@ float Grain::filterSample(float sample, bool isBypass) {
   if (isBypass)
     return sample;
   else
-    return mHighShelf(mLowShelf(sample));
+    return bpf_2.nextBP(bpf_1.nextBP(sample));
+    // mHighShelf_2(mLowShelf_2(mHighShelf_1(mLowShelf_1(sample))));
 }
 
 /******* voiceScheduler *******/
