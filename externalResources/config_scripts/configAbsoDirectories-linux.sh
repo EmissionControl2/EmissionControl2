@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/base
 
 if [ ! -d "$HOME/opt/" ]; then
   mkdir "$HOME/opt/"
@@ -17,7 +17,7 @@ if [ ! -d "$HOME/opt/EmissionControl20/soundOutput" ]; then
 fi
 
 if [ ! -d "$HOME/opt/EmissionControl20/samples" ]; then
-  cp -r "samples" "$HOME/opt/EmissionControl20/"
+  cp -r "Resources/samples" "$HOME/opt/EmissionControl20/"
 fi
 
 if [ ! -d "$HOME/opt/EmissionControl20/configs" ]; then
