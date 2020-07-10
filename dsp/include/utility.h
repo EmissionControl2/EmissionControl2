@@ -1,12 +1,12 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include "Gamma/Gamma.h"
-#include "al/io/al_File.hpp"
-#include "const.h"
 #include <cmath>
 #include <memory>
 #include <mutex>
+#include "Gamma/Gamma.h"
+#include "al/io/al_File.hpp"
+#include "const.h"
 
 namespace util {
 
@@ -14,7 +14,7 @@ namespace util {
  * Line class that moves from one point to another over a set period of time.
  */
 class line {
-public:
+ public:
   /**
    * @brief Default constructor.
    */
@@ -50,6 +50,12 @@ public:
 
   float getIncrement() const { return increment; }
 
+  float getStart() const { return start; }
+
+  float getValue() const { return value; }
+
+  float getTarget() const { return target; }
+
   /**
    * @brief Check if the line function is complete.
    *
@@ -58,7 +64,7 @@ public:
   bool const done() { return value == target; }
 
 private:
-  float value = 0, target = 0, seconds = 1, increment = 0;
+  float value = 0, start = 0, target = 0, seconds = 1, increment = 0;
   float mSamplingRate;
 };
 
@@ -66,7 +72,7 @@ private:
  * Envelope generator for creating exponetial decay and exponential growth.
  */
 class expo {
-public:
+ public:
   /**
    * @brief Generate exponential envelope in real-time.
    *
@@ -109,9 +115,9 @@ public:
    */
   void increment() { mX += mIncrementX; }
 
-private:
-  float mIncrementX, mX = 0, mY = 0.001, mThresholdX = -1 * std::log(0.001),
-                     mThresholdY = 0.001, mSamplingRate = consts::SAMPLE_RATE;
+ private:
+  float mIncrementX, mX = 0, mY = 0.001, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001,
+                     mSamplingRate = consts::SAMPLE_RATE;
   bool mReverse = 0;
   int mTotalS = 1;
 };
@@ -121,7 +127,7 @@ private:
  * A tukey window is like a fatter Hann envelope.
  */
 class tukey {
-public:
+ public:
   /**
    * @brief Generate tukey envelope in real-time.
    *
@@ -165,7 +171,7 @@ public:
    */
   void increment() { currentS++; }
 
-private:
+ private:
   float value = 0, alpha = 0.6, mSamplingRate = consts::SAMPLE_RATE;
   int currentS = 0, totalS = 1;
 };
@@ -174,8 +180,9 @@ private:
  * A Buffer struct that has multi-sound file loading functionalities.
  * Inspired by Karl Yerkes.
  */
-template <typename T> class buffer {
-public:
+template <typename T>
+class buffer {
+ public:
   T *data;
   unsigned size = 0;
   int channels;
@@ -183,14 +190,12 @@ public:
 
   virtual ~buffer() {
     fflush(stdout);
-    if (data)
-      delete[] data;
+    if (data) delete[] data;
   }
 
   void deleteBuffer() {
     fflush(stdout);
-    if (data)
-      delete[] data;
+    if (data) delete[] data;
   }
 
   T &operator[](unsigned index) { return data[index]; }
@@ -203,14 +208,12 @@ public:
    */
   void resize(unsigned n) {
     size = n;
-    if (data)
-      delete[] data; // or your have a memory leak
+    if (data) delete[] data;  // or your have a memory leak
     if (n == 0) {
       data = nullptr;
     } else {
       data = new T[n];
-      for (unsigned i = 0; i < n; ++i)
-        data[i] = 0.0f;
+      for (unsigned i = 0; i < n; ++i) data[i] = 0.0f;
     }
   }
 
@@ -222,10 +225,8 @@ public:
    * @return Value at given index.
    */
   T get(float index) const {
-    if (index < 0)
-      index += size;
-    if (index > size)
-      index -= size;
+    if (index < 0) index += size;
+    if (index > size) index -= size;
 
     return raw(index);
   }
@@ -234,7 +235,7 @@ public:
     const unsigned i = floor(index);
     const T x0 = data[i];
     const T x1 =
-        data[(i == (size - 1)) ? 0 : i + channels]; // looping semantics
+        data[(i >= (size - channels)) ? 0 : i + channels]; // looping semantics
     const T t = index - i;
     return x1 * t + x0 * (1 - t);
   }
@@ -249,8 +250,7 @@ public:
    */
   void add(const float index, const T value) {
     const unsigned i = floor(index);
-    const unsigned j =
-        (i == (size - 1)) ? 0 : i + channels; // looping semantics
+    const unsigned j = (i == (size - 1)) ? 0 : i + channels;  // looping semantics
     const float t = index - i;
     data[i] += value * (1 - t);
     data[j] += value * t;
@@ -258,7 +258,7 @@ public:
 };
 
 class RingBuffer {
-public:
+ public:
   RingBuffer(unsigned maxSize) : mMaxSize(maxSize) {
     mBuffer.resize(mMaxSize);
     mTail = -1;
@@ -301,21 +301,18 @@ public:
     // std::cout << "got here!" << std::endl;
     std::vector<float> array(lookBack, 0);
     int start = mTail - lookBack;
-    if (start < 0)
-      start = mMaxSize + start;
-    for (unsigned i = 0; i < lookBack; i++)
-      array[i] = mBuffer[(start + i) % mMaxSize];
+    if (start < 0) start = mMaxSize + start;
+    for (unsigned i = 0; i < lookBack; i++) array[i] = mBuffer[(start + i) % mMaxSize];
     // std::cout << "got here too!" << std::endl;
     return array;
   }
 
   void print() const {
-    for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i)
-      std::cout << *i << " ";
+    for (auto i = mBuffer.begin(); i != mBuffer.end(); ++i) std::cout << *i << " ";
     std::cout << "\n";
   }
 
-private:
+ private:
   std::vector<float> mBuffer;
   unsigned mMaxSize;
   int mTail;
@@ -330,8 +327,7 @@ private:
  * @param[in] The filename. An absolute filename is preferred.
  * @param[out] A vector holding the audio buffers.
  */
-bool load(std::string fileName,
-          std::vector<std::shared_ptr<buffer<float>>> &buf,
+bool load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf,
           float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
 
 /**
@@ -356,6 +352,6 @@ std::string getContentPath(std::string s);
  */
 bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
-} // namespace util
+}  // namespace util
 
 #endif

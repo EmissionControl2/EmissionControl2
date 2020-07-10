@@ -40,6 +40,7 @@ float line::operator()() {
 
 void line::set(float v, float t, float s) {
   value = v;
+  start = v;
   target = t;
   seconds = s;
   if (seconds <= 0)
