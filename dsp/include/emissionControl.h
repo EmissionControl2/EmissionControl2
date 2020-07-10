@@ -31,7 +31,7 @@
  * Allows for a single value [0,1] to interpolate between all three envelopes.
  */
 class grainEnvelope {
- public:
+public:
   void setSamplingRate(float samplingRate);
 
   float getSamplingRate() { return mSamplingRate; }
@@ -90,13 +90,13 @@ class grainEnvelope {
 
   float getDuration() const { return mDuration; }
 
- private:
+private:
   float mSamplingRate;
   util::expo mExpoEnv;
   util::tukey mTurkeyEnv;
   util::expo mRExpoEnv;
-  float mEnvelope;  // assumes between 0 and 1
-  float mDuration;  // in seconds
+  float mEnvelope; // assumes between 0 and 1
+  float mDuration; // in seconds
 };
 
 /**
@@ -104,7 +104,7 @@ class grainEnvelope {
  * grain/voiceScheduler parameters/
  */
 class ecModulator {
- public:
+public:
   /**
    * @brief Constructor for ecModulator.
    *
@@ -114,7 +114,8 @@ class ecModulator {
    * @param[in] The width of the modulator.
    */
   ecModulator(consts::waveform modWaveform = consts::SINE,
-              consts::polarity modPolarity = consts::BI, float frequency = 1, float width = 1) {
+              consts::polarity modPolarity = consts::BI, float frequency = 1,
+              float width = 1) {
     this->setWaveform(modWaveform);
     this->setPolarity(modPolarity);
     mLFO.set(frequency, 0, width);
@@ -221,7 +222,7 @@ class ecModulator {
 
   float getPhase() const { return mLFO.phase(); }
 
- private:
+private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
@@ -241,16 +242,18 @@ class ecModulator {
  * sources).
  */
 class ecParameter {
- public:
+public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
   al::Parameter *mParameter = nullptr;
-  al::Parameter *mLowRange = nullptr;   // Parameter designed to bound low mParameter.
-  al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
+  al::Parameter *mLowRange =
+      nullptr; // Parameter designed to bound low mParameter.
+  al::Parameter *mHighRange =
+      nullptr; // Parameter designed to bound high mParameter.
 
   /**
    * @brief ecParameter Constructor.
@@ -267,8 +270,9 @@ class ecParameter {
    *            If false, must input data on an outside modulator when calling
    * getParamMod().
    */
-  ecParameter(std::string parameterName, std::string displayName, float defaultValue = 0,
-              float defaultMin = -99999.0, float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
+  ecParameter(std::string parameterName, std::string displayName,
+              float defaultValue = 0, float defaultMin = -99999.0,
+              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
               float absMax = FLT_MAX, bool independentMod = 0);
 
   /**
@@ -290,10 +294,11 @@ class ecParameter {
    * getParamMod().
    *
    */
-  ecParameter(std::string parameterName, std::string displayName, std::string Group,
-              float defaultValue = 0, std::string prefix = "", float defaultMin = -99999.0,
-              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
-              bool independentMod = 0);
+  ecParameter(std::string parameterName, std::string displayName,
+              std::string Group, float defaultValue = 0,
+              std::string prefix = "", float defaultMin = -99999.0,
+              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
+              float absMax = FLT_MAX, bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -360,7 +365,7 @@ class ecParameter {
 
   void setDisplayName(std::string name) { mDisplayName = name; }
 
- private:
+private:
   std::string mDisplayName;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
@@ -374,16 +379,18 @@ class ecParameter {
  * sources).
  */
 class ecParameterInt {
- public:
+public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  al::ParameterInt *mParameterInt = nullptr;  // Main Parameter.
-  al::ParameterInt *mLowRange = nullptr;      // Parameter designed to bound low mParameter.
-  al::ParameterInt *mHighRange = nullptr;     // Parameter designed to bound high mParameter.
-  ecModulator *mModulator = nullptr;          // This is for dynamically allocating a
-                                              // parameter's own modulator.
+  al::ParameterInt *mParameterInt = nullptr; // Main Parameter.
+  al::ParameterInt *mLowRange =
+      nullptr; // Parameter designed to bound low mParameter.
+  al::ParameterInt *mHighRange =
+      nullptr; // Parameter designed to bound high mParameter.
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
 
   /**
    * @brief ecParameterInt Constructor.
@@ -404,10 +411,11 @@ class ecParameterInt {
    * getParamMod().
    *
    */
-  ecParameterInt(std::string parameterName, std::string displayName, std::string Group,
-                 int defaultValue = 0, std::string prefix = "", int defaultMin = -99999,
-                 int defaultMax = 99999, int absMin = -1 * INT_MAX, int absMax = INT_MAX,
-                 bool independentMod = 0);
+  ecParameterInt(std::string parameterName, std::string displayName,
+                 std::string Group, int defaultValue = 0,
+                 std::string prefix = "", int defaultMin = -99999,
+                 int defaultMax = 99999, int absMin = -1 * INT_MAX,
+                 int absMax = INT_MAX, bool independentMod = 0);
 
   /**
    * @bried ecParameterInt destructor.
@@ -466,7 +474,7 @@ class ecParameterInt {
 
   void setDisplayName(std::string name) { mDisplayName = name; }
 
- private:
+private:
   std::string mDisplayName;
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
@@ -499,7 +507,7 @@ struct grainParameters {
  * the voiceScheduler class
  */
 class Grain : public al::SynthVoice {
- public:
+public:
   Grain() { return; }
   /**
    * @brief Initialize voice. This function will only be called once per voice
@@ -536,7 +544,7 @@ class Grain : public al::SynthVoice {
 
   float getDurationMs() const { return mDurationMs; }
 
- private:
+private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
   gam::Biquad<> mHighShelf;
@@ -548,15 +556,17 @@ class Grain : public al::SynthVoice {
   float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
 
-  float linInterpSample(float index, int num_channels);
   float filterSample(float sample, bool isBypass);
+
+  // Temporary variables
+  float before, after, dec;
 };
 
 /**
  * Class used to schedule the emission of an arbitrary voice.
  */
 class voiceScheduler {
- public:
+public:
   /**
    * @brief Constructor of the voice scheduler.
    *
@@ -589,7 +599,9 @@ class voiceScheduler {
   /**
    * Sets frequency in which voices are emitted.
    */
-  void setFrequency(double frequency) { configure(frequency, mAsync, mIntermittence); }
+  void setFrequency(double frequency) {
+    configure(frequency, mAsync, mIntermittence);
+  }
 
   /**
    * Sets the asynchronicity parameter.
@@ -601,7 +613,9 @@ class voiceScheduler {
    *
    * DOES NOT AFFECT DENSITY OF EMISSION.
    */
-  void setAsynchronicity(double async) { configure(mFrequency, async, mIntermittence); }
+  void setAsynchronicity(double async) {
+    configure(mFrequency, async, mIntermittence);
+  }
 
   /**
    * Set the intermittence parameter.
@@ -613,7 +627,9 @@ class voiceScheduler {
    *
    * AFFECTS DENSITY OF EMISSION.
    */
-  void setIntermittence(double intermittence) { configure(mFrequency, mAsync, intermittence); }
+  void setIntermittence(double intermittence) {
+    configure(mFrequency, mAsync, intermittence);
+  }
 
   /**
    * @brief Set the amount of voices running in parallel.
@@ -622,7 +638,7 @@ class voiceScheduler {
    */
   void setPolyStream(consts::streamType type, int numStreams);
 
- private:
+private:
   gam::LFO<> mPulse;
   al::rnd::Random<> rand;
 
@@ -644,7 +660,7 @@ class voiceScheduler {
  */
 class flowControl {
   // friend class Granular;
- public:
+public:
   /**
    * This class will be calculate if it is necessary to reduce grain
    * rate/duration. Run at the audio rate (tentative).
@@ -662,7 +678,7 @@ class flowControl {
 
   float getAvgCPU() { return -11992.1; }
 
- private:
+private:
   // float mSamplingRate;
   // int mCounter;
   // float targetDuration;
@@ -676,7 +692,7 @@ class flowControl {
 
 // a struct to wrap LFO parameters
 struct LFOstruct {
- public:
+public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
@@ -691,7 +707,8 @@ struct LFOstruct {
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
-    frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
+    frequency =
+        new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
