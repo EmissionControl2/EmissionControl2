@@ -85,25 +85,31 @@ class ecInterface : public al::App {
   std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
+  int VUdataSize = globalSamplingRate / 30;
+  int lastVUdataSize = VUdataSize;
+
+  std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
+  std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
+
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(98, 113, 118);   // Background
-  ImColor SecondaryLight = ImColor(85, 114, 95);  // Oscilloscope L
-  ImColor TertiaryLight = ImColor(82, 87, 106);   // Oscilloscope R
-  ImColor Shade1Light = ImColor(133, 144, 148);   // Slider Color 1
-  ImColor Shade2Light = ImColor(167, 175, 178);   // Slider Color 2
-  ImColor Shade3Light = ImColor(202, 207, 208);   // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
+  ImColor PrimaryLight = ImColor(98, 113, 118);    // Background
+  ImColor SecondaryLight = ImColor(118, 107, 78);  // Oscilloscope L
+  ImColor TertiaryLight = ImColor(118, 84, 78);    // Oscilloscope R
+  ImColor Shade1Light = ImColor(133, 144, 148);    // Slider Color 1
+  ImColor Shade2Light = ImColor(167, 175, 178);    // Slider Color 2
+  ImColor Shade3Light = ImColor(202, 207, 208);    // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);            // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);     // Background
-  ImColor SecondaryDark = ImColor(85, 114, 95);  // Oscilloscope L
-  ImColor TertiaryDark = ImColor(82, 87, 106);   // Oscilloscope R
-  ImColor Shade1Dark = ImColor(55, 63, 66);      // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);      // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);    // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);     // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);      // Background
+  ImColor SecondaryDark = ImColor(118, 107, 78);  // Oscilloscope L
+  ImColor TertiaryDark = ImColor(118, 84, 78);    // Oscilloscope R
+  ImColor Shade1Dark = ImColor(55, 63, 66);       // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);       // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);     // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);      // Text Color
 
   ImColor *PrimaryColor = &PrimaryLight;
   ImColor *SecondaryColor = &SecondaryLight;
