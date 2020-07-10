@@ -24,9 +24,22 @@ class ecSynth : public al::SynthVoice {
   /**
    * Ringbuffers for oscilloscope
    */
-  unsigned int oscBufferSize = 96000 * 5;
+  unsigned int oscBufferSize =
+    96001 * 3;  // max size of scope window plus a few samples because I'm paranoid - Rodney
   util::RingBuffer oscBufferL{oscBufferSize};
   util::RingBuffer oscBufferR{oscBufferSize};
+
+  /**
+   * Ringbuffers for VU Meter
+   */
+  unsigned int vuBufferSize = 4096;
+  util::RingBuffer vuBufferL{vuBufferSize};
+  util::RingBuffer vuBufferR{vuBufferSize};
+  /**
+   * Vars for indicating clipping
+   */
+  int clipL = 0;
+  int clipR = 0;
 
   /**
    * The number of modulators in ecSynth.
@@ -39,13 +52,11 @@ class ecSynth : public al::SynthVoice {
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
-  ecParameter grainRate{
-      "Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0, 500, 0};
+  ecParameter grainRate{"Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0, 500, 0};
   al::ParameterMenu grainRateLFO{"##grainRateLFO"};
   ecParameter modGrainRateDepth{"modGrainRateDepth", "modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter asynchronicity{
-      "Asynchronicity", "2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1};
+  ecParameter asynchronicity{"Asynchronicity", "2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1};
   al::ParameterMenu asyncLFO{"##asyncLFO"};
   ecParameter modAsynchronicityDepth{
     "modAsynchronicityDepth", "modAsynchronicityDepth", "", 0, "", 0, 1, 0, 1};
