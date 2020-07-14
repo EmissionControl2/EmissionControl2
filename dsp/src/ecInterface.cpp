@@ -29,7 +29,7 @@ void ecInterface::onInit() {
 #endif
 
 #ifdef __linux__
-  system(("\"" + execDir + consts::CONFIG_DIR_SCRIPT_PATH + "\"").c_str());
+  system(("\"" + consts::CONFIG_DIR_SCRIPT_PATH + "\"").c_str());
 #endif
 
   initFileIOPaths();
@@ -104,8 +104,8 @@ void ecInterface::onCreate() {
 #endif
 
 #ifdef __linux__
-  ImGui::GetIO().Fonts->AddFontFromFileTTF((execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(),
-                                           16.0f);
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+    ("/usr/local/share/Fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
 #endif
 
   // Scale font
@@ -320,7 +320,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
   ImGui::SetCursorPosY(70);
   ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
-                       100, ImVec2(0, (windowHeight / 4) - 120), sizeof(int));
+                       100, ImVec2(0, (windowHeight / 4) - 100), sizeof(int));
   ParameterGUI::endPanel();
 
   // Draw Oscilloscope window
@@ -343,18 +343,18 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetCursorPosY(70);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*SecondaryColor);
   ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
-                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+                   ImVec2(0, (windowHeight / 4) - 100), sizeof(float));
 
   ImGui::SetCursorPosY(70);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(255, 255, 255, 0));
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*TertiaryColor);
   ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+                   ImVec2(0, (windowHeight / 4) - 100), sizeof(float));
 
   ImGui::SetCursorPosY(70);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
   ImGui::PlotLines("black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
-                   ImVec2(0, (windowHeight / 4) - 120), sizeof(float));
+                   ImVec2(0, (windowHeight / 4) - 100), sizeof(float));
 
   ImGui::PopItemWidth();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);

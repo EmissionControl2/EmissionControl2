@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Emission Control 2
+Comment=Launch Emission Control 2
+Exec=EmissionControl2
+Icon=EmissionControl2.png
+Terminal=false
+Type=Application
+Categories=Music;Synthesis;Sound;
+Name[en_US]=Emission Control 2
