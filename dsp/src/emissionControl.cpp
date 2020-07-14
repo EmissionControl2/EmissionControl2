@@ -619,7 +619,9 @@ void Grain::setFilter(float freq, float resonance) {
     res_process = (50 * log10(2 * (resonance - 0.8) + 1.000125)) + 2.62023;
   }
   cascadeFilter = resonance;
-  freqMakeup = 480;
+  freqMakeup = 96000000/(freq * freq) + 0.6;
+  if (freqMakeup > 750) freqMakeup = 750;
+
   std::cout << freqMakeup << std::endl;
 
   bpf_1.res(res_process);
