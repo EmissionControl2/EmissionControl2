@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 # name of application. replace 'app' with desired app name
-set(APP_NAME EmissionControl20)
+set(APP_NAME EmissionControl2)
 project(${APP_NAME} VERSION 0.5
                     DESCRIPTION "Granular Scheduler for Arbitrary Sound Files"
                     LANGUAGES CXX)
@@ -37,7 +37,7 @@ set(srcs
   src/utility.cpp
 )
 if(APPLE)
-  set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/EmissionControl20.app/Contents/Resources")
+  set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/EmissionControl2.app/Contents/Resources")
   set(CMAKE_MACOSX_RPATH 1)
   set(CMAKE_INSTALL_RPATH "@executable_path/../Resources/")
   set(RESOURCE_LIST
@@ -151,7 +151,7 @@ set_target_properties(${APP_NAME} PROPERTIES
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
-  MACOSX_BUNDLE_GUI_IDENTIFIER "EmissionControl20"
+  MACOSX_BUNDLE_GUI_IDENTIFIER "EmissionControl2"
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/MacOSXBundleInfo.plist.in
   )
   add_custom_command (TARGET ${APP_NAME}

@@ -311,11 +311,11 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 100);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 110);
   else if (slideType == consts::MOD)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 70);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 90);
   else if (slideType == consts::PARAM)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 200);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 210);
   valueSlider = mParameter->get();
   changed =
       ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
@@ -436,7 +436,7 @@ void ecParameterInt::drawRangeSlider() {
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 200);
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 210);
   valueSlider = mParameterInt->get();
   changed =
       ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
