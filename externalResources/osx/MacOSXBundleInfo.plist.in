@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>EmissionControl20</string>
+	<string>EmissionControl2</string>
 	<key>CFBundleGetInfoString</key>
 	<string>${MACOSX_BUNDLE_INFO_STRING}</string>
 	<key>CFBundleIconFile</key>
@@ -38,7 +38,7 @@
 	<array>
 	<dict>
 		<key>APFileDestinationPath</key>
-			<string>~/Library/Application\ Support/EmissionControl20/presets/</string>
+			<string>~/Library/Application\ Support/EmissionControl2/presets/</string>
 	</dict>
 	</array>
 </dict>
