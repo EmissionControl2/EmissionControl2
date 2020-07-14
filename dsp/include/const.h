@@ -9,6 +9,7 @@ const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
 const int AUDIO_OUTS = 2;
 const int DEVICE_NUM = -1;
+const bool LIGHT_MODE = true;
 enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
@@ -21,6 +22,7 @@ enum sliderType { PARAM, MOD, LFO };
 
 const std::string SOUND_OUTPUT_PATH_KEY = "USER_SOUND_OUTPUT_PATH";
 const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
+const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 
 /**
  *  DEFAULT USER PATHS

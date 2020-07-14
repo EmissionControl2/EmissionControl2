@@ -18,6 +18,7 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
+
   dimensions(1920, 1080);
 
   execDir = f.directory(util::getExecutablePath());
@@ -34,6 +35,7 @@ void ecInterface::onInit() {
 
   initFileIOPaths();
   jsonReadAndSetAudioSettings();
+  jsonReadAndSetColorSchemeMode();
   granulator.init(&audioIO());
 
 // Load in all files in at specified directory.
@@ -43,7 +45,6 @@ void ecInterface::onInit() {
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
-
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
   mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
@@ -204,6 +205,7 @@ void ecInterface::onDraw(Graphics &g) {
           Text = &TextLight;
           light = true;
         }
+        jsonWriteToConfig(light, consts::LIGHT_MODE_KEY);
       }
       ImGui::EndMenu();
     }
@@ -627,12 +629,27 @@ bool ecInterface::initJsonConfig() {
   json config;
   std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
 
-  if (ifs.is_open()) return true;
+  if (ifs.is_open()) {
+    config = json::parse(ifs);
 
-  config[consts::SOUND_OUTPUT_PATH_KEY] =
-    f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+    if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
+      config[consts::SOUND_OUTPUT_PATH_KEY] =
+          f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
-  config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
+    if (config.find(consts::SAMPLE_RATE_KEY) == config.end())
+      config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
+
+    if (config.find(consts::LIGHT_MODE_KEY) == config.end())
+      config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
+
+  } else {
+    config[consts::SOUND_OUTPUT_PATH_KEY] =
+        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+
+    config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
+
+    config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
+  }
 
   std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
   if (file.is_open()) file << config;
@@ -662,6 +679,36 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
     return true;
   } else {
     return false;
+  }
+}
+
+void ecInterface::jsonReadAndSetColorSchemeMode() {
+  json config;
+
+  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  light = config.at(consts::LIGHT_MODE_KEY);
+  if (!light) {
+    PrimaryColor = &PrimaryDark;
+    SecondaryColor = &SecondaryDark;
+    TertiaryColor = &TertiaryDark;
+    Shade1 = &Shade1Dark;
+    Shade2 = &Shade2Dark;
+    Shade3 = &Shade3Dark;
+    Text = &TextDark;
+  } else {
+    PrimaryColor = &PrimaryLight;
+    SecondaryColor = &SecondaryLight;
+    TertiaryColor = &TertiaryLight;
+    Shade1 = &Shade1Light;
+    Shade2 = &Shade2Light;
+    Shade3 = &Shade3Light;
+    Text = &TextLight;
   }
 }
 

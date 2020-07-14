@@ -50,6 +50,12 @@ class line {
 
   float getIncrement() const { return increment; }
 
+  float getStart() const { return start; }
+
+  float getValue() const { return value; }
+
+  float getTarget() const { return target; }
+
   /**
    * @brief Check if the line function is complete.
    *
@@ -57,8 +63,8 @@ class line {
    */
   bool const done() { return value == target; }
 
- private:
-  float value = 0, target = 0, seconds = 1, increment = 0;
+private:
+  float value = 0, start = 0, target = 0, seconds = 1, increment = 0;
   float mSamplingRate;
 };
 
@@ -228,7 +234,8 @@ class buffer {
   T raw(const float index) const {
     const unsigned i = floor(index);
     const T x0 = data[i];
-    const T x1 = data[(i == (size - 1)) ? 0 : i + channels];  // looping semantics
+    const T x1 =
+        data[(i >= (size - channels)) ? 0 : i + channels]; // looping semantics
     const T t = index - i;
     return x1 * t + x0 * (1 - t);
   }
