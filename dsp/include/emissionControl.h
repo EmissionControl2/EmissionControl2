@@ -551,15 +551,17 @@ private:
   gam::Biquad<> mLowShelf_1;
   gam::Biquad<> mHighShelf_2;
   gam::Biquad<> mLowShelf_2;
-  gam::Biquad<> bpf_1, bpf_2;
+  gam::Biquad<> bpf_1, bpf_2, bpf_3;
   grainEnvelope gEnv;
   bool bypassFilter = true;
-  float currentSample;
+  float currentSample, cascadeFilter = 0, freqMakeup;
   int *mPActiveVoices;
   float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
 
-  float filterSample(float sample, bool isBypass);
+  void setFilter(float freq, float resonance);
+
+  float filterSample(float sample, bool isBypass, float cascadeMix,float freqMakeupCoeff);
 
   // Temporary variables
   float before, after, dec;

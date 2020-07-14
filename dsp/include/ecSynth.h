@@ -105,7 +105,7 @@ class ecSynth : public al::SynthVoice {
   al::ParameterMenu panLFO{"##panLFO"};
   ecParameter modPanDepth{"modPanDepth", "modPanDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter volumeDB{"AmplitudedB", "13. Amplitude (dB)", "", -6, "", -60, 6, -180, 24};
+  ecParameter volumeDB{"AmplitudedB", "13. Amplitude (dB)", "", -6, "", -60, 6, -180, 48};
   al::ParameterMenu volumeLFO{"##volumeLFO"};
   ecParameter modVolumeDepth{"modVolumeDepth", "modVolumeDepth", "", 0, "", 0, 1, 0, 1};
 
