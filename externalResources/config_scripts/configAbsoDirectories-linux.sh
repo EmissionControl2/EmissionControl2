@@ -1,25 +1,17 @@
 #!/bin/bash
 
-if [ ! -d "$HOME/opt/" ]; then
-  mkdir "$HOME/opt/"
+if [ ! -d "$HOME/.config/EmissionControl2/presets" ]; then
+  mkdir -p "$HOME/.config/EmissionControl2/presets"
 fi
 
-if [ ! -d "$HOME/opt/EmissionControl20/" ]; then
-  mkdir "$HOME/opt/EmissionControl20/"
+if [ ! -d "$HOME/Music/EmissionControl2/soundOutput" ]; then
+  mkdir -p "$HOME/Music/EmissionControl2/soundOutput"
 fi
 
-if [ ! -d "$HOME/opt/EmissionControl20/presets" ]; then
-  mkdir "$HOME/opt/EmissionControl20/presets"
+if [ ! -d "$HOME/Music/EmissionControl2/samples" ]; then
+  cp -r "/usr/local/share/EmissionControl2/samples" "$HOME/Music/EmissionControl2"
 fi
 
-if [ ! -d "$HOME/opt/EmissionControl20/soundOutput" ]; then
-  mkdir "$HOME/opt/EmissionControl20/soundOutput"
-fi
-
-if [ ! -d "$HOME/opt/EmissionControl20/samples" ]; then
-  cp -r "samples" "$HOME/opt/EmissionControl20/"
-fi
-
-if [ ! -d "$HOME/opt/EmissionControl20/configs" ]; then
-  mkdir "$HOME/opt/EmissionControl20/configs"
+if [ ! -d "$HOME/.config/EmissionControl2/configs" ]; then
+  mkdir -p "$HOME/.config/EmissionControl2/configs"
 fi
