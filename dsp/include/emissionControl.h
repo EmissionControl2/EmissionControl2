@@ -554,6 +554,7 @@ private:
   int *mPActiveVoices;
   float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
+
   
   // Store value in mAmp;
   // Note that this is dependent on the active number of voices.
@@ -571,6 +572,7 @@ private:
 
   // Temporary variables
   float before, after, dec;
+  int prevSampleRate;
 };
 
 /**
