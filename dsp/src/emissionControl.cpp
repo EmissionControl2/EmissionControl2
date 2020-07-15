@@ -471,11 +471,11 @@ Grain::Grain() {}
 void Grain::init() {
   gEnv.reset();
   bpf_1_r.type(gam::BAND_PASS);
-  bpf_2_r.type(gam::BAND_PASS);
-  bpf_3_r.type(gam::LOW_PASS);
+  bpf_2_r.type(gam::RESONANT);
+  bpf_3_r.type(gam::BAND_PASS);
   bpf_1_l.type(gam::BAND_PASS);
-  bpf_2_l.type(gam::BAND_PASS);
-  bpf_3_l.type(gam::LOW_PASS);
+  bpf_2_l.type(gam::RESONANT);
+  bpf_3_l.type(gam::BAND_PASS);
 }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
@@ -614,23 +614,25 @@ void Grain::configureFilter(float freq, float resonance) {
 
   float res_process;
   res_process = powf(13,2.9 * (resonance-0.5)); //10^{3.25\cdot\left(x-0.5\right)}
-  cascadeFilter = resonance;
+  cascadeFilter = res_process/41.2304;
 
-  freqMakeup = (96000000 / (freq * freq / 2) + 3.6) * resonance; //(res_process/41.2304);
+  // freqMakeup = (96000000 / (freq * freq / 2) + 3.6) * resonance; //(res_process/41.2304);
 
   if (freqMakeup > 750 && freq < 120)
     freqMakeup = 750;
+  
+  freqMakeup = 1;
 
   std::cout << "ORIG: " << resonance << " PROCeSS: " << res_process << std::endl;
 
-  std::cout << freqMaekup << std::endl;
+  std::cout << freqMakeup << std::endl;
 
   bpf_1_l.freq(freq);
   bpf_2_l.freq(freq);
   bpf_3_l.freq(freq);
 
   bpf_1_l.res(res_process);
-  bpf_2_l.res(res_process);
+  bpf_2_l.res(log(res_process+1));
   bpf_3_l.res(res_process);
   if (source->channels == 2) {
     bpf_1_r.freq(freq);
@@ -638,7 +640,7 @@ void Grain::configureFilter(float freq, float resonance) {
     bpf_3_r.freq(freq);
 
     bpf_1_r.res(res_process);
-    bpf_2_r.res(res_process);
+    bpf_2_r.res(log(res_process+1));
     bpf_3_r.res(res_process);
   }
 }
@@ -651,10 +653,10 @@ float Grain::filterSample(float sample, bool isBypass, float cascadeMix,
   float solo, cascade;
   if (!isRight) {
     solo = bpf_1_l.nextBP(sample);
-    cascade = bpf_2_l.nextBP(bpf_3_l.nextBP(bpf_1_l.nextBP(sample)));
+    cascade = bpf_3_l.nextBP(bpf_2_l(solo));
   } else {
     solo = bpf_1_r.nextBP(sample);
-    cascade = bpf_2_r.nextBP(bpf_3_r.nextBP(bpf_1_r.nextBP(sample)));
+    cascade = bpf_3_r.nextBP(bpf_2_r(solo));
   }
 
   return (solo * (1 - cascadeMix)) + (cascade * cascadeMix * freqMakeup);
