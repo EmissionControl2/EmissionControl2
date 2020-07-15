@@ -302,7 +302,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PushItemWidth(70);
   valueLow = mLowRange->get();
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
-                             mLowRange->min(), mLowRange->max());
+                             mLowRange->min(), mLowRange->max(), "%.3f");
   ImGui::SameLine();
   if (changed)
     mLowRange->set(valueLow);
@@ -319,7 +319,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   valueSlider = mParameter->get();
   changed =
       ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
-                         mParameter->min(), mParameter->max());
+                         mParameter->min(), mParameter->max(), "%0.3f");
   if (changed)
     mParameter->set(valueSlider);
   ImGui::PopItemWidth();
@@ -466,7 +466,10 @@ void ecParameterInt::drawRangeSlider() {
 
 /******* Grain Class *******/
 
-Grain::Grain() {
+Grain::Grain() {}
+
+void Grain::init() {
+  gEnv.reset();
   bpf_1_r.type(gam::BAND_PASS);
   bpf_2_r.type(gam::BAND_PASS);
   bpf_3_r.type(gam::LOW_PASS);
@@ -474,8 +477,6 @@ Grain::Grain() {
   bpf_2_l.type(gam::BAND_PASS);
   bpf_3_l.type(gam::LOW_PASS);
 }
-
-void Grain::init() { gEnv.reset(); }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
   float startSample, endSample;
@@ -581,13 +582,13 @@ void Grain::onProcess(al::AudioIOData &io) {
 
 void Grain::onTriggerOn() {}
 
-void Grain::configureAmp(float inAmp) {
+void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
-  mAmp = powf(10, inAmp / 20);
+  mAmp = powf(10, dbIn / 20);
   mAmp =
       mAmp *
       powf(*mPActiveVoices + 1,
-           -0.36787698193); //  1/e PERFECT FOR grain overlap gain compensation
+           -0.367877); //  1/e PERFECT FOR grain overlap gain compensation
 }
 
 /* PAN PROCESS
@@ -612,27 +613,17 @@ void Grain::configureFilter(float freq, float resonance) {
     bypassFilter = false;
 
   float res_process;
-  freqMakeup = (96000000 / (freq * freq) + 3.6);
-  if (resonance < 0.5 && resonance >= 0) {
-    res_process = log2(resonance + 1.000125);
-  } else if(resonance < 0.8) {
-    res_process = (10 * log10(2 * (resonance - 0.5) + 1.000125)) + 0.584121;
-  } 
-  else {
-    res_process =
-        ((5 * (resonance - 0.8)) *
-         ((40 * log2(2 * (resonance - 0.8) + 1.000125)) + 3.13715)) + // 2.62023
-        ((1 - (5 * (resonance - 0.8))) *
-         ((10 * log10(2 * (resonance - 0.5) + 1.000125)) + 0.584121));
-
-    // freqMakeup += 
-    // freqMakeup *= res_process/6;
-  }
+  res_process = powf(13,2.9 * (resonance-0.5)); //10^{3.25\cdot\left(x-0.5\right)}
   cascadeFilter = resonance;
+
+  freqMakeup = (96000000 / (freq * freq / 2) + 3.6) * resonance; //(res_process/41.2304);
+
   if (freqMakeup > 750 && freq < 120)
     freqMakeup = 750;
 
-  std::cout << freqMakeup << std::endl;
+  std::cout << "ORIG: " << resonance << " PROCeSS: " << res_process << std::endl;
+
+  std::cout << freqMaekup << std::endl;
 
   bpf_1_l.freq(freq);
   bpf_2_l.freq(freq);
