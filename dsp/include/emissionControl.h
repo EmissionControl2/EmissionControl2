@@ -557,7 +557,7 @@ private:
   
   // Store value in mAmp;
   // Note that this is dependent on the active number of voices.
-  void configureAmp(float inAmp);
+  void configureAmp(float dbIn);
 
   // Store value in mLeft and mRight.
   void configurePan(float inPan);
