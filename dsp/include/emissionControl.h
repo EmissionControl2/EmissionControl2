@@ -508,7 +508,7 @@ struct grainParameters {
  */
 class Grain : public al::SynthVoice {
 public:
-  Grain() { return; }
+  Grain();
   /**
    * @brief Initialize voice. This function will only be called once per voice
    */
@@ -547,21 +547,27 @@ public:
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
-  gam::Biquad<> mHighShelf_1;
-  gam::Biquad<> mLowShelf_1;
-  gam::Biquad<> mHighShelf_2;
-  gam::Biquad<> mLowShelf_2;
-  gam::Biquad<> bpf_1, bpf_2, bpf_3;
+  gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
   grainEnvelope gEnv;
   bool bypassFilter = true;
   float currentSample, cascadeFilter = 0, freqMakeup;
   int *mPActiveVoices;
-  float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
+  float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
+  
+  // Store value in mAmp;
+  // Note that this is dependent on the active number of voices.
+  void configureAmp(float inAmp);
 
-  void setFilter(float freq, float resonance);
+  // Store value in mLeft and mRight.
+  void configurePan(float inPan);
 
-  float filterSample(float sample, bool isBypass, float cascadeMix,float freqMakeupCoeff);
+  void configureFilter(float freq, float resonance);
+
+  float filterSample(float sample, bool isBypass, float cascadeMix,
+                     float freqMakeupCoeff, bool isRight);
+
+  float nextBP_stereo(float sample1, float sample2);
 
   // Temporary variables
   float before, after, dec;
