@@ -284,8 +284,8 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
 
   ImGui::PushItemWidth(50);
   valueLow = mLowRange->get();
-  changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
-                             mLowRange->min(), mLowRange->max(), "%.3f");
+  changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1, mLowRange->min(),
+                             mLowRange->max(), "%.3f");
 
   ImGui::SameLine();
   if (changed) {
@@ -296,36 +296,32 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 90);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 80);
   else if (slideType == consts::MOD)
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 58);
   else if (slideType == consts::PARAM)
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 190);
   valueSlider = mParameter->get();
-  changed =
-      ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
-                         mParameter->min(), mParameter->max(), "%0.3f");
+  changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider, mParameter->min(),
+                               mParameter->max(), "%0.3f");
 
   if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
     editing = true;
   }
   if (editing) {
     if (ImGui::IsItemDeactivatedAfterEdit() &&
-        (ImGui::IsMouseDown(0) ||
-         ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+        (ImGui::IsMouseDown(0) || ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
       changed = true;
       editing = false;
     } else if (ImGui::IsItemDeactivated() &&
-               (ImGui::IsMouseDown(0) ||
-                ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+               (ImGui::IsMouseDown(0) || ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
       changed = false;
       editing = false;
-    } else 
+    } else
       changed = false;
   }
 
-  if (changed)
-    mParameter->set(valueSlider);
+  if (changed) mParameter->set(valueSlider);
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
@@ -413,7 +409,7 @@ void ecParameterInt::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameterInt::drawRangeSlider() {
+void ecParameterInt::drawRangeSlider(std::string sliderText) {
   int valueSlider, valueLow, valueHigh;
   bool changed;
   ImGui::PushItemWidth(50);
@@ -430,8 +426,13 @@ void ecParameterInt::drawRangeSlider() {
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 190);
   valueSlider = mParameterInt->get();
-  changed = ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
-                             mParameterInt->min(), mParameterInt->max());
+  if (sliderText != "") {
+    changed = ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
+                               mParameterInt->min(), mParameterInt->max(), sliderText.c_str());
+  } else {
+    changed = ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
+                               mParameterInt->min(), mParameterInt->max());
+  }
   if (changed) mParameterInt->set(valueSlider);
   ImGui::PopItemWidth();
 
@@ -531,8 +532,7 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     if (source->channels == 1) {
       currentSample = source->get(sourceIndex);
-      currentSample =
-          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
+      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
@@ -540,16 +540,14 @@ void Grain::onProcess(al::AudioIOData &io) {
       after = source->data[(int)floor(sourceIndex) * 2 + 2];
       dec = sourceIndex - floor(sourceIndex);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample =
-          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
+      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
       before = source->get(floor(sourceIndex + 1) * 2.0);
       after = source->get(floor(sourceIndex + 1) * 2.0 + 2);
       dec = (sourceIndex + 1) - floor(sourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample =
-          filterSample(currentSample, bypassFilter, cascadeFilter, 1);
+      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 1);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
@@ -566,9 +564,8 @@ void Grain::onTriggerOn() {}
 void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
   mAmp = powf(10, dbIn / 20);
-  mAmp = mAmp *
-         powf(*mPActiveVoices + 1,
-              -0.367877); //  1/e PERFECT FOR grain overlap gain compensation
+  mAmp = mAmp * powf(*mPActiveVoices + 1,
+                     -0.367877);  //  1/e PERFECT FOR grain overlap gain compensation
 }
 
 /* PAN PROCESS
@@ -586,16 +583,14 @@ void Grain::configurePan(float inPan) {
 }
 
 void Grain::configureFilter(float freq, float resonance) {
-
   if (resonance >= 0 && resonance < 0.00001)
     bypassFilter = true;
   else
     bypassFilter = false;
 
   float res_process;
-  res_process =
-      powf(13, 2.9 * (resonance - 0.5)); // 13^{2.9\cdot\left(x-0.5\right)}
-  cascadeFilter = res_process / 41.2304; // Normalize by max resonance.
+  res_process = powf(13, 2.9 * (resonance - 0.5));  // 13^{2.9\cdot\left(x-0.5\right)}
+  cascadeFilter = res_process / 41.2304;            // Normalize by max resonance.
 
   bpf_1_l.freq(freq);
   bpf_2_l.freq(freq);
@@ -615,10 +610,8 @@ void Grain::configureFilter(float freq, float resonance) {
   }
 }
 
-float Grain::filterSample(float sample, bool isBypass, float cascadeMix,
-                          bool isRight) {
-  if (isBypass)
-    return sample;
+float Grain::filterSample(float sample, bool isBypass, float cascadeMix, bool isRight) {
+  if (isBypass) return sample;
 
   float solo, cascade;
   if (!isRight) {
