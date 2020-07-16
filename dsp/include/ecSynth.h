@@ -214,7 +214,12 @@ class ecSynth : public al::SynthVoice {
 
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
-  std::string getCurrentAudioFileName() { return soundClipFileName[soundFile.mParameterInt->get()]; }
+  std::string getCurrentAudioFileName() {
+    std::string filename =
+      soundClipFileName[soundFile.getModParam(modSoundFileDepth.mParameter->get()) - 1];
+    filename = filename.substr(filename.find_last_of("/") + 1);
+    return filename;
+  }
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;

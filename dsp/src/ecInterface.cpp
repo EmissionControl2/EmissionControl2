@@ -123,8 +123,7 @@ void ecInterface::onDraw(Graphics &g) {
   float windowHeight = height();
 
   // Compare window size to fb size to account for HIDPI Display issues
-  // ImGui::SetWindowFontScale(getCurrentWindowPixelDensity());
-  // std::cout << width() / 1000.0f << std::endl;
+  // std::cout << width() << std::endl;
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
@@ -255,7 +254,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.resonance.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.soundFile.drawRangeSlider();
+  granulator.soundFile.drawRangeSlider(granulator.getCurrentAudioFileName());
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.tapeHead.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
