@@ -281,7 +281,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
-  ImGui::PushItemWidth(50);
+  ImGui::PushItemWidth(50 * io.FontGlobalScale);
   valueLow = mLowRange->get();
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1, mLowRange->min(),
                              mLowRange->max(), "%.3f");
@@ -327,7 +327,8 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
-  ImGui::PushItemWidth(50);
+
+  ImGui::PushItemWidth(50 * io.FontGlobalScale);
   valueHigh = mHighRange->get();
   changed = ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHigh, 0.1,
                              mHighRange->min(), mHighRange->max());
@@ -416,7 +417,7 @@ void ecParameterInt::drawRangeSlider(std::string sliderText) {
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
 
-  ImGui::PushItemWidth(50);
+  ImGui::PushItemWidth(50 * io.FontGlobalScale);
   valueLow = mLowRange->get();
   changed = ImGui::DragInt((mLowRange->displayName()).c_str(), &valueLow, 0.1, mLowRange->min(),
                            mLowRange->max());
@@ -460,7 +461,8 @@ void ecParameterInt::drawRangeSlider(std::string sliderText) {
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
-  ImGui::PushItemWidth(50);
+
+  ImGui::PushItemWidth(50 * io.FontGlobalScale);
   valueHigh = mHighRange->get();
   changed = ImGui::DragInt((mHighRange->displayName()).c_str(), &valueHigh, 0.1, mHighRange->min(),
                            mHighRange->max());
