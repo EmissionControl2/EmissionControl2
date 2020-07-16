@@ -412,15 +412,17 @@ void ecParameterInt::addToPresetHandler(al::PresetHandler &presetHandler) {
 void ecParameterInt::drawRangeSlider(std::string sliderText) {
   int valueSlider, valueLow, valueHigh;
   bool changed;
+  ImGuiIO &io = ImGui::GetIO();
+
   ImGui::PushItemWidth(50);
   valueLow = mLowRange->get();
   changed = ImGui::DragInt((mLowRange->displayName()).c_str(), &valueLow, 0.1, mLowRange->min(),
                            mLowRange->max());
   ImGui::SameLine();
-  if (changed) mLowRange->set(valueLow);
-  mParameterInt->min(valueLow);
-
-  // if(valueLow > mHighRange->get()) mParameter->min(mMin);
+  if (changed) {
+    mLowRange->set(valueLow);
+    mParameterInt->min(valueLow);
+  }
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
@@ -432,6 +434,22 @@ void ecParameterInt::drawRangeSlider(std::string sliderText) {
   } else {
     changed = ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
                                mParameterInt->min(), mParameterInt->max());
+  }
+
+  if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
+    editing = true;
+  }
+  if (editing) {
+    if (ImGui::IsItemDeactivatedAfterEdit() &&
+        (ImGui::IsMouseDown(0) || ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = true;
+      editing = false;
+    } else if (ImGui::IsItemDeactivated() &&
+               (ImGui::IsMouseDown(0) || ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = false;
+      editing = false;
+    } else
+      changed = false;
   }
   if (changed) mParameterInt->set(valueSlider);
   ImGui::PopItemWidth();
