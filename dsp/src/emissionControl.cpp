@@ -468,20 +468,16 @@ void ecParameterInt::drawRangeSlider() {
 
 Grain::Grain() {}
 
-void Grain::init() {
-  gEnv.reset();
-  bpf_1_r.type(gam::BAND_PASS);
-  bpf_2_r.type(gam::RESONANT);
-  bpf_3_r.type(gam::BAND_PASS);
-  bpf_1_l.type(gam::BAND_PASS);
-  bpf_2_l.type(gam::RESONANT);
-  bpf_3_l.type(gam::BAND_PASS);
-}
+void Grain::init() { gEnv.reset(); }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
   float startSample, endSample;
 
   mPActiveVoices = list.activeVoices;
+  if (static_cast<int>(samplingRate) != prevSamplingRate) {
+    prevSamplingRate = samplingRate;
+    initEffects(samplingRate);
+  }
 
   // Set Duration
   if (list.modGrainDurationDepth > 0)
@@ -549,8 +545,8 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     if (source->channels == 1) {
       currentSample = source->get(sourceIndex);
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter,
-                                   freqMakeup, 0);
+      currentSample =
+          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
@@ -559,16 +555,16 @@ void Grain::onProcess(al::AudioIOData &io) {
       after = source->data[(int)floor(sourceIndex) * 2 + 2];
       dec = sourceIndex - floor(sourceIndex);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter,
-                                   freqMakeup, 0);
+      currentSample =
+          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
       before = source->get(floor(sourceIndex + 1) * 2.0);
       after = source->get(floor(sourceIndex + 1) * 2.0 + 2);
       dec = (sourceIndex + 1) - floor(sourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter,
-                                   freqMakeup, 1);
+      currentSample =
+          filterSample(currentSample, bypassFilter, cascadeFilter, 1);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
@@ -585,10 +581,9 @@ void Grain::onTriggerOn() {}
 void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
   mAmp = powf(10, dbIn / 20);
-  mAmp =
-      mAmp *
-      powf(*mPActiveVoices + 1,
-           -0.367877); //  1/e PERFECT FOR grain overlap gain compensation
+  mAmp = mAmp *
+         powf(*mPActiveVoices + 1,
+              -0.367877); //  1/e PERFECT FOR grain overlap gain compensation
 }
 
 /* PAN PROCESS
@@ -613,26 +608,16 @@ void Grain::configureFilter(float freq, float resonance) {
     bypassFilter = false;
 
   float res_process;
-  res_process = powf(13,2.9 * (resonance-0.5)); //10^{3.25\cdot\left(x-0.5\right)}
-  cascadeFilter = res_process/41.2304;
-
-  // freqMakeup = (96000000 / (freq * freq / 2) + 3.6) * resonance; //(res_process/41.2304);
-
-  if (freqMakeup > 750 && freq < 120)
-    freqMakeup = 750;
-  
-  freqMakeup = 1;
-
-  std::cout << "ORIG: " << resonance << " PROCeSS: " << res_process << std::endl;
-
-  std::cout << freqMakeup << std::endl;
+  res_process =
+      powf(13, 2.9 * (resonance - 0.5)); // 13^{2.9\cdot\left(x-0.5\right)}
+  cascadeFilter = res_process / 41.2304; // Normalize by max resonance.
 
   bpf_1_l.freq(freq);
   bpf_2_l.freq(freq);
   bpf_3_l.freq(freq);
 
   bpf_1_l.res(res_process);
-  bpf_2_l.res(log(res_process+1));
+  bpf_2_l.res(log(res_process + 1));
   bpf_3_l.res(res_process);
   if (source->channels == 2) {
     bpf_1_r.freq(freq);
@@ -640,13 +625,13 @@ void Grain::configureFilter(float freq, float resonance) {
     bpf_3_r.freq(freq);
 
     bpf_1_r.res(res_process);
-    bpf_2_r.res(log(res_process+1));
+    bpf_2_r.res(log(res_process + 1));
     bpf_3_r.res(res_process);
   }
 }
 
 float Grain::filterSample(float sample, bool isBypass, float cascadeMix,
-                          float freqMakeupCoeff, bool isRight) {
+                          bool isRight) {
   if (isBypass)
     return sample;
 
@@ -659,7 +644,30 @@ float Grain::filterSample(float sample, bool isBypass, float cascadeMix,
     cascade = bpf_3_r.nextBP(bpf_2_r(solo));
   }
 
-  return (solo * (1 - cascadeMix)) + (cascade * cascadeMix * freqMakeup);
+  return (solo * (1 - cascadeMix)) + (cascade * cascadeMix);
+}
+
+void Grain::initEffects(float sr) {
+  bpf_1_r.onDomainChange(1);
+  bpf_2_r.onDomainChange(1);
+  bpf_3_r.onDomainChange(1);
+  bpf_1_l.onDomainChange(1);
+  bpf_2_l.onDomainChange(1);
+  bpf_3_l.onDomainChange(1);
+
+  bpf_1_r.set(440, 1, gam::BAND_PASS);
+  bpf_2_r.set(440, 1, gam::RESONANT);
+  bpf_3_r.set(440, 1, gam::BAND_PASS);
+  bpf_1_l.set(440, 1, gam::BAND_PASS);
+  bpf_2_l.set(440, 1, gam::RESONANT);
+  bpf_3_l.set(440, 1, gam::BAND_PASS);
+
+  bpf_1_l.zero();
+  bpf_2_l.zero();
+  bpf_3_l.zero();
+  bpf_1_r.zero();
+  bpf_2_r.zero();
+  bpf_3_r.zero();
 }
 
 /******* voiceScheduler *******/
