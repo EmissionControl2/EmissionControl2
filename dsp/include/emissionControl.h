@@ -484,7 +484,7 @@ private:
   bool mIndependentMod;
   int mMax, mMin;
   //Draw flags
-  bool changed, editing = false;
+  bool editing = false;
 };
 
 struct grainParameters {
