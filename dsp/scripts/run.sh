@@ -12,10 +12,8 @@ fi
   if [ $(uname -s) == "Darwin" ]; then
     chmod 644 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
     cmake --build ./build/release -j 5
-    chmod 444 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
   fi
 )
-
 result=$?
 if [ ${result} == 0 ]; then
 
@@ -26,10 +24,12 @@ if [ ${result} == 0 ]; then
 
   DEBUG=${1:-DEFAULT}
   if [ $(uname -s) == "Darwin" ]; then
+      chmod 444 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
     cd bin
     if [ ${DEBUG} == "-g" ]; then
       ./EmissionControl2.app/Contents/MacOS/EmissionControl2
     else
+
       open EmissionControl2.app
     fi
   fi
