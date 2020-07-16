@@ -15,6 +15,7 @@
 #include "Gamma/Filter.h"
 #include "Gamma/Oscillator.h"
 #include "al/math/al_Random.hpp"
+#include "al/app/al_App.hpp"
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
 #include "al/ui/al_PresetHandler.hpp"
@@ -370,6 +371,9 @@ private:
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
   bool mIndependentMod;
+  //Draw flags
+  bool editing = false;
+  
 };
 
 /**
@@ -479,6 +483,8 @@ private:
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
   int mMax, mMin;
+  //Draw flags
+  bool changed, editing = false;
 };
 
 struct grainParameters {
@@ -508,7 +514,7 @@ struct grainParameters {
  */
 class Grain : public al::SynthVoice {
 public:
-  Grain() { return; }
+  Grain();
   /**
    * @brief Initialize voice. This function will only be called once per voice
    */
@@ -547,19 +553,31 @@ public:
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
-  gam::Biquad<> mHighShelf;
-  gam::Biquad<> mLowShelf;
+  gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
   grainEnvelope gEnv;
   bool bypassFilter = true;
-  float currentSample;
+  float currentSample, cascadeFilter = 0;
   int *mPActiveVoices;
-  float envVal, sourceIndex, tapeHead, mDurationMs, mPan, mLeft, mRight, mAmp;
+  float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
 
-  float filterSample(float sample, bool isBypass);
+  // Store value in mAmp;
+  // Note that this is dependent on the active number of voices.
+  void configureAmp(float dbIn);
+
+  // Store value in mLeft and mRight.
+  void configurePan(float inPan);
+
+  void configureFilter(float freq, float resonance);
+
+  float filterSample(float sample, bool isBypass, float cascadeMix,
+                     bool isRight);
+
+  void initEffects(float sr);
 
   // Temporary variables
   float before, after, dec;
+  int prevSamplingRate = -1;
 };
 
 /**
