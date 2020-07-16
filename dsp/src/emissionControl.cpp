@@ -277,18 +277,21 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mLowRange);
   presetHandler.registerParameter(*mHighRange);
 }
-
 void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
+  ImGuiIO &io = ImGui::GetIO();
 
   ImGui::PushItemWidth(50);
   valueLow = mLowRange->get();
-  changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1, mLowRange->min(),
-                             mLowRange->max());
+  changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
+                             mLowRange->min(), mLowRange->max(), "%.3f");
+
   ImGui::SameLine();
-  if (changed) mLowRange->set(valueLow);
-  mParameter->min(valueLow);
+  if (changed) {
+    mLowRange->set(valueLow);
+    mParameter->min(valueLow);
+  }
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
@@ -299,9 +302,30 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   else if (slideType == consts::PARAM)
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 190);
   valueSlider = mParameter->get();
-  changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider, mParameter->min(),
-                               mParameter->max());
-  if (changed) mParameter->set(valueSlider);
+  changed =
+      ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
+                         mParameter->min(), mParameter->max(), "%0.3f");
+
+  if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
+    editing = true;
+  }
+  if (editing) {
+    if (ImGui::IsItemDeactivatedAfterEdit() &&
+        (ImGui::IsMouseDown(0) ||
+         ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = true;
+      editing = false;
+    } else if (ImGui::IsItemDeactivated() &&
+               (ImGui::IsMouseDown(0) ||
+                ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = false;
+      editing = false;
+    } else 
+      changed = false;
+  }
+
+  if (changed)
+    mParameter->set(valueSlider);
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
@@ -431,29 +455,37 @@ void ecParameterInt::drawRangeSlider() {
 
 /******* Grain Class *******/
 
-void Grain::init() {
-  gEnv.reset();
-  mLowShelf.type(gam::LOW_SHELF);
-  mHighShelf.type(gam::HIGH_SHELF);
-}
+Grain::Grain() {}
+
+void Grain::init() { gEnv.reset(); }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
   float startSample, endSample;
 
   mPActiveVoices = list.activeVoices;
+  if (static_cast<int>(samplingRate) != prevSamplingRate) {
+    prevSamplingRate = samplingRate;
+    initEffects(samplingRate);
+  }
 
+  // Set Duration
   if (list.modGrainDurationDepth > 0)
     setDurationMs(list.grainDurationMs.getModParam(list.modGrainDurationDepth));
   else
     setDurationMs(list.grainDurationMs.getParam());
 
+  // Set Envelope
+  gEnv.setSamplingRate(samplingRate);
   if (list.modEnvelopeDepth > 0)
     gEnv.set(mDurationMs / 1000, list.envelope.getModParam(list.modEnvelopeDepth));
   else
     gEnv.set(mDurationMs / 1000, list.envelope.getParam());
 
+  // Set sample
   this->source = list.source;
 
+  // Set where in the buffer to play.
+  index.setSamplingRate(samplingRate);
   if (list.modTapeHeadDepth > 0)
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
@@ -470,71 +502,24 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     endSample = floor(startSample +
                       ((mDurationMs / 1000) * samplingRate * abs(list.transposition.getParam())));
 
-  index.setSamplingRate(samplingRate);
-
   if (list.transposition.getParam() < 0)
     index.set(endSample, startSample, mDurationMs / 1000);
   else
     index.set(startSample, endSample, mDurationMs / 1000);
 
-  // Store modulated volume value of grain IF it is being modulated.
   if (list.modVolumeDepth > 0)
-    mAmp = list.volumeDB.getModParam(list.modVolumeDepth);
+    configureAmp(list.volumeDB.getModParam(list.modVolumeDepth));
   else
-    mAmp = list.volumeDB.getParam();
-
-  // Convert volume from db to amplitude
-  mAmp = powf(10, mAmp / 20);
+    configureAmp(list.volumeDB.getParam());
 
   // Store modulated pan value of grain IF it is being modulated.
   if (list.modPanDepth > 0)
-    mPan = list.pan.getModParam(list.modPanDepth);
+    configurePan(list.pan.getModParam(list.modPanDepth));
   else
-    mPan = list.pan.getParam();
+    configurePan(list.pan.getParam());
 
-  /* PAN PROCESS
-  In radians ---
-  LeftPan = 2√2(cos𝜃-sin𝜃)
-  RightPan = 2√2(cos𝜃+sin𝜃)
-  Where 𝜃 is in the range -pi/4 to pi/4
-  */
-  mPan = mPan * (M_PI) / 4;
-  float process_1 = std::cos(mPan);
-  float process_2 = std::sin(mPan);
-  mLeft = PAN_CONST * (process_1 - process_2);
-  mRight = PAN_CONST * (process_1 + process_2);
-
-  /**Set sampling rate of envelope**/
-  gEnv.setSamplingRate(samplingRate);
-  mAmp = mAmp * powf(*mPActiveVoices + 1,
-                     -0.36787698193);  //  1/e PERFECT FOR grain overlap gain compensation
-
-  // FILTERING SETUP
-
-  float resonance = list.resonance.getModParam(list.modResonanceDepth);
-
-  float freq = list.filter.getModParam(list.modFilterDepth);
-
-  if (resonance >= 0 && resonance < 0.00001)
-    bypassFilter = true;
-  else
-    bypassFilter = false;
-
-  // delta = 0.9 - (MIN_LEVEL in dB/ -6 dB)
-  float delta = 0.1;  // MIN_LEVEL = -30dB //0.4
-  mLowShelf.freq(freq * delta);
-  mHighShelf.freq(freq * 1 / delta);
-
-  float res_process = (resonance + 0.25) * 24;  // Resonance goes from 0.25 to 30
-  mLowShelf.res(res_process);
-  mHighShelf.res(res_process);
-
-  // MIN_LEVEL = -30B : f               // Converting to amps using powf(10,
-  // dBVal / 20);
-  res_process = 1 - resonance * 0.995;  // 1-Compliment of -120dB about. THIS
-  // 0.9999683772233983 DETERMINES how resonancy it is.
-  mLowShelf.level(res_process);
-  mHighShelf.level(res_process);
+  configureFilter(list.filter.getModParam(list.modFilterDepth),
+                  list.resonance.getModParam(list.modResonanceDepth));
 }
 
 void Grain::onProcess(al::AudioIOData &io) {
@@ -546,7 +531,8 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     if (source->channels == 1) {
       currentSample = source->get(sourceIndex);
-      currentSample = filterSample(currentSample, bypassFilter);
+      currentSample =
+          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
@@ -554,14 +540,16 @@ void Grain::onProcess(al::AudioIOData &io) {
       after = source->data[(int)floor(sourceIndex) * 2 + 2];
       dec = sourceIndex - floor(sourceIndex);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter);
+      currentSample =
+          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
       before = source->get(floor(sourceIndex + 1) * 2.0);
       after = source->get(floor(sourceIndex + 1) * 2.0 + 2);
       dec = (sourceIndex + 1) - floor(sourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter);
+      currentSample =
+          filterSample(currentSample, bypassFilter, cascadeFilter, 1);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
@@ -575,11 +563,96 @@ void Grain::onProcess(al::AudioIOData &io) {
 
 void Grain::onTriggerOn() {}
 
-float Grain::filterSample(float sample, bool isBypass) {
+void Grain::configureAmp(float dbIn) {
+  // Convert volume from db to amplitude
+  mAmp = powf(10, dbIn / 20);
+  mAmp = mAmp *
+         powf(*mPActiveVoices + 1,
+              -0.367877); //  1/e PERFECT FOR grain overlap gain compensation
+}
+
+/* PAN PROCESS
+In radians ---
+LeftPan = 2√2(cos𝜃-sin𝜃)
+RightPan = 2√2(cos𝜃+sin𝜃)
+Where 𝜃 is in the range -pi/4 to pi/4
+*/
+void Grain::configurePan(float inPan) {
+  float pan = inPan * (M_PI) / 4;
+  float process_1 = std::cos(pan);
+  float process_2 = std::sin(pan);
+  mLeft = PAN_CONST * (process_1 - process_2);
+  mRight = PAN_CONST * (process_1 + process_2);
+}
+
+void Grain::configureFilter(float freq, float resonance) {
+
+  if (resonance >= 0 && resonance < 0.00001)
+    bypassFilter = true;
+  else
+    bypassFilter = false;
+
+  float res_process;
+  res_process =
+      powf(13, 2.9 * (resonance - 0.5)); // 13^{2.9\cdot\left(x-0.5\right)}
+  cascadeFilter = res_process / 41.2304; // Normalize by max resonance.
+
+  bpf_1_l.freq(freq);
+  bpf_2_l.freq(freq);
+  bpf_3_l.freq(freq);
+
+  bpf_1_l.res(res_process);
+  bpf_2_l.res(log(res_process + 1));
+  bpf_3_l.res(res_process);
+  if (source->channels == 2) {
+    bpf_1_r.freq(freq);
+    bpf_2_r.freq(freq);
+    bpf_3_r.freq(freq);
+
+    bpf_1_r.res(res_process);
+    bpf_2_r.res(log(res_process + 1));
+    bpf_3_r.res(res_process);
+  }
+}
+
+float Grain::filterSample(float sample, bool isBypass, float cascadeMix,
+                          bool isRight) {
   if (isBypass)
     return sample;
-  else
-    return mHighShelf(mLowShelf(sample));
+
+  float solo, cascade;
+  if (!isRight) {
+    solo = bpf_1_l.nextBP(sample);
+    cascade = bpf_3_l.nextBP(bpf_2_l(solo));
+  } else {
+    solo = bpf_1_r.nextBP(sample);
+    cascade = bpf_3_r.nextBP(bpf_2_r(solo));
+  }
+
+  return (solo * (1 - cascadeMix)) + (cascade * cascadeMix);
+}
+
+void Grain::initEffects(float sr) {
+  bpf_1_r.onDomainChange(1);
+  bpf_2_r.onDomainChange(1);
+  bpf_3_r.onDomainChange(1);
+  bpf_1_l.onDomainChange(1);
+  bpf_2_l.onDomainChange(1);
+  bpf_3_l.onDomainChange(1);
+
+  bpf_1_r.set(440, 1, gam::BAND_PASS);
+  bpf_2_r.set(440, 1, gam::RESONANT);
+  bpf_3_r.set(440, 1, gam::BAND_PASS);
+  bpf_1_l.set(440, 1, gam::BAND_PASS);
+  bpf_2_l.set(440, 1, gam::RESONANT);
+  bpf_3_l.set(440, 1, gam::BAND_PASS);
+
+  bpf_1_l.zero();
+  bpf_2_l.zero();
+  bpf_3_l.zero();
+  bpf_1_r.zero();
+  bpf_2_r.zero();
+  bpf_3_r.zero();
 }
 
 /******* voiceScheduler *******/
