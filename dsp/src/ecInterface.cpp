@@ -555,12 +555,12 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
-  ImGui::SetCursorPosX(50);
-  ImGui::PushItemWidth(70);
+  ImGui::SetCursorPosX(50 * ImGui::GetIO().FontGlobalScale);
+  ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(60);
+  ImGui::PushItemWidth(60 * ImGui::GetIO().FontGlobalScale);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
@@ -580,7 +580,7 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
 }
 
 void ecInterface::drawModulationControl(al::ParameterMenu &menu, ecParameter &slider) {
-  ImGui::PushItemWidth(70);
+  ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
