@@ -228,7 +228,7 @@ class ecModulator {
   consts::waveform mModWaveform;
   consts::polarity mPolarity;
   int mSign;
-  float mFrequency, mCurrentSample, mHoldNoiseSample;
+  float mFrequency, mCurrentSample, mHoldNoiseSample, mWidth = 0.5;
   unsigned int lastPhase, currentPhase;
 
   float sampleAndHoldUniform(float low, float high);
