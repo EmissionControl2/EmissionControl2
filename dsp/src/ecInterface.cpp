@@ -123,14 +123,15 @@ void ecInterface::onDraw(Graphics &g) {
   float windowHeight = height();
 
   // Compare window size to fb size to account for HIDPI Display issues
-  // std::cout << width() << std::endl;
+  std::cout << width() << std::endl;
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
 
   al::imguiBeginFrame();
 
-  // if (width() < 1000) ImGui::GetIO().FontGlobalScale = width() / 1000.0f;
+  if (width() < 1000) ImGui::GetIO().FontGlobalScale = width() / 1000.0f;
+  else ImGui::GetIO().FontGlobalScale = 1.0;
 
   if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
     ImGui::OpenPopup("Load soundfiles please :,)");
