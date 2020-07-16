@@ -308,19 +308,24 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 void ecParameter::drawRangeSlider(consts::sliderType slideType) {
+  std::string format;
   float valueSlider, valueLow, valueHigh;
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
   valueLow = mLowRange->get();
+
+  if(abs(valueLow) < 100) format = "%.3f";
+  else if (abs(valueLow) < 1000) format = "%.2f";
+  else if(abs(valueLow) < 10000) format = "%.1f";
+  else format = "%.0f";
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
-                             mLowRange->min(), mLowRange->max(), "%.3f");
+                             mLowRange->min(), mLowRange->max(), format.c_str());
 
   ImGui::SameLine();
-  if (changed) {
+  if (changed) 
     mLowRange->set(valueLow);
-    mParameter->min(valueLow);
-  }
+  mParameter->min(valueLow);
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
@@ -364,8 +369,14 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
 
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
   valueHigh = mHighRange->get();
+
+  if(abs(valueHigh) < 100) format = "%.3f";
+  else if (abs(valueHigh) < 1000) format = "%.2f";
+  else if(abs(valueHigh) < 10000) format = "%.1f";
+  else format = "%.0f";
+
   changed = ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHigh,
-                             0.1, mHighRange->min(), mHighRange->max());
+                             0.1, mHighRange->min(), mHighRange->max(), format.c_str());
   if (changed)
     mHighRange->set(valueHigh);
   mParameter->max(valueHigh);
@@ -467,10 +478,9 @@ void ecParameterInt::drawRangeSlider(std::string sliderText) {
   changed = ImGui::DragInt((mLowRange->displayName()).c_str(), &valueLow, 0.1,
                            mLowRange->min(), mLowRange->max());
   ImGui::SameLine();
-  if (changed) {
+  if (changed)
     mLowRange->set(valueLow);
-    mParameterInt->min(valueLow);
-  }
+  mParameterInt->min(valueLow);
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
