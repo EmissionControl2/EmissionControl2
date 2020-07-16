@@ -39,6 +39,12 @@ set(srcs
 if(APPLE)
   set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/EmissionControl2.app/Contents/Resources")
   set(CMAKE_MACOSX_RPATH 1)
+
+  set(MACOSX_BUNDLE_ICON_FILE "EmissionControl2.icns")
+  set(ICON ${CMAKE_CURRENT_SOURCE_DIR}/../externalResources/osx/EmissionControl2.icns)
+  set_source_files_properties(${ICON} PROPERTIES
+       MACOSX_PACKAGE_LOCATION "Resources")
+
   set(CMAKE_INSTALL_RPATH "@executable_path/../Resources/")
   set(RESOURCE_LIST
       "libsndfile"
@@ -77,6 +83,7 @@ endif(APPLE)
 add_executable(${APP_NAME} MACOSX_BUNDLE
   src/main.cpp
   ${RESOURCE_FILES}
+  ${ICON}
 )
 
 target_include_directories(${APP_NAME} PRIVATE 
