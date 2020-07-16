@@ -428,7 +428,10 @@ void ecParameterInt::drawRangeSlider(std::string sliderText) {
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 190);
+  if (ImGui::GetContentRegionAvail().x - 190 > 80)
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 190);
+  else
+    ImGui::PushItemWidth(80);
   valueSlider = mParameterInt->get();
   if (sliderText != "") {
     changed = ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
