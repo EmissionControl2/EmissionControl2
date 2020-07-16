@@ -294,19 +294,21 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mLowRange);
   presetHandler.registerParameter(*mHighRange);
 }
-
 void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
+  ImGuiIO &io = ImGui::GetIO();
 
   ImGui::PushItemWidth(70);
   valueLow = mLowRange->get();
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
                              mLowRange->min(), mLowRange->max(), "%.3f");
+
   ImGui::SameLine();
-  if (changed)
+  if (changed) {
     mLowRange->set(valueLow);
-  mParameter->min(valueLow);
+    mParameter->min(valueLow);
+  }
 
   ImGui::PopItemWidth();
   ImGui::SameLine();
@@ -320,6 +322,25 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   changed =
       ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
                          mParameter->min(), mParameter->max(), "%0.3f");
+
+  if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
+    editing = true;
+  }
+  if (editing) {
+    if (ImGui::IsItemDeactivatedAfterEdit() &&
+        (ImGui::IsMouseDown(0) ||
+         ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = true;
+      editing = false;
+    } else if (ImGui::IsItemDeactivated() &&
+               (ImGui::IsMouseDown(0) ||
+                ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = false;
+      editing = false;
+    } else 
+      changed = false;
+  }
+
   if (changed)
     mParameter->set(valueSlider);
   ImGui::PopItemWidth();

@@ -15,6 +15,7 @@
 #include "Gamma/Filter.h"
 #include "Gamma/Oscillator.h"
 #include "al/math/al_Random.hpp"
+#include "al/app/al_App.hpp"
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
 #include "al/ui/al_PresetHandler.hpp"
@@ -370,6 +371,9 @@ private:
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
   bool mIndependentMod;
+  //Draw flags
+  bool editing = false;
+  
 };
 
 /**
@@ -479,6 +483,8 @@ private:
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
   int mMax, mMin;
+  //Draw flags
+  bool changed, editing = false;
 };
 
 struct grainParameters {
