@@ -18,7 +18,6 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
-
   dimensions(1920, 1080);
 
   execDir = f.directory(util::getExecutablePath());
@@ -106,11 +105,9 @@ void ecInterface::onCreate() {
 
 #ifdef __linux__
   ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    ("/usr/local/share/Fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
+    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
 #endif
 
-  // Scale font
-  // ImGui::GetIO().FontGlobalScale = 1.2;
   setGUIColors();
 }
 
@@ -127,11 +124,14 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Compare window size to fb size to account for HIDPI Display issues
   // ImGui::SetWindowFontScale(getCurrentWindowPixelDensity());
+  // std::cout << width() / 1000.0f << std::endl;
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
 
   al::imguiBeginFrame();
+
+  // if (width() < 1000) ImGui::GetIO().FontGlobalScale = width() / 1000.0f;
 
   if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
     ImGui::OpenPopup("Load soundfiles please :,)");
@@ -634,7 +634,7 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
       config[consts::SOUND_OUTPUT_PATH_KEY] =
-          f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     if (config.find(consts::SAMPLE_RATE_KEY) == config.end())
       config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
@@ -644,7 +644,7 @@ bool ecInterface::initJsonConfig() {
 
   } else {
     config[consts::SOUND_OUTPUT_PATH_KEY] =
-        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+      f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
@@ -776,7 +776,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Text, 0xff0000ff);
   }
-  float presetWindowWidth = ImGui::GetContentRegionAvail().x;
+  float presetWidth = (ImGui::GetContentRegionAvail().x / 12.0f) - 8.0f;
   for (int row = 0; row < presetRows; row++) {
     for (int column = 0; column < presetColumns; column++) {
       std::string name = std::to_string(counter);
@@ -786,8 +786,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
       if (is_selected) {
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
-      if (ImGui::Selectable(name.c_str(), is_selected, 0,
-                            ImVec2((presetWindowWidth / 12.0f) - 10.0f, fontSize * 1.2f))) {
+      if (ImGui::Selectable(name.c_str(), is_selected, 0, ImVec2(presetWidth, fontSize * 1.2f))) {
         if (state.storeButtonState) {
           std::string saveName = state.enteredText;
           if (saveName.size() == 0) {
@@ -858,7 +857,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     ImGui::Text("Click on a preset number to store.");
   } else {
     std::vector<std::string> mapList = presetHandler->availablePresetMaps();
-    ImGui::PushItemWidth(presetWindowWidth - 150.0f);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 150.0f);
     if (ImGui::BeginCombo("Preset Map", state.currentBank.data())) {
       stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();
       for (auto mapName : stateMap[presetHandler].mapList) {
