@@ -281,7 +281,6 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
-
   ImGui::PushItemWidth(50);
   valueLow = mLowRange->get();
   changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1, mLowRange->min(),
@@ -296,11 +295,14 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 80);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 80);
   else if (slideType == consts::MOD)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 58);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 58);
   else if (slideType == consts::PARAM)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() - 190);
+    if (ImGui::GetContentRegionAvail().x - 190 > 80)
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 190);
+    else
+      ImGui::PushItemWidth(80);
   valueSlider = mParameter->get();
   changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider, mParameter->min(),
                                mParameter->max(), "%0.3f");
