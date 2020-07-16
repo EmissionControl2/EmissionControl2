@@ -550,12 +550,11 @@ private:
   gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
   grainEnvelope gEnv;
   bool bypassFilter = true;
-  float currentSample, cascadeFilter = 0, freqMakeup;
+  float currentSample, cascadeFilter = 0;
   int *mPActiveVoices;
   float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
 
-  
   // Store value in mAmp;
   // Note that this is dependent on the active number of voices.
   void configureAmp(float dbIn);
@@ -566,13 +565,13 @@ private:
   void configureFilter(float freq, float resonance);
 
   float filterSample(float sample, bool isBypass, float cascadeMix,
-                     float freqMakeupCoeff, bool isRight);
+                     bool isRight);
 
-  float nextBP_stereo(float sample1, float sample2);
+  void initEffects(float sr);
 
   // Temporary variables
   float before, after, dec;
-  int prevSampleRate;
+  int prevSamplingRate = -1;
 };
 
 /**
