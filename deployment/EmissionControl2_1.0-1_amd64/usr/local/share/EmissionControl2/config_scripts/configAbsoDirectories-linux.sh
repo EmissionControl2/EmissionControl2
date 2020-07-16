@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/base
 
 if [ ! -d "$HOME/.config/EmissionControl2/presets" ]; then
   mkdir -p "$HOME/.config/EmissionControl2/presets"
