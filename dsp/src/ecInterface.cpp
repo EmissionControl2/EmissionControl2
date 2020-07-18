@@ -26,10 +26,21 @@ void ecInterface::onInit() {
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);
   system(f.conformPathToOS((execDir + consts::CONFIG_DIR_SCRIPT_PATH)).c_str());
+  configFile = consts::DEFAULT_CONFIG_FILE;
 #endif
 
 #ifdef __linux__
-  system(("\"" + consts::CONFIG_DIR_SCRIPT_PATH + "\"").c_str());
+  std::string configPath = "/.config/EmissionControl2";
+  // use xdg directories if available
+  if (getenv("$XDG_CONFIG_HOME") != NULL) {
+    configPath = getenv("$XDG_CONFIG_HOME") + std::string("/EmissionControl2");
+  }
+  configFile = configPath + "/config/config.json";
+  presetsPath = configPath + "/presets";
+
+  // create config directories if needed
+  system(("mkdir -p " + userPath + configPath + "/config").c_str());
+  system(("mkdir -p " + userPath + presetsPath).c_str());
 #endif
 
   initFileIOPaths();
@@ -47,11 +58,12 @@ void ecInterface::onInit() {
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
   mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+  configFile = consts::DEFAULT_CONFIG_FILE;
 #endif
 
 #ifdef __linux__
-  granulator.loadInitSoundFiles((userPath + consts::DEFAULT_SAMPLE_PATH));
-  mPresets.setRootPath(userPath + consts::DEFAULT_PRESETS_PATH);
+  granulator.loadInitSoundFiles(consts::DEFAULT_SAMPLE_PATH);
+  mPresets.setRootPath(userPath + presetsPath);
 #endif
   audioIO().append(mRecorder);
 }
@@ -130,8 +142,10 @@ void ecInterface::onDraw(Graphics &g) {
 
   al::imguiBeginFrame();
 
-  if (width() < 1000) ImGui::GetIO().FontGlobalScale = width() / 1000.0f;
-  else ImGui::GetIO().FontGlobalScale = 1.0;
+  if (width() < 1000)
+    ImGui::GetIO().FontGlobalScale = width() / 1000.0f;
+  else
+    ImGui::GetIO().FontGlobalScale = 1.0;
 
   if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
     ImGui::OpenPopup("Load soundfiles please :,)");
@@ -302,6 +316,15 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth * 3 / 16, windowHeight / 4, flags);
 
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
+  if (ImGui::Button("Change Output Path")) {
+    result = NFD_PickFolder(NULL, &outPath);
+
+    if (result == NFD_OKAY) {
+      std::string temp = outPath;
+      jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
+      jsonReadAndSetSoundOutputPath();
+    }
+  }
   ParameterGUI::endPanel();
 
   // Draw preset window
@@ -549,6 +572,7 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
   }
   ImGui::SameLine();
   ImGui::Checkbox("Overwrite", &state.overwriteButton);
+  ImGui::Text("Writing to:\n %s", directory.c_str());
   ImGui::PopID();
 }
 
@@ -627,7 +651,7 @@ int ecInterface::getSampleRateIndex() {
 
 bool ecInterface::initJsonConfig() {
   json config;
-  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + configFile);
 
   if (ifs.is_open()) {
     config = json::parse(ifs);
@@ -651,7 +675,7 @@ bool ecInterface::initJsonConfig() {
     config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
   }
 
-  std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
+  std::ofstream file((userPath + configFile).c_str());
   if (file.is_open()) file << config;
 
   return false;
@@ -666,13 +690,13 @@ template <typename T>
 bool ecInterface::jsonWriteToConfig(T value, std::string key) {
   json config;
 
-  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + configFile);
 
   if (ifs.is_open()) config = json::parse(ifs);
 
   config[key] = value;
 
-  std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
+  std::ofstream file((userPath + configFile).c_str());
 
   if (file.is_open()) {
     file << config;
@@ -685,7 +709,7 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
 void ecInterface::jsonReadAndSetColorSchemeMode() {
   json config;
 
-  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + configFile);
 
   if (ifs.is_open())
     config = json::parse(ifs);
@@ -715,7 +739,7 @@ void ecInterface::jsonReadAndSetColorSchemeMode() {
 void ecInterface::jsonReadAndSetSoundOutputPath() {
   json config;
 
-  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + configFile);
 
   if (ifs.is_open())
     config = json::parse(ifs);
@@ -728,7 +752,7 @@ void ecInterface::jsonReadAndSetSoundOutputPath() {
 void ecInterface::jsonReadAndSetAudioSettings() {
   json config;
 
-  std::ifstream ifs(userPath + consts::DEFAULT_CONFIG_FILE);
+  std::ifstream ifs(userPath + configFile);
 
   if (ifs.is_open())
     config = json::parse(ifs);

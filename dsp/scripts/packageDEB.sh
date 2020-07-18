@@ -38,11 +38,9 @@ cd "$Dir"
 
 cp -r "bin/Resources/samples" "$BUILDDIR/usr/local/share/EmissionControl2/"
 
-cp -r "bin/Resources/config_scripts" "$BUILDDIR/usr/local/share/EmissionControl2/"
-
 cp "bin/EmissionControl2" "$BUILDDIR/usr/local/bin"
 
-cp "../externalResources/EmissionControl2.png" "$BUILDDIR/usr/share/pixmaps"
+cp "../externalResources/Icon/EmissionControl2.png" "$BUILDDIR/usr/share/pixmaps"
 
 cp "bin/Resources/Fonts/Roboto-Medium.ttf" "$BUILDDIR/usr/local/share/fonts/EmissionControl2"
 
