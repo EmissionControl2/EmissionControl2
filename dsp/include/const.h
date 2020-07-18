@@ -39,14 +39,8 @@ const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 
 #ifdef __linux__
-const std::string CONFIG_DIR_SCRIPT_PATH =
-  "/usr/local/share/EmissionControl2/config_scripts/configAbsoDirectories-linux.sh";
-const std::string DEFAULT_SAMPLE_PATH = "/Music/EmissionControl2/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH = "/Music/EmissionControl2/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = "/.config/EmissionControl2/presets/";
-const std::string DEFAULT_CONFIG_PATH = "/.config/EmissionControl2/configs/";
-const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
-const std::string DEFAULT_RESOURCE_PATH = "/opt/EmissionControl2/Resources/";
+const std::string DEFAULT_SAMPLE_PATH = "/usr/local/share/EmissionControl2/samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
 #ifdef _WIN32_
