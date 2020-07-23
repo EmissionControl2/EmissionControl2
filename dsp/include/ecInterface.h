@@ -62,6 +62,7 @@ class ecInterface : public al::App {
   ecSynth granulator;
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
+  Clipper mHardClip;
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
   ;
