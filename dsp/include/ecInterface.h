@@ -63,6 +63,7 @@ private:
   ecSynth granulator;
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
+  Clipper mHardClip;
 
   std::string soundOutput, execDir, execPath, userPath;
   al::File f;

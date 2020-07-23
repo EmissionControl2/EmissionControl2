@@ -269,9 +269,7 @@ void ecSynth::onProcess(AudioIOData &io) {
     // Add samples to VU ringbuffer (squared for RMS calculations)
     vuBufferL.push_back(pow(io.out(0), 2));
     vuBufferR.push_back(pow(io.out(1), 2));
-
-    hardClip(io);
-    // softClip(io);
+   
   }
 }
 
