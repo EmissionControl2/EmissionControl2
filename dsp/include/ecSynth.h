@@ -53,9 +53,13 @@ public:
   // array of lfo parameters to draw later
   std::vector<LFOstruct *> LFOparameters;
 
+  /**Where parameters will be accessed**/
+  std::array<ecParameter*, NUM_PARAMS> Parameters;
+  
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
+
   ecParameter grainRate{"Grainrate", "1. Grain rate", "", 1, "", 0.1, 100, 0, 500, 0};
   al::ParameterMenu grainRateLFO{"##grainRateLFO"};
   ecParameter modGrainRateWidth{
@@ -137,8 +141,6 @@ public:
       "modVolumeWidth", "modVolumeWidth", "", 0, "", 0, 1, 0, 1};
 
   ecSynth() {};
-
-  void mapParameters();
 
   /**
    * @brief Initilialize the synth.
@@ -270,8 +272,14 @@ private:
   float mPeakCPU;
   float mAvgCPU;
   int *mPActiveVoices = nullptr;
-  std::array<ecParameter*, NUM_PARAMS> Parameters;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
+
+  /**** Private Functions ****/
+
+  /**
+   * @brief Maps parameters to Parameters array
+   */
+  void mapParameters();
 };
 
 #endif
