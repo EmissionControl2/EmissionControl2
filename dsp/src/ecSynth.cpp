@@ -21,6 +21,12 @@ void ecSynth::setIO(al::AudioIOData *io) {
   mGlobalSamplingRate = io->fps();
 }
 
+void ecSynth::mapParameters() {
+  Parameters[GRAIN_RATE] = &grainRate;
+  Parameters[GRAIN_RATE_DEPTH] = &modGrainRateWidth;
+
+}
+
 void ecSynth::init(al::AudioIOData *io) {
   int index;
 
@@ -185,35 +191,35 @@ void ecSynth::onProcess(AudioIOData &io) {
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
     // NOTE grainRate noise isnt very perceptible
-    if (modGrainRateDepth.getParam() > 0) // modulate the grain rate
+    if (modGrainRateWidth.getParam() > 0) // modulate the grain rate
       grainScheduler.setFrequency(
-          grainRate.getModParam(modGrainRateDepth.getParam()));
+          grainRate.getModParam(modGrainRateWidth.getParam()));
     else
       grainScheduler.setFrequency(grainRate.getParam());
 
-    if (modAsynchronicityDepth.getParam() > 0) // modulate the asynchronicity
+    if (modAsynchronicityWidth.getParam() > 0) // modulate the asynchronicity
       grainScheduler.setAsynchronicity(
-          asynchronicity.getModParam(modAsynchronicityDepth.getParam()));
+          asynchronicity.getModParam(modAsynchronicityWidth.getParam()));
     else
       grainScheduler.setAsynchronicity(asynchronicity.getParam());
 
-    if (modIntermittencyDepth.getParam() > 0) // modulate the intermittency
+    if (modIntermittencyWidth.getParam() > 0) // modulate the intermittency
       grainScheduler.setIntermittence(
-          intermittency.getModParam(modIntermittencyDepth.getParam()));
+          intermittency.getModParam(modIntermittencyWidth.getParam()));
     else
       grainScheduler.setIntermittence(intermittency.getParam());
 
-    if (modStreamsDepth.getParam() >
+    if (modStreamsWidth.getParam() >
         0) // Modulate the amount of streams playing.
       grainScheduler.setPolyStream(
-          consts::synchronous, streams.getModParam(modStreamsDepth.getParam()));
+          consts::synchronous, streams.getModParam(modStreamsWidth.getParam()));
     else
       grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
 
     // CONTROL RATE LOOP (Executes every 4th sample)
     if (controlRateCounter == 4) {
       controlRateCounter = 0;
-      mModClip = soundFile.getModParam(modSoundFileDepth.getParam()) - 1;
+      mModClip = soundFile.getModParam(modSoundFileWidth.getParam()) - 1;
     }
     controlRateCounter++;
     /////
@@ -223,21 +229,21 @@ void ecSynth::onProcess(AudioIOData &io) {
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
         grainParameters list = {grainDurationMs,
-                                modGrainDurationDepth.getParam(),
+                                modGrainDurationWidth.getParam(),
                                 envelope,
-                                modEnvelopeDepth.getParam(),
+                                modEnvelopeWidth.getParam(),
                                 tapeHead,
-                                modTapeHeadDepth.getParam(),
+                                modTapeHeadWidth.getParam(),
                                 transposition,
-                                modTranspositionDepth.getParam(),
+                                modTranspositionWidth.getParam(),
                                 filter,
-                                modFilterDepth.getParam(),
+                                modFilterWidth.getParam(),
                                 resonance,
-                                modResonanceDepth.getParam(),
+                                modResonanceWidth.getParam(),
                                 volumeDB,
-                                modVolumeDepth.getParam(),
+                                modVolumeWidth.getParam(),
                                 pan,
-                                modPanDepth.getParam(),
+                                modPanWidth.getParam(),
                                 soundClip[mModClip],
                                 mPActiveVoices};
 
@@ -269,7 +275,6 @@ void ecSynth::onProcess(AudioIOData &io) {
     // Add samples to VU ringbuffer (squared for RMS calculations)
     vuBufferL.push_back(pow(io.out(0), 2));
     vuBufferR.push_back(pow(io.out(1), 2));
-   
   }
 }
 

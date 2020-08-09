@@ -12,6 +12,7 @@
 
 /**** AlloLib LIB ****/
 #include "al/app/al_App.hpp"
+#include "al/io/al_MIDI.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
@@ -19,8 +20,12 @@
 /**** External LIB ****/
 #include "../external/nativefiledialog/src/include/nfd.h"
 
-class ecInterface : public al::App {
- public:
+/**** C STD LIB ****/
+#include <array>
+
+
+class ecInterface : public al::App, public al::MIDIMessageHandler {
+public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -41,6 +46,11 @@ class ecInterface : public al::App {
    */
   virtual void onDraw(al::Graphics &g) override;
 
+  /**
+   * @brief Called everytime a MIDI message is sent.
+   */
+  virtual void onMIDIMessage(const al::MIDIMessage &m) override;
+
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
     std::string currentBank;
@@ -53,10 +63,11 @@ class ecInterface : public al::App {
     bool storeButtonState{false};
   };
   // Custom preset draw function (copied and modified from al_ParameterGUI.hpp)
-  static PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
-                                                 int presetColumns, int presetRows);
+  static PresetHandlerState &
+  ECdrawPresetHandler(al::PresetHandler *presetHandler, int presetColumns,
+                      int presetRows);
 
- private:
+private:
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
@@ -64,8 +75,11 @@ class ecInterface : public al::App {
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
 
+  RtMidiIn midiIn;
+  std::array<unsigned char,consts::NUM_PARAMS> midiMap;
+
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
-  ;
+
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
@@ -75,16 +89,19 @@ class ecInterface : public al::App {
 
   double globalSamplingRate = consts::SAMPLE_RATE;
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
-                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
+                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                           ImGuiWindowFlags_NoSavedSettings;
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   float oscFrame = 1;
   double lastSamplingRate = globalSamplingRate;
 
-  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
-  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataL =
+      std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataR =
+      std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
   int VUdataSize = globalSamplingRate / 30;
@@ -96,22 +113,22 @@ class ecInterface : public al::App {
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(98, 113, 118);    // Background
-  ImColor SecondaryLight = ImColor(139, 127, 58);  // Oscilloscope L
-  ImColor TertiaryLight = ImColor(123, 52, 76);    // Oscilloscope R
-  ImColor Shade1Light = ImColor(133, 144, 148);    // Slider Color 1
-  ImColor Shade2Light = ImColor(167, 175, 178);    // Slider Color 2
-  ImColor Shade3Light = ImColor(202, 207, 208);    // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);            // Text Color
+  ImColor PrimaryLight = ImColor(98, 113, 118);   // Background
+  ImColor SecondaryLight = ImColor(139, 127, 58); // Oscilloscope L
+  ImColor TertiaryLight = ImColor(123, 52, 76);   // Oscilloscope R
+  ImColor Shade1Light = ImColor(133, 144, 148);   // Slider Color 1
+  ImColor Shade2Light = ImColor(167, 175, 178);   // Slider Color 2
+  ImColor Shade3Light = ImColor(202, 207, 208);   // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);       // Background
-  ImColor SecondaryDark = ImColor(208, 193, 113);  // Oscilloscope L
-  ImColor TertiaryDark = ImColor(184, 100, 128);   // Oscilloscope R
-  ImColor Shade1Dark = ImColor(55, 63, 66);        // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);        // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);      // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);       // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);      // Background
+  ImColor SecondaryDark = ImColor(208, 193, 113); // Oscilloscope L
+  ImColor TertiaryDark = ImColor(184, 100, 128);  // Oscilloscope R
+  ImColor Shade1Dark = ImColor(55, 63, 66);       // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);       // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);     // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);      // Text Color
 
   ImColor *PrimaryColor;
   ImColor *SecondaryColor;
@@ -134,6 +151,8 @@ class ecInterface : public al::App {
   // ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color
   // 3
   // ImColor TextLight = ImColor(0.929f, 0.933f, 0.929f);       // Text Color
+
+  void initMIDI();
 
   void drawAudioIO(al::AudioIO *io);
 
@@ -158,8 +177,7 @@ class ecInterface : public al::App {
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T>
-  bool jsonWriteToConfig(T value, std::string key);
+  template <typename T> bool jsonWriteToConfig(T value, std::string key);
 
   /**
    * @brief Read json config file and write output path to soundOutput member
@@ -185,7 +203,8 @@ class ecInterface : public al::App {
  *
  * @param[in] Amount of space allocated for sound.
  */
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory = "", uint32_t bufferSize = 0);
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                               uint32_t numChannels, std::string directory = "",
+                               uint32_t bufferSize = 0);
 
 #endif
