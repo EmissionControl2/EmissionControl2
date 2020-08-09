@@ -23,8 +23,27 @@ void ecSynth::setIO(al::AudioIOData *io) {
 
 void ecSynth::mapParameters() {
   Parameters[GRAIN_RATE] = &grainRate;
-  Parameters[GRAIN_RATE_DEPTH] = &modGrainRateWidth;
-
+  Parameters[GRAIN_RATE_WIDTH] = &modGrainRateWidth;
+  Parameters[ASYNC] = &asynchronicity;
+  Parameters[ASYNC_WIDTH] = &modAsynchronicityWidth;
+  Parameters[INTERM] = &intermittency;
+  Parameters[INTERM_WIDTH] = &modIntermittencyWidth;
+  Parameters[GRAIN_DUR] = &grainDurationMs;
+  Parameters[GRAIN_DUR_WIDTH] = &modGrainDurationWidth;
+  Parameters[ENVELOPE] = &envelope;
+  Parameters[ENVELOPE_WIDTH] = &modEnvelopeWidth;
+  Parameters[TRANSPOSE] = &transposition;
+  Parameters[TRANSPOSE_WIDTH] = &modTranspositionWidth;
+  Parameters[FILTER] = &filter;
+  Parameters[FILTER_WIDTH] = &modFilterWidth;
+  Parameters[RESONANCE] = &resonance;
+  Parameters[RESONANCE_WIDTH] = &modResonanceWidth;
+  Parameters[TAPE_HEAD] = &tapeHead;
+  Parameters[TAPE_HEAD_WIDTH] = &modTapeHeadWidth;
+  Parameters[PAN] = &pan;
+  Parameters[PAN_WIDTH] = &modPanWidth;
+  Parameters[VOLUME] = &volumeDB;
+  Parameters[VOLUME_WIDTH] = &modVolumeWidth;
 }
 
 void ecSynth::init(al::AudioIOData *io) {
@@ -37,6 +56,8 @@ void ecSynth::init(al::AudioIOData *io) {
   for (index = 0; index < NUM_MODULATORS; index++) {
     LFOparameters.push_back(new LFOstruct{index});
   }
+
+  mapParameters();
 
   mGlobalSamplingRate = io->fps();
   mPrevSR = io->fps();
