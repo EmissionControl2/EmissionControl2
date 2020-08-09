@@ -277,7 +277,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mLowRange);
   presetHandler.registerParameter(*mHighRange);
 }
-void ecParameter::drawRangeSlider(consts::sliderType slideType) {
+void ecParameter::drawRangeSlider(float scaleX, consts::sliderType slideType) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
@@ -295,12 +295,12 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 85);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (85 * scaleX));
   else if (slideType == consts::MOD)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 58);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (58 * scaleX));
   else if (slideType == consts::PARAM)
     if (ImGui::GetContentRegionAvail().x - 190 > 80)
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 190);
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (190 * scaleX));
     else
       ImGui::PushItemWidth(80);
   valueSlider = mParameter->get();
@@ -338,15 +338,12 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
-  ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.1f);
   if (slideType == consts::LFO)
     ImGui::Text("Hz");
   else if (slideType == consts::MOD)
     ImGui::Text("");
   else if (slideType == consts::PARAM)
     ImGui::Text((getDisplayName()).c_str());
-
-  ImGui::PopItemWidth();
 }
 
 /******* ecParameterInt *******/
@@ -412,7 +409,7 @@ void ecParameterInt::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameterInt::drawRangeSlider(std::string sliderText) {
+void ecParameterInt::drawRangeSlider(float scaleX, std::string sliderText) {
   int valueSlider, valueLow, valueHigh;
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
@@ -430,9 +427,9 @@ void ecParameterInt::drawRangeSlider(std::string sliderText) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (ImGui::GetContentRegionAvail().x - 190 > 80)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 190);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (190 * scaleX));
   else
-    ImGui::PushItemWidth(80);
+    ImGui::PushItemWidth(80 * scaleX);
   valueSlider = mParameterInt->get();
   if (sliderText != "") {
     changed = ImGui::SliderInt((mParameterInt->displayName()).c_str(), &valueSlider,
