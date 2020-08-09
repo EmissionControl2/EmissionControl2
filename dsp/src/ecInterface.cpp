@@ -66,6 +66,7 @@ void ecInterface::onInit() {
   granulator.loadInitSoundFiles(consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(userPath + presetsPath);
 #endif
+  initMIDI();
   audioIO().append(mRecorder);
   audioIO().append(mHardClip);
 }
@@ -86,19 +87,19 @@ void ecInterface::onCreate() {
   granulator.pan.addToPresetHandler(mPresets);
   granulator.soundFile.addToPresetHandler(mPresets);
 
-  granulator.modGrainRateDepth.addToPresetHandler(mPresets);
-  granulator.modAsynchronicityDepth.addToPresetHandler(mPresets);
-  granulator.modIntermittencyDepth.addToPresetHandler(mPresets);
-  granulator.modStreamsDepth.addToPresetHandler(mPresets);
-  granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
-  granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
-  granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
-  granulator.modTranspositionDepth.addToPresetHandler(mPresets);
-  granulator.modFilterDepth.addToPresetHandler(mPresets);
-  granulator.modResonanceDepth.addToPresetHandler(mPresets);
-  granulator.modVolumeDepth.addToPresetHandler(mPresets);
-  granulator.modPanDepth.addToPresetHandler(mPresets);
-  granulator.modSoundFileDepth.addToPresetHandler(mPresets);
+  granulator.modGrainRateWidth.addToPresetHandler(mPresets);
+  granulator.modAsynchronicityWidth.addToPresetHandler(mPresets);
+  granulator.modIntermittencyWidth.addToPresetHandler(mPresets);
+  granulator.modStreamsWidth.addToPresetHandler(mPresets);
+  granulator.modGrainDurationWidth.addToPresetHandler(mPresets);
+  granulator.modEnvelopeWidth.addToPresetHandler(mPresets);
+  granulator.modTapeHeadWidth.addToPresetHandler(mPresets);
+  granulator.modTranspositionWidth.addToPresetHandler(mPresets);
+  granulator.modFilterWidth.addToPresetHandler(mPresets);
+  granulator.modResonanceWidth.addToPresetHandler(mPresets);
+  granulator.modVolumeWidth.addToPresetHandler(mPresets);
+  granulator.modPanWidth.addToPresetHandler(mPresets);
+  granulator.modSoundFileWidth.addToPresetHandler(mPresets);
 
   mPresets << granulator.grainRateLFO << granulator.asyncLFO
            << granulator.intermittencyLFO << granulator.streamsLFO
@@ -291,34 +292,34 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::beginPanel("Modulation", 0, windowHeight / 4 + 25,
                            windowWidth / 2, windowHeight / 2, flags);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
+  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
+  drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.intermittencyLFO,
-                        granulator.modIntermittencyDepth);
+                        granulator.modIntermittencyWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth);
+  drawModulationControl(granulator.streamsLFO, granulator.modStreamsWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.grainDurationLFO,
-                        granulator.modGrainDurationDepth);
+                        granulator.modGrainDurationWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth);
+  drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   drawModulationControl(granulator.transpositionLFO,
-                        granulator.modTranspositionDepth);
+                        granulator.modTranspositionWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.filterLFO, granulator.modFilterDepth);
+  drawModulationControl(granulator.filterLFO, granulator.modFilterWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth);
+  drawModulationControl(granulator.resonanceLFO, granulator.modResonanceWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth);
+  drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth);
+  drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
+  drawModulationControl(granulator.panLFO, granulator.modPanWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
+  drawModulationControl(granulator.volumeLFO, granulator.modVolumeWidth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
@@ -327,11 +328,8 @@ void ecInterface::onDraw(Graphics &g) {
                            windowHeight * 3 / 4 + 25, windowWidth * 3 / 16,
                            windowHeight / 4, flags);
 
-<<<<<<< HEAD
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
                      audioIO().channelsOut(), soundOutput);
-=======
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
 
@@ -341,7 +339,6 @@ void ecInterface::onDraw(Graphics &g) {
       jsonReadAndSetSoundOutputPath();
     }
   }
->>>>>>> 466f632251c602b2dee7261438ba529420f89e3d
   ParameterGUI::endPanel();
 
   // Draw preset window
@@ -477,6 +474,59 @@ void ecInterface::onDraw(Graphics &g) {
   al::imguiEndFrame();
 
   al::imguiDraw();
+}
+
+void ecInterface::initMIDI() {
+  // Check for connected MIDI devices
+  if (midiIn.getPortCount() > 0) {
+    // Bind ourself to the RtMidiIn object, to have the onMidiMessage()
+    // callback called whenever a MIDI message is received
+    MIDIMessageHandler::bindTo(midiIn);
+
+    // Open the last device found
+    unsigned int port = midiIn.getPortCount() - 1;
+    midiIn.openPort(port);
+    printf("Opened port to %s\n", midiIn.getPortName(port).c_str());
+  } else {
+    printf("Error: No MIDI devices found.\n");
+  }
+}
+
+void ecInterface::onMIDIMessage(const MIDIMessage &m) {
+  // std::cout << static_cast<unsigned>(m.type()) << std::endl;
+  switch (m.type()) {
+  case MIDIByte::NOTE_ON:
+    printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+    break;
+
+  case MIDIByte::NOTE_OFF:
+    printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+    break;
+
+  case MIDIByte::PITCH_BEND:
+    printf("Value %f\n", m.pitchBend());
+    break;
+
+  // Control messages need to be parsed again...
+  case MIDIByte::CONTROL_CHANGE:
+    m.print();
+    std::cout << static_cast<unsigned>(m.channel()) << std::endl;
+    std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
+    std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
+
+    // printf("%s\n", MIDIByte::controlNumberString(m.controlNumber()));
+    // switch (m.controlNumber()) {
+    // case MIDIByte::MODULATION:
+    //   printf("Control Num: %i -- Value: %f\n", static_cast<unsigned>(m.controlNumber()),m.controlValue(1));
+    //   break;
+
+    // case MIDIByte::EXPRESSION:
+    //   printf("Control Num: %i -- Value: %f\n", static_cast<unsigned>(m.controlNumber()),m.controlValue(1));
+    //   break;
+    // }
+    break;
+  default:;
+  }
 }
 
 void ecInterface::drawAudioIO(AudioIO *io) {
@@ -713,14 +763,9 @@ bool ecInterface::initJsonConfig() {
     config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
   }
 
-<<<<<<< HEAD
-  std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
+  std::ofstream file((userPath + configFile).c_str());
   if (file.is_open())
     file << config;
-=======
-  std::ofstream file((userPath + configFile).c_str());
-  if (file.is_open()) file << config;
->>>>>>> 466f632251c602b2dee7261438ba529420f89e3d
 
   return false;
 }
