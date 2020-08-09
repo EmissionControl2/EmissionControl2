@@ -75,7 +75,6 @@ class ecInterface : public al::App {
   ImFont *titleFont;
   float fontScale = 1.0;
   float adjustScaleY = 1.0;
-  float adjustScaleX = 1.0;
   double globalSamplingRate = consts::SAMPLE_RATE;
 
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
