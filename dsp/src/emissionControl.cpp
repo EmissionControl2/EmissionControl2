@@ -295,7 +295,7 @@ void ecParameter::drawRangeSlider(consts::sliderType slideType) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 80);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 85);
   else if (slideType == consts::MOD)
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 58);
   else if (slideType == consts::PARAM)

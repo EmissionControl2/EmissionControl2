@@ -65,14 +65,17 @@ class ecInterface : public al::App {
   Clipper mHardClip;
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
-  ;
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
   nfdresult_t result;
   std::string currentFile = "No file selected";
   std::string previousFile = "No file selected";
-
+  ImFont *bodyFont;
+  ImFont *titleFont;
+  float fontScale = 1.0;
+  float adjustScaleY = 1.0;
+  float adjustScaleX = 1.0;
   double globalSamplingRate = consts::SAMPLE_RATE;
 
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
