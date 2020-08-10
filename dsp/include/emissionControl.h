@@ -559,6 +559,7 @@ private:
   int *mPActiveVoices;
   float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
+  int iSourceIndex;
 
   // Store value in mAmp;
   // Note that this is dependent on the active number of voices.
