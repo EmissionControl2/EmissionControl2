@@ -178,10 +178,6 @@ bool util::load(std::string fileName,
   a->data = new float[a->size];
   a->channels = soundFile.channels();
   // a->channels = 1; //Use for loading in non-audio files
-  // std::cout << fileName << " " << soundFile.frames() << " "
-  //           << soundFile.channels() << std::endl;
-  soundFile.print();
-  std::cout << a->size << std::endl;
   soundFile.read(a->data, a->frames);
   if (resample) { // We care about resampling.
 

@@ -557,8 +557,7 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
     startSample = floor(source->frames *
                         (list.tapeHead.getModParam(list.modTapeHeadDepth)));
   else
-    startSample =
-        floor(source->frames * list.tapeHead.getParam());
+    startSample = floor(source->frames * list.tapeHead.getParam());
 
   if (list.modTranspositionDepth > 0)
     endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
@@ -595,21 +594,20 @@ void Grain::onProcess(al::AudioIOData &io) {
     sourceIndex = index();
     iSourceIndex = floor(sourceIndex);
 
-    if (floor(sourceIndex) >= source->frames- source->channels) {
-      sourceIndex = fmod(sourceIndex,(float)(source->frames - source->channels));
+    if (floor(sourceIndex) >= source->frames - source->channels) {
+      sourceIndex =
+          fmod(sourceIndex, (float)(source->frames - source->channels));
       iSourceIndex = iSourceIndex % (source->frames - source->channels);
     }
 
-
-
     counter++;
-    if(counter % 24000 == 0) {
+    if (counter % 24000 == 0) {
       // std::cout << "------------" << std::endl;
       // if (iSourceIndex > source->size) {
-        // std::cout << sourceIndex << std::endl;
-        // std::cout << iSourceIndex << std::endl;
-        // std::cout << source->size << std::endl;
-        // std::cout << iSourceIndex * 2 << std::endl;
+      // std::cout << sourceIndex << std::endl;
+      // std::cout << iSourceIndex << std::endl;
+      // std::cout << source->size << std::endl;
+      // std::cout << iSourceIndex * 2 << std::endl;
       // }
     }
 
