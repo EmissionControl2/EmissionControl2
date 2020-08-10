@@ -204,7 +204,7 @@ public:
   T &operator[](unsigned index) { return data[index]; }
   T operator[](const T index) const { return get(index); }
 
-  T get (unsigned index) const {return data[index];}
+  T get(unsigned index) const { return data[index]; }
 
   /**
    * @brief Resize buffer.
