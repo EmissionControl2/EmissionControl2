@@ -327,10 +327,6 @@ void ecInterface::onDraw(Graphics &g) {
                            windowHeight * 3 / 4 + 25, windowWidth * 3 / 16,
                            windowHeight / 4, flags);
 
-<<<<<<< HEAD
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
-                     audioIO().channelsOut(), soundOutput);
-=======
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
@@ -341,7 +337,6 @@ void ecInterface::onDraw(Graphics &g) {
       jsonReadAndSetSoundOutputPath();
     }
   }
->>>>>>> 466f632251c602b2dee7261438ba529420f89e3d
   ParameterGUI::endPanel();
 
   // Draw preset window
@@ -713,14 +708,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
   }
 
-<<<<<<< HEAD
-  std::ofstream file((userPath + consts::DEFAULT_CONFIG_FILE).c_str());
-  if (file.is_open())
-    file << config;
-=======
   std::ofstream file((userPath + configFile).c_str());
   if (file.is_open()) file << config;
->>>>>>> 466f632251c602b2dee7261438ba529420f89e3d
 
   return false;
 }
