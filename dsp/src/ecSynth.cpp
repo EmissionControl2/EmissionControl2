@@ -68,6 +68,10 @@ void ecSynth::init(al::AudioIOData *io) {
   tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
       [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
+  scanSpeedLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
+  scanSpeed.setModulationSource(Modulators[0]);
+  scanSpeedLFO.registerChangeCallback(
+      [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
   transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
@@ -228,6 +232,8 @@ void ecSynth::onProcess(AudioIOData &io) {
                                 modEnvelopeDepth.getParam(),
                                 tapeHead,
                                 modTapeHeadDepth.getParam(),
+                                scanSpeed,
+                                modScanSpeedDepth.getParam(),
                                 transposition,
                                 modTranspositionDepth.getParam(),
                                 filter,
@@ -239,7 +245,8 @@ void ecSynth::onProcess(AudioIOData &io) {
                                 pan,
                                 modPanDepth.getParam(),
                                 soundClip[mModClip],
-                                mPActiveVoices};
+                                mPActiveVoices,
+                                &mLastScanPos};
 
         voice->configureGrain(list, mGlobalSamplingRate);
 
@@ -269,7 +276,6 @@ void ecSynth::onProcess(AudioIOData &io) {
     // Add samples to VU ringbuffer (squared for RMS calculations)
     vuBufferL.push_back(pow(io.out(0), 2));
     vuBufferR.push_back(pow(io.out(1), 2));
-   
   }
 }
 

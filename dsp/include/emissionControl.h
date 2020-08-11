@@ -493,6 +493,8 @@ struct grainParameters {
   float modEnvelopeDepth;
   ecParameter &tapeHead;
   float modTapeHeadDepth;
+  ecParameter &scanSpeed;
+  float modScanSpeedDepth;
   ecParameter &transposition;
   float modTranspositionDepth;
   ecParameter &filter;
@@ -505,6 +507,7 @@ struct grainParameters {
   float modPanDepth;
   std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
+  float *lastScanEndPos;
 };
 
 /**
@@ -557,6 +560,7 @@ private:
   bool bypassFilter = true;
   float currentSample, cascadeFilter = 0;
   int *mPActiveVoices;
+  float *mLastEndScanPos;
   float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
   int iSourceIndex;
