@@ -564,9 +564,10 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   } else {
     diff = (*mLastEndScanPos) - list.tapeHead.getParam();
     // std::cout << source->frames * diff * 0.5 << std::endl;
-    startSample = (int)(floor(source->frames * list.tapeHead.getParam() +
+    startSample = (int)(floor((source->frames * list.tapeHead.getParam()) +
                          (source->frames * diff * list.scanSpeed.getParam()))) % source->frames;
   }
+  *mLastEndScanPos = startSample / source->frames;
 
   if (list.modTranspositionDepth > 0)
     endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
@@ -646,7 +647,7 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     if (gEnv.done()) {
       // std::cout << sourceIndex / source->frames << std::endl;
-      *mLastEndScanPos = sourceIndex / source->frames;
+      // *mLastEndScanPos = sourceIndex / source->frames;
       *mPActiveVoices -= 1; // This will remove a grain from the active list.
       free();
       break;
