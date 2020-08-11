@@ -391,12 +391,14 @@ void ecInterface::onDraw(Graphics &g) {
   if (framecounter % 10 == 0) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(granulator.getActiveVoices());
+    highestStreamCount = *max_element(streamHistory.begin(), streamHistory.end());
+    if (highestStreamCount < 2) highestStreamCount = 2;
   }
-  int highestCount = *max_element(streamHistory.begin(), streamHistory.end());
+
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PlotHistogram(
-    "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0, highestCount,
+    "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0, highestStreamCount,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)), sizeof(int));
   ImGui::PopFont();
   ParameterGUI::endPanel();
