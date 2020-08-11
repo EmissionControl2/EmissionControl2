@@ -124,12 +124,17 @@ public:
   ecParameter modTapeHeadDepth{
       "modScanDepth", "modScanDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter pan{"Pan", "12. Pan", "", 0, "", -1, 1, -1, 1};
+  ecParameter scanSpeed{"ScanSpeed", "12. Scan Speed", "", 1, "", -2, 2, -4, 4};
+  al::ParameterMenu scanSpeedLFO{"##scanSpeedLFO"};
+  ecParameter modScanSpeedDepth{
+      "modScanSpeedDepth", "modScanSpeedDepth", "", 0, "", 0, 1, 0, 1};
+
+  ecParameter pan{"Pan", "13. Pan", "", 0, "", -1, 1, -1, 1};
   al::ParameterMenu panLFO{"##panLFO"};
   ecParameter modPanDepth{"modPanDepth", "modPanDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter volumeDB{
-      "AmplitudedB", "13. Amplitude (dB)", "", -6, "", -60, 6, -180, 48};
+      "AmplitudedB", "14. Amplitude (dB)", "", -6, "", -60, 6, -180, 48};
   al::ParameterMenu volumeLFO{"##volumeLFO"};
   ecParameter modVolumeDepth{
       "modVolumeDepth", "modVolumeDepth", "", 0, "", 0, 1, 0, 1};
@@ -266,6 +271,7 @@ private:
   float mPeakCPU;
   float mAvgCPU;
   int *mPActiveVoices = nullptr;
+  float mLastScanPos = 0;
 
   std::vector<std::shared_ptr<ecModulator>> Modulators;
 };

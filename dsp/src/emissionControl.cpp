@@ -527,6 +527,8 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   float startSample, endSample;
 
   mPActiveVoices = list.activeVoices;
+  mLastEndScanPos = list.lastScanEndPos;
+
   if (static_cast<int>(samplingRate) != prevSamplingRate) {
     prevSamplingRate = samplingRate;
     initEffects(samplingRate);
@@ -551,13 +553,20 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // Set where in the buffer to play.
   index.setSamplingRate(samplingRate);
-  if (list.modTapeHeadDepth > 0)
+  float diff;
+  if (list.modTapeHeadDepth > 0) {
     // NOTE: the tape head wraps around to the beginning of the buffer when
     // it exceeds its buffer size.
+    diff =
+        (*mLastEndScanPos) - list.tapeHead.getModParam(list.modTapeHeadDepth);
     startSample = floor(source->frames *
                         (list.tapeHead.getModParam(list.modTapeHeadDepth)));
-  else
-    startSample = floor(source->frames * list.tapeHead.getParam());
+  } else {
+    diff = (*mLastEndScanPos) - list.tapeHead.getParam();
+    // std::cout << source->frames * diff * 0.5 << std::endl;
+    startSample = (int)(floor(source->frames * list.tapeHead.getParam() +
+                         (source->frames * diff * list.scanSpeed.getParam()))) % source->frames;
+  }
 
   if (list.modTranspositionDepth > 0)
     endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
@@ -636,6 +645,8 @@ void Grain::onProcess(al::AudioIOData &io) {
     }
 
     if (gEnv.done()) {
+      // std::cout << sourceIndex / source->frames << std::endl;
+      *mLastEndScanPos = sourceIndex / source->frames;
       *mPActiveVoices -= 1; // This will remove a grain from the active list.
       free();
       break;
