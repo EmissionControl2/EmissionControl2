@@ -493,8 +493,6 @@ struct grainParameters {
   float modEnvelopeDepth;
   ecParameter &tapeHead;
   float modTapeHeadDepth;
-  ecParameter &scanSpeed;
-  float modScanSpeedDepth;
   ecParameter &transposition;
   float modTranspositionDepth;
   ecParameter &filter;
