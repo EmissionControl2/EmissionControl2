@@ -388,11 +388,13 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushFont(bodyFont);
   ImGui::Text("Current Active Grains: %.1i ", granulator.getActiveVoices());
 
-  if (framecounter % 10 == 0) {
+  if (grainAccum < granulator.getActiveVoices()) grainAccum = granulator.getActiveVoices();
+  if (framecounter % 2 == 0) {
     streamHistory.erase(streamHistory.begin());
-    streamHistory.push_back(granulator.getActiveVoices());
+    streamHistory.push_back(grainAccum);
     highestStreamCount = *max_element(streamHistory.begin(), streamHistory.end());
     if (highestStreamCount < 2) highestStreamCount = 2;
+    grainAccum = 0;
   }
 
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);

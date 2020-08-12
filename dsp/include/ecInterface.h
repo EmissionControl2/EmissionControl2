@@ -83,6 +83,7 @@ class ecInterface : public al::App {
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   int highestStreamCount = 2;
+  int grainAccum = 0;
   float oscFrame = 1;
   double lastSamplingRate = globalSamplingRate;
 
