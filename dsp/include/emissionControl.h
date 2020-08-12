@@ -507,7 +507,7 @@ struct grainParameters {
   float modPanDepth;
   std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
-  float *lastScanEndPos;
+  float mCurrentIndex;
 };
 
 /**
@@ -548,9 +548,9 @@ public:
    *
    * @param[in] Set duration of grain in milliseconds.
    */
-  void setDurationMs(float dur) { mDurationMs = dur; }
+  void setDurationS(float dur) { mDurationS = dur; }
 
-  float getDurationMs() const { return mDurationMs; }
+  float getDurationS() const { return mDurationS; }
 
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
@@ -561,9 +561,12 @@ private:
   float currentSample, cascadeFilter = 0;
   int *mPActiveVoices;
   float *mLastEndScanPos;
-  float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
+  float envVal, sourceIndex, tapeHead, mDurationS, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
   int iSourceIndex;
+  float mSamplingRate = consts::SAMPLE_RATE;
+
+  void configureIndex(const grainParameters &list);
 
   // Store value in mAmp;
   // Note that this is dependent on the active number of voices.

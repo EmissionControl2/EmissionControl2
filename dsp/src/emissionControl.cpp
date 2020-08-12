@@ -524,63 +524,32 @@ Grain::Grain() {}
 void Grain::init() { gEnv.reset(); }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
-  float startSample, endSample;
-
   mPActiveVoices = list.activeVoices;
-  mLastEndScanPos = list.lastScanEndPos;
 
   if (static_cast<int>(samplingRate) != prevSamplingRate) {
     prevSamplingRate = samplingRate;
-    initEffects(samplingRate);
+    mSamplingRate = samplingRate;
+    initEffects(mSamplingRate);
   }
 
   // Set Duration
   if (list.modGrainDurationDepth > 0)
-    setDurationMs(list.grainDurationMs.getModParam(list.modGrainDurationDepth));
+    setDurationS(list.grainDurationMs.getModParam(list.modGrainDurationDepth) /
+                 1000);
   else
-    setDurationMs(list.grainDurationMs.getParam());
+    setDurationS(list.grainDurationMs.getParam() / 1000);
 
   // Set Envelope
-  gEnv.setSamplingRate(samplingRate);
+  gEnv.setSamplingRate(mSamplingRate);
   if (list.modEnvelopeDepth > 0)
-    gEnv.set(mDurationMs / 1000,
-             list.envelope.getModParam(list.modEnvelopeDepth));
+    gEnv.set(mDurationS, list.envelope.getModParam(list.modEnvelopeDepth));
   else
-    gEnv.set(mDurationMs / 1000, list.envelope.getParam());
+    gEnv.set(mDurationS, list.envelope.getParam());
 
   // Set sample
   this->source = list.source;
 
-  // Set where in the buffer to play.
-  index.setSamplingRate(samplingRate);
-  float diff;
-  if (list.modTapeHeadDepth > 0) {
-    // NOTE: the tape head wraps around to the beginning of the buffer when
-    // it exceeds its buffer size.
-    diff =
-        (*mLastEndScanPos) - list.tapeHead.getModParam(list.modTapeHeadDepth);
-    startSample = floor(source->frames *
-                        (list.tapeHead.getModParam(list.modTapeHeadDepth)));
-  } else {
-    diff = (*mLastEndScanPos) - list.tapeHead.getParam();
-    // std::cout << source->frames * diff * 0.5 << std::endl;
-    startSample = (int)(floor((source->frames * list.tapeHead.getParam()) +
-                         (source->frames * diff * list.scanSpeed.getParam()))) % source->frames;
-  }
-  *mLastEndScanPos = startSample / source->frames;
-
-  if (list.modTranspositionDepth > 0)
-    endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
-                                     abs(list.transposition.getModParam(
-                                         list.modTranspositionDepth))));
-  else
-    endSample = floor(startSample + ((mDurationMs / 1000) * samplingRate *
-                                     abs(list.transposition.getParam())));
-
-  if (list.transposition.getParam() < 0)
-    index.set(endSample, startSample, mDurationMs / 1000);
-  else
-    index.set(startSample, endSample, mDurationMs / 1000);
+  configureIndex(list);
 
   if (list.modVolumeDepth > 0)
     configureAmp(list.volumeDB.getModParam(list.modVolumeDepth));
@@ -597,7 +566,6 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
                   list.resonance.getModParam(list.modResonanceDepth));
 }
 
-unsigned counter = 0;
 void Grain::onProcess(al::AudioIOData &io) {
   while (io()) {
     envVal = gEnv();
@@ -608,17 +576,6 @@ void Grain::onProcess(al::AudioIOData &io) {
       sourceIndex =
           fmod(sourceIndex, (float)(source->frames - source->channels));
       iSourceIndex = iSourceIndex % (source->frames - source->channels);
-    }
-
-    counter++;
-    if (counter % 24000 == 0) {
-      // std::cout << "------------" << std::endl;
-      // if (iSourceIndex > source->size) {
-      // std::cout << sourceIndex << std::endl;
-      // std::cout << iSourceIndex << std::endl;
-      // std::cout << source->size << std::endl;
-      // std::cout << iSourceIndex * 2 << std::endl;
-      // }
     }
 
     if (source->channels == 1) {
@@ -646,8 +603,6 @@ void Grain::onProcess(al::AudioIOData &io) {
     }
 
     if (gEnv.done()) {
-      // std::cout << sourceIndex / source->frames << std::endl;
-      // *mLastEndScanPos = sourceIndex / source->frames;
       *mPActiveVoices -= 1; // This will remove a grain from the active list.
       free();
       break;
@@ -656,6 +611,27 @@ void Grain::onProcess(al::AudioIOData &io) {
 }
 
 void Grain::onTriggerOn() {}
+
+void Grain::configureIndex(const grainParameters &list) {
+  float startSample, endSample;
+
+  // Set where in the buffer to play.
+  index.setSamplingRate(mSamplingRate);
+  startSample = list.mCurrentIndex;
+
+  if (list.modTranspositionDepth > 0)
+    endSample = floor(startSample + (mDurationS * mSamplingRate *
+                                     abs(list.transposition.getModParam(
+                                         list.modTranspositionDepth))));
+  else {
+    endSample = floor(startSample + (mDurationS * mSamplingRate *
+                                     abs(list.transposition.getParam())));
+  }
+  if (list.transposition.getParam() < 0)
+    index.set(endSample, startSample, mDurationS);
+  else
+    index.set(startSample, endSample, mDurationS);
+}
 
 void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
