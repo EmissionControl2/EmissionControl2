@@ -79,6 +79,8 @@ void ecInterface::onCreate() {
   granulator.grainDurationMs.addToPresetHandler(mPresets);
   granulator.envelope.addToPresetHandler(mPresets);
   granulator.tapeHead.addToPresetHandler(mPresets);
+  granulator.scanSpeed.addToPresetHandler(mPresets);
+  granulator.scanWidth.addToPresetHandler(mPresets);
   granulator.transposition.addToPresetHandler(mPresets);
   granulator.filter.addToPresetHandler(mPresets);
   granulator.resonance.addToPresetHandler(mPresets);
@@ -93,6 +95,7 @@ void ecInterface::onCreate() {
   granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
   granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
   granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
+  granulator.modScanWidthDepth.addToPresetHandler(mPresets);
   granulator.modTranspositionDepth.addToPresetHandler(mPresets);
   granulator.modFilterDepth.addToPresetHandler(mPresets);
   granulator.modResonanceDepth.addToPresetHandler(mPresets);
@@ -103,7 +106,8 @@ void ecInterface::onCreate() {
   mPresets << granulator.grainRateLFO << granulator.asyncLFO
            << granulator.intermittencyLFO << granulator.streamsLFO
            << granulator.grainDurationLFO << granulator.envelopeLFO
-           << granulator.tapeHeadLFO << granulator.transpositionLFO
+           << granulator.tapeHeadLFO << granulator.scanSpeedLFO
+           << granulator.scanWidthLFO << granulator.transpositionLFO
            << granulator.filterLFO << granulator.resonanceLFO
            << granulator.volumeLFO << granulator.panLFO
            << granulator.soundFileLFO;
@@ -281,10 +285,14 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.tapeHead.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.pan.drawRangeSlider();
+  granulator.scanWidth.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.volumeDB.drawRangeSlider();
+  granulator.scanSpeed.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  granulator.pan.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  granulator.volumeDB.drawRangeSlider();
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   ParameterGUI::endPanel();
 
   // Draw modulation window
@@ -316,10 +324,14 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
+  drawModulationControl(granulator.scanWidthLFO, granulator.modScanWidthDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
+  drawModulationControl(granulator.scanSpeedLFO, granulator.modScanSpeedDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   ParameterGUI::endPanel();
 
   // Draw recorder window
@@ -327,7 +339,8 @@ void ecInterface::onDraw(Graphics &g) {
                            windowHeight * 3 / 4 + 25, windowWidth * 3 / 16,
                            windowHeight / 4, flags);
 
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
+                     audioIO().channelsOut(), soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
 
@@ -709,7 +722,8 @@ bool ecInterface::initJsonConfig() {
   }
 
   std::ofstream file((userPath + configFile).c_str());
-  if (file.is_open()) file << config;
+  if (file.is_open())
+    file << config;
 
   return false;
 }
