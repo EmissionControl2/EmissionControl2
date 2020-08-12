@@ -270,19 +270,19 @@ void ecSynth::onProcess(AudioIOData &io) {
                            (mGlobalSamplingRate * abs(scan_speed)));
       }
 
-      if (prevTapeHeadVal != nowTapeHeadVal) {
-        std::cout << "here" << std::endl;
-        if (mScanner.getValue() < nowTapeHeadVal * frames) {
-          mScanner.set(mScanner.getValue(), nowTapeHeadVal * frames,
-                       abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
-                           (mGlobalSamplingRate * scan_speed) /
-                           (scan_speed * 8));
-        } else
-          mScanner.set(nowTapeHeadVal * frames, mScanner.getValue(),
-                       abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
-                           (mGlobalSamplingRate * scan_speed) /
-                           (scan_speed * 8));
-      }
+      // if (prevTapeHeadVal != nowTapeHeadVal) {
+      //   std::cout << "here" << std::endl;
+      //   if (mScanner.getValue() < nowTapeHeadVal * frames) {
+      //     mScanner.set(mScanner.getValue(), nowTapeHeadVal * frames,
+      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
+      //                      (mGlobalSamplingRate * scan_speed) /
+      //                      (scan_speed * 8));
+      //   } else
+      //     mScanner.set(nowTapeHeadVal * frames, mScanner.getValue(),
+      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
+      //                      (mGlobalSamplingRate * scan_speed) /
+      //                      (scan_speed * 8));
+      // }
 
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
