@@ -37,6 +37,8 @@ void ecSynth::init(al::AudioIOData *io) {
 
   mPActiveVoices = &mActiveVoices;
 
+  mScanner.setSamplingRate(mGlobalSamplingRate);
+
   // MUST USE THIS ORDER
   grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   grainRate.setModulationSource(Modulators[0]); // Default
@@ -151,6 +153,10 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[3]->duty->registerChangeCallback(
       [&](float value) { Modulators[3]->setWidth(value); });
 
+  // scanSpeed->mParameter->registerChangeCallback(
+  //     [&](float value) {
+
+  //       mScanner.setFrequency(value); });
   /**
    * WHY DOES THIS CRASH ??
    */
@@ -214,9 +220,11 @@ void ecSynth::onProcess(AudioIOData &io) {
     else
       grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
 
+    mCurrentIndex = mScanner();
     // CONTROL RATE LOOP (Executes every 4th sample)
     if (controlRateCounter == 4) {
       controlRateCounter = 0;
+      mPrevModClip = mModClip;
       mModClip = soundFile.getModParam(modSoundFileDepth.getParam()) - 1;
     }
     controlRateCounter++;
@@ -224,29 +232,83 @@ void ecSynth::onProcess(AudioIOData &io) {
 
     // Grain by Grain Initilization
     if (grainScheduler.trigger()) {
+      prevTapeHeadVal = nowTapeHeadVal;
+      nowTapeHeadVal = tapeHead.getModParam(modTapeHeadDepth.getParam());
+      prev_scan_speed = scan_speed;
+      scan_speed = scanSpeed.getModParam(modScanSpeedDepth.getParam());
+      float frames = soundClip[mModClip]->frames;
+      if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
+          prevTapeHeadVal != nowTapeHeadVal) {
+
+        if (scan_speed >= 0)
+          mScanner.set(nowTapeHeadVal * frames, frames,
+                       (frames - (nowTapeHeadVal * frames)) /
+                           (mGlobalSamplingRate * scan_speed));
+        else
+          mScanner.set(nowTapeHeadVal * frames, 0,
+                       ((nowTapeHeadVal * frames)) /
+                           (mGlobalSamplingRate * abs(scan_speed)));
+      }
+
+      // if (mCurrentIndex == mScanner.getTarget()) {
+      //   if (scan_speed >= 0)
+      //     mScanner.set(0, frames,
+      //                  (frames) / (mGlobalSamplingRate * scan_speed));
+      //   else
+      //     mScanner.set(frames, 0,
+      //                  ((frames)) / (mGlobalSamplingRate * abs(scan_speed)));
+      // }
+
+      if (scan_speed != prev_scan_speed) {
+        if (scan_speed >= 0)
+          mScanner.set(mScanner.getValue(), frames,
+                       (frames - (mScanner.getValue())) /
+                           (mGlobalSamplingRate * scan_speed));
+        else
+          mScanner.set(mScanner.getValue(), 0,
+                       ((mScanner.getValue())) /
+                           (mGlobalSamplingRate * abs(scan_speed)));
+      }
+
+      if (prevTapeHeadVal != nowTapeHeadVal) {
+        std::cout << "here" << std::endl;
+        if (mScanner.getValue() < nowTapeHeadVal * frames) {
+          mScanner.set(mScanner.getValue(), nowTapeHeadVal * frames,
+                       abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
+                           (mGlobalSamplingRate * scan_speed) /
+                           (scan_speed * 8));
+        } else
+          mScanner.set(nowTapeHeadVal * frames, mScanner.getValue(),
+                       abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
+                           (mGlobalSamplingRate * scan_speed) /
+                           (scan_speed * 8));
+      }
+
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
-        grainParameters list = {grainDurationMs,
-                                modGrainDurationDepth.getParam(),
-                                envelope,
-                                modEnvelopeDepth.getParam(),
-                                tapeHead,
-                                modTapeHeadDepth.getParam(),
-                                scanSpeed,
-                                modScanSpeedDepth.getParam(),
-                                transposition,
-                                modTranspositionDepth.getParam(),
-                                filter,
-                                modFilterDepth.getParam(),
-                                resonance,
-                                modResonanceDepth.getParam(),
-                                volumeDB,
-                                modVolumeDepth.getParam(),
-                                pan,
-                                modPanDepth.getParam(),
-                                soundClip[mModClip],
-                                mPActiveVoices,
-                                &mLastScanPos};
+        grainParameters list = {
+            grainDurationMs,
+            modGrainDurationDepth.getParam(),
+            envelope,
+            modEnvelopeDepth.getParam(),
+            tapeHead,
+            modTapeHeadDepth.getParam(),
+            scanSpeed,
+            modScanSpeedDepth.getParam(),
+            transposition,
+            modTranspositionDepth.getParam(),
+            filter,
+            modFilterDepth.getParam(),
+            resonance,
+            modResonanceDepth.getParam(),
+            volumeDB,
+            modVolumeDepth.getParam(),
+            pan,
+            modPanDepth.getParam(),
+            soundClip[mModClip],
+            mPActiveVoices,
+            mCurrentIndex,
+        };
 
         voice->configureGrain(list, mGlobalSamplingRate);
 

@@ -186,7 +186,6 @@ bool util::load(std::string fileName,
      * Comment out if you want to read arbitrary files.
      */
     if (soundFile.frameRate() != samplingRate) {
-      std::cout << samplingRate << std::endl;
       std::shared_ptr<buffer<float>> b(new buffer<float>());
       b->filePath = fileName;
       b->size = (a->size) / soundFile.frameRate() * samplingRate;

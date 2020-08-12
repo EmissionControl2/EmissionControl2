@@ -271,9 +271,17 @@ private:
   float mPeakCPU;
   float mAvgCPU;
   int *mPActiveVoices = nullptr;
-  float mLastScanPos = 0;
 
   std::vector<std::shared_ptr<ecModulator>> Modulators;
+
+  /***mScanner Tests***/
+  util::line mScanner;
+  float mCurrentIndex;
+  float mLastScanPos = 0;
+  int mPrevModClip;
+  float prevTapeHeadVal, nowTapeHeadVal;
+  float prev_scan_speed,scan_speed; 
+
 };
 
 #endif
