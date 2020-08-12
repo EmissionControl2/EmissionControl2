@@ -456,6 +456,7 @@ void ecInterface::onDraw(Graphics &g) {
                            windowHeight * 3 / 4 + (25 * adjustScaleY), windowWidth * 1 / 16,
                            windowHeight / 4, flags);
   ImGui::PopFont();
+  ImGui::PushFont(bodyFont);
   VUdataSize = globalSamplingRate / 30;  // Size of VU meter data arrays
   if (VUdataSize != lastVUdataSize) {    // resize VU meter data arrays if SR changed
     VUdataLeft.resize(VUdataSize);
@@ -503,7 +504,6 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0, 0, 0, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(1, 1, 1, 150));
-
   ParameterGUI::endPanel();
 
   // Throw popup to remind user to load in sound files if none are present.
@@ -514,6 +514,8 @@ void ecInterface::onDraw(Graphics &g) {
     // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
+  ImGui::PopFont();
+
   ImGui::End();
   al::imguiEndFrame();
 
