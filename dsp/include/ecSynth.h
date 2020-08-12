@@ -119,7 +119,7 @@ public:
   ecParameter modSoundFileDepth{
       "modSoundFileDepth", "modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter tapeHead{"Scan", "11. Scan", "", 0.5, "", 0, 1, 0, 1};
+  ecParameter tapeHead{"Scan", "11. Scan Position", "", 0.5, "", 0, 1, 0, 1};
   al::ParameterMenu tapeHeadLFO{"##scanLFO"};
   ecParameter modTapeHeadDepth{
       "modScanDepth", "modScanDepth", "", 0, "", 0, 1, 0, 1};
@@ -129,12 +129,17 @@ public:
   ecParameter modScanSpeedDepth{
       "modScanSpeedDepth", "modScanSpeedDepth", "", 0, "", 0, 1, 0, 1};
 
-  ecParameter pan{"Pan", "13. Pan", "", 0, "", -1, 1, -1, 1};
+  ecParameter scanWidth{"scanWidth", "13. Scan Width", "", 1, "", 0, 1, 0, 1};
+  al::ParameterMenu scanWidthLFO{"##scanWidthLFO"};
+  ecParameter modScanWidthDepth{
+      "modScanWidthDepth", "modScanWidthDepth", "", 0, "", 0, 1, 0, 1};
+
+  ecParameter pan{"Pan", "14. Pan", "", 0, "", -1, 1, -1, 1};
   al::ParameterMenu panLFO{"##panLFO"};
   ecParameter modPanDepth{"modPanDepth", "modPanDepth", "", 0, "", 0, 1, 0, 1};
 
   ecParameter volumeDB{
-      "AmplitudedB", "14. Amplitude (dB)", "", -6, "", -60, 6, -180, 48};
+      "AmplitudedB", "15. Amplitude (dB)", "", -6, "", -60, 6, -180, 48};
   al::ParameterMenu volumeLFO{"##volumeLFO"};
   ecParameter modVolumeDepth{
       "modVolumeDepth", "modVolumeDepth", "", 0, "", 0, 1, 0, 1};
@@ -280,8 +285,7 @@ private:
   float mLastScanPos = 0;
   int mPrevModClip;
   float prevTapeHeadVal, nowTapeHeadVal;
-  float prev_scan_speed,scan_speed; 
-
+  float prev_scan_speed, scan_speed, prev_scan_width, scan_width;
 };
 
 #endif

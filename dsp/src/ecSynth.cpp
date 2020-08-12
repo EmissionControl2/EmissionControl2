@@ -74,6 +74,10 @@ void ecSynth::init(al::AudioIOData *io) {
   scanSpeed.setModulationSource(Modulators[0]);
   scanSpeedLFO.registerChangeCallback(
       [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
+  scanWidthLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
+  scanWidth.setModulationSource(Modulators[0]);
+  scanWidthLFO.registerChangeCallback(
+      [&](int value) { scanWidth.setModulationSource(Modulators[value]); });
   transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
@@ -232,22 +236,28 @@ void ecSynth::onProcess(AudioIOData &io) {
 
     // Grain by Grain Initilization
     if (grainScheduler.trigger()) {
+
       prevTapeHeadVal = nowTapeHeadVal;
       nowTapeHeadVal = tapeHead.getModParam(modTapeHeadDepth.getParam());
       prev_scan_speed = scan_speed;
       scan_speed = scanSpeed.getModParam(modScanSpeedDepth.getParam());
+      prev_scan_width = scan_width;
+      scan_width = scanWidth.getModParam(modScanWidthDepth.getParam());
       float frames = soundClip[mModClip]->frames;
+      float start, end;
+
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
           prevTapeHeadVal != nowTapeHeadVal) {
-
-        if (scan_speed >= 0)
-          mScanner.set(nowTapeHeadVal * frames, frames,
-                       (frames - (nowTapeHeadVal * frames)) /
-                           (mGlobalSamplingRate * scan_speed));
-        else
-          mScanner.set(nowTapeHeadVal * frames, 0,
-                       ((nowTapeHeadVal * frames)) /
-                           (mGlobalSamplingRate * abs(scan_speed)));
+        start = nowTapeHeadVal * frames;
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
       }
 
       // if (mCurrentIndex == mScanner.getTarget()) {
@@ -260,26 +270,43 @@ void ecSynth::onProcess(AudioIOData &io) {
       // }
 
       if (scan_speed != prev_scan_speed) {
-        if (scan_speed >= 0)
-          mScanner.set(mScanner.getValue(), frames,
-                       (frames - (mScanner.getValue())) /
-                           (mGlobalSamplingRate * scan_speed));
-        else
-          mScanner.set(mScanner.getValue(), 0,
-                       ((mScanner.getValue())) /
-                           (mGlobalSamplingRate * abs(scan_speed)));
+        start = mScanner.getValue();
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
+      }
+
+      if (scan_width != prev_scan_width) {
+        start = mScanner.getValue();
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
       }
 
       // if (prevTapeHeadVal != nowTapeHeadVal) {
       //   std::cout << "here" << std::endl;
       //   if (mScanner.getValue() < nowTapeHeadVal * frames) {
       //     mScanner.set(mScanner.getValue(), nowTapeHeadVal * frames,
-      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
+      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue()))
+      //                  /
       //                      (mGlobalSamplingRate * scan_speed) /
       //                      (scan_speed * 8));
       //   } else
       //     mScanner.set(nowTapeHeadVal * frames, mScanner.getValue(),
-      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue())) /
+      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue()))
+      //                  /
       //                      (mGlobalSamplingRate * scan_speed) /
       //                      (scan_speed * 8));
       // }
@@ -293,8 +320,6 @@ void ecSynth::onProcess(AudioIOData &io) {
             modEnvelopeDepth.getParam(),
             tapeHead,
             modTapeHeadDepth.getParam(),
-            scanSpeed,
-            modScanSpeedDepth.getParam(),
             transposition,
             modTranspositionDepth.getParam(),
             filter,
