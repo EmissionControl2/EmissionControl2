@@ -37,6 +37,8 @@ void ecSynth::init(al::AudioIOData *io) {
 
   mPActiveVoices = &mActiveVoices;
 
+  mScanner.setSamplingRate(mGlobalSamplingRate);
+
   // MUST USE THIS ORDER
   grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   grainRate.setModulationSource(Modulators[0]); // Default
@@ -68,6 +70,14 @@ void ecSynth::init(al::AudioIOData *io) {
   tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
       [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
+  scanSpeedLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
+  scanSpeed.setModulationSource(Modulators[0]);
+  scanSpeedLFO.registerChangeCallback(
+      [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
+  scanWidthLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
+  scanWidth.setModulationSource(Modulators[0]);
+  scanWidthLFO.registerChangeCallback(
+      [&](int value) { scanWidth.setModulationSource(Modulators[value]); });
   transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
@@ -147,6 +157,10 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[3]->duty->registerChangeCallback(
       [&](float value) { Modulators[3]->setWidth(value); });
 
+  // scanSpeed->mParameter->registerChangeCallback(
+  //     [&](float value) {
+
+  //       mScanner.setFrequency(value); });
   /**
    * WHY DOES THIS CRASH ??
    */
@@ -162,7 +176,7 @@ void ecSynth::init(al::AudioIOData *io) {
   //       [&](float value) { Modulators[index]->setWidth(value); });
   // }
 
-  grainSynth.allocatePolyphony<Grain>(1024);
+  grainSynth.allocatePolyphony<Grain>(2048);
   grainSynth.setDefaultUserData(this);
 
   /**
@@ -210,9 +224,11 @@ void ecSynth::onProcess(AudioIOData &io) {
     else
       grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
 
+    mCurrentIndex = mScanner();
     // CONTROL RATE LOOP (Executes every 4th sample)
     if (controlRateCounter == 4) {
       controlRateCounter = 0;
+      mPrevModClip = mModClip;
       mModClip = soundFile.getModParam(modSoundFileDepth.getParam()) - 1;
     }
     controlRateCounter++;
@@ -220,26 +236,104 @@ void ecSynth::onProcess(AudioIOData &io) {
 
     // Grain by Grain Initilization
     if (grainScheduler.trigger()) {
+
+      prevTapeHeadVal = nowTapeHeadVal;
+      nowTapeHeadVal = tapeHead.getModParam(modTapeHeadDepth.getParam());
+      prev_scan_speed = scan_speed;
+      scan_speed = scanSpeed.getModParam(modScanSpeedDepth.getParam());
+      prev_scan_width = scan_width;
+      scan_width = scanWidth.getModParam(modScanWidthDepth.getParam());
+      float frames = soundClip[mModClip]->frames;
+      float start, end;
+
+      if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
+          prevTapeHeadVal != nowTapeHeadVal) {
+        start = nowTapeHeadVal * frames;
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
+      }
+
+      // if (mCurrentIndex == mScanner.getTarget()) {
+      //   if (scan_speed >= 0)
+      //     mScanner.set(0, frames,
+      //                  (frames) / (mGlobalSamplingRate * scan_speed));
+      //   else
+      //     mScanner.set(frames, 0,
+      //                  ((frames)) / (mGlobalSamplingRate * abs(scan_speed)));
+      // }
+
+      if (scan_speed != prev_scan_speed) {
+        start = mScanner.getValue();
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
+      }
+
+      if (scan_width != prev_scan_width) {
+        start = mScanner.getValue();
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
+      }
+
+      // if (prevTapeHeadVal != nowTapeHeadVal) {
+      //   std::cout << "here" << std::endl;
+      //   if (mScanner.getValue() < nowTapeHeadVal * frames) {
+      //     mScanner.set(mScanner.getValue(), nowTapeHeadVal * frames,
+      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue()))
+      //                  /
+      //                      (mGlobalSamplingRate * scan_speed) /
+      //                      (scan_speed * 8));
+      //   } else
+      //     mScanner.set(nowTapeHeadVal * frames, mScanner.getValue(),
+      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue()))
+      //                  /
+      //                      (mGlobalSamplingRate * scan_speed) /
+      //                      (scan_speed * 8));
+      // }
+
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
-        grainParameters list = {grainDurationMs,
-                                modGrainDurationDepth.getParam(),
-                                envelope,
-                                modEnvelopeDepth.getParam(),
-                                tapeHead,
-                                modTapeHeadDepth.getParam(),
-                                transposition,
-                                modTranspositionDepth.getParam(),
-                                filter,
-                                modFilterDepth.getParam(),
-                                resonance,
-                                modResonanceDepth.getParam(),
-                                volumeDB,
-                                modVolumeDepth.getParam(),
-                                pan,
-                                modPanDepth.getParam(),
-                                soundClip[mModClip],
-                                mPActiveVoices};
+        grainParameters list = {
+            grainDurationMs,
+            modGrainDurationDepth.getParam(),
+            envelope,
+            modEnvelopeDepth.getParam(),
+            tapeHead,
+            modTapeHeadDepth.getParam(),
+            transposition,
+            modTranspositionDepth.getParam(),
+            filter,
+            modFilterDepth.getParam(),
+            resonance,
+            modResonanceDepth.getParam(),
+            volumeDB,
+            modVolumeDepth.getParam(),
+            pan,
+            modPanDepth.getParam(),
+            soundClip[mModClip],
+            mPActiveVoices,
+            mCurrentIndex,
+        };
 
         voice->configureGrain(list, mGlobalSamplingRate);
 
@@ -269,7 +363,6 @@ void ecSynth::onProcess(AudioIOData &io) {
     // Add samples to VU ringbuffer (squared for RMS calculations)
     vuBufferL.push_back(pow(io.out(0), 2));
     vuBufferR.push_back(pow(io.out(1), 2));
-   
   }
 }
 

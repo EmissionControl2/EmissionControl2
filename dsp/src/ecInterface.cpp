@@ -78,6 +78,8 @@ void ecInterface::onCreate() {
   granulator.grainDurationMs.addToPresetHandler(mPresets);
   granulator.envelope.addToPresetHandler(mPresets);
   granulator.tapeHead.addToPresetHandler(mPresets);
+  granulator.scanSpeed.addToPresetHandler(mPresets);
+  granulator.scanWidth.addToPresetHandler(mPresets);
   granulator.transposition.addToPresetHandler(mPresets);
   granulator.filter.addToPresetHandler(mPresets);
   granulator.resonance.addToPresetHandler(mPresets);
@@ -92,6 +94,7 @@ void ecInterface::onCreate() {
   granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
   granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
   granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
+  granulator.modScanWidthDepth.addToPresetHandler(mPresets);
   granulator.modTranspositionDepth.addToPresetHandler(mPresets);
   granulator.modFilterDepth.addToPresetHandler(mPresets);
   granulator.modResonanceDepth.addToPresetHandler(mPresets);
@@ -101,9 +104,9 @@ void ecInterface::onCreate() {
 
   mPresets << granulator.grainRateLFO << granulator.asyncLFO << granulator.intermittencyLFO
            << granulator.streamsLFO << granulator.grainDurationLFO << granulator.envelopeLFO
-           << granulator.tapeHeadLFO << granulator.transpositionLFO << granulator.filterLFO
-           << granulator.resonanceLFO << granulator.volumeLFO << granulator.panLFO
-           << granulator.soundFileLFO;
+           << granulator.tapeHeadLFO << granulator.scanSpeedLFO << granulator.scanWidthLFO
+           << granulator.transpositionLFO << granulator.filterLFO << granulator.resonanceLFO
+           << granulator.volumeLFO << granulator.panLFO << granulator.soundFileLFO;
 
   for (int i = 0; i < granulator.NUM_MODULATORS; i++) {
     granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
@@ -294,11 +297,14 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.tapeHead.drawRangeSlider(fontScale);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.pan.drawRangeSlider(fontScale);
+  granulator.scanWidth.drawRangeSlider(fontScale);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.volumeDB.drawRangeSlider(fontScale);
+  granulator.scanSpeed.drawRangeSlider(fontScale);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  ImGui::PopFont();
+  granulator.pan.drawRangeSlider(fontScale);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  granulator.volumeDB.drawRangeSlider(fontScale);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   ParameterGUI::endPanel();
 
   // Draw modulation window
@@ -330,10 +336,14 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
+  drawModulationControl(granulator.scanWidthLFO, granulator.modScanWidthDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
+  drawModulationControl(granulator.scanSpeedLFO, granulator.modScanSpeedDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  drawModulationControl(granulator.panLFO, granulator.modPanDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   ImGui::PopFont();
   ParameterGUI::endPanel();
 

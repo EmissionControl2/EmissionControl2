@@ -160,7 +160,6 @@ bool util::load(std::string fileName,
   std::string filePath = searchPaths.find(fileName).filepath();
   gam::SoundFile soundFile;
   soundFile.path(fileName);
-
   if (!soundFile.openRead()) {
     std::cout << "We could not read " << fileName << "!" << std::endl;
     // exit(1);
@@ -175,11 +174,11 @@ bool util::load(std::string fileName,
   std::shared_ptr<buffer<float>> a(new buffer<float>());
   a->filePath = fileName;
   a->size = soundFile.samples();
+  a->frames = soundFile.frames();
   a->data = new float[a->size];
   a->channels = soundFile.channels();
   // a->channels = 1; //Use for loading in non-audio files
-  soundFile.read(a->data, a->size);
-
+  soundFile.read(a->data, a->frames);
   if (resample) { // We care about resampling.
 
     /**
@@ -190,6 +189,7 @@ bool util::load(std::string fileName,
       std::shared_ptr<buffer<float>> b(new buffer<float>());
       b->filePath = fileName;
       b->size = (a->size) / soundFile.frameRate() * samplingRate;
+      b->frames = b->size / soundFile.channels();
       b->data = new float[b->size];
       b->channels = soundFile.channels();
       SRC_DATA *conversion = new SRC_DATA;
