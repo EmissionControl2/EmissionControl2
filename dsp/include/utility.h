@@ -186,6 +186,7 @@ public:
   T *data;
   unsigned size = 0;
   int channels;
+  unsigned frames;
   std::string filePath;
 
   virtual ~buffer() {
@@ -202,6 +203,8 @@ public:
 
   T &operator[](unsigned index) { return data[index]; }
   T operator[](const T index) const { return get(index); }
+
+  T get(unsigned index) const { return data[index]; }
 
   /**
    * @brief Resize buffer.
@@ -228,7 +231,7 @@ public:
    *
    * @return Value at given index.
    */
-  T get(float index) const {
+  T getInterpolate(float index) const {
     if (index < 0)
       index += size;
     if (index > size)

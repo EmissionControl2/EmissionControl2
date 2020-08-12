@@ -463,7 +463,7 @@ class ecParameterInt {
   /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(float scaleX, std::string sliderText = "");
+  void drawRangeSlider(float scaleX = 1.0f, std::string sliderText = "");
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -497,6 +497,7 @@ struct grainParameters {
   float modPanDepth;
   std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
+  float mCurrentIndex;
 };
 
 /**
@@ -537,9 +538,9 @@ class Grain : public al::SynthVoice {
    *
    * @param[in] Set duration of grain in milliseconds.
    */
-  void setDurationMs(float dur) { mDurationMs = dur; }
+  void setDurationS(float dur) { mDurationS = dur; }
 
-  float getDurationMs() const { return mDurationMs; }
+  float getDurationS() const { return mDurationS; }
 
  private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
@@ -549,8 +550,13 @@ class Grain : public al::SynthVoice {
   bool bypassFilter = true;
   float currentSample, cascadeFilter = 0;
   int *mPActiveVoices;
-  float envVal, sourceIndex, tapeHead, mDurationMs, mLeft, mRight, mAmp;
+  float *mLastEndScanPos;
+  float envVal, sourceIndex, tapeHead, mDurationS, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
+  int iSourceIndex;
+  float mSamplingRate = consts::SAMPLE_RATE;
+
+  void configureIndex(const grainParameters &list);
 
   // Store value in mAmp;
   // Note that this is dependent on the active number of voices.
