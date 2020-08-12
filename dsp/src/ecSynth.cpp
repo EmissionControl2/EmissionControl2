@@ -172,7 +172,7 @@ void ecSynth::init(al::AudioIOData *io) {
   //       [&](float value) { Modulators[index]->setWidth(value); });
   // }
 
-  grainSynth.allocatePolyphony<Grain>(1024);
+  grainSynth.allocatePolyphony<Grain>(2048);
   grainSynth.setDefaultUserData(this);
 
   /**
