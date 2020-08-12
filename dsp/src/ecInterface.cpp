@@ -396,7 +396,6 @@ void ecInterface::onDraw(Graphics &g) {
     if (highestStreamCount < 2) highestStreamCount = 2;
     grainAccum = 0;
   }
-
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PlotHistogram(
