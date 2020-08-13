@@ -52,6 +52,7 @@ class ecInterface : public al::App {
     std::string newMapText;
     bool storeButtonState{false};
   };
+
   // Custom preset draw function (copied and modified from al_ParameterGUI.hpp)
   static PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
                                                  int presetColumns, int presetRows);
@@ -125,20 +126,6 @@ class ecInterface : public al::App {
   ImColor *Shade3;
   ImColor *Text;
 
-  // // old green color scheme
-  // ImColor PrimaryLight = ImColor(0.459f, 0.592f, 0.518f);    // Background
-  // ImColor SecondaryLight = ImColor(0.655f, 0.561f, 0.451f);  // Oscilloscope
-  // L
-  // ImColor TertiaryLight = ImColor(0.569f, 0.388f, 0.459f);   // Oscilloscope
-  // R
-  // ImColor Shade1Light = ImColor(0.612f, 0.690f, 0.647f);     // Slider Color
-  // 1
-  // ImColor Shade2Light = ImColor(0.772f, 0.807f, 0.788f);     // Slider Color
-  // 2
-  // ImColor Shade3Light = ImColor(0.929f, 0.933f, 0.929f);     // Slider Color
-  // 3
-  // ImColor TextLight = ImColor(0.929f, 0.933f, 0.929f);       // Text Color
-
   void drawAudioIO(al::AudioIO *io);
 
   void drawLFOcontrol(ecSynth &synth, int lfoNumber);
@@ -150,9 +137,6 @@ class ecInterface : public al::App {
   void setPlotConfig();
 
   int getSampleRateIndex();
-
-  /**** Configuration File Stuff****/
-  // TO DO TO DO -- Make Linux cross platform with Rodney
 
   void initFileIOPaths();
 
