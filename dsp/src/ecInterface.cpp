@@ -163,7 +163,7 @@ void ecInterface::onDraw(Graphics &g) {
   adjustScaleY = 1.0f + ((fontScale - 1.0f) / 1.5f);
 
   if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
-    ImGui::OpenPopup("Load soundfiles please :,)");
+    ImGui::OpenPopup("No Sound File");
     audioIO().stop();
     noSoundFiles = true;
   }
@@ -537,10 +537,20 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Throw popup to remind user to load in sound files if none are present.
-  if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
-    ImGui::Text(
-      "Files can be loaded in from the top left menu.\nAudio will "
-      "turn on once a file has been loaded.");
+  if (ImGui::BeginPopupModal("No Sound File", &noSoundFiles)) {
+    ImGui::Text("Load a sound file to continue using EmissionControl");
+    if (ImGui::Button("Load Sound File")) {
+      result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
+
+      if (result == NFD_OKAY) {
+        size_t i;
+        for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
+          nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
+          granulator.loadSoundFile(path);
+        }
+        NFD_PathSet_Free(&pathSet);
+      }
+    }
     // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
