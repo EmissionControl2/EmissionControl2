@@ -50,6 +50,11 @@ public:
   // array of lfo parameters to draw later
   std::vector<LFOstruct *> LFOparameters;
 
+  std::vector<std::shared_ptr<util::buffer<float>>>
+      soundClip;    /* Store audio buffers in memory */
+  int mClipNum = 0; /* Number of sound files being stored in memory */
+  int mModClip = 0;
+
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
@@ -263,11 +268,7 @@ private:
   al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
                                                callback */
   voiceScheduler grainScheduler; /* Schedule grains */
-  std::vector<std::shared_ptr<util::buffer<float>>>
-      soundClip; /* Store audio buffers in memory */
   std::vector<std::string> soundClipFileName;
-  int mClipNum = 0; /* Number of sound files being stored in memory */
-  int mModClip = 0;
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;
