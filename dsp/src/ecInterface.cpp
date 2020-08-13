@@ -149,9 +149,6 @@ void ecInterface::onDraw(Graphics &g) {
   float windowWidth = width();
   float windowHeight = height();
 
-  // Compare window size to fb size to account for HIDPI Display issues
-  // std::cout << width() << std::endl;
-
   // Initialize Audio IO popup to false
   bool displayIO = false;
 
@@ -168,7 +165,7 @@ void ecInterface::onDraw(Graphics &g) {
   adjustScaleY = 1.0f + ((fontScale - 1.0f) / 1.5f);
 
   if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
-    ImGui::OpenPopup("Load soundfiles please :,)");
+    ImGui::OpenPopup("No Sound File");
     audioIO().stop();
     noSoundFiles = true;
   }
@@ -180,7 +177,7 @@ void ecInterface::onDraw(Graphics &g) {
   }
   // Draw GUI
 
-  // draw menu bar
+  // draw menu bar ----------------------------------------------------
   static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Settings")) {
@@ -211,11 +208,6 @@ void ecInterface::onDraw(Graphics &g) {
           }
           NFD_PathSet_Free(&pathSet);
         }
-
-        // if ((currentFile != previousFile) && (NFD_OKAY == 1)) {
-        //   granulator.loadSoundFile(currentFile);
-        //   previousFile = currentFile;
-        // }
       }
       if (ImGui::MenuItem("Remove Current Sound File", "")) {
         granulator.removeCurrentSoundFile();
@@ -264,7 +256,7 @@ void ecInterface::onDraw(Graphics &g) {
   if (!fontScaleOpen)
     jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
 
-  // Draw an interface to Audio IO.
+  // PopUp Audio IO window --------------------------------------------
   // This enables starting and stopping audio as well as selecting
   // Audio device and its parameters
   // if statement opens Audio IO popup if chosen from menu
@@ -278,7 +270,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndPopup();
   }
 
-  // Draw Granulator Controls
+  // Draw Granulator Controls -----------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("GRANULATION CONTROLS", 0, 25 * adjustScaleY,
                            windowWidth / 2, windowHeight / 2, flags);
@@ -318,7 +310,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   ParameterGUI::endPanel();
 
-  // Draw modulation window
+  // Draw modulation window -------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("MODULATION CONTROLS", windowWidth / 2,
                            25 * adjustScaleY, windowWidth / 2, windowHeight / 2,
@@ -359,11 +351,10 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw preset window
+  // Draw preset window -----------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("PRESETS", 0, windowHeight / 2 + (25 * adjustScaleY),
                            windowWidth / 2, windowHeight / 4, flags);
@@ -373,7 +364,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw LFO parameters window
+  // Draw LFO parameters window ---------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("LFO CONTROLS", windowWidth / 2,
                            windowHeight / 2 + (25 * adjustScaleY),
@@ -387,7 +378,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw recorder window
+  // Draw recorder window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("RECORDER", windowWidth * 3 / 4,
                            windowHeight * 3 / 4 + (25 * adjustScaleY),
@@ -408,7 +399,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw grain histogram window
+  // Draw grain histogram window --------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("ACTIVE GRAINS", 0,
                            windowHeight * 3 / 4 + (25 * adjustScaleY),
@@ -438,7 +429,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw Oscilloscope window
+  // Draw Oscilloscope window -----------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("OSCILLOSCOPE", windowWidth / 4,
                            windowHeight * 3 / 4 + (25 * adjustScaleY),
@@ -487,7 +478,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw VU Meter window
+  // Draw VU Meter window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel(" ##VU Meter", windowWidth * 15 / 16,
                            windowHeight * 3 / 4 + (25 * adjustScaleY),
@@ -553,9 +544,20 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Throw popup to remind user to load in sound files if none are present.
-  if (ImGui::BeginPopupModal("Load soundfiles please :,)", &noSoundFiles)) {
-    ImGui::Text("Files can be loaded in from the top left menu.\nAudio will "
-                "turn on once a file has been loaded.");
+  if (ImGui::BeginPopupModal("No Sound File", &noSoundFiles)) {
+    ImGui::Text("Load a sound file to continue using EmissionControl");
+    if (ImGui::Button("Load Sound File")) {
+      result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
+
+      if (result == NFD_OKAY) {
+        size_t i;
+        for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
+          nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
+          granulator.loadSoundFile(path);
+        }
+        NFD_PathSet_Free(&pathSet);
+      }
+    }
     // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
