@@ -9,7 +9,7 @@ int main() { // Create app instance
   // Set sampling rate for Gamma objects from app's audio
   gam::sampleRate(app.audioIO().framesPerSecond());
   app.dimensions(1920, 1080);
-  app.title("Emission Control");
+  app.title("Emission Control 2");
 
   app.audioIO().print();
 
