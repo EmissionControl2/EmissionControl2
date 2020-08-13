@@ -243,6 +243,10 @@ void ecSynth::onProcess(AudioIOData &io) {
       float frames = soundClip[mModClip]->frames;
       float start, end;
 
+      /**ODD BUG: when scan speed is higher than 1.015, the volume is gut in
+       * halfwut**/
+
+      // Reset index.
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
           prevTapeHeadVal != nowTapeHeadVal) {
         start = nowTapeHeadVal * frames;
@@ -253,7 +257,20 @@ void ecSynth::onProcess(AudioIOData &io) {
         } else {
           end = start * (1 - scan_width);
           mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+        }
+      }
+      // On the fly adjustments.
+      if (scan_width != prev_scan_width || scan_speed != prev_scan_speed) {
+        start = mScanner.getValue();
+        if (scan_speed >= 0) {
+          end = start + ((frames - start) * scan_width);
+          mScanner.set(start, end,
+                       (end - start) / (mGlobalSamplingRate * scan_speed));
+        } else {
+          end = start * (1 - scan_width);
+          mScanner.set(start, end,
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
         }
       }
 
@@ -266,47 +283,35 @@ void ecSynth::onProcess(AudioIOData &io) {
       //                  ((frames)) / (mGlobalSamplingRate * abs(scan_speed)));
       // }
 
-      if (scan_speed != prev_scan_speed) {
+      /* Experiments
+
+      if (prevTapeHeadVal != nowTapeHeadVal) {
         start = mScanner.getValue();
-        if (scan_speed >= 0) {
-          end = start + ((frames - start) * scan_width);
-          mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * scan_speed));
-        } else {
-          end = start * (1 - scan_width);
-          mScanner.set(start, end,
-                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
-        }
+        end = (nowTapeHeadVal * frames) +
+              ((frames - (nowTapeHeadVal * frames)) * scan_width);
+        mScanner.set(start, end,
+                     (end - start) / (mGlobalSamplingRate * scan_speed));
       }
 
-      if (scan_width != prev_scan_width) {
-        start = mScanner.getValue();
-        if (scan_speed >= 0) {
-          end = start + ((frames - start) * scan_width);
+      */
+
+      /* Experiment: Quick attack to new tapehead position.
+      if (prevTapeHeadVal != nowTapeHeadVal) {
+        if (mScanner.getValue() < nowTapeHeadVal * frames) {
+          start = mScanner.getValue();
+          end = nowTapeHeadVal * frames;
           mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * scan_speed));
+                       abs(end - start) / (mGlobalSamplingRate * scan_speed) /
+                           (scan_speed * 16));
         } else {
-          end = start * (1 - scan_width);
+          start = nowTapeHeadVal * frames;
+          end = mScanner.getValue();
           mScanner.set(start, end,
-                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+                       abs(start - end) / (mGlobalSamplingRate * scan_speed) /
+                           (scan_speed * 16));
         }
       }
-
-      // if (prevTapeHeadVal != nowTapeHeadVal) {
-      //   std::cout << "here" << std::endl;
-      //   if (mScanner.getValue() < nowTapeHeadVal * frames) {
-      //     mScanner.set(mScanner.getValue(), nowTapeHeadVal * frames,
-      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue()))
-      //                  /
-      //                      (mGlobalSamplingRate * scan_speed) /
-      //                      (scan_speed * 8));
-      //   } else
-      //     mScanner.set(nowTapeHeadVal * frames, mScanner.getValue(),
-      //                  abs((nowTapeHeadVal * frames) - (mScanner.getValue()))
-      //                  /
-      //                      (mGlobalSamplingRate * scan_speed) /
-      //                      (scan_speed * 8));
-      // }
+      */
 
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
