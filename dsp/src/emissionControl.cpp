@@ -485,6 +485,7 @@ void Grain::init() { gEnv.reset(); }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mPActiveVoices = list.activeVoices;
+  this->source = list.source;
 
   if (static_cast<int>(samplingRate) != prevSamplingRate) {
     prevSamplingRate = samplingRate;
@@ -505,9 +506,7 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
   else
     gEnv.set(mDurationS, list.envelope.getParam());
 
-  // Set sample
-  this->source = list.source;
-
+  // Configure what part of the buffer the grain will play;
   configureIndex(list);
 
   if (list.modVolumeDepth > 0)
