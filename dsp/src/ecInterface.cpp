@@ -249,7 +249,7 @@ void ecInterface::onDraw(Graphics &g) {
   bool fontScaleOpen = true;
   if (ImGui::BeginPopupModal("Font Size", &fontScaleOpen)) {
     ImGui::PushItemWidth(windowWidth / 3);
-    ImGui::SliderFloat("Font Size", &fontScale, 0.5, 3.0, "%.2f");
+    ImGui::SliderFloat("Scale", &fontScale, 0.5, 3.0, "%.2f");
     ImGui::PopItemWidth();
     ImGui::EndPopup();
   }
@@ -270,7 +270,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw Granulator Controls
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("GRANULATOR CONTROLS", 0, 25 * adjustScaleY, windowWidth / 2,
+  ParameterGUI::beginPanel("GRANULATION CONTROLS", 0, 25 * adjustScaleY, windowWidth / 2,
                            windowHeight / 2, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -309,8 +309,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw modulation window
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("MODULATION", windowWidth / 2, 25 * adjustScaleY, windowWidth / 2,
-                           windowHeight / 2, flags);
+  ParameterGUI::beginPanel("MODULATION CONTROLS", windowWidth / 2, 25 * adjustScaleY,
+                           windowWidth / 2, windowHeight / 2, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
@@ -344,6 +344,10 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  ImGui::PlotLines("", granulator.soundClip[granulator.mModClip]->data,
+                   granulator.soundClip[granulator.mModClip]->size / 64, 0, nullptr, -1, 1,
+                   ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+                   sizeof(float) * 64);
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -396,7 +400,7 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth / 4, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  ImGui::Text("Current Active Grains: %.1i ", granulator.getActiveVoices());
+  ImGui::Text("Counter: %.1i ", granulator.getActiveVoices());
 
   if (grainAccum < granulator.getActiveVoices()) grainAccum = granulator.getActiveVoices();
   if (framecounter % 2 == 0) {
@@ -421,7 +425,7 @@ void ecInterface::onDraw(Graphics &g) {
                            windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  ImGui::Text("Oscilloscope Timeframe (s):");
+  ImGui::Text("Time frame (s):");
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
   if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
@@ -1016,7 +1020,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     //          ImGui::PopItemWidth();
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
     float morphTime = presetHandler->getMorphTime();
-    if (ImGui::InputFloat("morph time", &morphTime, 0.0f, 20.0f)) {
+    if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
       presetHandler->setMorphTime(morphTime);
     }
     ImGui::PopItemWidth();
