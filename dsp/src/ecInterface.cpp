@@ -53,7 +53,8 @@ void ecInterface::onInit() {
 // Set output directory of recorded files.
 #ifdef __APPLE__
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
-  mPresets.setRootPath(f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
+  mPresets.setRootPath(
+    f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
@@ -102,15 +103,19 @@ void ecInterface::onCreate() {
   granulator.modPanDepth.addToPresetHandler(mPresets);
   granulator.modSoundFileDepth.addToPresetHandler(mPresets);
 
-  mPresets << granulator.grainRateLFO << granulator.asyncLFO << granulator.intermittencyLFO
-           << granulator.streamsLFO << granulator.grainDurationLFO << granulator.envelopeLFO
-           << granulator.tapeHeadLFO << granulator.scanSpeedLFO << granulator.scanWidthLFO
-           << granulator.transpositionLFO << granulator.filterLFO << granulator.resonanceLFO
-           << granulator.volumeLFO << granulator.panLFO << granulator.soundFileLFO;
+  mPresets << granulator.grainRateLFO << granulator.asyncLFO
+           << granulator.intermittencyLFO << granulator.streamsLFO
+           << granulator.grainDurationLFO << granulator.envelopeLFO
+           << granulator.tapeHeadLFO << granulator.scanSpeedLFO
+           << granulator.scanWidthLFO << granulator.transpositionLFO
+           << granulator.filterLFO << granulator.resonanceLFO
+           << granulator.volumeLFO << granulator.panLFO
+           << granulator.soundFileLFO;
 
   for (int i = 0; i < granulator.NUM_MODULATORS; i++) {
     granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
-    mPresets << *granulator.LFOparameters[i]->shape << *granulator.LFOparameters[i]->duty
+    mPresets << *granulator.LFOparameters[i]->shape
+             << *granulator.LFOparameters[i]->duty
              << *granulator.LFOparameters[i]->polarity;
   }
 
@@ -163,7 +168,8 @@ void ecInterface::onDraw(Graphics &g) {
     noSoundFiles = true;
   }
 
-  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning() && !isPaused) {
+  if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning() &&
+      !isPaused) {
     audioIO().start();
     noSoundFiles = false;
   }
@@ -233,7 +239,6 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::EndMainMenuBar();
   }
-
   // PopUp Font scale window ------------------------------------------
   if (fontScaleWindow == true) {
     ImGui::OpenPopup("Font Size");
@@ -246,7 +251,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndPopup();
   }
 
-  // Draw an interface to Audio IO. -----------------------------------
+  // PopUp Audio IO window --------------------------------------------
   // This enables starting and stopping audio as well as selecting
   // Audio device and its parameters
   // if statement opens Audio IO popup if chosen from menu
@@ -262,8 +267,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw Granulator Controls -----------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("GRANULATION CONTROLS", 0, 25 * adjustScaleY, windowWidth / 2,
-                           windowHeight / 2, flags);
+  ParameterGUI::beginPanel("GRANULATION CONTROLS", 0, 25 * adjustScaleY,
+                           windowWidth / 2, windowHeight / 2, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
@@ -285,7 +290,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.resonance.drawRangeSlider(fontScale);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.soundFile.drawRangeSlider(fontScale, granulator.getCurrentAudioFileName());
+  granulator.soundFile.drawRangeSlider(fontScale,
+                                       granulator.getCurrentAudioFileName());
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.tapeHead.drawRangeSlider(fontScale);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
@@ -301,8 +307,9 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw modulation window -------------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("MODULATION CONTROLS", windowWidth / 2, 25 * adjustScaleY,
-                           windowWidth / 2, windowHeight / 2, flags);
+  ParameterGUI::beginPanel("MODULATION CONTROLS", windowWidth / 2,
+                           25 * adjustScaleY, windowWidth / 2, windowHeight / 2,
+                           flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
@@ -310,15 +317,18 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  drawModulationControl(granulator.intermittencyLFO, granulator.modIntermittencyDepth);
+  drawModulationControl(granulator.intermittencyLFO,
+                        granulator.modIntermittencyDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  drawModulationControl(granulator.grainDurationLFO, granulator.modGrainDurationDepth);
+  drawModulationControl(granulator.grainDurationLFO,
+                        granulator.modGrainDurationDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.transpositionLFO, granulator.modTranspositionDepth);
+  drawModulationControl(granulator.transpositionLFO,
+                        granulator.modTranspositionDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.filterLFO, granulator.modFilterDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
@@ -341,8 +351,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw preset window -----------------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("PRESETS", 0, windowHeight / 2 + (25 * adjustScaleY), windowWidth / 2,
-                           windowHeight / 4, flags);
+  ParameterGUI::beginPanel("PRESETS", 0, windowHeight / 2 + (25 * adjustScaleY),
+                           windowWidth / 2, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ecInterface::ECdrawPresetHandler(&mPresets, 12, 4);
@@ -351,7 +361,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw LFO parameters window ---------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("LFO CONTROLS", windowWidth / 2, windowHeight / 2 + (25 * adjustScaleY),
+  ParameterGUI::beginPanel("LFO CONTROLS", windowWidth / 2,
+                           windowHeight / 2 + (25 * adjustScaleY),
                            windowWidth / 2, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -365,11 +376,12 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw recorder window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("RECORDER", windowWidth * 3 / 4,
-                           windowHeight * 3 / 4 + (25 * adjustScaleY), windowWidth * 3 / 16,
-                           windowHeight / 4, flags);
+                           windowHeight * 3 / 4 + (25 * adjustScaleY),
+                           windowWidth * 3 / 16, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
+                     audioIO().channelsOut(), soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
 
@@ -384,33 +396,38 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw grain histogram window --------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("ACTIVE GRAINS", 0, windowHeight * 3 / 4 + (25 * adjustScaleY),
+  ParameterGUI::beginPanel("ACTIVE GRAINS", 0,
+                           windowHeight * 3 / 4 + (25 * adjustScaleY),
                            windowWidth / 4, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::Text("Counter: %.1i ", granulator.getActiveVoices());
 
-  if (grainAccum < granulator.getActiveVoices()) grainAccum = granulator.getActiveVoices();
+  if (grainAccum < granulator.getActiveVoices())
+    grainAccum = granulator.getActiveVoices();
   if (framecounter % 2 == 0) {
     streamHistory.erase(streamHistory.begin());
     streamHistory.push_back(grainAccum);
-    highestStreamCount = *max_element(streamHistory.begin(), streamHistory.end());
+    highestStreamCount =
+      *max_element(streamHistory.begin(), streamHistory.end());
     if (highestStreamCount < 2) highestStreamCount = 2;
     grainAccum = 0;
   }
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PlotHistogram(
-    "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0, highestStreamCount,
-    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)), sizeof(int));
+    "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
+    highestStreamCount,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    sizeof(int));
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
   // Draw Oscilloscope window -----------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("OSCILLOSCOPE", windowWidth / 4,
-                           windowHeight * 3 / 4 + (25 * adjustScaleY), windowWidth / 2,
-                           windowHeight / 4, flags);
+                           windowHeight * 3 / 4 + (25 * adjustScaleY),
+                           windowWidth / 2, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::Text("Time frame (s):");
@@ -430,22 +447,25 @@ void ecInterface::onDraw(Graphics &g) {
 
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*SecondaryColor);
-  ImGui::PlotLines("ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
-                   ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-                   sizeof(float));
+  ImGui::PlotLines(
+    "ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    sizeof(float));
 
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(255, 255, 255, 0));
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*TertiaryColor);
-  ImGui::PlotLines("ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-                   ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-                   sizeof(float));
+  ImGui::PlotLines(
+    "ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    sizeof(float));
 
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
-  ImGui::PlotLines("black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
-                   ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-                   sizeof(float));
+  ImGui::PlotLines(
+    "black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    sizeof(float));
 
   ImGui::PopItemWidth();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
@@ -455,24 +475,29 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw VU Meter window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel(" ##VU Meter", windowWidth * 15 / 16,
-                           windowHeight * 3 / 4 + (25 * adjustScaleY), windowWidth * 1 / 16,
-                           windowHeight / 4, flags);
+                           windowHeight * 3 / 4 + (25 * adjustScaleY),
+                           windowWidth * 1 / 16, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   VUdataSize = globalSamplingRate / 30;  // Size of VU meter data arrays
-  if (VUdataSize != lastVUdataSize) {    // resize VU meter data arrays if SR changed
+  if (VUdataSize !=
+      lastVUdataSize) {  // resize VU meter data arrays if SR changed
     VUdataLeft.resize(VUdataSize);
     VUdataRight.resize(VUdataSize);
     lastVUdataSize = VUdataSize;
   }
 
-  VUdataLeft = granulator.vuBufferL.getArray(VUdataSize);   // get left data from ringbuffer
-  VUdataRight = granulator.vuBufferR.getArray(VUdataSize);  // get right data from ringbuffer
+  VUdataLeft =
+    granulator.vuBufferL.getArray(VUdataSize);  // get left data from ringbuffer
+  VUdataRight = granulator.vuBufferR.getArray(
+    VUdataSize);  // get right data from ringbuffer
 
   // Calculate RMS
-  float VUleft = std::accumulate(VUdataLeft.begin(), VUdataLeft.end(), 0.0f) / VUdataSize;
+  float VUleft =
+    std::accumulate(VUdataLeft.begin(), VUdataLeft.end(), 0.0f) / VUdataSize;
   VUleft = sqrt(VUleft);
-  float VUright = std::accumulate(VUdataRight.begin(), VUdataRight.end(), 0.0f) / VUdataSize;
+  float VUright =
+    std::accumulate(VUdataRight.begin(), VUdataRight.end(), 0.0f) / VUdataSize;
   VUright = sqrt(VUright);
 
   // set meter colors to green
@@ -494,18 +519,21 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, ((ImVec4)ImColor(0, 0, 0, 180)));
   ImGui::PlotHistogram(
     "##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
-    ImVec2((windowWidth * 1 / 32) - 12, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    ImVec2((windowWidth * 1 / 32) - 12,
+           ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   ImGui::SameLine();
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUrightCol);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUrightCol);
   ImGui::PlotHistogram(
     "##VUright", &VUright, 1, 0, nullptr, 0, 1,
-    ImVec2((windowWidth * 1 / 32) - 12, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    ImVec2((windowWidth * 1 / 32) - 12,
+           ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0, 0, 0, 150));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(1, 1, 1, 150));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
+                        (ImVec4)ImColor(1, 1, 1, 150));
   ParameterGUI::endPanel();
 
   // Throw popup to remind user to load in sound files if none are present.
@@ -563,8 +591,9 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     if (ImGui::Button("Update Devices")) {
       updateDevices(state);
     }
-    if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
-                     static_cast<void *>(&state.devices), state.devices.size())) {
+    if (ImGui::Combo(
+          "Device", &state.currentDevice, ParameterGUI::vector_getter,
+          static_cast<void *>(&state.devices), state.devices.size())) {
       // TODO adjust valid number of channels.
     }
     std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
@@ -576,7 +605,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.currentDevice));
       granulator.setIO(io);
-      if (writeSampleRate) jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+      if (writeSampleRate)
+        jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
 
       granulator.resampleSoundFiles();
 
@@ -590,8 +620,9 @@ void ecInterface::drawAudioIO(AudioIO *io) {
   ImGui::PopID();
 }
 
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory, uint32_t bufferSize) {
+static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                               uint32_t numChannels, std::string directory,
+                               uint32_t bufferSize) {
   struct SoundfileRecorderState {
     bool recordButton;
     bool overwriteButton;
@@ -634,12 +665,13 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, u
         while (File::exists(directory + filename) && counter < 9999) {
           filename = buf1;
           int lastDot = filename.find_last_of(".");
-          filename =
-            filename.substr(0, lastDot) + std::to_string(counter++) + filename.substr(lastDot);
+          filename = filename.substr(0, lastDot) + std::to_string(counter++) +
+                     filename.substr(lastDot);
         }
       }
-      if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize,
-                           gam::SoundFile::WAV, gam::SoundFile::FLOAT)) {
+      if (!recorder->start(directory + filename, frameRate, numChannels,
+                           ringBufferSize, gam::SoundFile::WAV,
+                           gam::SoundFile::FLOAT)) {
         std::cerr << "Error opening file for record" << std::endl;
       }
     } else {
@@ -664,7 +696,8 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(fontScale, consts::LFO);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(fontScale,
+                                                             consts::LFO);
   // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
 
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
@@ -679,7 +712,8 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   }
 }
 
-void ecInterface::drawModulationControl(al::ParameterMenu &menu, ecParameter &slider) {
+void ecInterface::drawModulationControl(al::ParameterMenu &menu,
+                                        ecParameter &slider) {
   ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
@@ -693,7 +727,8 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0, 0, 0, 130));
-  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0, 0, 0, 150));
+  ImGui::PushStyleColor(ImGuiCol_SliderGrabActive,
+                        (ImVec4)ImColor(0, 0, 0, 150));
   ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)*Shade2);
@@ -702,7 +737,8 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0, 0, 0, 150));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
+                        (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
@@ -837,29 +873,30 @@ void ecInterface::jsonReadAndSetAudioSettings() {
 
   globalSamplingRate = config.at(consts::SAMPLE_RATE_KEY);
 
-  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
+  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS,
+                 consts::DEVICE_NUM);
 
   granulator.setIO(&audioIO());
 }
 
 /**** Custom Preset Drawer -- Implementation****/
 /**** Borrowed and modified from al_ParameterGUI.cpp****/
-ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
-                                                                  int presetColumns,
-                                                                  int presetRows) {
+ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
+  PresetHandler *presetHandler, int presetColumns, int presetRows) {
   static std::map<PresetHandler *, ecInterface::PresetHandlerState> stateMap;
   if (stateMap.find(presetHandler) == stateMap.end()) {
     //        std::cout << "Created state for " << (unsigned long)
     //        presetHandler
     //        << std::endl;
-    stateMap[presetHandler] =
-      ecInterface::PresetHandlerState{"", 0, presetHandler->availablePresetMaps()};
+    stateMap[presetHandler] = ecInterface::PresetHandlerState{
+      "", 0, presetHandler->availablePresetMaps()};
     if (stateMap[presetHandler].mapList.size() > 0) {
       stateMap[presetHandler].currentBank = stateMap[presetHandler].mapList[0];
       stateMap[presetHandler].currentBankIndex = 0;
     }
-    presetHandler->registerPresetMapCallback(
-      [&](std::string mapName) { stateMap[presetHandler].currentBank = mapName; });
+    presetHandler->registerPresetMapCallback([&](std::string mapName) {
+      stateMap[presetHandler].currentBank = mapName;
+    });
   }
   ecInterface::PresetHandlerState &state = stateMap[presetHandler];
   float fontSize = ImGui::GetFontSize();
@@ -886,7 +923,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
       if (is_selected) {
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
-      if (ImGui::Selectable(name.c_str(), is_selected, 0, ImVec2(presetWidth, fontSize * 1.2f))) {
+      if (ImGui::Selectable(name.c_str(), is_selected, 0,
+                            ImVec2(presetWidth, fontSize * 1.2f))) {
         if (state.storeButtonState) {
           std::string saveName = state.enteredText;
           if (saveName.size() == 0) {
@@ -898,7 +936,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
           ImGui::PopStyleColor();
           state.enteredText.clear();
         } else {
-          if (presetHandler->recallPreset(counter) != "") {  // Preset is available
+          if (presetHandler->recallPreset(counter) !=
+              "") {  // Preset is available
             selection = counter;
           }
         }
@@ -989,8 +1028,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
       ImGui::PopItemWidth();
       ImGui::SameLine();
       if (ImGui::Button("Create")) {
-        auto path =
-          File::conformDirectory(presetHandler->getCurrentPath()) + state.newMapText + ".presetMap";
+        auto path = File::conformDirectory(presetHandler->getCurrentPath()) +
+                    state.newMapText + ".presetMap";
         // Create an empty file
         std::ofstream file;
         file.open(path, std::ios::out);
