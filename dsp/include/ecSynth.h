@@ -50,6 +50,10 @@ class ecSynth : public al::SynthVoice {
   // array of lfo parameters to draw later
   std::vector<LFOstruct *> LFOparameters;
 
+  std::vector<std::shared_ptr<util::buffer<float>>> soundClip; /* Store audio buffers in memory */
+  int mClipNum = 0; /* Number of sound files being stored in memory */
+  int mModClip = 0;
+
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
@@ -239,7 +243,6 @@ class ecSynth : public al::SynthVoice {
                                                callback */
   voiceScheduler grainScheduler; /* Schedule grains */
   std::vector<std::string> soundClipFileName;
-  int mClipNum = 0; /* Number of sound files being stored in memory */
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;
