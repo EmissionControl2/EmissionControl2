@@ -233,8 +233,6 @@ class ecSynth : public al::SynthVoice {
     filename = filename.substr(filename.find_last_of("/") + 1);
     return filename;
   }
-  std::vector<std::shared_ptr<util::buffer<float>>> soundClip; /* Store audio buffers in memory */
-  int mModClip = 0;
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;

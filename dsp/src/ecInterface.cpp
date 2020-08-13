@@ -344,10 +344,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  ImGui::PlotLines("", granulator.soundClip[granulator.mModClip]->data,
-                   granulator.soundClip[granulator.mModClip]->size / 64, 0, nullptr, -1, 1,
-                   ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-                   sizeof(float) * 64);
+  
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
