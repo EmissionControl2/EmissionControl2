@@ -256,7 +256,7 @@ void ecSynth::onProcess(AudioIOData &io) {
         } else {
           end = start * (1 - scan_width);
           mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
         }
       }
 
@@ -269,18 +269,6 @@ void ecSynth::onProcess(AudioIOData &io) {
       //                  ((frames)) / (mGlobalSamplingRate * abs(scan_speed)));
       // }
 
-      if (scan_speed != prev_scan_speed) {
-        start = mScanner.getValue();
-        if (scan_speed >= 0) {
-          end = start + ((frames - start) * scan_width);
-          mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * scan_speed));
-        } else {
-          end = start * (1 - scan_width);
-          mScanner.set(start, end,
-                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
-        }
-      }
 
       if (scan_width != prev_scan_width) {
         start = mScanner.getValue();
@@ -289,6 +277,7 @@ void ecSynth::onProcess(AudioIOData &io) {
           mScanner.set(start, end,
                        (end - start) / (mGlobalSamplingRate * scan_speed));
         } else {
+          std::cout << "here" << std::endl;
           end = start * (1 - scan_width);
           mScanner.set(start, end,
                        (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
