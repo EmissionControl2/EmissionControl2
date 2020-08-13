@@ -246,10 +246,10 @@ void ecSynth::onProcess(AudioIOData &io) {
       float frames = soundClip[mModClip]->frames;
       float start, end;
 
-      /**ODD BUG: when scan speed is higher than 1.015, the volume is gut in halfwut**/
+      /**ODD BUG: when scan speed is higher than 1.015, the volume is gut in
+       * halfwut**/
 
-
-      //Reset index.
+      // Reset index.
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
           prevTapeHeadVal != nowTapeHeadVal) {
         start = nowTapeHeadVal * frames;
