@@ -205,97 +205,10 @@ float ecModulator::sampleAndHoldUniform(float low, float high) {
     return mHoldNoiseSample;
 }
 
-/******* ecParameter *******/
-
-ecParameter::ecParameter(std::string parameterName, std::string displayName,
-                         float defaultValue, float defaultMin, float defaultMax,
-                         float absMin, float absMax, bool independentMod) {
-  mParameter =
-      new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
-  mDisplayName = displayName;
-  mParameter->displayName("##" + parameterName);
-  mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
-                            absMin, absMax};
-  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
-                             defaultMax, absMin, absMax};
-  mMin = defaultMin;
-  mMax = defaultMax;
-  mIndependentMod = independentMod;
-  if (mIndependentMod) // if true, this parameter will have its own modulator
-    mModulator = new ecModulator();
-}
-
-ecParameter::ecParameter(std::string parameterName, std::string displayName,
-                         std::string Group, float defaultValue,
-                         std::string prefix, float defaultMin, float defaultMax,
-                         float absMin, float absMax, bool independentMod) {
-  mParameter = new Parameter{parameterName, Group,      defaultValue,
-                             prefix,        defaultMin, defaultMax};
-  mDisplayName = displayName;
-  mParameter->displayName("##" + parameterName);
-  mLowRange = new Parameter{("##" + parameterName + "Low").c_str(),
-                            Group,
-                            defaultMin,
-                            prefix,
-                            absMin,
-                            absMax};
-  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
-                             Group,
-                             defaultMax,
-                             prefix,
-                             absMin,
-                             absMax};
-  mMin = defaultMin;
-  mMax = defaultMax;
-  mIndependentMod = independentMod;
-  if (mIndependentMod) // if true, this parameter will have its own modulator
-    mModulator = new ecModulator();
-}
-
-ecParameter::~ecParameter() {
-  delete mParameter;
-  delete mLowRange;
-  delete mHighRange;
-  if (mIndependentMod)
-    delete mModulator;
-}
-
-void ecParameter::setIndependentMod(bool independentMod) {
-  mIndependentMod = independentMod;
-  if (mIndependentMod && mModulator == nullptr)
-    mModulator = new ecModulator();
-  else
-    delete mModulator;
-}
-
-float ecParameter::getModParam(float modWidth) {
-  float temp;
-  if (!mIndependentMod && mModSource.get() != nullptr)
-    temp = mParameter->get() + (mModSource->getCurrentSample() * modWidth *
-                                (mHighRange->get() - mLowRange->get()));
-  else if (mIndependentMod)
-    temp = mParameter->get() + ((*mModulator)() * modWidth *
-                                (mHighRange->get() - mLowRange->get()));
-  else {
-    std::cerr << "No Valid Modulation source for ecParameter instance: "
-              << mParameter->displayName() << std::endl;
-    std::exit(1);
-  }
-  if (temp > mHighRange->get())
-    return mHighRange->get();
-  else if (temp < mLowRange->get())
-    return mLowRange->get();
-  else
-    return temp;
-}
-
-void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
-  presetHandler.registerParameter(*mParameter);
-  presetHandler.registerParameter(*mLowRange);
-  presetHandler.registerParameter(*mHighRange);
-}
-
-void ecParameter::drawRangeSlider(float scaleX, consts::sliderType slideType) {
+/******* ecParameter*******
+void ecParameter::drawRangeSlider(float scaleX,
+                                       consts::sliderType slideType,
+                                       std::string sliderText) {
   float valueSlider, valueLow, valueHigh;
   bool changed;
   ImGuiIO &io = ImGui::GetIO();
@@ -366,6 +279,231 @@ void ecParameter::drawRangeSlider(float scaleX, consts::sliderType slideType) {
   else if (slideType == consts::MOD)
     ImGui::Text("");
   else if (slideType == consts::PARAM)
+    ImGui::Text((getDisplayName()).c_str());
+}
+*/
+
+/******* ecParameter *******/
+
+ecParameter::ecParameter(std::string parameterName, std::string displayName,
+                         float defaultValue, float defaultMin, float defaultMax,
+                         float absMin, float absMax,
+                         consts::sliderType slideType, bool independentMod) {
+  mParameter =
+      new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
+  mDisplayName = displayName;
+  mParameter->displayName("##" + parameterName);
+  mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
+                            absMin, absMax};
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
+                             defaultMax, absMin, absMax};
+  mMin = defaultMin;
+  mMax = defaultMax;
+  mSliderType = slideType;
+  mIndependentMod = independentMod;
+  if (mIndependentMod) // if true, this parameter will have its own modulator
+    mModulator = new ecModulator();
+}
+
+ecParameter::ecParameter(std::string parameterName, std::string displayName,
+                         std::string Group, float defaultValue,
+                         std::string prefix, float defaultMin, float defaultMax,
+                         float absMin, float absMax,
+                         consts::sliderType slideType, bool independentMod) {
+  mParameter = new Parameter{parameterName, Group,      defaultValue,
+                             prefix,        defaultMin, defaultMax};
+  mDisplayName = displayName;
+  mParameter->displayName("##" + parameterName);
+  mLowRange = new Parameter{("##" + parameterName + "Low").c_str(),
+                            Group,
+                            defaultMin,
+                            prefix,
+                            absMin,
+                            absMax};
+  mHighRange = new Parameter{("##" + parameterName + "High").c_str(),
+                             Group,
+                             defaultMax,
+                             prefix,
+                             absMin,
+                             absMax};
+  mMin = defaultMin;
+  mMax = defaultMax;
+  mSliderType = slideType;
+  mIndependentMod = independentMod;
+  if (mIndependentMod) // if true, this parameter will have its own modulator
+    mModulator = new ecModulator();
+}
+
+ecParameter::~ecParameter() {
+  delete mParameter;
+  delete mLowRange;
+  delete mHighRange;
+  if (mIndependentMod)
+    delete mModulator;
+}
+
+void ecParameter::setIndependentMod(bool independentMod) {
+  mIndependentMod = independentMod;
+  if (mIndependentMod && mModulator == nullptr)
+    mModulator = new ecModulator();
+  else
+    delete mModulator;
+}
+
+float ecParameter::getModParam(float modWidth) {
+  float temp;
+  if (!mIndependentMod && mModSource.get() != nullptr)
+    temp = mParameter->get() + (mModSource->getCurrentSample() * modWidth *
+                                (mHighRange->get() - mLowRange->get()));
+  else if (mIndependentMod)
+    temp = mParameter->get() + ((*mModulator)() * modWidth *
+                                (mHighRange->get() - mLowRange->get()));
+  else {
+    std::cerr << "No Valid Modulation source for ecParameter instance: "
+              << mParameter->displayName() << std::endl;
+    std::exit(1);
+  }
+  if (temp > mHighRange->get())
+    return mHighRange->get();
+  else if (temp < mLowRange->get())
+    return mLowRange->get();
+  else
+    return temp;
+}
+
+void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
+  presetHandler.registerParameter(*mParameter);
+  presetHandler.registerParameter(*mLowRange);
+  presetHandler.registerParameter(*mHighRange);
+}
+
+void ecParameter::drawRangeSlider(float scaleX, 
+                                  std::string sliderText) {
+  float valueSliderf, valueLowf, valueHighf;
+  int valueSlideri, valueLowi, valueHighi;
+  bool changed, isInt = false;
+  if (mSliderType > 2)
+    isInt = true;
+  ImGuiIO &io = ImGui::GetIO();
+  ImGui::PushItemWidth(50 * io.FontGlobalScale);
+  if (isInt) {
+    valueLowi = static_cast<int>(mLowRange->get());
+    changed = ImGui::DragInt((mLowRange->displayName()).c_str(), &valueLowi,
+                             0.1, (int)mLowRange->min(), (int)mLowRange->max());
+  } else {
+    valueLowf = mLowRange->get();
+    changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLowf,
+                               0.1, mLowRange->min(), mLowRange->max(), "%.3f");
+  }
+
+  // if (mParameter->displayName() == "##Grainrate")
+  //   std::cout << mLowRange->get() << std::endl;
+
+  ImGui::SameLine();
+  if (changed && isInt) {
+    mLowRange->set(valueLowi);
+  } else if (changed && !isInt) {
+    mLowRange->set(valueLowf);
+  }
+  if (isInt)
+    mParameter->min(valueLowi);
+  else
+    mParameter->min(valueLowf);
+
+  ImGui::PopItemWidth();
+  ImGui::SameLine();
+  if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (85 * scaleX));
+  else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (58 * scaleX));
+  else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
+    if (ImGui::GetContentRegionAvail().x - 190 > 80)
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (190 * scaleX));
+    else
+      ImGui::PushItemWidth(80);
+  if (isInt) {
+    valueSlideri = static_cast<int>(mParameter->get());
+    if (sliderText != "") {
+      changed = ImGui::SliderInt((mParameter->displayName()).c_str(),
+                                 &valueSlideri, mParameter->min(),
+                                 mParameter->max(), sliderText.c_str());
+    } else {
+      changed =
+          ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri,
+                           mParameter->min(), mParameter->max());
+    }
+  } else { // Draw float slider.
+    valueSliderf = mParameter->get();
+    if (sliderText != "") {
+      ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
+                         mParameter->min(), mParameter->max(),
+                         sliderText.c_str());
+    } else {
+      changed =
+          ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
+                             mParameter->min(), mParameter->max(), "%0.3f");
+    }
+  }
+
+  if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
+    editing = true;
+  }
+  if (editing) {
+    if (ImGui::IsItemDeactivatedAfterEdit() &&
+        (ImGui::IsMouseDown(0) ||
+         ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = true;
+      editing = false;
+    } else if (ImGui::IsItemDeactivated() &&
+               (ImGui::IsMouseDown(0) ||
+                ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
+      changed = false;
+      editing = false;
+    } else
+      changed = false;
+  }
+
+  if (changed && isInt)
+    mParameter->set(valueSlideri);
+  else if (changed && !isInt)
+    mParameter->set(valueSliderf);
+
+  ImGui::PopItemWidth();
+
+  ImGui::SameLine();
+
+  ImGui::PushItemWidth(50 * io.FontGlobalScale);
+  if (isInt) {
+    valueHighi = static_cast<int>(mHighRange->get());
+    changed =
+        ImGui::DragInt((mHighRange->displayName()).c_str(), &valueHighi, 0.1,
+                       (int)mHighRange->min(), (int)mHighRange->max());
+  } else {
+    valueHighf = mHighRange->get();
+    changed =
+        ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHighf, 0.1,
+                         mHighRange->min(), mHighRange->max(), "%.3f");
+  }
+
+  ImGui::SameLine();
+  if (changed && isInt) {
+    mHighRange->set(valueHighi);
+  } else if (changed && !isInt) {
+    mHighRange->set(valueHighf);
+  }
+  if (isInt)
+    mParameter->max(valueHighi);
+  else
+    mParameter->max(valueHighf);
+
+  ImGui::PopItemWidth();
+
+  ImGui::SameLine();
+  if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
+    ImGui::Text("Hz");
+  else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
+    ImGui::Text("");
+  else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
     ImGui::Text((getDisplayName()).c_str());
 }
 

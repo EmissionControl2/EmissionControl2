@@ -274,7 +274,9 @@ public:
   ecParameter(std::string parameterName, std::string displayName,
               float defaultValue = 0, float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX, bool independentMod = 0);
+              float absMax = FLT_MAX,
+              consts::sliderType slideType = consts::PARAM,
+              bool independentMod = 0);
 
   /**
    * @brief ecParameter Constructor.
@@ -299,7 +301,9 @@ public:
               std::string Group, float defaultValue = 0,
               std::string prefix = "", float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX, bool independentMod = 0);
+              float absMax = FLT_MAX,
+              consts::sliderType slideType = consts::PARAM,
+              bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -351,7 +355,8 @@ public:
   float getModParam(float modDepth);
 
   /**
-   * @brief Registers all parameters within ecParameter to a preset handler.
+   * @brief Registers all parameters within ecParameter to a preset
+   * handler.
    *
    * @param[in] presetHandler : A reference to a preset handler.
    */
@@ -360,15 +365,19 @@ public:
   /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(float scaleX = 1.0f,
-                       consts::sliderType slideType = consts::PARAM);
+  void drawRangeSlider(float scaleX = 1.0f, std::string sliderText = "");
 
   std::string getDisplayName() const { return mDisplayName; }
 
   void setDisplayName(std::string name) { mDisplayName = name; }
 
+  consts::sliderType getSliderType() const { return mSliderType; }
+
+  void getSliderType(consts::sliderType s) { mSliderType = s; }
+
 private:
   std::string mDisplayName;
+  consts::sliderType mSliderType;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
   bool mIndependentMod;
@@ -463,7 +472,8 @@ public:
   int getModParam(float modWidth);
 
   /**
-   * @brief Registers all parameters within ecParameter to a preset handler.
+   * @brief Registers all parameters within ecParameter to a preset
+   * handler.
    *
    * @param[in] presetHandler : A reference to a preset handler.
    */
@@ -744,8 +754,8 @@ public:
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
-    frequency =
-        new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
+    frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001,
+                                10000, consts::LFO);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});

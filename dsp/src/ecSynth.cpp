@@ -155,10 +155,6 @@ void ecSynth::init(al::AudioIOData *io) {
   LFOparameters[3]->duty->registerChangeCallback(
     [&](float value) { Modulators[3]->setWidth(value); });
 
-  // scanSpeed->mParameter->registerChangeCallback(
-  //     [&](float value) {
-
-  //       mScanner.setFrequency(value); });
   /**
    * WHY DOES THIS CRASH ??
    */
