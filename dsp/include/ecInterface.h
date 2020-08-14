@@ -54,8 +54,12 @@ class ecInterface : public al::App {
   };
 
   // Custom preset draw function (copied and modified from al_ParameterGUI.hpp)
-  static PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
-                                                 int presetColumns, int presetRows);
+  PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
+                                          int presetColumns, int presetRows);
+
+  void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
+                          uint32_t numChannels, std::string directory = "",
+                          uint32_t bufferSize = 0);
 
  private:
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
@@ -78,8 +82,9 @@ class ecInterface : public al::App {
   float adjustScaleY = 1.0;
   double globalSamplingRate = consts::SAMPLE_RATE;
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
-                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
+                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                           ImGuiWindowFlags_NoSavedSettings;
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
@@ -88,8 +93,10 @@ class ecInterface : public al::App {
   float oscFrame = 1;
   double lastSamplingRate = globalSamplingRate;
 
-  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
-  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataL =
+    std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataR =
+    std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
   int VUdataSize = globalSamplingRate / 30;
@@ -101,26 +108,29 @@ class ecInterface : public al::App {
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(98, 113, 118);    // Background
-  ImColor SecondaryLight = ImColor(139, 127, 58);  // Oscilloscope L
-  ImColor TertiaryLight = ImColor(123, 52, 76);    // Oscilloscope R
-  ImColor Shade1Light = ImColor(133, 144, 148);    // Slider Color 1
-  ImColor Shade2Light = ImColor(167, 175, 178);    // Slider Color 2
-  ImColor Shade3Light = ImColor(202, 207, 208);    // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);            // Text Color
+  ImColor PrimaryLight = ImColor(98, 113, 118);  // Background
+  ImColor YellowLight = ImColor(139, 127, 58);   // Yellow
+  ImColor RedLight = ImColor(123, 52, 76);       // Red
+  ImColor GreenLight = ImColor(106, 154, 60);    // Green
+  ImColor Shade1Light = ImColor(133, 144, 148);  // Slider Color 1
+  ImColor Shade2Light = ImColor(167, 175, 178);  // Slider Color 2
+  ImColor Shade3Light = ImColor(202, 207, 208);  // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);       // Background
-  ImColor SecondaryDark = ImColor(208, 193, 113);  // Oscilloscope L
-  ImColor TertiaryDark = ImColor(184, 100, 128);   // Oscilloscope R
-  ImColor Shade1Dark = ImColor(55, 63, 66);        // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);        // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);      // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);       // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);    // Background
+  ImColor YellowDark = ImColor(208, 193, 113);  // Yellow
+  ImColor RedDark = ImColor(184, 100, 128);     // Red
+  ImColor GreenDark = ImColor(106, 154, 60);    // Green
+  ImColor Shade1Dark = ImColor(55, 63, 66);     // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);     // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);   // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);    // Text Color
 
   ImColor *PrimaryColor;
-  ImColor *SecondaryColor;
-  ImColor *TertiaryColor;
+  ImColor *ECyellow;
+  ImColor *ECred;
+  ImColor *ECgreen;
   ImColor *Shade1;
   ImColor *Shade2;
   ImColor *Shade3;
@@ -173,7 +183,5 @@ class ecInterface : public al::App {
  *
  * @param[in] Amount of space allocated for sound.
  */
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
-                               std::string directory = "", uint32_t bufferSize = 0);
 
 #endif

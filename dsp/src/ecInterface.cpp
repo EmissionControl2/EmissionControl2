@@ -213,8 +213,9 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Toggle Light/Dark", "")) {
         if (light) {
           PrimaryColor = &PrimaryDark;
-          SecondaryColor = &SecondaryDark;
-          TertiaryColor = &TertiaryDark;
+          ECyellow = &YellowDark;
+          ECred = &RedDark;
+          ECgreen = &GreenDark;
           Shade1 = &Shade1Dark;
           Shade2 = &Shade2Dark;
           Shade3 = &Shade3Dark;
@@ -222,8 +223,9 @@ void ecInterface::onDraw(Graphics &g) {
           light = false;
         } else {
           PrimaryColor = &PrimaryLight;
-          SecondaryColor = &SecondaryLight;
-          TertiaryColor = &TertiaryLight;
+          ECyellow = &YellowLight;
+          ECred = &RedLight;
+          ECgreen = &GreenLight;
           Shade1 = &Shade1Light;
           Shade2 = &Shade2Light;
           Shade3 = &Shade3Light;
@@ -302,7 +304,7 @@ void ecInterface::onDraw(Graphics &g) {
   granulator.pan.drawRangeSlider(fontScale);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   granulator.volumeDB.drawRangeSlider(fontScale);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
   // Draw modulation window -------------------------------------------
@@ -345,7 +347,7 @@ void ecInterface::onDraw(Graphics &g) {
   drawModulationControl(granulator.panLFO, granulator.modPanDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -414,12 +416,15 @@ void ecInterface::onDraw(Graphics &g) {
     grainAccum = 0;
   }
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PlotHistogram(
     "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
     highestStreamCount,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(int));
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -443,21 +448,22 @@ void ecInterface::onDraw(Graphics &g) {
 
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
   oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
-  ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
   ImGui::SetCursorPosY(70 * adjustScaleY);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*SecondaryColor);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECyellow);
   ImGui::PlotLines(
     "ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
 
   ImGui::SetCursorPosY(70 * adjustScaleY);
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(255, 255, 255, 0));
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*TertiaryColor);
+  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
   ImGui::PlotLines(
     "ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (31 * adjustScaleY)),
     sizeof(float));
 
   ImGui::SetCursorPosY(70 * adjustScaleY);
@@ -501,16 +507,16 @@ void ecInterface::onDraw(Graphics &g) {
   VUright = sqrt(VUright);
 
   // set meter colors to green
-  ImVec4 VUleftCol = (ImVec4)ImColor(0, 255, 0, 100);
-  ImVec4 VUrightCol = (ImVec4)ImColor(0, 255, 0, 100);
+  ImVec4 VUleftCol = (ImVec4)*ECgreen;
+  ImVec4 VUrightCol = (ImVec4)*ECgreen;
 
   // Set meter colors to red if clipped
   if (granulator.clipL > 0) {
-    VUleftCol = (ImVec4)ImColor(255, 0, 0, 100);
+    VUleftCol = (ImVec4)*ECred;
     granulator.clipL--;
   }
   if (granulator.clipR > 0) {
-    VUrightCol = (ImVec4)ImColor(255, 0, 0, 100);
+    VUrightCol = (ImVec4)*ECred;
     granulator.clipR--;
   }
 
@@ -630,9 +636,10 @@ void ecInterface::drawAudioIO(AudioIO *io) {
   ImGui::PopID();
 }
 
-static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
-                               uint32_t numChannels, std::string directory,
-                               uint32_t bufferSize) {
+void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder,
+                                     double frameRate, uint32_t numChannels,
+                                     std::string directory,
+                                     uint32_t bufferSize) {
   struct SoundfileRecorderState {
     bool recordButton;
     bool overwriteButton;
@@ -650,7 +657,7 @@ static void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
   ImGui::PopItemWidth();
 
   if (state.recordButton) {
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
+    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*ECred);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0, 0.5, 0.5, 1.0));
   }
   std::string buttonText = state.recordButton ? "Stop" : "Record";
@@ -746,9 +753,9 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0, 0, 0, 150));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
                         (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 }
@@ -841,16 +848,18 @@ void ecInterface::jsonReadAndSetColorSchemeMode() {
   light = config.at(consts::LIGHT_MODE_KEY);
   if (!light) {
     PrimaryColor = &PrimaryDark;
-    SecondaryColor = &SecondaryDark;
-    TertiaryColor = &TertiaryDark;
+    ECyellow = &YellowDark;
+    ECred = &RedDark;
+    ECgreen = &GreenDark;
     Shade1 = &Shade1Dark;
     Shade2 = &Shade2Dark;
     Shade3 = &Shade3Dark;
     Text = &TextDark;
   } else {
     PrimaryColor = &PrimaryLight;
-    SecondaryColor = &SecondaryLight;
-    TertiaryColor = &TertiaryLight;
+    ECyellow = &YellowLight;
+    ECred = &RedLight;
+    ECgreen = &GreenLight;
     Shade1 = &Shade1Light;
     Shade2 = &Shade2Light;
     Shade3 = &Shade3Light;
@@ -921,7 +930,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
   ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
-    ImGui::PushStyleColor(ImGuiCol_Text, 0xff0000ff);
+    ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*ECgreen);
   }
   float presetWidth = (ImGui::GetContentRegionAvail().x / 12.0f) - 8.0f;
   for (int row = 0; row < presetRows; row++) {
@@ -982,7 +991,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
   ImGui::SameLine(0.0f, 40.0f);
 
   if (state.storeButtonState) {
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0, 0.0, 0.0, 1.0));
+    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*ECgreen);
   }
   std::string storeText = state.storeButtonState ? "Cancel" : "Store";
   bool storeButtonPressed = ImGui::Button(storeText.c_str(), ImVec2(100, 0));
@@ -1052,9 +1061,6 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
         state.newMap = false;
       }
     }
-    // TODO options to create new bank
-    //        ImGui::SameLine();
-    //          ImGui::PopItemWidth();
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
     float morphTime = presetHandler->getMorphTime();
     if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
@@ -1062,8 +1068,6 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
     }
     ImGui::PopItemWidth();
   }
-
-  //            ImGui::Text("%s", currentPresetName.c_str());
   ImGui::PopID();
   return state;
 }
