@@ -5,6 +5,26 @@
 
 namespace consts {
 
+
+enum paramNames {
+  GRAIN_RATE = 0,
+  ASYNC,
+  INTERM,
+  STREAMS,
+  GRAIN_DUR,
+  ENVELOPE,
+  PITCH_SHIFT,
+  FILTER_CENTER,
+  RESONANCE,
+  SOUND_FILE,
+  SCAN_POS,
+  SCAN_WIDTH,
+  SCAN_SPEED,
+  PAN,
+  VOLUME
+};
+const int NUM_PARAMS = 15;
+
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
 const int AUDIO_OUTS = 2;

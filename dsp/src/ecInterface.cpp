@@ -279,36 +279,35 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.grainRate.drawRangeSlider(fontScale);
+  granulator.grainRate.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.asynchronicity.drawRangeSlider(fontScale);
+  granulator.asynchronicity.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.intermittency.drawRangeSlider(fontScale);
+  granulator.intermittency.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.streams.drawRangeSlider(fontScale);
+  granulator.streams.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.grainDurationMs.drawRangeSlider(fontScale);
+  granulator.grainDurationMs.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.envelope.drawRangeSlider(fontScale);
+  granulator.envelope.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.transposition.drawRangeSlider(fontScale);
+  granulator.transposition.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.filter.drawRangeSlider(fontScale);
+  granulator.filter.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.resonance.drawRangeSlider(fontScale);
+  granulator.resonance.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.soundFile.drawRangeSlider(fontScale,
-                                       granulator.getCurrentAudioFileName());
+  granulator.soundFile.drawRangeSlider(granulator.getCurrentAudioFileName());
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.tapeHead.drawRangeSlider(fontScale);
+  granulator.tapeHead.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.scanWidth.drawRangeSlider(fontScale);
+  granulator.scanWidth.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.scanSpeed.drawRangeSlider(fontScale);
+  granulator.scanSpeed.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.pan.drawRangeSlider(fontScale);
+  granulator.pan.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.volumeDB.drawRangeSlider(fontScale);
+  granulator.volumeDB.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
@@ -726,7 +725,7 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(fontScale);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider();
   // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
 
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
@@ -747,7 +746,7 @@ void ecInterface::drawModulationControl(al::ParameterMenu &menu,
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  slider.drawRangeSlider(fontScale);
+  slider.drawRangeSlider();
 }
 
 void ecInterface::setGUIColors() {
