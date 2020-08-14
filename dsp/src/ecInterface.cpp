@@ -43,9 +43,11 @@ void ecInterface::onInit() {
   system(("mkdir -p " + userPath + presetsPath).c_str());
 #endif
 
-  initFileIOPaths();
+  initJsonConfig();
+  jsonReadAndSetSoundOutputPath();
   jsonReadAndSetAudioSettings();
   jsonReadAndSetColorSchemeMode();
+  jsonReadAndSetFontScale();
   granulator.init(&audioIO());
 
 // Load in all files in at specified directory.
@@ -241,8 +243,9 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::EndMainMenuBar();
   }
-  // PopUp Font scale window ------------------------------------------
-  if (fontScaleWindow == true) {
+
+  // PopUp Font scale window
+  if (fontScaleWindow) {
     ImGui::OpenPopup("Font Size");
   }
   bool fontScaleOpen = true;
@@ -252,12 +255,13 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopItemWidth();
     ImGui::EndPopup();
   }
+  if (!fontScaleOpen) jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
 
   // PopUp Audio IO window --------------------------------------------
   // This enables starting and stopping audio as well as selecting
   // Audio device and its parameters
   // if statement opens Audio IO popup if chosen from menu
-  if (displayIO == true) {
+  if (displayIO) {
     ImGui::OpenPopup("Audio Settings");
   }
 
@@ -424,7 +428,6 @@ void ecInterface::onDraw(Graphics &g) {
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(int));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -795,6 +798,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::LIGHT_MODE_KEY) == config.end())
       config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
 
+    if (config.find(consts::FONT_SCALE_KEY) == config.end())
+      config[consts::FONT_SCALE_KEY] = consts::FONT_SCALE;
+
   } else {
     config[consts::SOUND_OUTPUT_PATH_KEY] =
       f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
@@ -802,17 +808,14 @@ bool ecInterface::initJsonConfig() {
     config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
     config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
+
+    config[consts::FONT_SCALE_KEY] = consts::FONT_SCALE;
   }
 
   std::ofstream file((userPath + configFile).c_str());
   if (file.is_open()) file << config;
 
   return false;
-}
-
-void ecInterface::initFileIOPaths() {
-  initJsonConfig();
-  jsonReadAndSetSoundOutputPath();
 }
 
 template <typename T>
@@ -833,6 +836,19 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
   } else {
     return false;
   }
+}
+
+void ecInterface::jsonReadAndSetFontScale() {
+  json config;
+
+  std::ifstream ifs(userPath + configFile);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  fontScale = config.at(consts::FONT_SCALE_KEY);
 }
 
 void ecInterface::jsonReadAndSetColorSchemeMode() {
