@@ -485,6 +485,45 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
+  // Draw Scan Display
+  ImGui::PushFont(titleFont);
+  ParameterGUI::beginPanel("Scan Display", windowWidth * 3 / 4,
+                           windowHeight * 3 / 4 + (25 * adjustScaleY),
+                           windowWidth * 3 / 16, windowHeight / 4, flags);
+  ImGui::PopFont();
+  ImGui::PushFont(bodyFont);
+
+  float plotWidth = ImGui::GetContentRegionAvail().x;
+  float plotHeight = ImGui::GetContentRegionAvail().y - (30 * adjustScaleY);
+  ImVec2 p = ImGui::GetCursorScreenPos();
+
+  // Downsample value
+  int sampleSkip = 1;
+
+  // Increase downsample value based on file length
+  if (granulator.soundClip[granulator.mModClip]->size >
+      ImGui::GetContentRegionAvail().x)
+    sampleSkip = int(granulator.soundClip[granulator.mModClip]->size /
+                     ImGui::GetContentRegionAvail().x);
+
+  // Draw Waveform
+  ImGui::PlotLines(
+    "##scanDisplay", granulator.soundClip[granulator.mModClip]->data,
+    granulator.soundClip[granulator.mModClip]->size / sampleSkip, 0, nullptr,
+    -1, 1, ImVec2(plotWidth, plotHeight), sizeof(float) * sampleSkip);
+
+  // Draw scan position
+  ImGui::GetWindowDrawList()->AddLine(
+    ImVec2(p.x + (granulator.tapeHead.getParam() * plotWidth), p.y),
+    ImVec2(p.x + (granulator.tapeHead.getParam() * plotWidth),
+           p.y + plotHeight),
+    IM_COL32(255, 0, 0, 255), 5.0f);
+
+  // Draw scan width
+
+  ImGui::PopFont();
+  ParameterGUI::endPanel();
+
   // Draw VU Meter window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel(" ##VU Meter", windowWidth * 15 / 16,
