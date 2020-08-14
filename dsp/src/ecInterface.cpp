@@ -135,6 +135,7 @@ void ecInterface::onCreate() {
     ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
 #endif
 
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
   setGUIColors();
 }
 
@@ -157,10 +158,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   al::imguiBeginFrame();
 
-  if (width() < 1000)
-    ImGui::GetIO().FontGlobalScale = width() / 1000.0f;
-  else
-    ImGui::GetIO().FontGlobalScale = fontScale;
+  ImGui::GetIO().FontGlobalScale = fontScale;
 
   adjustScaleY = 1.0f + ((fontScale - 1.0f) / 1.5f);
 
@@ -278,36 +276,35 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.grainRate.drawRangeSlider(fontScale);
+  granulator.grainRate.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.asynchronicity.drawRangeSlider(fontScale);
+  granulator.asynchronicity.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.intermittency.drawRangeSlider(fontScale);
+  granulator.intermittency.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.streams.drawRangeSlider(fontScale);
+  granulator.streams.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.grainDurationMs.drawRangeSlider(fontScale);
+  granulator.grainDurationMs.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.envelope.drawRangeSlider(fontScale);
+  granulator.envelope.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.transposition.drawRangeSlider(fontScale);
+  granulator.transposition.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.filter.drawRangeSlider(fontScale);
+  granulator.filter.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.resonance.drawRangeSlider(fontScale);
+  granulator.resonance.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.soundFile.drawRangeSlider(fontScale,
-                                       granulator.getCurrentAudioFileName());
+  granulator.soundFile.drawRangeSlider(granulator.getCurrentAudioFileName());
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.tapeHead.drawRangeSlider(fontScale);
+  granulator.tapeHead.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.scanWidth.drawRangeSlider(fontScale);
+  granulator.scanWidth.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.scanSpeed.drawRangeSlider(fontScale);
+  granulator.scanSpeed.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  granulator.pan.drawRangeSlider(fontScale);
+  granulator.pan.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  granulator.volumeDB.drawRangeSlider(fontScale);
+  granulator.volumeDB.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
@@ -358,10 +355,31 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw preset window -----------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("PRESETS", 0, windowHeight / 2 + (25 * adjustScaleY),
-                           windowWidth / 2, windowHeight / 4, flags);
+                           windowWidth / 4, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ecInterface::ECdrawPresetHandler(&mPresets, 12, 4);
+  ImGui::PopFont();
+  ParameterGUI::endPanel();
+
+  // Draw recorder window ---------------------------------------------
+  ImGui::PushFont(titleFont);
+  ParameterGUI::beginPanel("RECORDER", windowWidth / 4,
+                           windowHeight / 2 + (25 * adjustScaleY),
+                           windowWidth / 4, windowHeight / 4, flags);
+  ImGui::PopFont();
+  ImGui::PushFont(bodyFont);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
+                     audioIO().channelsOut(), soundOutput);
+  if (ImGui::Button("Change Output Path")) {
+    result = NFD_PickFolder(NULL, &outPath);
+
+    if (result == NFD_OKAY) {
+      std::string temp = outPath;
+      jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
+      jsonReadAndSetSoundOutputPath();
+    }
+  }
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -376,27 +394,6 @@ void ecInterface::onDraw(Graphics &g) {
   drawLFOcontrol(granulator, 1);
   drawLFOcontrol(granulator, 2);
   drawLFOcontrol(granulator, 3);
-  ImGui::PopFont();
-  ParameterGUI::endPanel();
-
-  // Draw recorder window ---------------------------------------------
-  ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("RECORDER", windowWidth * 3 / 4,
-                           windowHeight * 3 / 4 + (25 * adjustScaleY),
-                           windowWidth * 3 / 16, windowHeight / 4, flags);
-  ImGui::PopFont();
-  ImGui::PushFont(bodyFont);
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
-                     audioIO().channelsOut(), soundOutput);
-  if (ImGui::Button("Change Output Path")) {
-    result = NFD_PickFolder(NULL, &outPath);
-
-    if (result == NFD_OKAY) {
-      std::string temp = outPath;
-      jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
-      jsonReadAndSetSoundOutputPath();
-    }
-  }
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -458,7 +455,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_PlotLines,
                         light ? (ImVec4)*ECgreen : (ImVec4)*ECyellow);
   ImGui::PlotLines(
-    "ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
+    "##ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   // Draw a black line across the center of the scope
@@ -466,22 +463,22 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
   ImGui::PlotLines(
-    "black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+    "##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   // Draw right channel oscilloscope
-  ImGui::SetCursorPosY(70 * adjustScaleY);
+  ImGui::SetCursorPosY(71 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
   ImGui::PlotLines(
-    "ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-    ImVec2(0, ImGui::GetContentRegionAvail().y - (31 * adjustScaleY)),
+    "##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   // Draw a black line across the center of the scope
-  ImGui::SetCursorPosY(70 * adjustScaleY);
+  ImGui::SetCursorPosY(71 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
   ImGui::PlotLines(
-    "black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
-    ImVec2(0, ImGui::GetContentRegionAvail().y - (31 * adjustScaleY)),
+    "##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   ImGui::PopItemWidth();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
@@ -495,20 +492,20 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth * 1 / 16, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  VUdataSize = globalSamplingRate / 30;  // Size of VU meter data arrays
-  if (VUdataSize !=
-      lastVUdataSize) {  // resize VU meter data arrays if SR changed
+  // Size of VU meter data arrays in samples
+  VUdataSize = globalSamplingRate / 30;
+  // resize VU meter data arrays if SR changed
+  if (VUdataSize != lastVUdataSize) {
     VUdataLeft.resize(VUdataSize);
     VUdataRight.resize(VUdataSize);
     lastVUdataSize = VUdataSize;
   }
+  // Get left channel data from ringbuffer
+  VUdataLeft = granulator.vuBufferL.getArray(VUdataSize);
+  // Get right channel data from ringbuffer
+  VUdataRight = granulator.vuBufferR.getArray(VUdataSize);
 
-  VUdataLeft =
-    granulator.vuBufferL.getArray(VUdataSize);  // get left data from ringbuffer
-  VUdataRight = granulator.vuBufferR.getArray(
-    VUdataSize);  // get right data from ringbuffer
-
-  // Calculate RMS
+  // Calculate RMS value
   float VUleft =
     std::accumulate(VUdataLeft.begin(), VUdataLeft.end(), 0.0f) / VUdataSize;
   VUleft = sqrt(VUleft);
@@ -516,7 +513,7 @@ void ecInterface::onDraw(Graphics &g) {
     std::accumulate(VUdataRight.begin(), VUdataRight.end(), 0.0f) / VUdataSize;
   VUright = sqrt(VUright);
 
-  // set meter colors to green
+  // Set meter colors to green
   ImVec4 VUleftCol = (ImVec4)*ECgreen;
   ImVec4 VUrightCol = (ImVec4)*ECgreen;
 
@@ -530,12 +527,13 @@ void ecInterface::onDraw(Graphics &g) {
     granulator.clipR--;
   }
 
+  // Draw VU Meters
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUleftCol);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUleftCol);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, ((ImVec4)ImColor(0, 0, 0, 180)));
   ImGui::PlotHistogram(
     "##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
-    ImVec2((windowWidth * 1 / 32) - 12,
+    ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4,
            ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   ImGui::SameLine();
@@ -543,13 +541,10 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUrightCol);
   ImGui::PlotHistogram(
     "##VUright", &VUright, 1, 0, nullptr, 0, 1,
-    ImVec2((windowWidth * 1 / 32) - 12,
+    ImVec2(ImGui::GetContentRegionAvail().x,
            ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, (ImVec4)ImColor(0, 0, 0, 150));
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered,
-                        (ImVec4)ImColor(1, 1, 1, 150));
   ParameterGUI::endPanel();
 
   // Throw popup to remind user to load in sound files if none are present.
@@ -714,23 +709,22 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder,
 void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
-  ImGui::SetCursorPosX(50 * ImGui::GetIO().FontGlobalScale);
-  ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
+  ImGui::SetCursorPosX(50 * fontScale);
+  ImGui::PushItemWidth(70 * fontScale);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  ImGui::PushItemWidth(60 * ImGui::GetIO().FontGlobalScale);
+  ImGui::PushItemWidth(55 * fontScale);
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(fontScale,
-                                                             consts::LFO);
+  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider(consts::LFO);
   // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
 
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
     ImGui::Text("Duty");
     ImGui::SameLine();
-    ImGui::SetCursorPosX(50 * fontScale);
+    ImGui::SetCursorPosX(183 * fontScale);
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (25 * fontScale));
     ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
     ImGui::PopItemWidth();
@@ -741,11 +735,11 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
 
 void ecInterface::drawModulationControl(al::ParameterMenu &menu,
                                         ecParameter &slider) {
-  ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
+  ImGui::PushItemWidth(70 * fontScale);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  slider.drawRangeSlider(fontScale, consts::MOD);
+  slider.drawRangeSlider(consts::MOD);
 }
 
 void ecInterface::setGUIColors() {

@@ -32,7 +32,7 @@
  * Allows for a single value [0,1] to interpolate between all three envelopes.
  */
 class grainEnvelope {
-public:
+ public:
   void setSamplingRate(float samplingRate);
 
   float getSamplingRate() { return mSamplingRate; }
@@ -91,13 +91,13 @@ public:
 
   float getDuration() const { return mDuration; }
 
-private:
+ private:
   float mSamplingRate;
   util::expo mExpoEnv;
   util::tukey mTurkeyEnv;
   util::expo mRExpoEnv;
-  float mEnvelope; // assumes between 0 and 1
-  float mDuration; // in seconds
+  float mEnvelope;  // assumes between 0 and 1
+  float mDuration;  // in seconds
 };
 
 /**
@@ -105,7 +105,7 @@ private:
  * grain/voiceScheduler parameters/
  */
 class ecModulator {
-public:
+ public:
   /**
    * @brief Constructor for ecModulator.
    *
@@ -223,7 +223,7 @@ public:
 
   float getPhase() const { return mLFO.phase(); }
 
-private:
+ private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
@@ -243,18 +243,18 @@ private:
  * sources).
  */
 class ecParameter {
-public:
+ public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
-                                     // parameter's own modulator.
+  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
+                                      // parameter's own modulator.
   al::Parameter *mParameter = nullptr;
   al::Parameter *mLowRange =
-      nullptr; // Parameter designed to bound low mParameter.
+    nullptr;  // Parameter designed to bound low mParameter.
   al::Parameter *mHighRange =
-      nullptr; // Parameter designed to bound high mParameter.
+    nullptr;  // Parameter designed to bound high mParameter.
 
   /**
    * @brief ecParameter Constructor.
@@ -360,14 +360,13 @@ public:
   /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(float scaleX = 1.0f,
-                       consts::sliderType slideType = consts::PARAM);
+  void drawRangeSlider(consts::sliderType slideType = consts::PARAM);
 
   std::string getDisplayName() const { return mDisplayName; }
 
   void setDisplayName(std::string name) { mDisplayName = name; }
 
-private:
+ private:
   std::string mDisplayName;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
@@ -383,18 +382,18 @@ private:
  * sources).
  */
 class ecParameterInt {
-public:
+ public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  al::ParameterInt *mParameterInt = nullptr; // Main Parameter.
+  al::ParameterInt *mParameterInt = nullptr;  // Main Parameter.
   al::ParameterInt *mLowRange =
-      nullptr; // Parameter designed to bound low mParameter.
+    nullptr;  // Parameter designed to bound low mParameter.
   al::ParameterInt *mHighRange =
-      nullptr; // Parameter designed to bound high mParameter.
-  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
-                                     // parameter's own modulator.
+    nullptr;  // Parameter designed to bound high mParameter.
+  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
+                                      // parameter's own modulator.
 
   /**
    * @brief ecParameterInt Constructor.
@@ -472,13 +471,13 @@ public:
   /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(float scaleX = 1.0f, std::string sliderText = "");
+  void drawRangeSlider(std::string sliderText = "");
 
   std::string getDisplayName() const { return mDisplayName; }
 
   void setDisplayName(std::string name) { mDisplayName = name; }
 
-private:
+ private:
   std::string mDisplayName;
   std::shared_ptr<ecModulator> mModSource;
   bool mIndependentMod;
@@ -514,7 +513,7 @@ struct grainParameters {
  * the voiceScheduler class
  */
 class Grain : public al::SynthVoice {
-public:
+ public:
   Grain();
   /**
    * @brief Initialize voice. This function will only be called once per voice
@@ -551,7 +550,7 @@ public:
 
   float getDurationS() const { return mDurationS; }
 
-private:
+ private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
   gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
@@ -590,7 +589,7 @@ private:
  * Class used to schedule the emission of an arbitrary voice.
  */
 class voiceScheduler {
-public:
+ public:
   /**
    * @brief Constructor of the voice scheduler.
    *
@@ -662,7 +661,7 @@ public:
    */
   void setPolyStream(consts::streamType type, int numStreams);
 
-private:
+ private:
   gam::LFO<> mPulse;
   al::rnd::Random<> rand;
 
@@ -678,10 +677,8 @@ class Clipper : public al::AudioCallback {
   virtual void onAudioCB(al::AudioIOData &io) override {
     while (io()) {
       for (unsigned i = 0; i < io.channelsOut(); ++i) {
-        if (io.out(i) > 1)
-          io.sum(-1 * io.out(i) + 1, i);
-        if (io.out(i) < -1)
-          io.sum(-1 * io.out(i) - 1, i);
+        if (io.out(i) > 1) io.sum(-1 * io.out(i) + 1, i);
+        if (io.out(i) < -1) io.sum(-1 * io.out(i) - 1, i);
       }
     }
   }
@@ -697,7 +694,7 @@ class Clipper : public al::AudioCallback {
  */
 class flowControl {
   // friend class Granular;
-public:
+ public:
   /**
    * This class will be calculate if it is necessary to reduce grain
    * rate/duration. Run at the audio rate (tentative).
@@ -715,7 +712,7 @@ public:
 
   float getAvgCPU() { return -11992.1; }
 
-private:
+ private:
   // float mSamplingRate;
   // int mCounter;
   // float targetDuration;
@@ -729,7 +726,7 @@ private:
 
 // a struct to wrap LFO parameters
 struct LFOstruct {
-public:
+ public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
@@ -745,7 +742,7 @@ public:
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
     frequency =
-        new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
+      new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});

@@ -355,12 +355,12 @@ void ecSynth::onProcess(AudioIOData &io) {
   while (io()) {
     // Set clip vars to > 0 if clip is detected on any sample
     // 5 is the number of visual frames the meter will turn red for
-    if (io.out(0) > 1.0f || io.out(0) < -1.0f) clipL = 5;
-    if (io.out(1) > 1.0f || io.out(1) < -1.0f) clipR = 5;
+    if (abs(io.out(0)) > 1.0f) clipL = 5;
+    if (abs(io.out(1)) > 1.0f) clipR = 5;
     // add samples to oscilloscope ringbuffer
     oscBufferL.push_back(io.out(0));
     oscBufferR.push_back(io.out(1));
-    // Add samples to VU ringbuffer (squared for RMS calculations)
+    // Add samples to VU ringbuffer (squared in advance for RMS calculations)
     vuBufferL.push_back(pow(io.out(0), 2));
     vuBufferR.push_back(pow(io.out(1), 2));
   }
