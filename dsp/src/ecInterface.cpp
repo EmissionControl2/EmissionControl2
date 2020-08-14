@@ -496,6 +496,13 @@ void ecInterface::onDraw(Graphics &g) {
   float plotWidth = ImGui::GetContentRegionAvail().x;
   float plotHeight = ImGui::GetContentRegionAvail().y - (30 * adjustScaleY);
   ImVec2 p = ImGui::GetCursorScreenPos();
+  float scanPos =
+    granulator.tapeHead.getModParam(granulator.modTapeHeadDepth.getParam());
+  float scanWidth =
+    granulator.scanWidth.getModParam(granulator.modScanWidthDepth.getParam());
+  ImU32 semitransGreen =
+    IM_COL32(ECgreen->Value.x * 255, ECgreen->Value.y * 255,
+             ECgreen->Value.z * 255, 100);
 
   // Downsample value
   int sampleSkip = 1;
@@ -512,19 +519,35 @@ void ecInterface::onDraw(Graphics &g) {
     granulator.soundClip[granulator.mModClip]->size / sampleSkip, 0, nullptr,
     -1, 1, ImVec2(plotWidth, plotHeight), sizeof(float) * sampleSkip);
 
+  ImDrawList *drawList = ImGui::GetWindowDrawList();
+
   // Draw scan position
-  ImGui::GetWindowDrawList()->AddLine(
-    ImVec2(p.x + (granulator.tapeHead.getParam() * plotWidth), p.y),
-    ImVec2(p.x + (granulator.tapeHead.getParam() * plotWidth),
-           p.y + plotHeight),
-    IM_COL32(255, 0, 0, 255), 5.0f);
+  drawList->AddLine(ImVec2(p.x + (scanPos * plotWidth), p.y),
+                    ImVec2(p.x + (scanPos * plotWidth), p.y + plotHeight),
+                    *ECgreen, 5.0f);
 
   // Draw scan width
+  if (scanPos + scanWidth > 1.0f) {
+    drawList->AddRectFilled(ImVec2(p.x + (scanPos * plotWidth), p.y),
+                            ImVec2(p.x + plotWidth, p.y + plotHeight),
+                            semitransGreen);
+    drawList->AddRectFilled(
+      ImVec2(p.x, p.y),
+      ImVec2(p.x + ((scanPos + scanWidth - 1.0f) * plotWidth),
+             p.y + plotHeight),
+      semitransGreen);
+  } else {
+    drawList->AddRectFilled(
+      ImVec2(p.x + (scanPos * plotWidth), p.y),
+      ImVec2(p.x + ((scanPos + scanWidth) * plotWidth), p.y + plotHeight),
+      semitransGreen);
+  }
 
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw VU Meter window ---------------------------------------------
+  // Draw VU Meter window
+  // ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel(" ##VU Meter", windowWidth * 15 / 16,
                            windowHeight * 3 / 4 + (25 * adjustScaleY),
@@ -586,7 +609,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
-  // Throw popup to remind user to load in sound files if none are present.
+  // Throw popup to remind user to load in sound files if none are
+  // present.
   if (ImGui::BeginPopupModal("No Sound File", &noSoundFiles)) {
     ImGui::Text("Load a sound file to continue using EmissionControl");
     if (ImGui::Button("Load Sound File")) {
