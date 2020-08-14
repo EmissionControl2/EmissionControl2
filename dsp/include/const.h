@@ -24,6 +24,7 @@ enum paramNames {
   VOLUME
 };
 const int NUM_PARAMS = 15;
+const int NUM_LFOS = 4;
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
