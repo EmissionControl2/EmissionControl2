@@ -109,14 +109,14 @@ class ecInterface : public al::App {
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(98, 113, 118);  // Background
-  ImColor YellowLight = ImColor(139, 127, 58);   // Yellow
-  ImColor RedLight = ImColor(123, 52, 76);       // Red
-  ImColor GreenLight = ImColor(106, 154, 60);    // Green
-  ImColor Shade1Light = ImColor(133, 144, 148);  // Slider Color 1
-  ImColor Shade2Light = ImColor(167, 175, 178);  // Slider Color 2
-  ImColor Shade3Light = ImColor(202, 207, 208);  // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
+  ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
+  ImColor YellowLight = ImColor(181, 137, 0);     // Yellow
+  ImColor RedLight = ImColor(120, 29, 57);        // Red
+  ImColor GreenLight = ImColor(58, 106, 10);      // Green
+  ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
+  ImColor Shade3Light = ImColor(227, 231, 232);   // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
   ImColor PrimaryDark = ImColor(33, 38, 40);    // Background

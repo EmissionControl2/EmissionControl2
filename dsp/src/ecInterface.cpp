@@ -451,31 +451,38 @@ void ecInterface::onDraw(Graphics &g) {
 
   oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
   oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
-
+  // Draw left channel oscilloscope
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECyellow);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines,
+                        light ? (ImVec4)*ECgreen : (ImVec4)*ECyellow);
   ImGui::PlotLines(
     "ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
     sizeof(float));
-
+  // Draw a black line across the center of the scope
   ImGui::SetCursorPosY(70 * adjustScaleY);
+  ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
+  ImGui::PlotLines(
+    "black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    sizeof(float));
+  // Draw right channel oscilloscope
+  ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
   ImGui::PlotLines(
     "ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
     ImVec2(0, ImGui::GetContentRegionAvail().y - (31 * adjustScaleY)),
     sizeof(float));
-
+  // Draw a black line across the center of the scope
   ImGui::SetCursorPosY(70 * adjustScaleY);
   ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
   ImGui::PlotLines(
     "black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
-    ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+    ImVec2(0, ImGui::GetContentRegionAvail().y - (31 * adjustScaleY)),
     sizeof(float));
-
   ImGui::PopItemWidth();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PopFont();
@@ -757,7 +764,8 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
-                        (ImVec4)ImColor(255, 255, 255, 150));
+                        light ? (ImVec4)ImColor(0, 0, 0, 150)
+                              : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
