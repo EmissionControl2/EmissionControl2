@@ -41,119 +41,121 @@ void ecSynth::init(al::AudioIOData *io) {
 
   // MUST USE THIS ORDER
   grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  grainRate.setModulationSource(Modulators[0]);  // Default
+  grainRate.setModulationSource(Modulators[0]); // Default
   grainRateLFO.registerChangeCallback(
-    [&](int value) { grainRate.setModulationSource(Modulators[value]); });
+      [&](int value) { grainRate.setModulationSource(Modulators[value]); });
   asyncLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   asynchronicity.setModulationSource(Modulators[0]);
-  asyncLFO.registerChangeCallback(
-    [&](int value) { asynchronicity.setModulationSource(Modulators[value]); });
+  asyncLFO.registerChangeCallback([&](int value) {
+    asynchronicity.setModulationSource(Modulators[value]);
+  });
   intermittencyLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   intermittency.setModulationSource(Modulators[0]);
   intermittencyLFO.registerChangeCallback(
-    [&](int value) { intermittency.setModulationSource(Modulators[value]); });
+      [&](int value) { intermittency.setModulationSource(Modulators[value]); });
   streamsLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   streams.setModulationSource(Modulators[0]);
   streamsLFO.registerChangeCallback(
-    [&](int value) { streams.setModulationSource(Modulators[value]); });
+      [&](int value) { streams.setModulationSource(Modulators[value]); });
   grainDurationLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   grainDurationMs.setModulationSource(Modulators[0]);
-  grainDurationLFO.registerChangeCallback(
-    [&](int value) { grainDurationMs.setModulationSource(Modulators[value]); });
+  grainDurationLFO.registerChangeCallback([&](int value) {
+    grainDurationMs.setModulationSource(Modulators[value]);
+  });
   envelopeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   envelope.setModulationSource(Modulators[0]);
   envelopeLFO.registerChangeCallback(
-    [&](int value) { envelope.setModulationSource(Modulators[value]); });
+      [&](int value) { envelope.setModulationSource(Modulators[value]); });
   tapeHeadLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   tapeHead.setModulationSource(Modulators[0]);
   tapeHeadLFO.registerChangeCallback(
-    [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
+      [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
   scanSpeedLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   scanSpeed.setModulationSource(Modulators[0]);
   scanSpeedLFO.registerChangeCallback(
-    [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
+      [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
   scanWidthLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   scanWidth.setModulationSource(Modulators[0]);
   scanWidthLFO.registerChangeCallback(
-    [&](int value) { scanWidth.setModulationSource(Modulators[value]); });
+      [&](int value) { scanWidth.setModulationSource(Modulators[value]); });
   transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   transposition.setModulationSource(Modulators[0]);
   transpositionLFO.registerChangeCallback(
-    [&](int value) { transposition.setModulationSource(Modulators[value]); });
+      [&](int value) { transposition.setModulationSource(Modulators[value]); });
 
   filterLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   filter.setModulationSource(Modulators[0]);
   filterLFO.registerChangeCallback(
-    [&](int value) { filter.setModulationSource(Modulators[value]); });
+      [&](int value) { filter.setModulationSource(Modulators[value]); });
 
   resonanceLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   resonance.setModulationSource(Modulators[0]);
   resonanceLFO.registerChangeCallback(
-    [&](int value) { resonance.setModulationSource(Modulators[value]); });
+      [&](int value) { resonance.setModulationSource(Modulators[value]); });
 
   volumeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   volumeDB.setModulationSource(Modulators[0]);
   volumeLFO.registerChangeCallback(
-    [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
+      [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
   panLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   pan.setModulationSource(Modulators[0]);
   panLFO.registerChangeCallback(
-    [&](int value) { pan.setModulationSource(Modulators[value]); });
+      [&](int value) { pan.setModulationSource(Modulators[value]); });
   soundFileLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   soundFile.setModulationSource(Modulators[0]);
   soundFileLFO.registerChangeCallback(
-    [&](int value) { soundFile.setModulationSource(Modulators[value]); });
+      [&](int value) { soundFile.setModulationSource(Modulators[value]); });
 
   grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
 
   // FOR LOOP CAUSES CRASHES ???
   LFOparameters[0]->shape->registerChangeCallback(
-    [&](int value) { Modulators[0]->setWaveform(value); });
+      [&](int value) { Modulators[0]->setWaveform(value); });
 
   LFOparameters[0]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[0]->setPolarity(value); });
+      [&](int value) { Modulators[0]->setPolarity(value); });
 
   LFOparameters[0]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[0]->setFrequency(value); });
+      [&](float value) { Modulators[0]->setFrequency(value); });
 
   LFOparameters[0]->duty->registerChangeCallback(
-    [&](float value) { Modulators[0]->setWidth(value); });
+      [&](float value) { Modulators[0]->setWidth(value); });
 
   LFOparameters[1]->shape->registerChangeCallback(
-    [&](int value) { Modulators[1]->setWaveform(value); });
+      [&](int value) { Modulators[1]->setWaveform(value); });
 
   LFOparameters[1]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[1]->setPolarity(value); });
+      [&](int value) { Modulators[1]->setPolarity(value); });
 
   LFOparameters[1]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[1]->setFrequency(value); });
+      [&](float value) { Modulators[1]->setFrequency(value); });
 
   LFOparameters[1]->duty->registerChangeCallback(
-    [&](float value) { Modulators[1]->setWidth(value); });
+      [&](float value) { Modulators[1]->setWidth(value); });
 
   LFOparameters[2]->shape->registerChangeCallback(
-    [&](int value) { Modulators[2]->setWaveform(value); });
+      [&](int value) { Modulators[2]->setWaveform(value); });
 
   LFOparameters[2]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[2]->setPolarity(value); });
+      [&](int value) { Modulators[2]->setPolarity(value); });
 
   LFOparameters[2]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[2]->setFrequency(value); });
+      [&](float value) { Modulators[2]->setFrequency(value); });
 
   LFOparameters[2]->duty->registerChangeCallback(
-    [&](float value) { Modulators[2]->setWidth(value); });
+      [&](float value) { Modulators[2]->setWidth(value); });
 
   LFOparameters[3]->shape->registerChangeCallback(
-    [&](int value) { Modulators[3]->setWaveform(value); });
+      [&](int value) { Modulators[3]->setWaveform(value); });
 
   LFOparameters[3]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[3]->setPolarity(value); });
+      [&](int value) { Modulators[3]->setPolarity(value); });
 
   LFOparameters[3]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[3]->setFrequency(value); });
+      [&](float value) { Modulators[3]->setFrequency(value); });
 
   LFOparameters[3]->duty->registerChangeCallback(
-    [&](float value) { Modulators[3]->setWidth(value); });
+      [&](float value) { Modulators[3]->setWidth(value); });
 
   /**
    * WHY DOES THIS CRASH ??
@@ -176,7 +178,7 @@ void ecSynth::init(al::AudioIOData *io) {
   /**
    * Input correct number of files into parameters.
    */
-  soundFile.mParameterInt->max(mClipNum);
+  soundFile.mParameter->max(mClipNum);
   soundFile.mLowRange->max(mClipNum);
   soundFile.mHighRange->max(mClipNum);
   soundFile.mHighRange->set(mClipNum);
@@ -193,28 +195,28 @@ void ecSynth::onProcess(AudioIOData &io) {
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
     // NOTE grainRate noise isnt very perceptible
-    if (modGrainRateDepth.getParam() > 0)  // modulate the grain rate
+    if (modGrainRateDepth.getParam() > 0) // modulate the grain rate
       grainScheduler.setFrequency(
-        grainRate.getModParam(modGrainRateDepth.getParam()));
+          grainRate.getModParam(modGrainRateDepth.getParam()));
     else
       grainScheduler.setFrequency(grainRate.getParam());
 
-    if (modAsynchronicityDepth.getParam() > 0)  // modulate the asynchronicity
+    if (modAsynchronicityDepth.getParam() > 0) // modulate the asynchronicity
       grainScheduler.setAsynchronicity(
-        asynchronicity.getModParam(modAsynchronicityDepth.getParam()));
+          asynchronicity.getModParam(modAsynchronicityDepth.getParam()));
     else
       grainScheduler.setAsynchronicity(asynchronicity.getParam());
 
-    if (modIntermittencyDepth.getParam() > 0)  // modulate the intermittency
+    if (modIntermittencyDepth.getParam() > 0) // modulate the intermittency
       grainScheduler.setIntermittence(
-        intermittency.getModParam(modIntermittencyDepth.getParam()));
+          intermittency.getModParam(modIntermittencyDepth.getParam()));
     else
       grainScheduler.setIntermittence(intermittency.getParam());
 
     if (modStreamsDepth.getParam() >
-        0)  // Modulate the amount of streams playing.
+        0) // Modulate the amount of streams playing.
       grainScheduler.setPolyStream(
-        consts::synchronous, streams.getModParam(modStreamsDepth.getParam()));
+          consts::synchronous, streams.getModParam(modStreamsDepth.getParam()));
     else
       grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
 
@@ -312,25 +314,25 @@ void ecSynth::onProcess(AudioIOData &io) {
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
         grainParameters list = {
-          grainDurationMs,
-          modGrainDurationDepth.getParam(),
-          envelope,
-          modEnvelopeDepth.getParam(),
-          tapeHead,
-          modTapeHeadDepth.getParam(),
-          transposition,
-          modTranspositionDepth.getParam(),
-          filter,
-          modFilterDepth.getParam(),
-          resonance,
-          modResonanceDepth.getParam(),
-          volumeDB,
-          modVolumeDepth.getParam(),
-          pan,
-          modPanDepth.getParam(),
-          soundClip[mModClip],
-          mPActiveVoices,
-          mCurrentIndex,
+            grainDurationMs,
+            modGrainDurationDepth.getParam(),
+            envelope,
+            modEnvelopeDepth.getParam(),
+            tapeHead,
+            modTapeHeadDepth.getParam(),
+            transposition,
+            modTranspositionDepth.getParam(),
+            filter,
+            modFilterDepth.getParam(),
+            resonance,
+            modResonanceDepth.getParam(),
+            volumeDB,
+            modVolumeDepth.getParam(),
+            pan,
+            modPanDepth.getParam(),
+            soundClip[mModClip],
+            mPActiveVoices,
+            mCurrentIndex,
         };
 
         voice->configureGrain(list, mGlobalSamplingRate);
@@ -351,8 +353,10 @@ void ecSynth::onProcess(AudioIOData &io) {
   while (io()) {
     // Set clip vars to > 0 if clip is detected on any sample
     // 5 is the number of visual frames the meter will turn red for
-    if (io.out(0) > 1.0f || io.out(0) < -1.0f) clipL = 5;
-    if (io.out(1) > 1.0f || io.out(1) < -1.0f) clipR = 5;
+    if (io.out(0) > 1.0f || io.out(0) < -1.0f)
+      clipL = 5;
+    if (io.out(1) > 1.0f || io.out(1) < -1.0f)
+      clipR = 5;
     // add samples to oscilloscope ringbuffer
     oscBufferL.push_back(io.out(0));
     oscBufferR.push_back(io.out(1));
@@ -374,10 +378,10 @@ void ecSynth::loadSoundFile(std::string fileName) {
   if (temp) {
     soundClipFileName.push_back(fileName);
     mClipNum++;
-    soundFile.mParameterInt->max(mClipNum);
+    soundFile.mParameter->max(mClipNum);
     soundFile.mLowRange->max(mClipNum);
     soundFile.mHighRange->max(mClipNum);
-    soundFile.mHighRange->set(mClipNum);  // stylistic choice, might take out
+    soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
   }
 }
 
@@ -400,22 +404,23 @@ bool ecSynth::loadInitSoundFiles(std::string directory) {
 }
 
 bool ecSynth::removeSoundFile(int index) {
-  if (mClipNum == 0) return false;
+  if (mClipNum == 0)
+    return false;
   soundClip.erase(soundClip.begin() + index);
   soundClipFileName.erase(soundClipFileName.begin() + index);
   mClipNum--;
-  soundFile.mParameterInt->max(mClipNum);
+  soundFile.mParameter->max(mClipNum);
   soundFile.mLowRange->max(mClipNum);
   soundFile.mHighRange->max(mClipNum);
-  soundFile.mHighRange->set(mClipNum);  // stylistic choice, might take out
+  soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
 
-  if (soundFile.mParameterInt->get() >= index)
-    soundFile.mParameterInt->set(soundFile.mParameterInt->get() - 1);
+  if (static_cast<int>(soundFile.mParameter->get()) >= index)
+    soundFile.mParameter->set(soundFile.mParameter->get() - 1);
   return true;
 }
 
 bool ecSynth::removeCurrentSoundFile() {
-  removeSoundFile(soundFile.mParameterInt->get() - 1);
+  removeSoundFile(soundFile.mParameter->get() - 1);
   return true;
 }
 
@@ -424,10 +429,10 @@ void ecSynth::clearSoundFiles() {
   soundClipFileName.clear();
 
   mClipNum = 0;
-  soundFile.mParameterInt->max(mClipNum);
+  soundFile.mParameter->max(mClipNum);
   soundFile.mLowRange->max(mClipNum);
   soundFile.mHighRange->max(mClipNum);
-  soundFile.mHighRange->set(mClipNum);  // stylistic choice, might take out
+  soundFile.mHighRange->set(mClipNum); // stylistic choice, might take out
 }
 
 void ecSynth::resampleSoundFiles() {
@@ -448,8 +453,10 @@ void ecSynth::resampleSoundFiles() {
 
 void ecSynth::hardClip(al::AudioIOData &io) {
   for (unsigned i = 0; i < io.channelsOut(); ++i) {
-    if (io.out(i) > 1) io.sum(-1 * io.out(i) + 1, i);
-    if (io.out(i) < -1) io.sum(-1 * io.out(i) - 1, i);
+    if (io.out(i) > 1)
+      io.sum(-1 * io.out(i) + 1, i);
+    if (io.out(i) < -1)
+      io.sum(-1 * io.out(i) - 1, i);
   }
 }
 
