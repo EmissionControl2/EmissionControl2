@@ -80,6 +80,7 @@ class ecInterface : public al::App {
   ImFont *titleFont;
   float fontScale = 1.0;  // jack store this in JSON!!
   float adjustScaleY = 1.0;
+
   double globalSamplingRate = consts::SAMPLE_RATE;
 
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
@@ -148,7 +149,7 @@ class ecInterface : public al::App {
 
   int getSampleRateIndex();
 
-  void initFileIOPaths();
+  /**** Configuration File Stuff****/
 
   bool initJsonConfig();
 
@@ -168,6 +169,7 @@ class ecInterface : public al::App {
   void jsonReadAndSetSoundOutputPath();
   void jsonReadAndSetAudioSettings();
   void jsonReadAndSetColorSchemeMode();
+  void jsonReadAndSetFontScale();
 };
 
 /**
