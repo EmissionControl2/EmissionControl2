@@ -40,10 +40,18 @@ void ecSynth::init(al::AudioIOData *io) {
   mScanner.setSamplingRate(mGlobalSamplingRate);
 
   // MUST USE THIS ORDER
-  grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  grainRate.setModulationSource(Modulators[0]); // Default
-  grainRateLFO.registerChangeCallback(
+  std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4"};
+
+  ECParameters[consts::GRAIN_RATE]->setModulationSource(Modulators[0]);
+
+  ECModParameters[consts::GRAIN_RATE]->setMenuElements(lfo_names);
+  ECModParameters[consts::GRAIN_RATE]->registerMenuChangeCallback(
       [&](int value) { grainRate.setModulationSource(Modulators[value]); });
+
+  // grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
+  // grainRate.setModulationSource(Modulators[0]); // Default
+  // grainRateLFO.registerChangeCallback(
+  //     [&](int value) { grainRate.setModulationSource(Modulators[value]); });
   asyncLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
   asynchronicity.setModulationSource(Modulators[0]);
   asyncLFO.registerChangeCallback([&](int value) {
@@ -106,7 +114,8 @@ void ecSynth::init(al::AudioIOData *io) {
   soundFileLFO.registerChangeCallback(
       [&](int value) { soundFile.setModulationSource(Modulators[value]); });
 
-  grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
+  grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
+                           0.0);
 
   // FOR LOOP CAUSES CRASHES ???
   LFOparameters[0]->shape->registerChangeCallback(
@@ -195,11 +204,8 @@ void ecSynth::onProcess(AudioIOData &io) {
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
     // NOTE grainRate noise isnt very perceptible
-    if (modGrainRateDepth.getParam() > 0) // modulate the grain rate
-      grainScheduler.setFrequency(
-          grainRate.getModParam(modGrainRateDepth.getParam()));
-    else
-      grainScheduler.setFrequency(grainRate.getParam());
+    grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(
+        ECModParameters[consts::GRAIN_RATE]->getWidthParam()));
 
     if (modAsynchronicityDepth.getParam() > 0) // modulate the asynchronicity
       grainScheduler.setAsynchronicity(

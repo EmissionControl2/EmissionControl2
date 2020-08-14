@@ -19,6 +19,9 @@
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
 #include "al/ui/al_PresetHandler.hpp"
+#include "al/io/al_Imgui.hpp"
+#include "al/ui/al_ParameterGUI.hpp"
+
 
 /**** CSTD LIB ****/
 #include <string>
@@ -391,6 +394,24 @@ struct ecModParameter {
       : param("mod" + name + "Width", "mod" + name + "Width", "", 0, "", 0, 1,
               0, 1, consts::MOD),
         lfoMenu("##lfo" + name) {}
+
+  void setMenuElements(std::vector<std::string> elements) {
+    lfoMenu.setElements(elements);
+  }
+
+  float getWidthParam() { return param.getParam(); }
+
+  void registerMenuChangeCallback(std::function<void(int)> cb) {
+    lfoMenu.registerChangeCallback(cb);
+  }
+
+  void drawModulationControl() {
+    ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
+    al::ParameterGUI::drawMenu(&lfoMenu);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    param.drawRangeSlider();
+  }
 
   ecParameter param;
   al::ParameterMenu lfoMenu;

@@ -279,7 +279,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  granulator.grainRate.drawRangeSlider();
+  // granulator.grainRate.drawRangeSlider();
+  granulator.ECParameters[consts::GRAIN_RATE]->drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   granulator.asynchronicity.drawRangeSlider();
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
@@ -319,7 +320,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
+  granulator.ECModParameters[consts::GRAIN_RATE]->drawModulationControl();
+  // drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
