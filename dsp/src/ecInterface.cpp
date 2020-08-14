@@ -74,52 +74,58 @@ void ecInterface::onInit() {
 
 void ecInterface::onCreate() {
   al::imguiInit();
-  granulator.grainRate.addToPresetHandler(mPresets);
-  granulator.asynchronicity.addToPresetHandler(mPresets);
-  granulator.intermittency.addToPresetHandler(mPresets);
-  granulator.streams.addToPresetHandler(mPresets);
-  granulator.grainDurationMs.addToPresetHandler(mPresets);
-  granulator.envelope.addToPresetHandler(mPresets);
-  granulator.tapeHead.addToPresetHandler(mPresets);
-  granulator.scanSpeed.addToPresetHandler(mPresets);
-  granulator.scanWidth.addToPresetHandler(mPresets);
-  granulator.transposition.addToPresetHandler(mPresets);
-  granulator.filter.addToPresetHandler(mPresets);
-  granulator.resonance.addToPresetHandler(mPresets);
-  granulator.volumeDB.addToPresetHandler(mPresets);
-  granulator.pan.addToPresetHandler(mPresets);
-  granulator.soundFile.addToPresetHandler(mPresets);
 
-  granulator.modGrainRateDepth.addToPresetHandler(mPresets);
-  granulator.modAsynchronicityDepth.addToPresetHandler(mPresets);
-  granulator.modIntermittencyDepth.addToPresetHandler(mPresets);
-  granulator.modStreamsDepth.addToPresetHandler(mPresets);
-  granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
-  granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
-  granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
-  granulator.modScanWidthDepth.addToPresetHandler(mPresets);
-  granulator.modTranspositionDepth.addToPresetHandler(mPresets);
-  granulator.modFilterDepth.addToPresetHandler(mPresets);
-  granulator.modResonanceDepth.addToPresetHandler(mPresets);
-  granulator.modVolumeDepth.addToPresetHandler(mPresets);
-  granulator.modPanDepth.addToPresetHandler(mPresets);
-  granulator.modSoundFileDepth.addToPresetHandler(mPresets);
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    granulator.ECParameters[index]->addToPresetHandler(mPresets);
+    granulator.ECModParameters[index]->addToPresetHandler(mPresets);
+  }
 
-  mPresets << granulator.grainRateLFO << granulator.asyncLFO
-           << granulator.intermittencyLFO << granulator.streamsLFO
-           << granulator.grainDurationLFO << granulator.envelopeLFO
-           << granulator.tapeHeadLFO << granulator.scanSpeedLFO
-           << granulator.scanWidthLFO << granulator.transpositionLFO
-           << granulator.filterLFO << granulator.resonanceLFO
-           << granulator.volumeLFO << granulator.panLFO
-           << granulator.soundFileLFO;
-
-  for (int i = 0; i < granulator.NUM_MODULATORS; i++) {
+  for (int i = 0; i < consts::NUM_LFOS; i++) {
     granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
     mPresets << *granulator.LFOparameters[i]->shape
              << *granulator.LFOparameters[i]->duty
              << *granulator.LFOparameters[i]->polarity;
   }
+
+    // granulator.grainRate.addToPresetHandler(mPresets);
+  // granulator.asynchronicity.addToPresetHandler(mPresets);
+  // granulator.intermittency.addToPresetHandler(mPresets);
+  // granulator.streams.addToPresetHandler(mPresets);
+  // granulator.grainDurationMs.addToPresetHandler(mPresets);
+  // granulator.envelope.addToPresetHandler(mPresets);
+  // granulator.tapeHead.addToPresetHandler(mPresets);
+  // granulator.scanSpeed.addToPresetHandler(mPresets);
+  // granulator.scanWidth.addToPresetHandler(mPresets);
+  // granulator.transposition.addToPresetHandler(mPresets);
+  // granulator.filter.addToPresetHandler(mPresets);
+  // granulator.resonance.addToPresetHandler(mPresets);
+  // granulator.volumeDB.addToPresetHandler(mPresets);
+  // granulator.pan.addToPresetHandler(mPresets);
+  // granulator.soundFile.addToPresetHandler(mPresets);
+
+  // granulator.modGrainRateDepth.addToPresetHandler(mPresets);
+  // granulator.modAsynchronicityDepth.addToPresetHandler(mPresets);
+  // granulator.modIntermittencyDepth.addToPresetHandler(mPresets);
+  // granulator.modStreamsDepth.addToPresetHandler(mPresets);
+  // granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
+  // granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
+  // granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
+  // granulator.modScanWidthDepth.addToPresetHandler(mPresets);
+  // granulator.modTranspositionDepth.addToPresetHandler(mPresets);
+  // granulator.modFilterDepth.addToPresetHandler(mPresets);
+  // granulator.modResonanceDepth.addToPresetHandler(mPresets);
+  // granulator.modVolumeDepth.addToPresetHandler(mPresets);
+  // granulator.modPanDepth.addToPresetHandler(mPresets);
+  // granulator.modSoundFileDepth.addToPresetHandler(mPresets);
+
+  // mPresets << granulator.grainRateLFO << granulator.asyncLFO
+  //          << granulator.intermittencyLFO << granulator.streamsLFO
+  //          << granulator.grainDurationLFO << granulator.envelopeLFO
+  //          << granulator.tapeHeadLFO << granulator.scanSpeedLFO
+  //          << granulator.scanWidthLFO << granulator.transpositionLFO
+  //          << granulator.filterLFO << granulator.resonanceLFO
+  //          << granulator.volumeLFO << granulator.panLFO
+  //          << granulator.soundFileLFO;
 
 #ifdef __APPLE__
   ImFont *bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(

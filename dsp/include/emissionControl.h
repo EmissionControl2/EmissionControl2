@@ -405,6 +405,11 @@ struct ecModParameter {
     lfoMenu.registerChangeCallback(cb);
   }
 
+  void addToPresetHandler(al::PresetHandler &presetHandler) {
+    param.addToPresetHandler(presetHandler);
+    presetHandler.registerParameter(lfoMenu);
+  }
+
   void drawModulationControl() {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);
