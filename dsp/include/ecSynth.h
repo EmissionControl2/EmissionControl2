@@ -94,7 +94,8 @@ public:
                                     1,
                                     consts::MOD};
 
-  ecParameterInt streams{"Streams", "4. Streams", "", 1, "", 1, 12, 1, 20};
+  ecParameter streams{"Streams", "4. Streams", "", 1,  "",
+                      1,         12,           1,  20, consts::INT_PARAM};
   al::ParameterMenu streamsLFO{"##streamsLFO"};
   ecParameter modStreamsDepth{
       "modStreamsDepth", "modStreamsDepth", "", 0, "", 0, 1, 0, 1, consts::MOD};
@@ -134,7 +135,6 @@ public:
                                     0,
                                     1,
                                     consts::MOD};
-
   ecParameter filter{
       "Filterfreq", "8. Filter Center", "", 440, "", 60, 5000, 20, 24000};
   al::ParameterMenu filterLFO{"##filterLFO"};
@@ -147,11 +147,21 @@ public:
       "modResonanceDepth", "modResonanceDepth", "", 0, "", 0, 1, 0, 1,
       consts::MOD};
 
-  ecParameterInt soundFile{"Soundfile", "10. Sound File", "", 1,       "",
-                           1,           mClipNum,         1,  mClipNum};
+  ecParameter soundFile{"Soundfile",
+                        "10. Sound File",
+                        "",
+                        1,
+                        "",
+                        1,
+                        static_cast<float>(mClipNum),
+                        1,
+                        static_cast<float>(mClipNum),
+                        consts::INT_PARAM};
+
   al::ParameterMenu soundFileLFO{"##soundFileLFO"};
   ecParameter modSoundFileDepth{
-      "modSoundFileDepth", "modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
+      "modSoundFileDepth", "modSoundFileDepth", "", 0, "", 0, 1, 0, 1,
+      consts::MOD};
 
   ecParameter tapeHead{"Scan", "11. Scan Position", "", 0.5, "", 0, 1, 0, 1};
   al::ParameterMenu tapeHeadLFO{"##scanLFO"};
