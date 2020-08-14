@@ -38,26 +38,26 @@ void ecSynth::init(al::AudioIOData *io) {
 
   // MUST USE THIS ORDER
   std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4"};
-  for (int i = 0; i < consts::NUM_PARAMS; i++) {
-    ECParameters[i]->setModulationSource(Modulators[0]);
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    ECParameters[index]->setModulationSource(Modulators[0]);
 
-    ECModParameters[i]->setMenuElements(lfo_names);
-    ECModParameters[i]->registerMenuChangeCallback(
+    ECModParameters[index]->setMenuElements(lfo_names);
+    ECModParameters[index]->registerMenuChangeCallback(
         [&](int value) { grainRate.setModulationSource(Modulators[value]); });
   }
 
-  for (int i = 0; i < consts::NUM_LFOS; i++) {
-    LFOparameters[i]->shape->registerChangeCallback(
-        [&](int value) { Modulators[i]->setWaveform(value); });
+  for (int index = 0; index < consts::NUM_LFOS; index++) {
+    LFOparameters[index]->shape->registerChangeCallback(
+        [&](int value) { Modulators[index]->setWaveform(value); });
 
-    LFOparameters[i]->polarity->registerChangeCallback(
-        [&](int value) { Modulators[i]->setPolarity(value); });
+    LFOparameters[index]->polarity->registerChangeCallback(
+        [&](int value) { Modulators[index]->setPolarity(value); });
 
-    LFOparameters[i]->frequency->mParameter->registerChangeCallback(
-        [&](float value) { Modulators[i]->setFrequency(value); });
+    LFOparameters[index]->frequency->mParameter->registerChangeCallback(
+        [&](float value) { Modulators[index]->setFrequency(value); });
 
-    LFOparameters[i]->duty->registerChangeCallback(
-        [&](float value) { Modulators[i]->setWidth(value); });
+    LFOparameters[index]->duty->registerChangeCallback(
+        [&](float value) { Modulators[index]->setWidth(value); });
   }
 
   grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
@@ -151,7 +151,6 @@ void ecSynth::onProcess(AudioIOData &io) {
 
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
 
-    // NOTE grainRate noise isnt very perceptible
     grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(
         ECModParameters[consts::GRAIN_RATE]->getWidthParam()));
 
