@@ -283,10 +283,10 @@ public:
     ECModParameters[consts::PAN] =
         std::unique_ptr<ecModParameter>(new ecModParameter{"pan"});
 
-    ECParameters[consts::PAN] = std::unique_ptr<ecParameter>(
+    ECParameters[consts::VOLUME] = std::unique_ptr<ecParameter>(
         new ecParameter{"AmplitudedB", "15. Amplitude (dB)", "", -6, "", -60, 6,
                         -180, 48, consts::PARAM});
-    ECModParameters[consts::PAN] =
+    ECModParameters[consts::VOLUME] =
         std::unique_ptr<ecModParameter>(new ecModParameter{"volume"});
   }
 
