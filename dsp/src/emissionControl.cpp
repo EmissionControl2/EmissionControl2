@@ -205,84 +205,6 @@ float ecModulator::sampleAndHoldUniform(float low, float high) {
     return mHoldNoiseSample;
 }
 
-/******* ecParameter*******
-void ecParameter::drawRangeSlider(float scaleX,
-                                       consts::sliderType slideType,
-                                       std::string sliderText) {
-  float valueSlider, valueLow, valueHigh;
-  bool changed;
-  ImGuiIO &io = ImGui::GetIO();
-  ImGui::PushItemWidth(50 * io.FontGlobalScale);
-  valueLow = mLowRange->get();
-  changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLow, 0.1,
-                             mLowRange->min(), mLowRange->max(), "%.3f");
-
-  ImGui::SameLine();
-  if (changed) {
-    mLowRange->set(valueLow);
-    mParameter->min(valueLow);
-  }
-
-  ImGui::PopItemWidth();
-  ImGui::SameLine();
-  if (slideType == consts::LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (85 * scaleX));
-  else if (slideType == consts::MOD)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (58 * scaleX));
-  else if (slideType == consts::PARAM)
-    if (ImGui::GetContentRegionAvail().x - 190 > 80)
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (190 * scaleX));
-    else
-      ImGui::PushItemWidth(80);
-  valueSlider = mParameter->get();
-  changed =
-      ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSlider,
-                         mParameter->min(), mParameter->max(), "%0.3f");
-
-  if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
-    editing = true;
-  }
-  if (editing) {
-    if (ImGui::IsItemDeactivatedAfterEdit() &&
-        (ImGui::IsMouseDown(0) ||
-         ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
-      changed = true;
-      editing = false;
-    } else if (ImGui::IsItemDeactivated() &&
-               (ImGui::IsMouseDown(0) ||
-                ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
-      changed = false;
-      editing = false;
-    } else
-      changed = false;
-  }
-
-  if (changed)
-    mParameter->set(valueSlider);
-  ImGui::PopItemWidth();
-
-  ImGui::SameLine();
-
-  ImGui::PushItemWidth(50 * io.FontGlobalScale);
-  valueHigh = mHighRange->get();
-  changed = ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHigh,
-                             0.1, mHighRange->min(), mHighRange->max());
-  if (changed)
-    mHighRange->set(valueHigh);
-  mParameter->max(valueHigh);
-
-  ImGui::PopItemWidth();
-
-  ImGui::SameLine();
-  if (slideType == consts::LFO)
-    ImGui::Text("Hz");
-  else if (slideType == consts::MOD)
-    ImGui::Text("");
-  else if (slideType == consts::PARAM)
-    ImGui::Text((getDisplayName()).c_str());
-}
-*/
-
 /******* ecParameter *******/
 
 ecParameter::ecParameter(std::string parameterName, std::string displayName,
@@ -377,8 +299,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameter::drawRangeSlider(float scaleX, 
-                                  std::string sliderText) {
+void ecParameter::drawRangeSlider(std::string sliderText) {
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
   bool changed, isInt = false;
@@ -413,12 +334,15 @@ void ecParameter::drawRangeSlider(float scaleX,
   ImGui::PopItemWidth();
   ImGui::SameLine();
   if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (85 * scaleX));
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x -
+                         (85 * io.FontGlobalScale));
   else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (58 * scaleX));
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x -
+                         (58 * io.FontGlobalScale));
   else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
     if (ImGui::GetContentRegionAvail().x - 190 > 80)
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (190 * scaleX));
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x -
+                           (190 * io.FontGlobalScale));
     else
       ImGui::PushItemWidth(80);
   if (isInt) {

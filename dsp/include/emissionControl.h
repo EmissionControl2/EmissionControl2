@@ -365,7 +365,7 @@ public:
   /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(float scaleX = 1.0f, std::string sliderText = "");
+  void drawRangeSlider(std::string sliderText = "");
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -383,6 +383,17 @@ private:
   bool mIndependentMod;
   // Draw flags
   bool editing = false;
+};
+
+struct ecModParameter {
+
+  ecModParameter(std::string name)
+      : param("mod" + name + "Width", "mod" + name + "Width", "", 0, "", 0, 1,
+              0, 1, consts::MOD),
+        lfoMenu("##lfo" + name) {}
+
+  ecParameter param;
+  al::ParameterMenu lfoMenu;
 };
 
 struct grainParameters {

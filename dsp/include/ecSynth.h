@@ -18,9 +18,16 @@
 /**** CSTD LIB ****/
 #include <math.h>
 #include <memory>
+#include <array>
 
 class ecSynth : public al::SynthVoice {
 public:
+  std::array<std::unique_ptr<ecParameter>,consts::NUM_PARAMS> ECParameters;
+  std::array<std::unique_ptr<ecModParameter>,consts::NUM_PARAMS> ECModParameters;
+
+  // ecModParameter test{"grainRate"};
+  // std::array<std::unique_ptr<ecPar
+
   /**
    * Ringbuffers for oscilloscope
    */
@@ -168,16 +175,16 @@ public:
   ecParameter modTapeHeadDepth{
       "modScanDepth", "modScanDepth", "", 0, "", 0, 1, 0, 1, consts::MOD};
 
-  ecParameter scanSpeed{"ScanSpeed", "12. Scan Speed", "", 1, "", -2, 2, -4, 4};
-  al::ParameterMenu scanSpeedLFO{"##scanSpeedLFO"};
-  ecParameter modScanSpeedDepth{
-      "modScanSpeedDepth", "modScanSpeedDepth", "", 0, "", 0, 1, 0, 1,
-      consts::MOD};
-
   ecParameter scanWidth{"scanWidth", "13. Scan Width", "", 1, "", 0, 1, 0, 1};
   al::ParameterMenu scanWidthLFO{"##scanWidthLFO"};
   ecParameter modScanWidthDepth{
       "modScanWidthDepth", "modScanWidthDepth", "", 0, "", 0, 1, 0, 1,
+      consts::MOD};
+
+  ecParameter scanSpeed{"ScanSpeed", "12. Scan Speed", "", 1, "", -2, 2, -4, 4};
+  al::ParameterMenu scanSpeedLFO{"##scanSpeedLFO"};
+  ecParameter modScanSpeedDepth{
+      "modScanSpeedDepth", "modScanSpeedDepth", "", 0, "", 0, 1, 0, 1,
       consts::MOD};
 
   ecParameter pan{"Pan", "14. Pan", "", 0, "", -1, 1, -1, 1};
