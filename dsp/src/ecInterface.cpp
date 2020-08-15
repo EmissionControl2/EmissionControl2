@@ -88,46 +88,6 @@ void ecInterface::onCreate() {
              << *granulator.LFOparameters[i]->polarity;
   }
 
-  // granulator.grainRate.addToPresetHandler(mPresets);
-  // granulator.asynchronicity.addToPresetHandler(mPresets);
-  // granulator.intermittency.addToPresetHandler(mPresets);
-  // granulator.streams.addToPresetHandler(mPresets);
-  // granulator.grainDurationMs.addToPresetHandler(mPresets);
-  // granulator.envelope.addToPresetHandler(mPresets);
-  // granulator.tapeHead.addToPresetHandler(mPresets);
-  // granulator.scanSpeed.addToPresetHandler(mPresets);
-  // granulator.scanWidth.addToPresetHandler(mPresets);
-  // granulator.transposition.addToPresetHandler(mPresets);
-  // granulator.filter.addToPresetHandler(mPresets);
-  // granulator.resonance.addToPresetHandler(mPresets);
-  // granulator.volumeDB.addToPresetHandler(mPresets);
-  // granulator.pan.addToPresetHandler(mPresets);
-  // granulator.soundFile.addToPresetHandler(mPresets);
-
-  // granulator.modGrainRateDepth.addToPresetHandler(mPresets);
-  // granulator.modAsynchronicityDepth.addToPresetHandler(mPresets);
-  // granulator.modIntermittencyDepth.addToPresetHandler(mPresets);
-  // granulator.modStreamsDepth.addToPresetHandler(mPresets);
-  // granulator.modGrainDurationDepth.addToPresetHandler(mPresets);
-  // granulator.modEnvelopeDepth.addToPresetHandler(mPresets);
-  // granulator.modTapeHeadDepth.addToPresetHandler(mPresets);
-  // granulator.modScanWidthDepth.addToPresetHandler(mPresets);
-  // granulator.modTranspositionDepth.addToPresetHandler(mPresets);
-  // granulator.modFilterDepth.addToPresetHandler(mPresets);
-  // granulator.modResonanceDepth.addToPresetHandler(mPresets);
-  // granulator.modVolumeDepth.addToPresetHandler(mPresets);
-  // granulator.modPanDepth.addToPresetHandler(mPresets);
-  // granulator.modSoundFileDepth.addToPresetHandler(mPresets);
-
-  // mPresets << granulator.grainRateLFO<<   granulator.asyncLFO
-  //          << granulator.intermittencyLFO << granulator.streamsLFO
-  //          << granulator.grainDurationLFO << granulator.envelopeLFO
-  //          << granulator.tapeHeadLFO << granulator.scanSpeedLFO
-  //          << granulator.scanWidthLFO << granulator.transpositionLFO
-  //          << granulator.filterLFO << granulator.resonanceLFO
-  //          << granulator.volumeLFO << granulator.panLFO
-  //          << granulator.soundFileLFO;
-
 #ifdef __APPLE__
   ImFont *bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
       (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
@@ -294,38 +254,6 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECParameters[index]->drawRangeSlider();
   }
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // granulator.grainRate.drawRangeSlider();
-  // // granulator.ECParameters[consts::GRAIN_RATE]->drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // granulator.asynchronicity.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // granulator.intermittency.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // granulator.streams.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // granulator.grainDurationMs.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // granulator.envelope.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // granulator.transposition.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // granulator.filter.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // granulator.resonance.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // granulator.soundFile.drawRangeSlider(granulator.getCurrentAudioFileName());
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // granulator.tapeHead.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // granulator.scanWidth.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // granulator.scanSpeed.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // granulator.pan.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // granulator.volumeDB.drawRangeSlider();
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ParameterGUI::endPanel();
 
   // Draw modulation window -------------------------------------------
@@ -344,41 +272,6 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECModParameters[index]->drawModulationControl();
   }
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // granulator.ECModParameters[consts::GRAIN_RATE]->drawModulationControl();
-  // // drawModulationControl(granulator.grainRateLFO, granulator.modGrainRateDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // drawModulationControl(granulator.asyncLFO, granulator.modAsynchronicityDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // drawModulationControl(granulator.intermittencyLFO,
-  //                       granulator.modIntermittencyDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // drawModulationControl(granulator.streamsLFO, granulator.modStreamsDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // drawModulationControl(granulator.grainDurationLFO,
-  //                       granulator.modGrainDurationDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // drawModulationControl(granulator.envelopeLFO, granulator.modEnvelopeDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // drawModulationControl(granulator.transpositionLFO,
-  //                       granulator.modTranspositionDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // drawModulationControl(granulator.filterLFO, granulator.modFilterDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // drawModulationControl(granulator.resonanceLFO, granulator.modResonanceDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // drawModulationControl(granulator.soundFileLFO, granulator.modSoundFileDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // drawModulationControl(granulator.tapeHeadLFO, granulator.modTapeHeadDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // drawModulationControl(granulator.scanWidthLFO, granulator.modScanWidthDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-  // drawModulationControl(granulator.scanSpeedLFO, granulator.modScanSpeedDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  // drawModulationControl(granulator.panLFO, granulator.modPanDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-  // drawModulationControl(granulator.volumeLFO, granulator.modVolumeDepth);
-  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
