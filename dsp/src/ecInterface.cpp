@@ -399,10 +399,10 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth / 2, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  drawLFOcontrol(granulator, 0);
-  drawLFOcontrol(granulator, 1);
-  drawLFOcontrol(granulator, 2);
-  drawLFOcontrol(granulator, 3);
+  for(int index = 0; index < consts::NUM_LFOS; index++){
+    drawLFOcontrol(granulator, index);
+  }
+  
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
