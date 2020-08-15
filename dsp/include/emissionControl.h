@@ -443,28 +443,6 @@ struct grainParameters {
   float mCurrentIndex;
 };
 
-// struct grainParameters {
-//   ecParameter &grainDurationMs;
-//   float modGrainDurationDepth;
-//   ecParameter &envelope;
-//   float modEnvelopeDepth;
-//   ecParameter &tapeHead;
-//   float modTapeHeadDepth;
-//   ecParameter &transposition;
-//   float modTranspositionDepth;
-//   float filter;
-//   float modFilterDepth;
-//   float resonance;
-//   float modResonanceDepth;
-//   ecParameter &volumeDB;
-//   float modVolumeDepth;
-//   ecParameter &pan;
-//   float modPanDepth;
-//   std::shared_ptr<util::buffer<float>> source;
-//   int *activeVoices;
-//   float mCurrentIndex;
-// };
-
 /**
  * Grain class containing an audio buffer and an envelope. Used as the voice for
  * the voiceScheduler class

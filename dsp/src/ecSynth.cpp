@@ -62,87 +62,12 @@ void ecSynth::init(al::AudioIOData *io) {
         [this, index](float value) { Modulators[index]->setWidth(value); });
   }
 
-  // grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // grainRate.setModulationSource(Modulators[0]); // Default
-  // grainRateLFO.registerChangeCallback(
-  //     [&](int value) { grainRate.setModulationSource(Modulators[value]); });
-  // asyncLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // asynchronicity.setModulationSource(Modulators[0]);
-  // asyncLFO.registerChangeCallback([&](int value) {
-  //   asynchronicity.setModulationSource(Modulators[value]);
-  // });
-  // intermittencyLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // intermittency.setModulationSource(Modulators[0]);
-  // intermittencyLFO.registerChangeCallback(
-  //     [&](int value) { intermittency.setModulationSource(Modulators[value]);
-  //     });
-  // streamsLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // streams.setModulationSource(Modulators[0]);
-  // streamsLFO.registerChangeCallback(
-  //     [&](int value) { streams.setModulationSource(Modulators[value]); });
-  // grainDurationLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // grainDurationMs.setModulationSource(Modulators[0]);
-  // grainDurationLFO.registerChangeCallback([&](int value) {
-  //   grainDurationMs.setModulationSource(Modulators[value]);
-  // });
-  // envelopeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // envelope.setModulationSource(Modulators[0]);
-  // envelopeLFO.registerChangeCallback(
-  //     [&](int value) { envelope.setModulationSource(Modulators[value]); });
-  // tapeHeadLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // tapeHead.setModulationSource(Modulators[0]);
-  // tapeHeadLFO.registerChangeCallback(
-  //     [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
-  // scanSpeedLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // scanSpeed.setModulationSource(Modulators[0]);
-  // scanSpeedLFO.registerChangeCallback(
-  //     [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
-  // scanWidthLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // scanWidth.setModulationSource(Modulators[0]);
-  // scanWidthLFO.registerChangeCallback(
-  //     [&](int value) { scanWidth.setModulationSource(Modulators[value]); });
-  // transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // transposition.setModulationSource(Modulators[0]);
-  // transpositionLFO.registerChangeCallback(
-  //     [&](int value) { transposition.setModulationSource(Modulators[value]);
-  //     });
-
-  // filterLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // filter.setModulationSource(Modulators[0]);
-  // filterLFO.registerChangeCallback(
-  //     [&](int value) { filter.setModulationSource(Modulators[value]); });
-
-  // resonanceLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // resonance.setModulationSource(Modulators[0]);
-  // resonanceLFO.registerChangeCallback(
-  //     [&](int value) { resonance.setModulationSource(Modulators[value]); });
-
-  // volumeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // volumeDB.setModulationSource(Modulators[0]);
-  // volumeLFO.registerChangeCallback(
-  //     [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
-  // panLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // pan.setModulationSource(Modulators[0]);
-  // panLFO.registerChangeCallback(
-  //     [&](int value) { pan.setModulationSource(Modulators[value]); });
-  // soundFileLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  // soundFile.setModulationSource(Modulators[0]);
-  // soundFileLFO.registerChangeCallback(
-  //     [&](int value) { soundFile.setModulationSource(Modulators[value]); });
-
   grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
                            0.0);
 
   grainSynth.allocatePolyphony<Grain>(2048);
   grainSynth.setDefaultUserData(this);
 
-  /**
-   * Input correct number of files into parameters.
-   */
-  // soundFile.mParameter->max(mClipNum);
-  // soundFile.mLowRange->max(mClipNum);
-  // soundFile.mHighRange->max(mClipNum);
-  // soundFile.mHighRange->set(mClipNum);
 }
 
 void ecSynth::onProcess(AudioIOData &io) {
