@@ -406,6 +406,7 @@ struct ecModParameter {
   }
 
   void addToPresetHandler(al::PresetHandler &presetHandler) {
+    // std::cout << "HERE" << std::endl;
     param.addToPresetHandler(presetHandler);
     presetHandler.registerParameter(lfoMenu);
   }
@@ -423,26 +424,46 @@ struct ecModParameter {
 };
 
 struct grainParameters {
-  ecParameter &grainDurationMs;
+  std::shared_ptr<ecParameter> grainDurationMs;
   float modGrainDurationDepth;
-  ecParameter &envelope;
+  std::shared_ptr<ecParameter> envelope;
   float modEnvelopeDepth;
-  ecParameter &tapeHead;
-  float modTapeHeadDepth;
-  ecParameter &transposition;
+  std::shared_ptr<ecParameter> transposition;
   float modTranspositionDepth;
-  ecParameter &filter;
+  std::shared_ptr<ecParameter> filter;
   float modFilterDepth;
-  ecParameter &resonance;
+  std::shared_ptr<ecParameter> resonance;
   float modResonanceDepth;
-  ecParameter &volumeDB;
+  std::shared_ptr<ecParameter> volumeDB;
   float modVolumeDepth;
-  ecParameter &pan;
+  std::shared_ptr<ecParameter> pan;
   float modPanDepth;
   std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
   float mCurrentIndex;
 };
+
+// struct grainParameters {
+//   ecParameter &grainDurationMs;
+//   float modGrainDurationDepth;
+//   ecParameter &envelope;
+//   float modEnvelopeDepth;
+//   ecParameter &tapeHead;
+//   float modTapeHeadDepth;
+//   ecParameter &transposition;
+//   float modTranspositionDepth;
+//   float filter;
+//   float modFilterDepth;
+//   float resonance;
+//   float modResonanceDepth;
+//   ecParameter &volumeDB;
+//   float modVolumeDepth;
+//   ecParameter &pan;
+//   float modPanDepth;
+//   std::shared_ptr<util::buffer<float>> source;
+//   int *activeVoices;
+//   float mCurrentIndex;
+// };
 
 /**
  * Grain class containing an audio buffer and an envelope. Used as the voice for
@@ -574,6 +595,7 @@ public:
    */
   void setAsynchronicity(double async) {
     configure(mFrequency, async, mIntermittence);
+    // std::cout << mFrequency << std::endl;
   }
 
   /**

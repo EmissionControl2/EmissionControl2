@@ -48,7 +48,6 @@ void ecInterface::onInit() {
   jsonReadAndSetAudioSettings();
   jsonReadAndSetColorSchemeMode();
   jsonReadAndSetFontScale();
-  granulator.init(&audioIO());
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
@@ -68,17 +67,14 @@ void ecInterface::onInit() {
   granulator.loadInitSoundFiles(consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(userPath + presetsPath);
 #endif
+
+  granulator.init(&audioIO());
   audioIO().append(mRecorder);
   audioIO().append(mHardClip);
 }
 
 void ecInterface::onCreate() {
   al::imguiInit();
-
-  for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    granulator.ECParameters[index]->addToPresetHandler(mPresets);
-    granulator.ECModParameters[index]->addToPresetHandler(mPresets);
-  }
 
   for (int i = 0; i < consts::NUM_LFOS; i++) {
     granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
@@ -87,7 +83,12 @@ void ecInterface::onCreate() {
              << *granulator.LFOparameters[i]->polarity;
   }
 
-    // granulator.grainRate.addToPresetHandler(mPresets);
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    granulator.ECParameters[index]->addToPresetHandler(mPresets);
+    granulator.ECModParameters[index]->addToPresetHandler(mPresets);
+  }
+
+  // granulator.grainRate.addToPresetHandler(mPresets);
   // granulator.asynchronicity.addToPresetHandler(mPresets);
   // granulator.intermittency.addToPresetHandler(mPresets);
   // granulator.streams.addToPresetHandler(mPresets);
@@ -118,7 +119,7 @@ void ecInterface::onCreate() {
   // granulator.modPanDepth.addToPresetHandler(mPresets);
   // granulator.modSoundFileDepth.addToPresetHandler(mPresets);
 
-  // mPresets << granulator.grainRateLFO << granulator.asyncLFO
+  // mPresets << granulator.grainRateLFO<<   granulator.asyncLFO
   //          << granulator.intermittencyLFO << granulator.streamsLFO
   //          << granulator.grainDurationLFO << granulator.envelopeLFO
   //          << granulator.tapeHeadLFO << granulator.scanSpeedLFO
@@ -210,7 +211,7 @@ void ecInterface::onDraw(Graphics &g) {
           size_t i;
           for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
             nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
-            granulator.loadSoundFile(path);
+            granulator.loadSoundFileRT(path);
           }
           NFD_PathSet_Free(&pathSet);
         }
@@ -293,8 +294,9 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECParameters[index]->drawRangeSlider();
   }
+  // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
   // granulator.grainRate.drawRangeSlider();
-  // granulator.ECParameters[consts::GRAIN_RATE]->drawRangeSlider();
+  // // granulator.ECParameters[consts::GRAIN_RATE]->drawRangeSlider();
   // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
   // granulator.asynchronicity.drawRangeSlider();
   // ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
@@ -589,7 +591,7 @@ void ecInterface::onDraw(Graphics &g) {
         size_t i;
         for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
           nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
-          granulator.loadSoundFile(path);
+          granulator.loadSoundFileRT(path);
         }
         NFD_PathSet_Free(&pathSet);
       }
