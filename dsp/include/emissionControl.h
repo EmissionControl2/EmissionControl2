@@ -685,7 +685,7 @@ private:
 /*** GUI ELEMENTS ***/
 
 // a struct to wrap LFO parameters
-struct LFOstruct {
+class LFOstruct {
 public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
@@ -713,6 +713,7 @@ public:
   ~LFOstruct() {
     delete shape;
     delete frequency;
+    delete polarity;
     delete duty;
   }
 };

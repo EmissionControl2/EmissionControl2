@@ -27,7 +27,7 @@ void ecSynth::init(al::AudioIOData *io) {
 
   for (int index = 0; index < consts::NUM_LFOS; index++) {
     Modulators.push_back(std::make_shared<ecModulator>());
-    LFOparameters.push_back(new LFOstruct{index});
+    LFOparameters.push_back(std::make_shared<LFOstruct>(index));
   }
 
   mGlobalSamplingRate = io->fps();
@@ -43,21 +43,21 @@ void ecSynth::init(al::AudioIOData *io) {
     ECParameters[index]->setModulationSource(Modulators[0]);
     ECModParameters[index]->setMenuElements(lfo_names);
     ECModParameters[index]->registerMenuChangeCallback(
-        [&](int value) { grainRate.setModulationSource(Modulators[value]); });
+        [this,index](int value) { ECParameters[index]->setModulationSource(Modulators[value]); });
   }
 
-  for (int index = 0; index < consts::NUM_LFOS; index++) {
+  for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
     LFOparameters[index]->shape->registerChangeCallback(
-        [&](int value) { Modulators[index]->setWaveform(value); });
+        [this,index](int value) { Modulators[index]->setWaveform(value); });
 
     LFOparameters[index]->polarity->registerChangeCallback(
-        [&](int value) { Modulators[index]->setPolarity(value); });
+        [this,index](int value) { Modulators[index]->setPolarity(value); });
 
     LFOparameters[index]->frequency->mParameter->registerChangeCallback(
-        [&](float value) { Modulators[index]->setFrequency(value); });
+        [this,index](float value) { Modulators[index]->setFrequency(value); });
 
     LFOparameters[index]->duty->registerChangeCallback(
-        [&](float value) { Modulators[index]->setWidth(value); });
+        [this,index](float value) { Modulators[index]->setWidth(value); });
   }
 
   // grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});

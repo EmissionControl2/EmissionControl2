@@ -76,16 +76,16 @@ void ecInterface::onInit() {
 void ecInterface::onCreate() {
   al::imguiInit();
 
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    granulator.ECParameters[index]->addToPresetHandler(mPresets);
+    granulator.ECModParameters[index]->addToPresetHandler(mPresets);
+  }
+
   for (int i = 0; i < consts::NUM_LFOS; i++) {
     granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
     mPresets << *granulator.LFOparameters[i]->shape
              << *granulator.LFOparameters[i]->duty
              << *granulator.LFOparameters[i]->polarity;
-  }
-
-  for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    granulator.ECParameters[index]->addToPresetHandler(mPresets);
-    // granulator.ECModParameters[index]->addToPresetHandler(mPresets);
   }
 
   // granulator.grainRate.addToPresetHandler(mPresets);
@@ -745,6 +745,7 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::SameLine();
   ImGui::SetCursorPosX(50 * ImGui::GetIO().FontGlobalScale);
   ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
+
   ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();

@@ -314,9 +314,6 @@ void ecParameter::drawRangeSlider(std::string sliderText) {
                                0.1, mLowRange->min(), mLowRange->max(), "%.3f");
   }
 
-  // if (mParameter->displayName() == "##Grainrate")
-  //   std::cout << mLowRange->get() << std::endl;
-
   ImGui::SameLine();
   if (changed && isInt) {
     mLowRange->set(valueLowi);

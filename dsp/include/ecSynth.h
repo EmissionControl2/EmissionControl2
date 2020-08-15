@@ -49,7 +49,7 @@ public:
   const static int NUM_MODULATORS = 4;
 
   // array of lfo parameters to draw later
-  std::vector<LFOstruct *> LFOparameters;
+  std::vector<std::shared_ptr<LFOstruct>> LFOparameters;
 
   std::vector<std::shared_ptr<util::buffer<float>>>
       soundClip;    /* Store audio buffers in memory */
