@@ -85,7 +85,7 @@ void ecInterface::onCreate() {
 
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     granulator.ECParameters[index]->addToPresetHandler(mPresets);
-    granulator.ECModParameters[index]->addToPresetHandler(mPresets);
+    // granulator.ECModParameters[index]->addToPresetHandler(mPresets);
   }
 
   // granulator.grainRate.addToPresetHandler(mPresets);
