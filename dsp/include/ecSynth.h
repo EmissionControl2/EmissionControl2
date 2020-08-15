@@ -56,7 +56,7 @@ public:
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip = 0;
 
-  std::array<std::unique_ptr<ecParameter>, consts::NUM_PARAMS> ECParameters;
+  std::array<std::shared_ptr<ecParameter>, consts::NUM_PARAMS> ECParameters;
   std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
       ECModParameters;
 
@@ -196,7 +196,7 @@ public:
   ecParameter modVolumeDepth{
       "modVolumeDepth", "modVolumeDepth", "", 0, "", 0, 1, 0, 1, consts::MOD};
 
-  ecSynth() { initParameters(); }
+  ecSynth() {}
 
   void initParameters() {
     ECParameters[consts::GRAIN_RATE] = std::unique_ptr<ecParameter>(
@@ -261,7 +261,7 @@ public:
         std::unique_ptr<ecModParameter>(new ecModParameter{"soundFile"});
 
     ECParameters[consts::SCAN_POS] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Scan", "11. Scan Position", "", 0.5, "", 0, 1, 0, 1,
+        new ecParameter{"scanPosition", "11. Scan Position", "", 0.5, "", 0, 1, 0, 1,
                         consts::PARAM});
     ECModParameters[consts::SCAN_POS] =
         std::unique_ptr<ecModParameter>(new ecModParameter{"scanPosition"});
@@ -316,11 +316,18 @@ public:
   virtual void onTriggerOff() override;
 
   /**
+   * @brief Load sound file into memory, used only on init.
+   *
+   * @param[in] The the filepath to the audio file.
+   */
+  void loadSoundFileOffline(std::string fileName);
+
+/**
    * @brief Load sound file into memory.
    *
    * @param[in] The the filepath to the audio file.
    */
-  void loadSoundFile(std::string fileName);
+  void loadSoundFileRT(std::string fileName);
 
   /**
    * @brief Load sound files from designated sample folder.
@@ -394,8 +401,11 @@ public:
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
   std::string getCurrentAudioFileName() {
-    std::string filename = soundClipFileName
-        [soundFile.getModParam(modSoundFileDepth.mParameter->get()) - 1];
+    std::string filename =
+        soundClipFileName[ECParameters[consts::SOUND_FILE]->getModParam(
+                              ECModParameters[consts::SOUND_FILE]
+                                  ->getWidthParam()) -
+                          1];
     filename = filename.substr(filename.find_last_of("/") + 1);
     return filename;
   }

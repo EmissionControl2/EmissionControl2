@@ -446,34 +446,34 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // Set Duration
   if (list.modGrainDurationDepth > 0)
-    setDurationS(list.grainDurationMs.getModParam(list.modGrainDurationDepth) /
+    setDurationS(list.grainDurationMs->getModParam(list.modGrainDurationDepth) /
                  1000);
   else
-    setDurationS(list.grainDurationMs.getParam() / 1000);
+    setDurationS(list.grainDurationMs->getParam() / 1000);
 
   // Set Envelope
   gEnv.setSamplingRate(mSamplingRate);
   if (list.modEnvelopeDepth > 0)
-    gEnv.set(mDurationS, list.envelope.getModParam(list.modEnvelopeDepth));
+    gEnv.set(mDurationS, list.envelope->getModParam(list.modEnvelopeDepth));
   else
-    gEnv.set(mDurationS, list.envelope.getParam());
+    gEnv.set(mDurationS, list.envelope->getParam());
 
   // Configure what part of the buffer the grain will play;
   configureIndex(list);
 
   if (list.modVolumeDepth > 0)
-    configureAmp(list.volumeDB.getModParam(list.modVolumeDepth));
+    configureAmp(list.volumeDB->getModParam(list.modVolumeDepth));
   else
-    configureAmp(list.volumeDB.getParam());
+    configureAmp(list.volumeDB->getParam());
 
   // Store modulated pan value of grain IF it is being modulated.
   if (list.modPanDepth > 0)
-    configurePan(list.pan.getModParam(list.modPanDepth));
+    configurePan(list.pan->getModParam(list.modPanDepth));
   else
-    configurePan(list.pan.getParam());
+    configurePan(list.pan->getParam());
 
-  configureFilter(list.filter.getModParam(list.modFilterDepth),
-                  list.resonance.getModParam(list.modResonanceDepth));
+  configureFilter(list.filter->getModParam(list.modFilterDepth),
+                  list.resonance->getModParam(list.modResonanceDepth));
 }
 
 void Grain::onProcess(al::AudioIOData &io) {
@@ -531,13 +531,13 @@ void Grain::configureIndex(const grainParameters &list) {
 
   if (list.modTranspositionDepth > 0)
     endSample = floor(startSample + (mDurationS * mSamplingRate *
-                                     abs(list.transposition.getModParam(
+                                     abs(list.transposition->getModParam(
                                          list.modTranspositionDepth))));
   else {
     endSample = floor(startSample + (mDurationS * mSamplingRate *
-                                     abs(list.transposition.getParam())));
+                                     abs(list.transposition->getParam())));
   }
-  if (list.transposition.getParam() < 0)
+  if (list.transposition->getParam() < 0)
     index.set(endSample, startSample, mDurationS);
   else
     index.set(startSample, endSample, mDurationS);
