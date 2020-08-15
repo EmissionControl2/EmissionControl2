@@ -21,7 +21,7 @@ void ecSynth::setIO(al::AudioIOData *io) {
   mGlobalSamplingRate = io->fps();
 }
 
-void ecSynth::init(al::AudioIOData *io) {
+void ecSynth::initialize(al::AudioIOData *io) {
 
   initParameters();
 
@@ -67,7 +67,6 @@ void ecSynth::init(al::AudioIOData *io) {
 
   grainSynth.allocatePolyphony<Grain>(2048);
   grainSynth.setDefaultUserData(this);
-
 }
 
 void ecSynth::onProcess(AudioIOData &io) {
@@ -79,30 +78,32 @@ void ecSynth::onProcess(AudioIOData &io) {
       Modulators[index]->sampleAndStore();
 
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
+    width = ECModParameters[consts::GRAIN_RATE]->getWidthParam();
+    if (width > 0)
+      grainScheduler.setFrequency(
+          ECParameters[consts::GRAIN_RATE]->getModParam(width));
+    else
+      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getParam());
 
-    grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(
-        ECModParameters[consts::GRAIN_RATE]->getWidthParam()));
-
-    if (ECModParameters[consts::ASYNC]->getWidthParam() >
-        0) // modulate the asynchronicity
-      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getModParam(
-          ECModParameters[consts::ASYNC]->getWidthParam()));
+    width = ECModParameters[consts::ASYNC]->getWidthParam();
+    if (width > 0) // modulate the asynchronicity
+      grainScheduler.setAsynchronicity(
+          ECParameters[consts::ASYNC]->getModParam(width));
     else
       grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getParam());
 
-    if (ECModParameters[consts::INTERM]->getWidthParam() >
-        0) // modulate the intermittency
-      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getModParam(
-          ECModParameters[consts::INTERM]->getWidthParam()));
+    width = ECModParameters[consts::INTERM]->getWidthParam();
+    if (width > 0) // modulate the intermittency
+      grainScheduler.setIntermittence(
+          ECParameters[consts::INTERM]->getModParam(width));
     else
       grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
 
-    if (ECModParameters[consts::STREAMS]->getWidthParam() >
-        0) // Modulate the amount of streams playing.
+    width = ECModParameters[consts::STREAMS]->getWidthParam();
+    if (width > 0) // Modulate the amount of streams playing.
       grainScheduler.setPolyStream(
           consts::synchronous,
-          static_cast<int>(ECParameters[consts::STREAMS]->getModParam(
-              ECModParameters[consts::STREAMS]->getWidthParam())));
+          static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
     else
       grainScheduler.setPolyStream(
           consts::synchronous,

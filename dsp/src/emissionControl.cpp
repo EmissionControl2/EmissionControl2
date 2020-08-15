@@ -207,7 +207,8 @@ float ecModulator::sampleAndHoldUniform(float low, float high) {
 ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          float defaultValue, float defaultMin, float defaultMax,
                          float absMin, float absMax,
-                         consts::sliderType slideType, bool independentMod) {
+                         consts::sliderType slideType, std::string sliderText,
+                         bool independentMod) {
   mParameter =
       new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
   mDisplayName = displayName;
@@ -219,6 +220,7 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
   mMin = defaultMin;
   mMax = defaultMax;
   mSliderType = slideType;
+  mSliderText = sliderText;
   mIndependentMod = independentMod;
   if (mIndependentMod) // if true, this parameter will have its own modulator
     mModulator = new ecModulator();
@@ -228,7 +230,8 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          std::string Group, float defaultValue,
                          std::string prefix, float defaultMin, float defaultMax,
                          float absMin, float absMax,
-                         consts::sliderType slideType, bool independentMod) {
+                         consts::sliderType slideType, std::string sliderText,
+                         bool independentMod) {
   mParameter = new Parameter{parameterName, Group,      defaultValue,
                              prefix,        defaultMin, defaultMax};
   mDisplayName = displayName;
@@ -248,6 +251,7 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
   mMin = defaultMin;
   mMax = defaultMax;
   mSliderType = slideType;
+  mSliderText = sliderText;
   mIndependentMod = independentMod;
   if (mIndependentMod) // if true, this parameter will have its own modulator
     mModulator = new ecModulator();
@@ -296,7 +300,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameter::drawRangeSlider(std::string sliderText) {
+void ecParameter::drawRangeSlider() {
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
   bool changed, isInt = false;
@@ -339,12 +343,12 @@ void ecParameter::drawRangeSlider(std::string sliderText) {
                            (190 * io.FontGlobalScale));
     else
       ImGui::PushItemWidth(80);
-  if (isInt) {
+  if (isInt) { // Draw int slider.
     valueSlideri = static_cast<int>(mParameter->get());
-    if (sliderText != "") {
+    if (mSliderText != "") {
       changed = ImGui::SliderInt((mParameter->displayName()).c_str(),
                                  &valueSlideri, mParameter->min(),
-                                 mParameter->max(), sliderText.c_str());
+                                 mParameter->max(), (mSliderText).c_str());
     } else {
       changed =
           ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri,
@@ -352,10 +356,10 @@ void ecParameter::drawRangeSlider(std::string sliderText) {
     }
   } else { // Draw float slider.
     valueSliderf = mParameter->get();
-    if (sliderText != "") {
-      ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
+    if (mSliderText != "") {
+      changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
                          mParameter->min(), mParameter->max(),
-                         sliderText.c_str());
+                         mSliderText.c_str());
     } else {
       changed =
           ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
@@ -418,7 +422,7 @@ void ecParameter::drawRangeSlider(std::string sliderText) {
 
   ImGui::SameLine();
   if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
-    ImGui::Text("Hz");
+    ImGui::Text("");
   else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
     ImGui::Text("");
   else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
