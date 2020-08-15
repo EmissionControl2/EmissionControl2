@@ -15,13 +15,12 @@
 #include "Gamma/Filter.h"
 #include "Gamma/Oscillator.h"
 #include "al/app/al_App.hpp"
+#include "al/io/al_Imgui.hpp"
 #include "al/math/al_Random.hpp"
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
-#include "al/ui/al_PresetHandler.hpp"
-#include "al/io/al_Imgui.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
-
+#include "al/ui/al_PresetHandler.hpp"
 
 /**** CSTD LIB ****/
 #include <string>
@@ -261,7 +260,6 @@ public:
 
   /**
    * @brief ecParameter Constructor.
-   *
    * @param[in] parameterName The name of the parameter
    * @param[in] displayName The displayed name of the parameter
    * @param[in] defaultValue The initial value for the parameter
@@ -269,17 +267,22 @@ public:
    * @param[in] Default maximum value for the parameter.
    * @param[in] Absolute minimum value for the parameter.
    * @param[in] Absolute maximum value for the parameter.
-   * @param[in] Waveform used to modulate the parameters current value.
-   * @param[in] If set to true, the parameter will contain its own modulator.
+   * @param[in] slideType: Sets the type of slider drawn
+   *    -- PARAM, PARAM_INT, LFO, LFO_INT, MOD, MOD_INT
+   * @param[in] sliderText: Set the text to be displayed on the slider
+   *    Example "%i Hz"
+   *      This will display the current value of the slider with Hz next to it.
+   * @param[in] independentMod:
+   *            If set to true, the parameter will contain its own modulator.
    *            If false, must input data on an outside modulator when calling
-   * getParamMod().
+   *              getParamMod().
    */
   ecParameter(std::string parameterName, std::string displayName,
               float defaultValue = 0, float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
               float absMax = FLT_MAX,
               consts::sliderType slideType = consts::PARAM,
-              bool independentMod = 0);
+              std::string sliderText = "", bool independentMod = 0);
 
   /**
    * @brief ecParameter Constructor.
@@ -289,16 +292,21 @@ public:
    * @param[in] Group The group the parameter belongs to
    * @param[in] defaultValue The initial value for the parameter
    * @param[in] prefix An address prefix that is prepended to the parameter's
-   * OSC address
+   *            OSC address.
    * @param[in] Default minimum value for the parameter.
    * @param[in] Default maximum value for the parameter.
    * @param[in] Absolute minimum value for the parameter.
    * @param[in] Absolute maximum value for the parameter.
    * @param[in] Waveform used to modulate the parameters current value.
-   * @param[in] If set to true, the parameter will contain its own modulator.
+   * @param[in] slideType: Sets the type of slider drawn
+   *    -- PARAM, PARAM_INT, LFO, LFO_INT, MOD, MOD_INT
+   * @param[in] sliderText: Set the text to be displayed on the slider
+   *    Example "%i Hz"
+   *      This will display the current value of the slider with Hz next to it.
+   * @param[in] independentMod:
+   *            If set to true, the parameter will contain its own modulator.
    *            If false, must input data on an outside modulator when calling
-   * getParamMod().
-   *
+   *              getParamMod().
    */
   ecParameter(std::string parameterName, std::string displayName,
               std::string Group, float defaultValue = 0,
@@ -306,7 +314,7 @@ public:
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
               float absMax = FLT_MAX,
               consts::sliderType slideType = consts::PARAM,
-              bool independentMod = 0);
+              std::string sliderText = "", bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -366,9 +374,16 @@ public:
   void addToPresetHandler(al::PresetHandler &presetHandler);
 
   /**
+   * @brief Set the text to be displayed on the slider
+   * Example "%i Hz"
+   *    This will display the current value of the slider with Hz next to it.
+   */
+  void setSliderText(std::string sliderText) { mSliderText = sliderText; }
+
+  /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(std::string sliderText = "");
+  void drawRangeSlider();
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -380,6 +395,7 @@ public:
 
 private:
   std::string mDisplayName;
+  std::string mSliderText;
   consts::sliderType mSliderType;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
@@ -680,7 +696,7 @@ public:
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
     frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001,
-                                10000, consts::LFO);
+                                10000, consts::LFO, "%.3f Hz");
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});

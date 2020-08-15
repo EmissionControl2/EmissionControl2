@@ -68,7 +68,7 @@ void ecInterface::onInit() {
   mPresets.setRootPath(userPath + presetsPath);
 #endif
 
-  granulator.init(&audioIO());
+  granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
   audioIO().append(mHardClip);
 }
@@ -89,9 +89,9 @@ void ecInterface::onCreate() {
   }
 
 #ifdef __APPLE__
-  ImFont *bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+  bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
       (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
-  ImFont *titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+  titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
       (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
 #endif
 
@@ -142,10 +142,15 @@ void ecInterface::onDraw(Graphics &g) {
     audioIO().start();
     noSoundFiles = false;
   }
+
+  // Set Dynamic Slider Text
+  granulator.ECParameters[consts::SOUND_FILE]->setSliderText(
+      granulator.getCurrentAudioFileName());
+
   // Draw GUI
 
   // draw menu bar ----------------------------------------------------
-  static bool show_app_main_menu_bar = true;
+  // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Settings")) {
       if (ImGui::MenuItem("Audio Output", "")) {
@@ -245,12 +250,12 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth / 2, windowHeight / 2, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  for(int index = 0; index < consts::NUM_PARAMS; index++) {
-    if(index % 3 == 0)
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    if (index % 3 == 0)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else if(index % 3 == 1)
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else 
+    else if (index % 3 == 1)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+    else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECParameters[index]->drawRangeSlider();
   }
@@ -263,12 +268,12 @@ void ecInterface::onDraw(Graphics &g) {
                            flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  for(int index = 0; index < consts::NUM_PARAMS; index++) {
-    if(index % 3 == 0)
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    if (index % 3 == 0)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else if(index % 3 == 1)
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else 
+    else if (index % 3 == 1)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+    else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECModParameters[index]->drawModulationControl();
   }
@@ -292,10 +297,10 @@ void ecInterface::onDraw(Graphics &g) {
                            windowWidth / 2, windowHeight / 4, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  for(int index = 0; index < consts::NUM_LFOS; index++){
+  for (int index = 0; index < consts::NUM_LFOS; index++) {
     drawLFOcontrol(granulator, index);
   }
-  
+
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -647,8 +652,6 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider();
-  // ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->frequency);
-
   if (*synth.LFOparameters[lfoNumber]->shape == 1) {
     ImGui::Text("Duty");
     ImGui::SameLine();

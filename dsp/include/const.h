@@ -5,6 +5,8 @@
 
 namespace consts {
 
+enum sliderType{ PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
+
 
 enum paramNames {
   GRAIN_RATE = 0,
@@ -36,7 +38,6 @@ enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
 enum bound { MIN, MAX };
-enum sliderType{ PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
 
 /**
  *  JSON KEYS
