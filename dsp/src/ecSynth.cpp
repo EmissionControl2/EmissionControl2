@@ -64,6 +64,9 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
                            0.0);
+  mScanner.set(ECParameters[consts::SCAN_POS]->getParam() *
+                   soundClip[0]->frames,
+               soundClip[0]->frames, mGlobalSamplingRate);
 
   grainSynth.allocatePolyphony<Grain>(2048);
   grainSynth.setDefaultUserData(this);
