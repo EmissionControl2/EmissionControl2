@@ -21,15 +21,12 @@ void ecSynth::setIO(al::AudioIOData *io) {
   mGlobalSamplingRate = io->fps();
 }
 
-void ecSynth::init(al::AudioIOData *io) {
-  int index;
+void ecSynth::initialize(al::AudioIOData *io) {
+  initParameters();
 
-  for (index = 0; index < NUM_MODULATORS; index++) {
+  for (int index = 0; index < consts::NUM_LFOS; index++) {
     Modulators.push_back(std::make_shared<ecModulator>());
-  }
-
-  for (index = 0; index < NUM_MODULATORS; index++) {
-    LFOparameters.push_back(new LFOstruct{index});
+    LFOparameters.push_back(std::make_shared<LFOstruct>(index));
   }
 
   mGlobalSamplingRate = io->fps();
@@ -40,150 +37,38 @@ void ecSynth::init(al::AudioIOData *io) {
   mScanner.setSamplingRate(mGlobalSamplingRate);
 
   // MUST USE THIS ORDER
-  grainRateLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  grainRate.setModulationSource(Modulators[0]);  // Default
-  grainRateLFO.registerChangeCallback(
-    [&](int value) { grainRate.setModulationSource(Modulators[value]); });
-  asyncLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  asynchronicity.setModulationSource(Modulators[0]);
-  asyncLFO.registerChangeCallback(
-    [&](int value) { asynchronicity.setModulationSource(Modulators[value]); });
-  intermittencyLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  intermittency.setModulationSource(Modulators[0]);
-  intermittencyLFO.registerChangeCallback(
-    [&](int value) { intermittency.setModulationSource(Modulators[value]); });
-  streamsLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  streams.setModulationSource(Modulators[0]);
-  streamsLFO.registerChangeCallback(
-    [&](int value) { streams.setModulationSource(Modulators[value]); });
-  grainDurationLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  grainDurationMs.setModulationSource(Modulators[0]);
-  grainDurationLFO.registerChangeCallback(
-    [&](int value) { grainDurationMs.setModulationSource(Modulators[value]); });
-  envelopeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  envelope.setModulationSource(Modulators[0]);
-  envelopeLFO.registerChangeCallback(
-    [&](int value) { envelope.setModulationSource(Modulators[value]); });
-  tapeHeadLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  tapeHead.setModulationSource(Modulators[0]);
-  tapeHeadLFO.registerChangeCallback(
-    [&](int value) { tapeHead.setModulationSource(Modulators[value]); });
-  scanSpeedLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  scanSpeed.setModulationSource(Modulators[0]);
-  scanSpeedLFO.registerChangeCallback(
-    [&](int value) { scanSpeed.setModulationSource(Modulators[value]); });
-  scanWidthLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  scanWidth.setModulationSource(Modulators[0]);
-  scanWidthLFO.registerChangeCallback(
-    [&](int value) { scanWidth.setModulationSource(Modulators[value]); });
-  transpositionLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  transposition.setModulationSource(Modulators[0]);
-  transpositionLFO.registerChangeCallback(
-    [&](int value) { transposition.setModulationSource(Modulators[value]); });
+  std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4"};
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    ECParameters[index]->setModulationSource(Modulators[0]);
+    ECModParameters[index]->setMenuElements(lfo_names);
+    ECModParameters[index]->registerMenuChangeCallback(
+      [this, index](int value) {
+        ECParameters[index]->setModulationSource(Modulators[value]);
+      });
+  }
 
-  filterLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  filter.setModulationSource(Modulators[0]);
-  filterLFO.registerChangeCallback(
-    [&](int value) { filter.setModulationSource(Modulators[value]); });
+  for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
+    LFOparameters[index]->shape->registerChangeCallback(
+      [this, index](int value) { Modulators[index]->setWaveform(value); });
 
-  resonanceLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  resonance.setModulationSource(Modulators[0]);
-  resonanceLFO.registerChangeCallback(
-    [&](int value) { resonance.setModulationSource(Modulators[value]); });
+    LFOparameters[index]->polarity->registerChangeCallback(
+      [this, index](int value) { Modulators[index]->setPolarity(value); });
 
-  volumeLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  volumeDB.setModulationSource(Modulators[0]);
-  volumeLFO.registerChangeCallback(
-    [&](int value) { volumeDB.setModulationSource(Modulators[value]); });
-  panLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  pan.setModulationSource(Modulators[0]);
-  panLFO.registerChangeCallback(
-    [&](int value) { pan.setModulationSource(Modulators[value]); });
-  soundFileLFO.setElements({"LFO1", "LFO2", "LFO3", "LFO4"});
-  soundFile.setModulationSource(Modulators[0]);
-  soundFileLFO.registerChangeCallback(
-    [&](int value) { soundFile.setModulationSource(Modulators[value]); });
+    LFOparameters[index]->frequency->mParameter->registerChangeCallback(
+      [this, index](float value) { Modulators[index]->setFrequency(value); });
 
-  grainScheduler.configure(grainRate.getParam(), 0.0, 0.0);
+    LFOparameters[index]->duty->registerChangeCallback(
+      [this, index](float value) { Modulators[index]->setWidth(value); });
+  }
 
-  // FOR LOOP CAUSES CRASHES ???
-  LFOparameters[0]->shape->registerChangeCallback(
-    [&](int value) { Modulators[0]->setWaveform(value); });
-
-  LFOparameters[0]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[0]->setPolarity(value); });
-
-  LFOparameters[0]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[0]->setFrequency(value); });
-
-  LFOparameters[0]->duty->registerChangeCallback(
-    [&](float value) { Modulators[0]->setWidth(value); });
-
-  LFOparameters[1]->shape->registerChangeCallback(
-    [&](int value) { Modulators[1]->setWaveform(value); });
-
-  LFOparameters[1]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[1]->setPolarity(value); });
-
-  LFOparameters[1]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[1]->setFrequency(value); });
-
-  LFOparameters[1]->duty->registerChangeCallback(
-    [&](float value) { Modulators[1]->setWidth(value); });
-
-  LFOparameters[2]->shape->registerChangeCallback(
-    [&](int value) { Modulators[2]->setWaveform(value); });
-
-  LFOparameters[2]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[2]->setPolarity(value); });
-
-  LFOparameters[2]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[2]->setFrequency(value); });
-
-  LFOparameters[2]->duty->registerChangeCallback(
-    [&](float value) { Modulators[2]->setWidth(value); });
-
-  LFOparameters[3]->shape->registerChangeCallback(
-    [&](int value) { Modulators[3]->setWaveform(value); });
-
-  LFOparameters[3]->polarity->registerChangeCallback(
-    [&](int value) { Modulators[3]->setPolarity(value); });
-
-  LFOparameters[3]->frequency->mParameter->registerChangeCallback(
-    [&](float value) { Modulators[3]->setFrequency(value); });
-
-  LFOparameters[3]->duty->registerChangeCallback(
-    [&](float value) { Modulators[3]->setWidth(value); });
-
-  // scanSpeed->mParameter->registerChangeCallback(
-  //     [&](float value) {
-
-  //       mScanner.setFrequency(value); });
-  /**
-   * WHY DOES THIS CRASH ??
-   */
-  // for (int index = 0; index < NUM_MODULATORS; ++index) {
-  //   std::cout << "INDEX: " << index << std::endl;
-  //   LFOparameters[index]->shape->registerChangeCallback(
-  //       [&](int value) { Modulators[index]->setWaveform(value); });
-
-  //   LFOparameters[index]->frequency->registerChangeCallback(
-  //       [&](float value) { Modulators[index]->setFrequency(value); });
-
-  //   LFOparameters[index]->duty->registerChangeCallback(
-  //       [&](float value) { Modulators[index]->setWidth(value); });
-  // }
+  grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
+                           0.0);
+  mScanner.set(
+    ECParameters[consts::SCAN_POS]->getParam() * soundClip[0]->frames,
+    soundClip[0]->frames, mGlobalSamplingRate);
 
   grainSynth.allocatePolyphony<Grain>(2048);
   grainSynth.setDefaultUserData(this);
-
-  /**
-   * Input correct number of files into parameters.
-   */
-  soundFile.mParameterInt->max(mClipNum);
-  soundFile.mLowRange->max(mClipNum);
-  soundFile.mHighRange->max(mClipNum);
-  soundFile.mHighRange->set(mClipNum);
 }
 
 void ecSynth::onProcess(AudioIOData &io) {
@@ -195,39 +80,45 @@ void ecSynth::onProcess(AudioIOData &io) {
       Modulators[index]->sampleAndStore();
 
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
-
-    // NOTE grainRate noise isnt very perceptible
-    if (modGrainRateDepth.getParam() > 0)  // modulate the grain rate
+    width = ECModParameters[consts::GRAIN_RATE]->getWidthParam();
+    if (width > 0)
       grainScheduler.setFrequency(
-        grainRate.getModParam(modGrainRateDepth.getParam()));
+        ECParameters[consts::GRAIN_RATE]->getModParam(width));
     else
-      grainScheduler.setFrequency(grainRate.getParam());
+      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getParam());
 
-    if (modAsynchronicityDepth.getParam() > 0)  // modulate the asynchronicity
+    width = ECModParameters[consts::ASYNC]->getWidthParam();
+    if (width > 0)  // modulate the asynchronicity
       grainScheduler.setAsynchronicity(
-        asynchronicity.getModParam(modAsynchronicityDepth.getParam()));
+        ECParameters[consts::ASYNC]->getModParam(width));
     else
-      grainScheduler.setAsynchronicity(asynchronicity.getParam());
+      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getParam());
 
-    if (modIntermittencyDepth.getParam() > 0)  // modulate the intermittency
+    width = ECModParameters[consts::INTERM]->getWidthParam();
+    if (width > 0)  // modulate the intermittency
       grainScheduler.setIntermittence(
-        intermittency.getModParam(modIntermittencyDepth.getParam()));
+        ECParameters[consts::INTERM]->getModParam(width));
     else
-      grainScheduler.setIntermittence(intermittency.getParam());
+      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
 
-    if (modStreamsDepth.getParam() >
-        0)  // Modulate the amount of streams playing.
+    width = ECModParameters[consts::STREAMS]->getWidthParam();
+    if (width > 0)  // Modulate the amount of streams playing.
       grainScheduler.setPolyStream(
-        consts::synchronous, streams.getModParam(modStreamsDepth.getParam()));
+        consts::synchronous,
+        static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
     else
-      grainScheduler.setPolyStream(consts::synchronous, streams.getParam());
+      grainScheduler.setPolyStream(
+        consts::synchronous,
+        static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
 
     mCurrentIndex = mScanner();
     // CONTROL RATE LOOP (Executes every 4th sample)
     if (controlRateCounter == 4) {
       controlRateCounter = 0;
       mPrevModClip = mModClip;
-      mModClip = soundFile.getModParam(modSoundFileDepth.getParam()) - 1;
+      mModClip = static_cast<int>(ECParameters[consts::SOUND_FILE]->getModParam(
+                   ECModParameters[consts::SOUND_FILE]->getWidthParam())) -
+                 1;
     }
     controlRateCounter++;
     /////
@@ -235,16 +126,16 @@ void ecSynth::onProcess(AudioIOData &io) {
     // Grain by Grain Initilization
     if (grainScheduler.trigger()) {
       prevTapeHeadVal = nowTapeHeadVal;
-      nowTapeHeadVal = tapeHead.getModParam(modTapeHeadDepth.getParam());
+      nowTapeHeadVal = ECParameters[consts::SCAN_POS]->getModParam(
+        ECModParameters[consts::SCAN_POS]->getWidthParam());
       prev_scan_speed = scan_speed;
-      scan_speed = scanSpeed.getModParam(modScanSpeedDepth.getParam());
+      scan_speed = ECParameters[consts::SCAN_SPEED]->getModParam(
+        ECModParameters[consts::SCAN_SPEED]->getWidthParam());
       prev_scan_width = scan_width;
-      scan_width = scanWidth.getModParam(modScanWidthDepth.getParam());
+      scan_width = ECParameters[consts::SCAN_WIDTH]->getModParam(
+        ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
       float frames = soundClip[mModClip]->frames;
       float start, end;
-
-      /**ODD BUG: when scan speed is higher than 1.015, the volume is gut in
-       * halfwut**/
 
       // Reset index.
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
@@ -316,22 +207,20 @@ void ecSynth::onProcess(AudioIOData &io) {
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
         grainParameters list = {
-          grainDurationMs,
-          modGrainDurationDepth.getParam(),
-          envelope,
-          modEnvelopeDepth.getParam(),
-          tapeHead,
-          modTapeHeadDepth.getParam(),
-          transposition,
-          modTranspositionDepth.getParam(),
-          filter,
-          modFilterDepth.getParam(),
-          resonance,
-          modResonanceDepth.getParam(),
-          volumeDB,
-          modVolumeDepth.getParam(),
-          pan,
-          modPanDepth.getParam(),
+          ECParameters[consts::GRAIN_DUR],
+          ECModParameters[consts::GRAIN_DUR]->getWidthParam(),
+          ECParameters[consts::ENVELOPE],
+          ECModParameters[consts::ENVELOPE]->getWidthParam(),
+          ECParameters[consts::PITCH_SHIFT],
+          ECModParameters[consts::PITCH_SHIFT]->getWidthParam(),
+          ECParameters[consts::FILTER_CENTER],
+          ECModParameters[consts::FILTER_CENTER]->getWidthParam(),
+          ECParameters[consts::RESONANCE],
+          ECModParameters[consts::RESONANCE]->getWidthParam(),
+          ECParameters[consts::VOLUME],
+          ECModParameters[consts::VOLUME]->getWidthParam(),
+          ECParameters[consts::PAN],
+          ECModParameters[consts::PAN]->getWidthParam(),
           soundClip[mModClip],
           mPActiveVoices,
           mCurrentIndex,
@@ -370,7 +259,7 @@ void ecSynth::onTriggerOn() {}
 
 void ecSynth::onTriggerOff() {}
 
-void ecSynth::loadSoundFile(std::string fileName) {
+void ecSynth::loadSoundFileRT(std::string fileName) {
   if (std::find(soundClipFileName.begin(), soundClipFileName.end(), fileName) !=
       soundClipFileName.end())
     return;
@@ -378,10 +267,23 @@ void ecSynth::loadSoundFile(std::string fileName) {
   if (temp) {
     soundClipFileName.push_back(fileName);
     mClipNum++;
-    soundFile.mParameterInt->max(mClipNum);
-    soundFile.mLowRange->max(mClipNum);
-    soundFile.mHighRange->max(mClipNum);
-    soundFile.mHighRange->set(mClipNum);  // stylistic choice, might take out
+
+    ECParameters[consts::SOUND_FILE]->mParameter->max(mClipNum);
+    ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);
+    ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
+    ECParameters[consts::SOUND_FILE]->mHighRange->set(
+      mClipNum);  // stylistic choice, might take out
+  }
+}
+
+void ecSynth::loadSoundFileOffline(std::string fileName) {
+  if (std::find(soundClipFileName.begin(), soundClipFileName.end(), fileName) !=
+      soundClipFileName.end())
+    return;
+  bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true);
+  if (temp) {
+    soundClipFileName.push_back(fileName);
+    mClipNum++;
   }
 }
 
@@ -393,10 +295,10 @@ bool ecSynth::loadInitSoundFiles(std::string directory) {
   for (auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
     if (i->file().substr(i->file().length() - 4) == ".wav" ||
         i->file().substr(i->file().length() - 4) == ".aif") {
-      loadSoundFile(i->filepath());
+      loadSoundFileOffline(i->filepath());
       success = true;
     } else if (i->file().substr(i->file().length() - 5) == ".aiff") {
-      loadSoundFile(i->filepath());
+      loadSoundFileOffline(i->filepath());
       success = true;
     }
   }
@@ -408,18 +310,21 @@ bool ecSynth::removeSoundFile(int index) {
   soundClip.erase(soundClip.begin() + index);
   soundClipFileName.erase(soundClipFileName.begin() + index);
   mClipNum--;
-  soundFile.mParameterInt->max(mClipNum);
-  soundFile.mLowRange->max(mClipNum);
-  soundFile.mHighRange->max(mClipNum);
-  soundFile.mHighRange->set(mClipNum);  // stylistic choice, might take out
+  ECParameters[consts::SOUND_FILE]->mParameter->max(mClipNum);
+  ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);
+  ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
+  ECParameters[consts::SOUND_FILE]->mHighRange->set(
+    mClipNum);  // stylistic choice, might take out
 
-  if (soundFile.mParameterInt->get() >= index)
-    soundFile.mParameterInt->set(soundFile.mParameterInt->get() - 1);
+  if (static_cast<int>(ECParameters[consts::SOUND_FILE]->mParameter->get()) >=
+      index)
+    ECParameters[consts::SOUND_FILE]->mParameter->set(
+      ECParameters[consts::SOUND_FILE]->mParameter->get() - 1);
   return true;
 }
 
 bool ecSynth::removeCurrentSoundFile() {
-  removeSoundFile(soundFile.mParameterInt->get() - 1);
+  removeSoundFile(ECParameters[consts::SOUND_FILE]->mParameter->get() - 1);
   return true;
 }
 
@@ -428,10 +333,11 @@ void ecSynth::clearSoundFiles() {
   soundClipFileName.clear();
 
   mClipNum = 0;
-  soundFile.mParameterInt->max(mClipNum);
-  soundFile.mLowRange->max(mClipNum);
-  soundFile.mHighRange->max(mClipNum);
-  soundFile.mHighRange->set(mClipNum);  // stylistic choice, might take out
+  ECParameters[consts::SOUND_FILE]->mParameter->max(mClipNum);
+  ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);
+  ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
+  ECParameters[consts::SOUND_FILE]->mHighRange->set(
+    mClipNum);  // stylistic choice, might take out
 }
 
 void ecSynth::resampleSoundFiles() {
@@ -447,7 +353,7 @@ void ecSynth::resampleSoundFiles() {
 
   clearSoundFiles();
   for (long unsigned i = 0; i < filePaths.size(); i++)
-    loadSoundFile(filePaths[i]);
+    loadSoundFileRT(filePaths[i]);
 }
 
 void ecSynth::hardClip(al::AudioIOData &io) {
