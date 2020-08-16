@@ -717,7 +717,6 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
     ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    ImGui::Text("Hz");
   }
 }
 
