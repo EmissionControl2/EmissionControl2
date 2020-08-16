@@ -16,6 +16,7 @@
 #include "al/ui/al_Parameter.hpp"
 
 /**** CSTD LIB ****/
+#include <array>
 #include <math.h>
 #include <memory>
 
@@ -48,114 +49,111 @@ public:
   const static int NUM_MODULATORS = 4;
 
   // array of lfo parameters to draw later
-  std::vector<LFOstruct *> LFOparameters;
+  std::vector<std::shared_ptr<LFOstruct>> LFOparameters;
 
   std::vector<std::shared_ptr<util::buffer<float>>>
       soundClip;    /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip = 0;
 
+  std::array<std::shared_ptr<ecParameter>, consts::NUM_PARAMS> ECParameters;
+  std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
+      ECModParameters;
+
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
-  ecParameter grainRate{
-      "Grainrate", "1. Grain Rate", "", 1, "", 0.1, 100, 0, 500, 0};
-  al::ParameterMenu grainRateLFO{"##grainRateLFO"};
-  ecParameter modGrainRateDepth{
-      "modGrainRateDepth", "modGrainRateDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter asynchronicity{
-      "Asynchronicity", "2. Asynchronicity", "", 0.0, "", 0.0, 1.0, 0, 1};
-  al::ParameterMenu asyncLFO{"##asyncLFO"};
-  ecParameter modAsynchronicityDepth{"modAsynchronicityDepth",
-                                     "modAsynchronicityDepth",
-                                     "",
-                                     0,
-                                     "",
-                                     0,
-                                     1,
-                                     0,
-                                     1};
-
-  ecParameter intermittency{
-      "Intermittancy", "3. Intermittancy", "", 0, "", 0, 1, 0, 1};
-  al::ParameterMenu intermittencyLFO{"##intermittencyLFO"};
-  ecParameter modIntermittencyDepth{
-      "modIntermittencyDepth", "modIntermittencyDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameterInt streams{"Streams", "4. Streams", "", 1, "", 1, 12, 1, 20};
-  al::ParameterMenu streamsLFO{"##streamsLFO"};
-  ecParameter modStreamsDepth{
-      "modStreamsDepth", "modStreamsDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter grainDurationMs{
-      "GrainDurms", "5. Grain Dur (ms)", "",   30, "", 0.01,
-      1000,         0.0000001,           10000};
-  al::ParameterMenu grainDurationLFO{"##grainDurationLFO"};
-  ecParameter modGrainDurationDepth{
-      "modGrainDurationDepth", "modGrainDurationDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter envelope{
-      "Envelopeshape", "6. Envelope Shape", "", 0.5, "", 0, 1, 0, 1};
-  al::ParameterMenu envelopeLFO{"##envelopeLFO"};
-  ecParameter modEnvelopeDepth{
-      "modEnvelopeDepth", "modEnvelopeDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter transposition{
-      "Pitchshift", "7. Pitch Shift", "", 1, "", -2, 2, -20, 20};
-  al::ParameterMenu transpositionLFO{"##transpositionLFO"};
-  ecParameter modTranspositionDepth{
-      "modTranspositionDepth", "modTranspositionDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter filter{
-      "Filterfreq", "8. Filter Center", "", 440, "", 60, 5000, 20, 24000};
-  al::ParameterMenu filterLFO{"##filterLFO"};
-  ecParameter modFilterDepth{
-      "modFilterDepth", "modFilterDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter resonance{"Resonance", "9. Resonance", "", 0, "", 0, 1, 0, 1};
-  al::ParameterMenu resonanceLFO{"##resonanceLFO"};
-  ecParameter modResonanceDepth{
-      "modResonanceDepth", "modResonanceDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameterInt soundFile{"Soundfile", "10. Sound File", "", 1,       "",
-                           1,           mClipNum,         1,  mClipNum};
-  al::ParameterMenu soundFileLFO{"##soundFileLFO"};
-  ecParameter modSoundFileDepth{
-      "modSoundFileDepth", "modSoundFileDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter tapeHead{"Scan", "11. Scan Position", "", 0.5, "", 0, 1, 0, 1};
-  al::ParameterMenu tapeHeadLFO{"##scanLFO"};
-  ecParameter modTapeHeadDepth{
-      "modScanDepth", "modScanDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter scanSpeed{"ScanSpeed", "12. Scan Speed", "", 1, "", -2, 2, -4, 4};
-  al::ParameterMenu scanSpeedLFO{"##scanSpeedLFO"};
-  ecParameter modScanSpeedDepth{
-      "modScanSpeedDepth", "modScanSpeedDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter scanWidth{"scanWidth", "13. Scan Width", "", 1, "", 0, 1, 0, 1};
-  al::ParameterMenu scanWidthLFO{"##scanWidthLFO"};
-  ecParameter modScanWidthDepth{
-      "modScanWidthDepth", "modScanWidthDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter pan{"Pan", "14. Pan", "", 0, "", -1, 1, -1, 1};
-  al::ParameterMenu panLFO{"##panLFO"};
-  ecParameter modPanDepth{"modPanDepth", "modPanDepth", "", 0, "", 0, 1, 0, 1};
-
-  ecParameter volumeDB{
-      "AmplitudedB", "15. Amplitude (dB)", "", -6, "", -60, 6, -180, 48};
-  al::ParameterMenu volumeLFO{"##volumeLFO"};
-  ecParameter modVolumeDepth{
-      "modVolumeDepth", "modVolumeDepth", "", 0, "", 0, 1, 0, 1};
 
   ecSynth() {}
+
+  void initParameters() {
+    using namespace consts;
+
+    ECParameters[GRAIN_RATE] = std::make_shared<ecParameter>(
+        "grainRate", "1. Grain Rate", 1, 0.1, 100, 0, 500, PARAM, "%.3f Hz");
+
+    ECModParameters[GRAIN_RATE] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"grainRate"});
+
+    ECParameters[ASYNC] = std::unique_ptr<ecParameter>(new ecParameter{
+        "Asynchronicity", "2. Asynchronicity", 0.0, 0.0, 1.0, 0, 1, PARAM});
+    ECModParameters[ASYNC] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"asynchronicity"});
+
+    ECParameters[INTERM] = std::unique_ptr<ecParameter>(new ecParameter{
+        "Intermittancy", "3. Intermittancy", 0, 0, 1, 0, 1, PARAM});
+    ECModParameters[INTERM] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"intermmitency"});
+
+    ECParameters[STREAMS] = std::unique_ptr<ecParameter>(
+        new ecParameter{"Streams", "4. Streams", 1, 1, 12, 1, 20, INT_PARAM});
+    ECModParameters[STREAMS] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"streams"});
+
+    ECParameters[GRAIN_DUR] = std::unique_ptr<ecParameter>(
+        new ecParameter{"GrainDurms", "5. Grain Duration", 30, 0.01, 1000, 0.0000001,
+                        10000, PARAM, "%.3f ms"});
+    ECModParameters[GRAIN_DUR] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"grainDuration"});
+
+    ECParameters[ENVELOPE] = std::unique_ptr<ecParameter>(new ecParameter{
+        "Envelopeshape", "6. Envelope Shape", 0.5, 0, 1, 0, 1, PARAM});
+    ECModParameters[ENVELOPE] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"envelope"});
+
+    ECParameters[PITCH_SHIFT] = std::unique_ptr<ecParameter>(new ecParameter{
+        "Pitchshift", "7. Pitch Shift", 1, -2, 2, -20, 20, PARAM});
+    ECModParameters[PITCH_SHIFT] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"pitchShift"});
+
+    ECParameters[FILTER_CENTER] = std::unique_ptr<ecParameter>(
+        new ecParameter{"Filterfreq", "8. Filter Center", 440, 60, 5000, 20,
+                        24000, PARAM, "%.3f Hz"});
+    ECModParameters[FILTER_CENTER] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"filterCenter"});
+
+    ECParameters[RESONANCE] = std::unique_ptr<ecParameter>(
+        new ecParameter{"Resonance", "9. Resonance", 0, 0, 1, 0, 1, PARAM});
+    ECModParameters[RESONANCE] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"resonance"});
+
+    ECParameters[SOUND_FILE] = std::unique_ptr<ecParameter>(new ecParameter{
+        "Soundfile", "10. Sound File", 1, 1, static_cast<float>(mClipNum), 1,
+        static_cast<float>(mClipNum), INT_PARAM});
+    ECModParameters[SOUND_FILE] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"soundFile"});
+
+    ECParameters[SCAN_POS] = std::unique_ptr<ecParameter>(new ecParameter{
+        "scanPosition", "11. Scan Position", 0.5, 0, 1, 0, 1, PARAM});
+    ECModParameters[SCAN_POS] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"scanPosition"});
+
+    ECParameters[SCAN_WIDTH] = std::unique_ptr<ecParameter>(
+        new ecParameter{"scanWidth", "12. Scan Width", 1, 0, 1, 0, 1, PARAM});
+    ECModParameters[SCAN_WIDTH] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"scanWidth"});
+
+    ECParameters[SCAN_SPEED] = std::unique_ptr<ecParameter>(
+        new ecParameter{"ScanSpeed", "13. Scan Speed", 1, -2, 2, -4, 4, PARAM});
+    ECModParameters[SCAN_SPEED] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"scanSpeed"});
+
+    ECParameters[PAN] = std::unique_ptr<ecParameter>(
+        new ecParameter{"Pan", "14. Pan", 0, -1, 1, -1, 1, PARAM});
+    ECModParameters[PAN] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"pan"});
+
+    ECParameters[VOLUME] = std::unique_ptr<ecParameter>(
+        new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48,
+                        PARAM, "%.3f dB"});
+    ECModParameters[VOLUME] =
+        std::unique_ptr<ecModParameter>(new ecModParameter{"volume"});
+  }
 
   /**
    * @brief Initilialize the synth.
    */
-  virtual void init(al::AudioIOData *io);
-
+  void initialize(al::AudioIOData *io);
   /**
    * @brief Set data needed to perform granulation correctly.
    */
@@ -177,11 +175,18 @@ public:
   virtual void onTriggerOff() override;
 
   /**
-   * @brief Load sound file into memory.
+   * @brief Load sound file into memory, used only on init.
    *
    * @param[in] The the filepath to the audio file.
    */
-  void loadSoundFile(std::string fileName);
+  void loadSoundFileOffline(std::string fileName);
+
+  /**
+     * @brief Load sound file into memory.
+     *
+     * @param[in] The the filepath to the audio file.
+     */
+  void loadSoundFileRT(std::string fileName);
 
   /**
    * @brief Load sound files from designated sample folder.
@@ -255,8 +260,7 @@ public:
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
   std::string getCurrentAudioFileName() {
-    std::string filename = soundClipFileName
-        [soundFile.getModParam(modSoundFileDepth.mParameter->get()) - 1];
+    std::string filename = soundClipFileName[mModClip];
     filename = filename.substr(filename.find_last_of("/") + 1);
     return filename;
   }
@@ -274,16 +278,18 @@ private:
   int mActiveVoices = 0;
   int mCounter = 0;
   float mAvgActiveVoices = 0;
-  float mPeakCPU;
-  float mAvgCPU;
+  // float mPeakCPU;
+  // float mAvgCPU;
   int *mPActiveVoices = nullptr;
 
   std::vector<std::shared_ptr<ecModulator>> Modulators;
 
+  /***localAudioThread variables***/
+  float width;
+
   /***mScanner Tests***/
   util::line mScanner;
   float mCurrentIndex;
-  float mLastScanPos = 0;
   int mPrevModClip;
   float prevTapeHeadVal, nowTapeHeadVal;
   float prev_scan_speed, scan_speed, prev_scan_width, scan_width;

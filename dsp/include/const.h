@@ -5,6 +5,29 @@
 
 namespace consts {
 
+enum sliderType{ PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
+
+
+enum paramNames {
+  GRAIN_RATE = 0,
+  ASYNC,
+  INTERM,
+  STREAMS,
+  GRAIN_DUR,
+  ENVELOPE,
+  PITCH_SHIFT,
+  FILTER_CENTER,
+  RESONANCE,
+  SOUND_FILE,
+  SCAN_POS,
+  SCAN_WIDTH,
+  SCAN_SPEED,
+  PAN,
+  VOLUME
+};
+const int NUM_PARAMS = 15;
+const int NUM_LFOS = 4;
+
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
 const int AUDIO_OUTS = 2;
@@ -15,7 +38,6 @@ enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
 enum bound { MIN, MAX };
-enum sliderType { PARAM, MOD, LFO };
 
 /**
  *  JSON KEYS

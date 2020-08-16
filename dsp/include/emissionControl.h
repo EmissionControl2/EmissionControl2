@@ -15,9 +15,11 @@
 #include "Gamma/Filter.h"
 #include "Gamma/Oscillator.h"
 #include "al/app/al_App.hpp"
+#include "al/io/al_Imgui.hpp"
 #include "al/math/al_Random.hpp"
 #include "al/scene/al_DynamicScene.hpp"
 #include "al/ui/al_Parameter.hpp"
+#include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 
 /**** CSTD LIB ****/
@@ -258,7 +260,6 @@ class ecParameter {
 
   /**
    * @brief ecParameter Constructor.
-   *
    * @param[in] parameterName The name of the parameter
    * @param[in] displayName The displayed name of the parameter
    * @param[in] defaultValue The initial value for the parameter
@@ -266,15 +267,22 @@ class ecParameter {
    * @param[in] Default maximum value for the parameter.
    * @param[in] Absolute minimum value for the parameter.
    * @param[in] Absolute maximum value for the parameter.
-   * @param[in] Waveform used to modulate the parameters current value.
-   * @param[in] If set to true, the parameter will contain its own modulator.
+   * @param[in] slideType: Sets the type of slider drawn
+   *    -- PARAM, PARAM_INT, LFO, LFO_INT, MOD, MOD_INT
+   * @param[in] sliderText: Set the text to be displayed on the slider
+   *    Example "%i Hz"
+   *      This will display the current value of the slider with Hz next to it.
+   * @param[in] independentMod:
+   *            If set to true, the parameter will contain its own modulator.
    *            If false, must input data on an outside modulator when calling
-   * getParamMod().
+   *              getParamMod().
    */
   ecParameter(std::string parameterName, std::string displayName,
               float defaultValue = 0, float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX, bool independentMod = 0);
+              float absMax = FLT_MAX,
+              consts::sliderType slideType = consts::PARAM,
+              std::string sliderText = "", bool independentMod = 0);
 
   /**
    * @brief ecParameter Constructor.
@@ -284,22 +292,29 @@ class ecParameter {
    * @param[in] Group The group the parameter belongs to
    * @param[in] defaultValue The initial value for the parameter
    * @param[in] prefix An address prefix that is prepended to the parameter's
-   * OSC address
+   *            OSC address.
    * @param[in] Default minimum value for the parameter.
    * @param[in] Default maximum value for the parameter.
    * @param[in] Absolute minimum value for the parameter.
    * @param[in] Absolute maximum value for the parameter.
    * @param[in] Waveform used to modulate the parameters current value.
-   * @param[in] If set to true, the parameter will contain its own modulator.
+   * @param[in] slideType: Sets the type of slider drawn
+   *    -- PARAM, PARAM_INT, LFO, LFO_INT, MOD, MOD_INT
+   * @param[in] sliderText: Set the text to be displayed on the slider
+   *    Example "%i Hz"
+   *      This will display the current value of the slider with Hz next to it.
+   * @param[in] independentMod:
+   *            If set to true, the parameter will contain its own modulator.
    *            If false, must input data on an outside modulator when calling
-   * getParamMod().
-   *
+   *              getParamMod().
    */
   ecParameter(std::string parameterName, std::string displayName,
               std::string Group, float defaultValue = 0,
               std::string prefix = "", float defaultMin = -99999.0,
               float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX, bool independentMod = 0);
+              float absMax = FLT_MAX,
+              consts::sliderType slideType = consts::PARAM,
+              std::string sliderText = "", bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -351,23 +366,37 @@ class ecParameter {
   float getModParam(float modDepth);
 
   /**
-   * @brief Registers all parameters within ecParameter to a preset handler.
+   * @brief Registers all parameters within ecParameter to a preset
+   * handler.
    *
    * @param[in] presetHandler : A reference to a preset handler.
    */
   void addToPresetHandler(al::PresetHandler &presetHandler);
 
   /**
+   * @brief Set the text to be displayed on the slider
+   * Example "%i Hz"
+   *    This will display the current value of the slider with Hz next to it.
+   */
+  void setSliderText(std::string sliderText) { mSliderText = sliderText; }
+
+  /**
    * @brief Draw the parameter range slider.
    */
-  void drawRangeSlider(consts::sliderType slideType = consts::PARAM);
+  void drawRangeSlider();
 
   std::string getDisplayName() const { return mDisplayName; }
 
   void setDisplayName(std::string name) { mDisplayName = name; }
 
+  consts::sliderType getSliderType() const { return mSliderType; }
+
+  void getSliderType(consts::sliderType s) { mSliderType = s; }
+
  private:
   std::string mDisplayName;
+  std::string mSliderText;
+  consts::sliderType mSliderType;
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
   bool mIndependentMod;
@@ -375,133 +404,54 @@ class ecParameter {
   bool editing = false;
 };
 
-/**
- * Derived from ParameterInt class.
- * Allows for dynamically allocating an internal modulator,
- * as well as using an external modulation source (choose from four different
- * sources).
- */
-class ecParameterInt {
- public:
-  /**
-   * PUBLIC OBJECTS
-   *
-   */
-  al::ParameterInt *mParameterInt = nullptr;  // Main Parameter.
-  al::ParameterInt *mLowRange =
-    nullptr;  // Parameter designed to bound low mParameter.
-  al::ParameterInt *mHighRange =
-    nullptr;  // Parameter designed to bound high mParameter.
-  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
+struct ecModParameter {
+  ecModParameter(std::string name)
+    : param("mod" + name + "Width", "mod" + name + "Width", "", 0, "", 0, 1, 0,
+            1, consts::MOD),
+      lfoMenu("##lfo" + name) {}
 
-  /**
-   * @brief ecParameterInt Constructor.
-   *
-   * @param[in] parameterName The name of the parameter
-   * @param[in] displayName The displayed name of the parameter
-   * @param[in] Group The group the parameter belongs to
-   * @param[in] defaultValue The initial value for the parameter
-   * @param[in] prefix An address prefix that is prepended to the parameter's
-   * OSC address
-   * @param[in] Default minimum value for the parameter.
-   * @param[in] Default maximum value for the parameter.
-   * @param[in] Absolute minimum value for the parameter.
-   * @param[in] Absolute maximum value for the parameter.
-   * @param[in] Waveform used to modulate the parameters current value.
-   * @param[in] If set to true, the parameter will contain its own modulator.
-   *            If false, must input data on an outside modulator when calling
-   * getParamMod().
-   *
-   */
-  ecParameterInt(std::string parameterName, std::string displayName,
-                 std::string Group, int defaultValue = 0,
-                 std::string prefix = "", int defaultMin = -99999,
-                 int defaultMax = 99999, int absMin = -1 * INT_MAX,
-                 int absMax = INT_MAX, bool independentMod = 0);
-
-  /**
-   * @bried ecParameterInt destructor.
-   */
-  ~ecParameterInt();
-
-  /**
-   * @brief Set which external modulation source to use.
-   *
-   * @param modSource: Pointer to the external ecModulator for this parameter.
-   */
-  void setModulationSource(const std::shared_ptr<ecModulator> &modSource) {
-    mModSource = modSource;
+  void setMenuElements(std::vector<std::string> elements) {
+    lfoMenu.setElements(elements);
   }
 
-  /**
-   * @brief Decide if there will be a modulator contained within instance.
-   *
-   * @param[in] If set to true, the parameter will contain its own modulator.
-   *            If false, must input data on an outside modulator when calling
-   * getParamMod().
-   */
-  void setIndependentMod(bool independentMod);
+  float getWidthParam() { return param.getParam(); }
 
-  /**
-   * @brief Get current parameter value.
-   *
-   * @return Parameter value.
-   */
-  float getParam() { return mParameterInt->get(); }
+  void registerMenuChangeCallback(std::function<void(int)> cb) {
+    lfoMenu.registerChangeCallback(cb);
+  }
 
-  /**
-   * @brief Function that returns the ecParameterInt value transformed by its
-   * INTERNAL modulation source. (ie independence set to true) Runs at
-   * Audio/Control Rate.
-   *
-   * param[in] FROM 0 to 1; The width of the modulation source.
-   *
-   * @return Modified version of the current parameter value.
-   */
-  int getModParam(float modWidth);
+  void addToPresetHandler(al::PresetHandler &presetHandler) {
+    // std::cout << "HERE" << std::endl;
+    param.addToPresetHandler(presetHandler);
+    presetHandler.registerParameter(lfoMenu);
+  }
 
-  /**
-   * @brief Registers all parameters within ecParameter to a preset handler.
-   *
-   * @param[in] presetHandler : A reference to a preset handler.
-   */
-  void addToPresetHandler(al::PresetHandler &presetHandler);
+  void drawModulationControl() {
+    ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
+    al::ParameterGUI::drawMenu(&lfoMenu);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    param.drawRangeSlider();
+  }
 
-  /**
-   * @brief Draw the parameter range slider.
-   */
-  void drawRangeSlider(std::string sliderText = "");
-
-  std::string getDisplayName() const { return mDisplayName; }
-
-  void setDisplayName(std::string name) { mDisplayName = name; }
-
- private:
-  std::string mDisplayName;
-  std::shared_ptr<ecModulator> mModSource;
-  bool mIndependentMod;
-  int mMax, mMin;
-  // Draw flags
-  bool editing = false;
+  ecParameter param;
+  al::ParameterMenu lfoMenu;
 };
 
 struct grainParameters {
-  ecParameter &grainDurationMs;
+  std::shared_ptr<ecParameter> grainDurationMs;
   float modGrainDurationDepth;
-  ecParameter &envelope;
+  std::shared_ptr<ecParameter> envelope;
   float modEnvelopeDepth;
-  ecParameter &tapeHead;
-  float modTapeHeadDepth;
-  ecParameter &transposition;
+  std::shared_ptr<ecParameter> transposition;
   float modTranspositionDepth;
-  ecParameter &filter;
+  std::shared_ptr<ecParameter> filter;
   float modFilterDepth;
-  ecParameter &resonance;
+  std::shared_ptr<ecParameter> resonance;
   float modResonanceDepth;
-  ecParameter &volumeDB;
+  std::shared_ptr<ecParameter> volumeDB;
   float modVolumeDepth;
-  ecParameter &pan;
+  std::shared_ptr<ecParameter> pan;
   float modPanDepth;
   std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
@@ -638,6 +588,7 @@ class voiceScheduler {
    */
   void setAsynchronicity(double async) {
     configure(mFrequency, async, mIntermittence);
+    // std::cout << mFrequency << std::endl;
   }
 
   /**
@@ -725,7 +676,7 @@ class flowControl {
 /*** GUI ELEMENTS ***/
 
 // a struct to wrap LFO parameters
-struct LFOstruct {
+class LFOstruct {
  public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
@@ -741,8 +692,8 @@ struct LFOstruct {
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
-    frequency =
-      new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000);
+    frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001,
+                                10000, consts::LFO, "%.3f Hz");
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
@@ -753,6 +704,7 @@ struct LFOstruct {
   ~LFOstruct() {
     delete shape;
     delete frequency;
+    delete polarity;
     delete duty;
   }
 };
