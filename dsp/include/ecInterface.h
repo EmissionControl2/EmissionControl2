@@ -143,9 +143,7 @@ class ecInterface : public al::App {
 
   void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider);
 
-  void setGUIColors();
-
-  void setPlotConfig();
+  void setGUIParams();
 
   int getSampleRateIndex();
 
