@@ -102,14 +102,13 @@ void ecInterface::onCreate() {
     ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
 #endif
 
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
-  setGUIColors();
+  setGUIParams();
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
-  setGUIColors();
+  setGUIParams();
   framecounter++;
   g.clear(background);
 
@@ -240,6 +239,9 @@ void ecInterface::onDraw(Graphics &g) {
     drawAudioIO(&audioIO());
     ImGui::EndPopup();
   }
+
+  if (ImGui::GetFrameHeightWithSpacing() * 16.8 > windowHeight / 2)
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
   float sliderheight = ImGui::GetFrameHeightWithSpacing();
 
   // Draw Granulator Controls -----------------------------------------
@@ -277,23 +279,23 @@ void ecInterface::onDraw(Graphics &g) {
     granulator.ECModParameters[index]->drawModulationControl();
   }
   ImGui::PopFont();
-  float NextWindowYPosition = sliderheight * 16.5 + 25 * adjustScaleY;
+  float NextWindowYPosition = sliderheight * 16.8 + 25 * adjustScaleY;
   ParameterGUI::endPanel();
 
   // Draw preset window -----------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("PRESETS", 0, NextWindowYPosition, windowWidth / 4,
-                           sliderheight * 9.8, flags);
+                           sliderheight * 8.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  ecInterface::ECdrawPresetHandler(&mPresets, 12, 4);
+  ecInterface::ECdrawPresetHandler(&mPresets, 12, 3);
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
   // Draw recorder window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("RECORDER", windowWidth / 4, NextWindowYPosition,
-                           windowWidth / 4, sliderheight * 9.8, flags);
+                           windowWidth / 4, sliderheight * 8.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
@@ -313,7 +315,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw LFO parameters window ---------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("LFO CONTROLS", windowWidth / 2, NextWindowYPosition,
-                           windowWidth / 2, sliderheight * 9.8, flags);
+                           windowWidth / 2, sliderheight * 8.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
@@ -321,7 +323,7 @@ void ecInterface::onDraw(Graphics &g) {
   }
 
   ImGui::PopFont();
-  NextWindowYPosition += sliderheight * 9.5;
+  NextWindowYPosition += sliderheight * 8.8;
   ParameterGUI::endPanel();
 
   // Draw Scan Display ------------------------------------------------
@@ -407,11 +409,11 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    ImGui::SetCursorPosY(70 * adjustScaleY);
+    ImGui::SetCursorPosY((sliderheight + 9) * 2);
     ImGui::PlotHistogram(
       "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr,
-      0, highestStreamCount, ImVec2(0, ImGui::GetContentRegionAvail().y),
-      sizeof(int));
+      0, highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
+
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();
@@ -438,7 +440,7 @@ void ecInterface::onDraw(Graphics &g) {
     oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
     // Draw left channel oscilloscope
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SetCursorPosY(70 * adjustScaleY);
+    ImGui::SetCursorPosY((sliderheight + 9) * 2);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::PushStyleColor(ImGuiCol_PlotLines,
                           light ? (ImVec4)*ECgreen : (ImVec4)*ECyellow);
@@ -446,24 +448,26 @@ void ecInterface::onDraw(Graphics &g) {
                      1, ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
     // Draw a black line across the center of the scope
-    ImGui::SetCursorPosY(70 * adjustScaleY);
+    ImGui::SetCursorPosY((sliderheight + 9) * 2);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
                      ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
     // Draw right channel oscilloscope
-    ImGui::SetCursorPosY(71 * adjustScaleY);
+    ImGui::SetCursorPosY((sliderheight + 9) * 2 + 2);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
     ImGui::PlotLines("##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1,
                      1, ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
     // Draw a black line across the center of the scope
-    ImGui::SetCursorPosY(71 * adjustScaleY);
+    ImGui::SetCursorPosY((sliderheight + 9) * 2 + 2);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0);
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
                      ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1);
     ImGui::PopItemWidth();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
@@ -728,7 +732,7 @@ void ecInterface::drawModulationControl(al::ParameterMenu &menu,
   slider.drawRangeSlider();
 }
 
-void ecInterface::setGUIColors() {
+void ecInterface::setGUIParams() {
   ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
@@ -749,6 +753,8 @@ void ecInterface::setGUIColors() {
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
 }
 
 int ecInterface::getSampleRateIndex() {
