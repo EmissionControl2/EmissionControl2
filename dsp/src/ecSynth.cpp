@@ -242,6 +242,20 @@ void ecSynth::onProcess(AudioIOData &io) {
   io.frame(0);
   // Manipulate on a stream level
   while (io()) {
+    // get recent peak
+    if (abs(io.out(0)) > peakL) {
+      peakL = abs(io.out(0));
+      peakResetL = 0;
+    };
+    if (abs(io.out(1)) > peakR) {
+      peakR = abs(io.out(1));
+      peakResetR = 0;
+    };
+    peakResetL += 1;
+    peakResetR += 1;
+    if (peakResetL > io.framesPerSecond() * 1) peakL = 0;
+    if (peakResetR > io.framesPerSecond() * 1) peakR = 0;
+
     // Set clip vars to > 0 if clip is detected on any sample
     // 5 is the number of visual frames the meter will turn red for
     if (abs(io.out(0)) > 1.0f) clipL = 5;

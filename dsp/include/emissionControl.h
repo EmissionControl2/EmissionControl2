@@ -408,7 +408,9 @@ struct ecModParameter {
   ecModParameter(std::string name)
     : param("mod" + name + "Width", "mod" + name + "Width", "", 0, "", 0, 1, 0,
             1, consts::MOD),
-      lfoMenu("##lfo" + name) {}
+      lfoMenu("##lfo" + name) {
+    mtiedParameter = name;
+  }
 
   void setMenuElements(std::vector<std::string> elements) {
     lfoMenu.setElements(elements);
@@ -434,6 +436,9 @@ struct ecModParameter {
     param.drawRangeSlider();
   }
 
+  std::string getTiedParam() { return mtiedParameter; }
+
+  std::string mtiedParameter;
   ecParameter param;
   al::ParameterMenu lfoMenu;
 };
