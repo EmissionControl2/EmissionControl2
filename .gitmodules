@@ -13,3 +13,9 @@
 [submodule "dsp/external/nativefiledialog"]
 	path = dsp/external/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog
+[submodule "implot"]
+	path = implot
+	url = https://github.com/epezent/implot
+[submodule "dsp/external/implot"]
+	path = dsp/external/implot
+	url = https://github.com/epezent/implot
