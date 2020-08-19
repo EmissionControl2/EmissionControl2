@@ -410,8 +410,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::SetCursorPosY(70 * adjustScaleY);
     ImGui::PlotHistogram(
       "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr,
-      0, highestStreamCount,
-      ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
+      0, highestStreamCount, ImVec2(0, ImGui::GetContentRegionAvail().y),
       sizeof(int));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
@@ -443,25 +442,22 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::PushStyleColor(ImGuiCol_PlotLines,
                           light ? (ImVec4)*ECgreen : (ImVec4)*ECyellow);
-    ImGui::PlotLines(
-      "##ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
-      ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-      sizeof(float));
+    ImGui::PlotLines("##ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1,
+                     1, ImVec2(0, ImGui::GetContentRegionAvail().y),
+                     sizeof(float));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(70 * adjustScaleY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
-    ImGui::PlotLines(
-      "##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
-      ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-      sizeof(float));
+    ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+                     ImVec2(0, ImGui::GetContentRegionAvail().y),
+                     sizeof(float));
     // Draw right channel oscilloscope
     ImGui::SetCursorPosY(71 * adjustScaleY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
-    ImGui::PlotLines(
-      "##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-      ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-      sizeof(float));
+    ImGui::PlotLines("##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1,
+                     1, ImVec2(0, ImGui::GetContentRegionAvail().y),
+                     sizeof(float));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(71 * adjustScaleY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
@@ -522,19 +518,17 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUleftCol);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUleftCol);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ((ImVec4)ImColor(0, 0, 0, 180)));
-    ImGui::PlotHistogram(
-      "##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
-      ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4,
-             ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-      sizeof(float));
+    ImGui::PlotHistogram("##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
+                         ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4,
+                                ImGui::GetContentRegionAvail().y),
+                         sizeof(float));
     ImGui::SameLine();
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUrightCol);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUrightCol);
-    ImGui::PlotHistogram(
-      "##VUright", &VUright, 1, 0, nullptr, 0, 1,
-      ImVec2(ImGui::GetContentRegionAvail().x,
-             ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-      sizeof(float));
+    ImGui::PlotHistogram("##VUright", &VUright, 1, 0, nullptr, 0, 1,
+                         ImVec2(ImGui::GetContentRegionAvail().x,
+                                ImGui::GetContentRegionAvail().y),
+                         sizeof(float));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();
