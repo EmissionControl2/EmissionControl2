@@ -364,6 +364,10 @@ void ecParameter::drawRangeSlider() {
                            mParameter->min(), mParameter->max(), "%0.3f");
     }
   }
+  if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD) {
+    if (ImGui::IsItemHovered())
+    ImGui::SetTooltip("%s", mModulator);
+  }
 
   if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
     editing = true;

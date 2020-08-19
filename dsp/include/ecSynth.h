@@ -40,8 +40,13 @@ class ecSynth : public al::SynthVoice {
   /**
    * Vars for indicating clipping
    */
-  int clipL = 0;
-  int clipR = 0;
+  int clipL, clipR = 0;
+
+  /**
+   * Peak values
+   */
+  float peakL, peakR = 0;
+  int peakResetL, peakResetR = 0;
 
   /**
    * The number of modulators in ecSynth.
