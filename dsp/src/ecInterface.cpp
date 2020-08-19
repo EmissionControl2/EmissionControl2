@@ -221,7 +221,7 @@ void ecInterface::onDraw(Graphics &g) {
   bool fontScaleOpen = true;
   if (ImGui::BeginPopupModal("Font Size", &fontScaleOpen)) {
     ImGui::PushItemWidth(windowWidth / 3);
-    ImGui::SliderFloat("Scale", &fontScale, 0.5, 3.0, "%.2f");
+    ImGui::SliderFloat("Scale", &fontScale, 0.5, 3.0, "%.1f");
     ImGui::PopItemWidth();
     ImGui::EndPopup();
   }
@@ -245,7 +245,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw Granulator Controls -----------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("GRANULATION CONTROLS", 0, 25 * adjustScaleY,
-                           windowWidth / 2, sliderheight * 16.5, flags);
+                           windowWidth / 2, sliderheight * 16.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
@@ -264,7 +264,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("MODULATION CONTROLS", windowWidth / 2,
                            25 * adjustScaleY, windowWidth / 2,
-                           sliderheight * 16.5, flags);
+                           sliderheight * 16.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
@@ -283,7 +283,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw preset window -----------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("PRESETS", 0, NextWindowYPosition, windowWidth / 4,
-                           sliderheight * 9.5, flags);
+                           sliderheight * 9.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   ecInterface::ECdrawPresetHandler(&mPresets, 12, 4);
@@ -293,7 +293,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw recorder window ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("RECORDER", windowWidth / 4, NextWindowYPosition,
-                           windowWidth / 4, sliderheight * 9.5, flags);
+                           windowWidth / 4, sliderheight * 9.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(),
@@ -313,7 +313,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Draw LFO parameters window ---------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("LFO CONTROLS", windowWidth / 2, NextWindowYPosition,
-                           windowWidth / 2, sliderheight * 9.5, flags);
+                           windowWidth / 2, sliderheight * 9.8, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
@@ -325,11 +325,11 @@ void ecInterface::onDraw(Graphics &g) {
   ParameterGUI::endPanel();
 
   // Draw Scan Display ------------------------------------------------
-  float graphHeight = (windowHeight - NextWindowYPosition) / 2;
+  float graphHeight = (windowHeight - NextWindowYPosition);
   if (graphHeight > 100) {
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("Scan Display", 0, NextWindowYPosition,
-                             windowWidth, graphHeight, flags);
+                             windowWidth, graphHeight / 3, flags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
 
@@ -384,13 +384,13 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     ImGui::PopFont();
-    NextWindowYPosition += graphHeight;
+    NextWindowYPosition += graphHeight / 3;
     ParameterGUI::endPanel();
 
     // Draw grain histogram window --------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("ACTIVE GRAINS", 0, NextWindowYPosition,
-                             windowWidth / 4, graphHeight, flags);
+                             windowWidth / 4, graphHeight * 2 / 3, flags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     ImGui::Text("Counter: %.1i ", granulator.getActiveVoices());
@@ -420,7 +420,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("OSCILLOSCOPE", windowWidth / 4,
                              NextWindowYPosition, windowWidth * 11 / 16,
-                             graphHeight, flags);
+                             graphHeight * 2 / 3, flags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     ImGui::Text("Time frame (s):");
@@ -461,10 +461,9 @@ void ecInterface::onDraw(Graphics &g) {
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(71 * adjustScaleY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
-    ImGui::PlotLines(
-      "##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
-      ImVec2(0, ImGui::GetContentRegionAvail().y - (30 * adjustScaleY)),
-      sizeof(float));
+    ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1.0, 1.0,
+                     ImVec2(0, ImGui::GetContentRegionAvail().y),
+                     sizeof(float));
     ImGui::PopItemWidth();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
@@ -475,7 +474,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel(" ##VU Meter", windowWidth * 15 / 16,
                              NextWindowYPosition, windowWidth * 1 / 16,
-                             graphHeight, flags);
+                             graphHeight * 2 / 3, flags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     // Size of VU meter data arrays in samples
