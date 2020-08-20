@@ -366,7 +366,7 @@ void ecParameter::drawRangeSlider() {
   }
   if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD) {
     if (ImGui::IsItemHovered())
-    ImGui::SetTooltip("%s", mModulator);
+      ImGui::SetTooltip("%s", (getDisplayName()).c_str());
   }
 
   if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
