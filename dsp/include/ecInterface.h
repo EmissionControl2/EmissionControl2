@@ -78,7 +78,7 @@ class ecInterface : public al::App {
   std::string previousFile = "No file selected";
   ImFont *bodyFont;
   ImFont *titleFont;
-  float fontScale = 1.0;  // jack store this in JSON!!
+  float fontScale = 1.0;
   float adjustScaleY = 1.0;
 
   double globalSamplingRate = consts::SAMPLE_RATE;
