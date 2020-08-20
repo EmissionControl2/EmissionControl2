@@ -359,6 +359,9 @@ void ecInterface::onDraw(Graphics &g) {
       granulator.ECModParameters[consts::SCAN_POS]->getWidthParam());
     float scanWidth = granulator.ECParameters[consts::SCAN_WIDTH]->getModParam(
       granulator.ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
+    if (granulator.ECParameters[consts::SCAN_SPEED]->getModParam(
+          granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
+      scanWidth *= -1;
     ImU32 semitransGreen =
       IM_COL32(ECgreen->Value.x * 255, ECgreen->Value.y * 255,
                ECgreen->Value.z * 255, 100);
