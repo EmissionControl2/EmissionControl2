@@ -86,6 +86,7 @@ class ecInterface : public al::App {
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
                            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags graphFlags = flags;
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
