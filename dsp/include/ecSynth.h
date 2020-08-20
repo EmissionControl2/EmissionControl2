@@ -139,7 +139,7 @@ class ecSynth : public al::SynthVoice {
       new ecModParameter{"modScanWidthDepth", "Scan Width"});
 
     ECParameters[SCAN_SPEED] = std::unique_ptr<ecParameter>(
-      new ecParameter{"ScanSpeed", "13. Scan Speed", 1, -2, 2, -4, 4, PARAM});
+      new ecParameter{"ScanSpeed", "13. Scan Speed", 1, -2, 2, -32, 32, PARAM});
     ECModParameters[SCAN_SPEED] = std::unique_ptr<ecModParameter>(
       new ecModParameter{"modScanSpeedDepth", "Scan Speed"});
 
