@@ -248,10 +248,10 @@ void ecInterface::onDraw(Graphics &g) {
 
   float menuBarHeight = 25 * adjustScaleY;
   float firstRowHeight = sliderheight * 16.8;
-  float secondRowHeight = sliderheight * 8.8;
+  float secondRowHeight = sliderheight * 8;
 
   // adjust second row size to fill space if graphs are not drawn
-  if (windowHeight - menuBarHeight - firstRowHeight - secondRowHeight < 150)
+  if (windowHeight - menuBarHeight - firstRowHeight - secondRowHeight < 100)
     secondRowHeight = windowHeight - firstRowHeight - menuBarHeight;
 
   // Draw Granulator Controls -----------------------------------------
@@ -337,11 +337,18 @@ void ecInterface::onDraw(Graphics &g) {
 
   NextWindowYPosition += secondRowHeight;
   float graphHeight = (windowHeight - NextWindowYPosition);
-  if (graphHeight >= 150) {
+  if (graphHeight >= 100) {
+    float graphPosY = (sliderheight + 9) * 2;
+    if (graphHeight <= 200) {
+      graphFlags = flags + ImGuiWindowFlags_NoTitleBar;
+      graphPosY = sliderheight + 12;
+    } else {
+      graphFlags = flags;
+    }
     // Draw Scan Display ------------------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("Scan Display", 0, NextWindowYPosition,
-                             windowWidth, graphHeight / 3, flags);
+                             windowWidth, graphHeight / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
 
@@ -405,7 +412,7 @@ void ecInterface::onDraw(Graphics &g) {
     // Draw grain histogram window --------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("ACTIVE GRAINS", 0, NextWindowYPosition,
-                             windowWidth / 4, graphHeight * 2 / 3, flags);
+                             windowWidth / 4, graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     ImGui::Text("Counter: %.1i ", granulator.getActiveVoices());
@@ -422,7 +429,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    ImGui::SetCursorPosY((sliderheight + 9) * 2);
+    ImGui::SetCursorPosY(graphPosY);
     ImGui::PlotHistogram(
       "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr,
       0, highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
@@ -434,9 +441,10 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("OSCILLOSCOPE", windowWidth / 4,
                              NextWindowYPosition, windowWidth * 11 / 16,
-                             graphHeight * 2 / 3, flags);
+                             graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
     ImGui::Text("Time frame (s):");
     ImGui::SameLine();
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
@@ -447,12 +455,11 @@ void ecInterface::onDraw(Graphics &g) {
         lastSamplingRate = globalSamplingRate;
       }
     }
-
     oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
     oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
     // Draw left channel oscilloscope
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SetCursorPosY((sliderheight + 9) * 2);
+    ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::PushStyleColor(ImGuiCol_PlotLines,
                           light ? (ImVec4)*ECgreen : (ImVec4)*ECyellow);
@@ -460,7 +467,7 @@ void ecInterface::onDraw(Graphics &g) {
                      1, ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
     // Draw a black line across the center of the scope
-    ImGui::SetCursorPosY((sliderheight + 9) * 2);
+    ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
@@ -468,13 +475,13 @@ void ecInterface::onDraw(Graphics &g) {
                      sizeof(float));
     // Draw right channel oscilloscope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
-    ImGui::SetCursorPosY(((sliderheight + 9) * 2) + 1);
+    ImGui::SetCursorPosY(graphPosY + 1);
     ImGui::PlotLines("##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1,
                      1, ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
     // Draw a black line across the center of the scope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
-    ImGui::SetCursorPosY(((sliderheight + 9) * 2) + 1);
+    ImGui::SetCursorPosY(graphPosY + 1);
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
                      ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
@@ -490,7 +497,8 @@ void ecInterface::onDraw(Graphics &g) {
     // ---------------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("VU", windowWidth * 15 / 16, NextWindowYPosition,
-                             windowWidth * 1 / 16, graphHeight * 2 / 3, flags);
+                             windowWidth * 1 / 16, graphHeight * 2 / 3,
+                             graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     // Size of VU meter data arrays in samples
