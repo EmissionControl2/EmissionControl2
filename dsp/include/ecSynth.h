@@ -49,6 +49,11 @@ class ecSynth : public al::SynthVoice {
   int peakResetL, peakResetR = 0;
 
   /**
+   * Grain Counter
+   */
+  int grainCounter = 0;
+
+  /**
    * The number of modulators in ecSynth.
    */
   const static int NUM_MODULATORS = 4;
