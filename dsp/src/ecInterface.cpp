@@ -944,7 +944,6 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
     });
   }
   ecInterface::PresetHandlerState &state = stateMap[presetHandler];
-  float fontSize = ImGui::GetFontSize();
 
   std::string id = std::to_string((unsigned long)presetHandler);
   std::string suffix = "##PresetHandler" + id;
@@ -969,7 +968,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
       if (ImGui::Selectable(name.c_str(), is_selected, 0,
-                            ImVec2(presetWidth, fontSize * 1.2f))) {
+                            ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f))) {
         if (state.storeButtonState) {
           std::string saveName = state.enteredText;
           if (saveName.size() == 0) {
@@ -990,9 +989,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
       if (is_selected) {
         ImGui::PopStyleColor(1);
       }
-      //                if (ImGui::IsItemHovered()) {
-      //                    ImGui::SetTooltip("I am a tooltip");
-      //                }
+
       if (column < presetColumns - 1) ImGui::SameLine();
       counter++;
       ImGui::PopID();
@@ -1014,22 +1011,26 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
       state.presetHandlerBank = 0;
     }
   }
-  ImGui::SameLine(0.0f, 40.0f);
+  ImGui::SameLine(0.0f, 20.0f);
 
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*ECgreen);
   }
   std::string storeText = state.storeButtonState ? "Cancel" : "Store";
-  bool storeButtonPressed = ImGui::Button(storeText.c_str(), ImVec2(100, 0));
+  bool storeButtonPressed = ImGui::Button(storeText.c_str(), ImVec2(0, 0));
   if (state.storeButtonState) {
     ImGui::PopStyleColor();
   }
   if (storeButtonPressed) {
     state.storeButtonState = !state.storeButtonState;
-    //          if (state.storeButtonState) {
-    //            state.enteredText = currentPresetName;
-    //          }
   }
+  ImGui::SameLine();
+  ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (70 * fontScale));
+  float morphTime = presetHandler->getMorphTime();
+  if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
+    presetHandler->setMorphTime(morphTime);
+  }
+  ImGui::PopItemWidth();
   if (state.storeButtonState) {
     char buf1[64];
     strncpy(buf1, state.enteredText.c_str(), 63);
@@ -1087,12 +1088,6 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
         state.newMap = false;
       }
     }
-    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
-    float morphTime = presetHandler->getMorphTime();
-    if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
-      presetHandler->setMorphTime(morphTime);
-    }
-    ImGui::PopItemWidth();
   }
   ImGui::PopID();
   return state;
