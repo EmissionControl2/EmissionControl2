@@ -438,12 +438,18 @@ void ecInterface::onDraw(Graphics &g) {
       if (highestStreamCount < 2) highestStreamCount = 2;
       grainAccum = 0;
     }
+    if (framecounter % 60 == 0) {
+      grainsPerSecond = granulator.grainCounter;
+      granulator.grainCounter = 0;
+    }
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PlotHistogram(
       "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr,
       0, highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip("Grains Per Second: %i", grainsPerSecond);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();
@@ -456,7 +462,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
-    ImGui::Text("Time frame (s):");
+    ImGui::Text("Time Frame (s):");
     ImGui::SameLine();
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
     if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
