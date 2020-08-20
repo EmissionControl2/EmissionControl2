@@ -136,46 +136,41 @@ void ecSynth::onProcess(AudioIOData &io) {
           ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
       float frames = soundClip[mModClip]->frames;
       float start, end;
-      int indexi;
-      
+
       // Case where the scanning head is given a hard reset.
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
           prevTapeHeadVal != nowTapeHeadVal) {
         start = nowTapeHeadVal * frames;
-        if (scan_speed >= 0) {
-          end = start + (frames * scan_width);
-          mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * scan_speed));
-        } else { //TODO 
-          end = start - (frames * scan_width);
-          mScanner.set(start, end,
-                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
-        }
+        end = start + (frames * scan_width);
+        mScanner.set(start, end,
+                     (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
       }
 
       // On the fly adjustments.
       if (scan_width != prev_scan_width || scan_speed != prev_scan_speed) {
         start = mScanner.getValue();
-        if (scan_speed >= 0) {
-          end = (nowTapeHeadVal * frames) + (frames * scan_width);
-          mScanner.set(start, end,
-                       (end - start) / (mGlobalSamplingRate * scan_speed));
-        } else { //TODO
-          end = start * (1 - scan_width);
-          mScanner.set(start, end,
-                       (start - end) / (mGlobalSamplingRate * abs(scan_speed)));
+        end = (nowTapeHeadVal * frames) + (frames * scan_width);
+        mScanner.set(start, end,
+                     (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+      }
+
+      // Logic for dealing with reversed buffer playthrough.
+      // Note that this is caused by negative scan speed.
+      if (scan_speed < 0) {
+        mCurrentIndex = 2 * (nowTapeHeadVal * frames) - mCurrentIndex;
+        // Wrapping logic.
+        if (mCurrentIndex < 0) {
+          mCurrentIndex = frames + mCurrentIndex;
         }
+      }
+      // Wrapping logic for when scan speed is positive.
+      else {
+        if (mCurrentIndex >= frames)
+          mCurrentIndex = mCurrentIndex - frames;
       }
 
 
-      // Wrap the buffer index to fit in the sound file.
-      // Work to maintain fractional indexing.
-      indexi = floor(mCurrentIndex);
-      mCurrentIndex = (indexi % static_cast<int>(frames));
-      std::cout << mScanner.getTarget() << " " << frames << " " << mCurrentIndex
-                << std::endl;
-
-      /* Experiments
+      /* Experiments For when Tape Head Changes
 
       if (prevTapeHeadVal != nowTapeHeadVal) {
         start = mScanner.getValue();
