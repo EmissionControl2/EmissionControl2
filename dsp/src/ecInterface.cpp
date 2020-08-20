@@ -401,6 +401,14 @@ void ecInterface::onDraw(Graphics &g) {
         ImVec2(p.x + ((scanPos + scanWidth - 1.0f) * plotWidth),
                p.y + plotHeight),
         semitransGreen);
+    } else if (scanPos + scanWidth < 0.0f) {
+      drawList->AddRectFilled(ImVec2(p.x + (scanPos * plotWidth), p.y),
+                              ImVec2(p.x, p.y + plotHeight), semitransGreen);
+      drawList->AddRectFilled(
+        ImVec2(p.x + plotWidth, p.y),
+        ImVec2(p.x + ((scanPos + scanWidth + 1.0f) * plotWidth),
+               p.y + plotHeight),
+        semitransGreen);
     } else {
       drawList->AddRectFilled(
         ImVec2(p.x + (scanPos * plotWidth), p.y),
