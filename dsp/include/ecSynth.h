@@ -16,9 +16,12 @@
 #include "al/ui/al_Parameter.hpp"
 
 /**** CSTD LIB ****/
+#include <array>
 #include <math.h>
 #include <array>
 #include <memory>
+
+using namespace consts;
 
 class ecSynth : public al::SynthVoice {
  public:
@@ -65,11 +68,14 @@ class ecSynth : public al::SynthVoice {
   std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
     ECModParameters;
 
+  /**Where parameters will be accessed**/
+  std::array<ecParameter*, NUM_PARAMS> Parameters;
+  
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
 
-  ecSynth() {}
+  ecSynth() {};
 
   void initParameters() {
     using namespace consts;
@@ -285,7 +291,6 @@ class ecSynth : public al::SynthVoice {
   // float mPeakCPU;
   // float mAvgCPU;
   int *mPActiveVoices = nullptr;
-
   std::vector<std::shared_ptr<ecModulator>> Modulators;
 
   /***localAudioThread variables***/

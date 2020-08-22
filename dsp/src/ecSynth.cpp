@@ -11,8 +11,6 @@
 /**** ALLOLIB ****/
 #include "al/io/al_File.hpp"
 
-using namespace al;
-
 /**** ecSynth Implementation ****/
 
 void ecSynth::setIO(al::AudioIOData *io) {
@@ -36,7 +34,6 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   mScanner.setSamplingRate(mGlobalSamplingRate);
 
-  // MUST USE THIS ORDER
   std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4"};
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     ECParameters[index]->setModulationSource(Modulators[0]);
@@ -71,7 +68,7 @@ void ecSynth::initialize(al::AudioIOData *io) {
   grainSynth.setDefaultUserData(this);
 }
 
-void ecSynth::onProcess(AudioIOData &io) {
+void ecSynth::onProcess(al::AudioIOData &io) {
   //        updateFromParameters();
   /* Manipulate on a Grain Level */
 
@@ -302,7 +299,7 @@ void ecSynth::loadSoundFileOffline(std::string fileName) {
 }
 
 bool ecSynth::loadInitSoundFiles(std::string directory) {
-  FileList initAudioFiles = fileListFromDir(directory);
+  al::FileList initAudioFiles = al::fileListFromDir(directory);
   initAudioFiles.sort(util::compareFileNoCase);
 
   bool success = false;

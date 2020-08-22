@@ -12,6 +12,7 @@
 
 /**** AlloLib LIB ****/
 #include "al/app/al_App.hpp"
+#include "al/io/al_MIDI.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
@@ -19,8 +20,11 @@
 /**** External LIB ****/
 #include "../external/nativefiledialog/src/include/nfd.h"
 
-class ecInterface : public al::App {
- public:
+/**** C STD LIB ****/
+#include <array>
+
+class ecInterface : public al::App, public al::MIDIMessageHandler {
+public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -40,6 +44,13 @@ class ecInterface : public al::App {
    * @brief Draw rate processing of synth interface.
    */
   virtual void onDraw(al::Graphics &g) override;
+  /** MIDI Stuff **/
+  void initMIDI();
+
+  /**
+   * @brief Called everytime a MIDI message is sent.
+   */
+  virtual void onMIDIMessage(const al::MIDIMessage &m) override;
 
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
@@ -57,17 +68,34 @@ class ecInterface : public al::App {
   PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
                                           int presetColumns, int presetRows);
 
+  /**
+   * @brief Modified version of al's soundfilerecordGUI.
+   *
+   * @param[in] Output recorder object.
+   *
+   * @param[in] Path of directory where the outputted sound files will be
+   * stored.
+   *
+   * @param[in] Frame rate of outputted file.
+   *
+   * @param[in] Number of channels of outputted file.
+   *
+   * @param[in] Amount of space allocated for sound.
+   */
   void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
                           uint32_t numChannels, std::string directory = "",
                           uint32_t bufferSize = 0);
 
- private:
+private:
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
+
+  RtMidiIn midiIn;
+  std::array<unsigned char, consts::NUM_PARAMS> midiMap;
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
   al::File f;
@@ -96,9 +124,9 @@ class ecInterface : public al::App {
   double lastSamplingRate = globalSamplingRate;
 
   std::vector<float> oscDataL =
-    std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+      std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> oscDataR =
-    std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+      std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
   int VUdataSize = globalSamplingRate / 30;
@@ -110,24 +138,24 @@ class ecInterface : public al::App {
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
-  ImColor YellowLight = ImColor(181, 137, 0);     // Yellow
-  ImColor RedLight = ImColor(120, 29, 57);        // Red
-  ImColor GreenLight = ImColor(58, 106, 10);      // Green
-  ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
-  ImColor Shade3Light = ImColor(227, 231, 232);   // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
+  ImColor PrimaryLight = ImColor(143, 157, 163); // Background
+  ImColor YellowLight = ImColor(181, 137, 0);    // Yellow
+  ImColor RedLight = ImColor(120, 29, 57);       // Red
+  ImColor GreenLight = ImColor(58, 106, 10);     // Green
+  ImColor Shade1Light = ImColor(171, 182, 186);  // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 206, 209);  // Slider Color 2
+  ImColor Shade3Light = ImColor(227, 231, 232);  // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);    // Background
-  ImColor YellowDark = ImColor(208, 193, 113);  // Yellow
-  ImColor RedDark = ImColor(184, 100, 128);     // Red
-  ImColor GreenDark = ImColor(106, 154, 60);    // Green
-  ImColor Shade1Dark = ImColor(55, 63, 66);     // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);     // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);   // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);    // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
+  ImColor YellowDark = ImColor(208, 193, 113); // Yellow
+  ImColor RedDark = ImColor(184, 100, 128);    // Red
+  ImColor GreenDark = ImColor(106, 154, 60);   // Green
+  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
@@ -156,8 +184,7 @@ class ecInterface : public al::App {
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T>
-  bool jsonWriteToConfig(T value, std::string key);
+  template <typename T> bool jsonWriteToConfig(T value, std::string key);
 
   /**
    * @brief Read json config file and write output path to soundOutput member
@@ -170,19 +197,5 @@ class ecInterface : public al::App {
   void jsonReadAndSetColorSchemeMode();
   void jsonReadAndSetFontScale();
 };
-
-/**
- * @brief Modified version of al's soundfilerecordGUI.
- *
- * @param[in] Output recorder object.
- *
- * @param[in] Path of directory where the outputted sound files will be stored.
- *
- * @param[in] Frame rate of outputted file.
- *
- * @param[in] Number of channels of outputted file.
- *
- * @param[in] Amount of space allocated for sound.
- */
 
 #endif
