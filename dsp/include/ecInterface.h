@@ -44,8 +44,10 @@ public:
    * @brief Draw rate processing of synth interface.
    */
   virtual void onDraw(al::Graphics &g) override;
+
   /** MIDI Stuff **/
   void initMIDI();
+  void updateParametersMIDI(const al::MIDIMessage &m);
 
   /**
    * @brief Called everytime a MIDI message is sent.
@@ -95,7 +97,7 @@ private:
   Clipper mHardClip;
 
   RtMidiIn midiIn;
-  std::array<unsigned char, consts::NUM_PARAMS> midiMap;
+  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ParametersMIDI;
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
   al::File f;

@@ -55,7 +55,7 @@ void ecInterface::onInit() {
 #ifdef __APPLE__
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(
-    f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
+      f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
@@ -67,6 +67,8 @@ void ecInterface::onInit() {
   granulator.loadInitSoundFiles(consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(userPath + presetsPath);
 #endif
+
+  initMIDI();
 
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
@@ -90,16 +92,16 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
 #endif
 
 #ifdef __linux__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
+      ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
+      ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
 #endif
 
   setGUIParams();
@@ -142,7 +144,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Set Dynamic Slider Text
   granulator.ECParameters[consts::SOUND_FILE]->setSliderText(
-    granulator.getCurrentAudioFileName());
+      granulator.getCurrentAudioFileName());
 
   // Draw GUI
 
@@ -224,7 +226,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopItemWidth();
     ImGui::EndPopup();
   }
-  if (!fontScaleOpen) jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
+  if (!fontScaleOpen)
+    jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
 
   // PopUp Audio IO window --------------------------------------------
   // This enables starting and stopping audio as well as selecting
@@ -356,15 +359,16 @@ void ecInterface::onDraw(Graphics &g) {
     float plotHeight = ImGui::GetContentRegionAvail().y;
     ImVec2 p = ImGui::GetCursorScreenPos();
     float scanPos = granulator.ECParameters[consts::SCAN_POS]->getModParam(
-      granulator.ECModParameters[consts::SCAN_POS]->getWidthParam());
+        granulator.ECModParameters[consts::SCAN_POS]->getWidthParam());
     float scanWidth = granulator.ECParameters[consts::SCAN_WIDTH]->getModParam(
-      granulator.ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
+        granulator.ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
     if (granulator.ECParameters[consts::SCAN_SPEED]->getModParam(
-          granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
+            granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) <
+        0)
       scanWidth *= -1;
     ImU32 semitransGreen =
-      IM_COL32(ECgreen->Value.x * 255, ECgreen->Value.y * 255,
-               ECgreen->Value.z * 255, 100);
+        IM_COL32(ECgreen->Value.x * 255, ECgreen->Value.y * 255,
+                 ECgreen->Value.z * 255, 100);
 
     // Downsample value
     int sampleSkip = 1;
@@ -377,9 +381,10 @@ void ecInterface::onDraw(Graphics &g) {
 
     // Draw Waveform
     ImGui::PlotLines(
-      "##scanDisplay", granulator.soundClip[granulator.mModClip]->data,
-      granulator.soundClip[granulator.mModClip]->size / sampleSkip, 0, nullptr,
-      -1, 1, ImVec2(plotWidth, plotHeight), sizeof(float) * sampleSkip);
+        "##scanDisplay", granulator.soundClip[granulator.mModClip]->data,
+        granulator.soundClip[granulator.mModClip]->size / sampleSkip, 0,
+        nullptr, -1, 1, ImVec2(plotWidth, plotHeight),
+        sizeof(float) * sampleSkip);
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip("Scan Pos: %i\% \nScan Width: %i\%", int(scanPos * 100),
                         int(scanWidth * 100));
@@ -397,23 +402,23 @@ void ecInterface::onDraw(Graphics &g) {
                               ImVec2(p.x + plotWidth, p.y + plotHeight),
                               semitransGreen);
       drawList->AddRectFilled(
-        ImVec2(p.x, p.y),
-        ImVec2(p.x + ((scanPos + scanWidth - 1.0f) * plotWidth),
-               p.y + plotHeight),
-        semitransGreen);
+          ImVec2(p.x, p.y),
+          ImVec2(p.x + ((scanPos + scanWidth - 1.0f) * plotWidth),
+                 p.y + plotHeight),
+          semitransGreen);
     } else if (scanPos + scanWidth < 0.0f) {
       drawList->AddRectFilled(ImVec2(p.x + (scanPos * plotWidth), p.y),
                               ImVec2(p.x, p.y + plotHeight), semitransGreen);
       drawList->AddRectFilled(
-        ImVec2(p.x + plotWidth, p.y),
-        ImVec2(p.x + ((scanPos + scanWidth + 1.0f) * plotWidth),
-               p.y + plotHeight),
-        semitransGreen);
+          ImVec2(p.x + plotWidth, p.y),
+          ImVec2(p.x + ((scanPos + scanWidth + 1.0f) * plotWidth),
+                 p.y + plotHeight),
+          semitransGreen);
     } else {
       drawList->AddRectFilled(
-        ImVec2(p.x + (scanPos * plotWidth), p.y),
-        ImVec2(p.x + ((scanPos + scanWidth) * plotWidth), p.y + plotHeight),
-        semitransGreen);
+          ImVec2(p.x + (scanPos * plotWidth), p.y),
+          ImVec2(p.x + ((scanPos + scanWidth) * plotWidth), p.y + plotHeight),
+          semitransGreen);
     }
 
     ImGui::PopFont();
@@ -434,16 +439,17 @@ void ecInterface::onDraw(Graphics &g) {
       streamHistory.erase(streamHistory.begin());
       streamHistory.push_back(grainAccum);
       highestStreamCount =
-        *max_element(streamHistory.begin(), streamHistory.end());
-      if (highestStreamCount < 2) highestStreamCount = 2;
+          *max_element(streamHistory.begin(), streamHistory.end());
+      if (highestStreamCount < 2)
+        highestStreamCount = 2;
       grainAccum = 0;
     }
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PlotHistogram(
-      "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr,
-      0, highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
+        "##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr,
+        0, highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();
@@ -497,7 +503,8 @@ void ecInterface::onDraw(Graphics &g) {
                      ImVec2(0, ImGui::GetContentRegionAvail().y),
                      sizeof(float));
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0);
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Oscilloscope");
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip("Oscilloscope");
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1);
     ImGui::PopItemWidth();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
@@ -526,12 +533,12 @@ void ecInterface::onDraw(Graphics &g) {
     VUdataRight = granulator.vuBufferR.getArray(VUdataSize);
 
     // Calculate RMS value
-    float VUleft =
-      std::accumulate(VUdataLeft.begin(), VUdataLeft.end(), 0.0f) / VUdataSize;
+    float VUleft = std::accumulate(VUdataLeft.begin(), VUdataLeft.end(), 0.0f) /
+                   VUdataSize;
     VUleft = sqrt(VUleft);
     float VUright =
-      std::accumulate(VUdataRight.begin(), VUdataRight.end(), 0.0f) /
-      VUdataSize;
+        std::accumulate(VUdataRight.begin(), VUdataRight.end(), 0.0f) /
+        VUdataSize;
     VUright = sqrt(VUright);
 
     // Set meter colors to green
@@ -612,6 +619,27 @@ void ecInterface::initMIDI() {
   } else {
     printf("Error: No MIDI devices found.\n");
   }
+
+  al::MIDIMessage dummy(0.0,5721,'\0', 48,'~');
+  ParametersMIDI[consts::GRAIN_RATE].push_back(dummy);
+}
+
+void ecInterface::updateParametersMIDI(const MIDIMessage &m) {
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    if (ParametersMIDI[index].size() == 0) {
+      continue;
+    }
+
+    for (int jndex = 0; jndex < ParametersMIDI[index].size(); jndex++) {
+      if (ParametersMIDI[index][jndex].channel() == m.channel() &&
+          ParametersMIDI[index][jndex].controlNumber() == m.controlNumber()) {
+        std::cout << "CHANGE PARAM PLS" << std::endl;
+      }
+    }
+  }
+  // std::cout << static_cast<unsigned>(
+  //                  ParameterMIDI[consts::GRAIN_RATE])
+  //           << std::endl;
 }
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
@@ -631,21 +659,11 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
 
   // Control messages need to be parsed again...
   case MIDIByte::CONTROL_CHANGE:
-    m.print();
+    // m.print();
     std::cout << static_cast<unsigned>(m.channel()) << std::endl;
     std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
-    std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
-
-    // printf("%s\n", MIDIByte::controlNumberString(m.controlNumber()));
-    // switch (m.controlNumber()) {
-    // case MIDIByte::MODULATION:
-    //   printf("Control Num: %i -- Value: %f\n", static_cast<unsigned>(m.controlNumber()),m.controlValue(1));
-    //   break;
-
-    // case MIDIByte::EXPRESSION:
-    //   printf("Control Num: %i -- Value: %f\n", static_cast<unsigned>(m.controlNumber()),m.controlValue(1));
-    //   break;
-    // }
+    // std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
+    updateParametersMIDI(m);
     break;
   default:;
   }
@@ -691,8 +709,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       updateDevices(state);
     }
     if (ImGui::Combo(
-          "Device", &state.currentDevice, ParameterGUI::vector_getter,
-          static_cast<void *>(&state.devices), state.devices.size())) {
+            "Device", &state.currentDevice, ParameterGUI::vector_getter,
+            static_cast<void *>(&state.devices), state.devices.size())) {
       // TODO adjust valid number of channels.
     }
     std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
@@ -848,16 +866,16 @@ void ecInterface::setGUIParams() {
 int ecInterface::getSampleRateIndex() {
   unsigned s_r = (unsigned)globalSamplingRate;
   switch (s_r) {
-    case 44100:
-      return 0;
-    case 48000:
-      return 1;
-    case 88100:
-      return 2;
-    case 96000:
-      return 3;
-    default:
-      return 0;
+  case 44100:
+    return 0;
+  case 48000:
+    return 1;
+  case 88100:
+    return 2;
+  case 96000:
+    return 3;
+  default:
+    return 0;
   }
 }
 
@@ -872,7 +890,7 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
       config[consts::SOUND_OUTPUT_PATH_KEY] =
-        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+          f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     if (config.find(consts::SAMPLE_RATE_KEY) == config.end())
       config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
@@ -885,7 +903,7 @@ bool ecInterface::initJsonConfig() {
 
   } else {
     config[consts::SOUND_OUTPUT_PATH_KEY] =
-      f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
@@ -895,7 +913,8 @@ bool ecInterface::initJsonConfig() {
   }
 
   std::ofstream file((userPath + configFile).c_str());
-  if (file.is_open()) file << config;
+  if (file.is_open())
+    file << config;
 
   return false;
 }
@@ -906,7 +925,8 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
 
   std::ifstream ifs(userPath + configFile);
 
-  if (ifs.is_open()) config = json::parse(ifs);
+  if (ifs.is_open())
+    config = json::parse(ifs);
 
   config[key] = value;
 
@@ -998,15 +1018,16 @@ void ecInterface::jsonReadAndSetAudioSettings() {
 
 /**** Custom Preset Drawer -- Implementation****/
 /**** Borrowed and modified from al_ParameterGUI.cpp****/
-ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
-  PresetHandler *presetHandler, int presetColumns, int presetRows) {
+ecInterface::PresetHandlerState &
+ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
+                                 int presetColumns, int presetRows) {
   static std::map<PresetHandler *, ecInterface::PresetHandlerState> stateMap;
   if (stateMap.find(presetHandler) == stateMap.end()) {
     //        std::cout << "Created state for " << (unsigned long)
     //        presetHandler
     //        << std::endl;
     stateMap[presetHandler] = ecInterface::PresetHandlerState{
-      "", 0, presetHandler->availablePresetMaps()};
+        "", 0, presetHandler->availablePresetMaps()};
     if (stateMap[presetHandler].mapList.size() > 0) {
       stateMap[presetHandler].currentBank = stateMap[presetHandler].mapList[0];
       stateMap[presetHandler].currentBankIndex = 0;
@@ -1023,7 +1044,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
 
   int selection = presetHandler->getCurrentPresetIndex();
   std::string currentPresetName = presetHandler->getCurrentPresetName();
-  if (currentPresetName.length() == 0) currentPresetName = "none";
+  if (currentPresetName.length() == 0)
+    currentPresetName = "none";
   ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
@@ -1053,7 +1075,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
           state.enteredText.clear();
         } else {
           if (presetHandler->recallPreset(counter) !=
-              "") {  // Preset is available
+              "") { // Preset is available
             selection = counter;
           }
         }
@@ -1062,7 +1084,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(
         ImGui::PopStyleColor(1);
       }
 
-      if (column < presetColumns - 1) ImGui::SameLine();
+      if (column < presetColumns - 1)
+        ImGui::SameLine();
       counter++;
       ImGui::PopID();
     }
