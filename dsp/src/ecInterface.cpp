@@ -84,10 +84,10 @@ void ecInterface::onCreate() {
   }
 
   for (int i = 0; i < consts::NUM_LFOS; i++) {
-    granulator.LFOparameters[i]->frequency->addToPresetHandler(mPresets);
-    mPresets << *granulator.LFOparameters[i]->shape
-             << *granulator.LFOparameters[i]->duty
-             << *granulator.LFOparameters[i]->polarity;
+    granulator.LFOParameters[i]->frequency->addToPresetHandler(mPresets);
+    mPresets << *granulator.LFOParameters[i]->shape
+             << *granulator.LFOParameters[i]->duty
+             << *granulator.LFOParameters[i]->polarity;
   }
 
 #ifdef __APPLE__
@@ -620,26 +620,64 @@ void ecInterface::initMIDI() {
     printf("Error: No MIDI devices found.\n");
   }
 
-  al::MIDIMessage dummy(0.0,5721,'\0', 48,'~');
-  ParametersMIDI[consts::GRAIN_RATE].push_back(dummy);
+  al::MIDIMessage dummy(0.0, 5721, '\0', 48, '~');
+  al::MIDIMessage dummy1(0.0, 5721, '\0', 49, '~');
+  al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
+  al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
+  ECParametersMIDI[consts::GRAIN_RATE].push_back(dummy);
+  ECParametersMIDI[consts::SCAN_POS].push_back(dummy1);
+  ECModParametersMIDI[consts::SCAN_POS].push_back(dummy2);
+  ECModParametersMIDI[consts::SCAN_POS].push_back(dummy3);
 }
 
 void ecInterface::updateParametersMIDI(const MIDIMessage &m) {
+
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (ParametersMIDI[index].size() == 0) {
-      continue;
+    // Check if we need to update any ecparameters.
+
+    for (int jndex = 0; jndex < ECParametersMIDI[index].size(); jndex++) {
+      if (ECParametersMIDI[index][jndex].channel() == m.channel() &&
+          ECParametersMIDI[index][jndex].controlNumber() == m.controlNumber()) {
+        float val = m.controlValue(); // Returns a value between 0 and 1.
+        val = granulator.ECParameters[index]->getCurrentMin() +
+              (val * abs(granulator.ECParameters[index]->getCurrentMax() -
+                         granulator.ECParameters[index]->getCurrentMin()));
+        granulator.ECParameters[index]->setParam(val);
+      }
     }
 
-    for (int jndex = 0; jndex < ParametersMIDI[index].size(); jndex++) {
-      if (ParametersMIDI[index][jndex].channel() == m.channel() &&
-          ParametersMIDI[index][jndex].controlNumber() == m.controlNumber()) {
-        std::cout << "CHANGE PARAM PLS" << std::endl;
+    // Check if we need to update any modulation parameters.
+
+    for (int jndex = 0; jndex < ECModParametersMIDI[index].size(); jndex++) {
+      if (ECModParametersMIDI[index][jndex].channel() == m.channel() &&
+          ECModParametersMIDI[index][jndex].controlNumber() ==
+              m.controlNumber()) {
+        float val = m.controlValue();
+        val = granulator.ECModParameters[index]->param.getCurrentMin() +
+              (val *
+               abs(granulator.ECModParameters[index]->param.getCurrentMax() -
+                   granulator.ECModParameters[index]->param.getCurrentMin()));
+        granulator.ECModParameters[index]->param.setParam(val);
       }
     }
   }
-  // std::cout << static_cast<unsigned>(
-  //                  ParameterMIDI[consts::GRAIN_RATE])
-  //           << std::endl;
+
+  // Check if we need to update any LFO parameters.
+  for (int index = 0; index < consts::NUM_LFOS; index++) {
+    for (int jndex = 0; jndex < LFOParametersMIDI[index].size(); jndex++) {
+      if (LFOParametersMIDI[index][jndex].channel() == m.channel() &&
+          LFOParametersMIDI[index][jndex].controlNumber() ==
+              m.controlNumber()) {
+        float val = m.controlValue();
+        val =
+            granulator.LFOParameters[index]->frequency->getCurrentMin() +
+            (val *
+             abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
+                 granulator.LFOParameters[index]->frequency->getCurrentMin()));
+        granulator.LFOParameters[index]->frequency->setParam(val);
+      }
+    }
+  }
 }
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
@@ -808,23 +846,23 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
   ImGui::PushItemWidth(70 * fontScale);
-  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->shape);
+  ParameterGUI::drawMenu(synth.LFOParameters[lfoNumber]->shape);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   ImGui::PushItemWidth(55 * fontScale);
-  ParameterGUI::drawMenu(synth.LFOparameters[lfoNumber]->polarity);
+  ParameterGUI::drawMenu(synth.LFOParameters[lfoNumber]->polarity);
   ImGui::PopItemWidth();
   ImGui::SameLine();
   int sliderPos = ImGui::GetCursorPosX();
-  synth.LFOparameters[lfoNumber]->frequency->drawRangeSlider();
-  if (*synth.LFOparameters[lfoNumber]->shape == 1) {
+  synth.LFOParameters[lfoNumber]->frequency->drawRangeSlider();
+  if (*synth.LFOParameters[lfoNumber]->shape == 1) {
     ImGui::SetCursorPosX(sliderPos - (35 * fontScale));
     ImGui::Text("Duty");
     ImGui::SameLine();
     ImGui::SetCursorPosX(sliderPos);
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * fontScale) +
                          8);
-    ParameterGUI::drawParameter(synth.LFOparameters[lfoNumber]->duty);
+    ParameterGUI::drawParameter(synth.LFOParameters[lfoNumber]->duty);
     ImGui::PopItemWidth();
   }
 }

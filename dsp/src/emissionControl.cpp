@@ -318,9 +318,9 @@ void ecParameter::drawRangeSlider() {
 
   ImGui::SameLine();
   if (changed && isInt) {
-    mLowRange->set(valueLowi);
+    setCurrentMin(valueLowi);
   } else if (changed && !isInt) {
-    mLowRange->set(valueLowf);
+    setCurrentMin(valueLowf);
   }
   if (isInt)
     mParameter->min(valueLowi);
@@ -411,9 +411,9 @@ void ecParameter::drawRangeSlider() {
 
   ImGui::SameLine();
   if (changed && isInt) {
-    mHighRange->set(valueHighi);
+    setCurrentMax(valueHighi);
   } else if (changed && !isInt) {
-    mHighRange->set(valueHighf);
+    setCurrentMax(valueHighf);
   }
   if (isInt)
     mParameter->max(valueHighi);
