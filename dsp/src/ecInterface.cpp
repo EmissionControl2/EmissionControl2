@@ -598,6 +598,59 @@ void ecInterface::onDraw(Graphics &g) {
   al::imguiDraw();
 }
 
+void ecInterface::initMIDI() {
+  // Check for connected MIDI devices
+  if (midiIn.getPortCount() > 0) {
+    // Bind ourself to the RtMidiIn object, to have the onMidiMessage()
+    // callback called whenever a MIDI message is received
+    MIDIMessageHandler::bindTo(midiIn);
+
+    // Open the last device found
+    unsigned int port = midiIn.getPortCount() - 1;
+    midiIn.openPort(port);
+    printf("Opened port to %s\n", midiIn.getPortName(port).c_str());
+  } else {
+    printf("Error: No MIDI devices found.\n");
+  }
+}
+
+void ecInterface::onMIDIMessage(const MIDIMessage &m) {
+  // std::cout << static_cast<unsigned>(m.type()) << std::endl;
+  switch (m.type()) {
+  case MIDIByte::NOTE_ON:
+    printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+    break;
+
+  case MIDIByte::NOTE_OFF:
+    printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+    break;
+
+  case MIDIByte::PITCH_BEND:
+    printf("Value %f\n", m.pitchBend());
+    break;
+
+  // Control messages need to be parsed again...
+  case MIDIByte::CONTROL_CHANGE:
+    m.print();
+    std::cout << static_cast<unsigned>(m.channel()) << std::endl;
+    std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
+    std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
+
+    // printf("%s\n", MIDIByte::controlNumberString(m.controlNumber()));
+    // switch (m.controlNumber()) {
+    // case MIDIByte::MODULATION:
+    //   printf("Control Num: %i -- Value: %f\n", static_cast<unsigned>(m.controlNumber()),m.controlValue(1));
+    //   break;
+
+    // case MIDIByte::EXPRESSION:
+    //   printf("Control Num: %i -- Value: %f\n", static_cast<unsigned>(m.controlNumber()),m.controlValue(1));
+    //   break;
+    // }
+    break;
+  default:;
+  }
+}
+
 void ecInterface::drawAudioIO(AudioIO *io) {
   struct AudioIOState {
     int currentSr = 1;
