@@ -24,7 +24,7 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   for (int index = 0; index < consts::NUM_LFOS; index++) {
     Modulators.push_back(std::make_shared<ecModulator>());
-    LFOparameters.push_back(std::make_shared<LFOstruct>(index));
+    LFOParameters.push_back(std::make_shared<LFOstruct>(index));
   }
 
   mGlobalSamplingRate = io->fps();
@@ -45,16 +45,16 @@ void ecSynth::initialize(al::AudioIOData *io) {
   }
 
   for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
-    LFOparameters[index]->shape->registerChangeCallback(
+    LFOParameters[index]->shape->registerChangeCallback(
         [this, index](int value) { Modulators[index]->setWaveform(value); });
 
-    LFOparameters[index]->polarity->registerChangeCallback(
+    LFOParameters[index]->polarity->registerChangeCallback(
         [this, index](int value) { Modulators[index]->setPolarity(value); });
 
-    LFOparameters[index]->frequency->mParameter->registerChangeCallback(
+    LFOParameters[index]->frequency->mParameter->registerChangeCallback(
         [this, index](float value) { Modulators[index]->setFrequency(value); });
 
-    LFOparameters[index]->duty->registerChangeCallback(
+    LFOParameters[index]->duty->registerChangeCallback(
         [this, index](float value) { Modulators[index]->setWidth(value); });
   }
 

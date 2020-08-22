@@ -57,7 +57,7 @@ class ecSynth : public al::SynthVoice {
   const static int NUM_MODULATORS = 4;
 
   // array of lfo parameters to draw later
-  std::vector<std::shared_ptr<LFOstruct>> LFOparameters;
+  std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
 
   std::vector<std::shared_ptr<util::buffer<float>>>
     soundClip;      /* Store audio buffers in memory */
@@ -67,9 +67,6 @@ class ecSynth : public al::SynthVoice {
   std::array<std::shared_ptr<ecParameter>, consts::NUM_PARAMS> ECParameters;
   std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
     ECModParameters;
-
-  /**Where parameters will be accessed**/
-  std::array<ecParameter*, NUM_PARAMS> Parameters;
   
   /**
    * PUBLIC PARAMETERS OF SYNTH

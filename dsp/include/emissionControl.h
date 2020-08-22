@@ -34,7 +34,7 @@
  * Allows for a single value [0,1] to interpolate between all three envelopes.
  */
 class grainEnvelope {
- public:
+public:
   void setSamplingRate(float samplingRate);
 
   float getSamplingRate() { return mSamplingRate; }
@@ -93,13 +93,13 @@ class grainEnvelope {
 
   float getDuration() const { return mDuration; }
 
- private:
+private:
   float mSamplingRate;
   util::expo mExpoEnv;
   util::tukey mTurkeyEnv;
   util::expo mRExpoEnv;
-  float mEnvelope;  // assumes between 0 and 1
-  float mDuration;  // in seconds
+  float mEnvelope; // assumes between 0 and 1
+  float mDuration; // in seconds
 };
 
 /**
@@ -107,7 +107,7 @@ class grainEnvelope {
  * grain/voiceScheduler parameters/
  */
 class ecModulator {
- public:
+public:
   /**
    * @brief Constructor for ecModulator.
    *
@@ -225,7 +225,7 @@ class ecModulator {
 
   float getPhase() const { return mLFO.phase(); }
 
- private:
+private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
@@ -245,18 +245,18 @@ class ecModulator {
  * sources).
  */
 class ecParameter {
- public:
+public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
   al::Parameter *mParameter = nullptr;
   al::Parameter *mLowRange =
-    nullptr;  // Parameter designed to bound low mParameter.
+      nullptr; // Parameter designed to bound low mParameter.
   al::Parameter *mHighRange =
-    nullptr;  // Parameter designed to bound high mParameter.
+      nullptr; // Parameter designed to bound high mParameter.
 
   /**
    * @brief ecParameter Constructor.
@@ -366,6 +366,38 @@ class ecParameter {
   float getModParam(float modDepth);
 
   /**
+   * @brief Set current min value of range slider.
+   *
+   */
+  void setCurrentMin(float min) {
+    mMin = min;
+    mLowRange->set(mMin);
+  }
+
+  /**
+   * @brief Set current max value of range slider.
+   *
+   */
+  void setCurrentMax(float max) {
+    mMax = max;
+    mHighRange->set(mMax);
+  }
+
+  /**
+   * @brief Get current max value.
+   *
+   * @return Max value.
+   */
+  float getCurrentMin() const { return mMin; }
+  
+  /**
+   * @brief Get current max value.
+   *
+   * @return Max value.
+   */
+  float getCurrentMax() const { return mMax; }
+
+  /**
    * @brief Registers all parameters within ecParameter to a preset
    * handler.
    *
@@ -393,7 +425,7 @@ class ecParameter {
 
   void getSliderType(consts::sliderType s) { mSliderType = s; }
 
- private:
+private:
   std::string mDisplayName;
   std::string mSliderText;
   consts::sliderType mSliderType;
@@ -406,8 +438,8 @@ class ecParameter {
 
 struct ecModParameter {
   ecModParameter(std::string parameterName, std::string displayName)
-    : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
-      lfoMenu("##lfo" + parameterName) {}
+      : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
+        lfoMenu("##lfo" + parameterName) {}
 
   void setMenuElements(std::vector<std::string> elements) {
     lfoMenu.setElements(elements);
@@ -462,7 +494,7 @@ struct grainParameters {
  * the voiceScheduler class
  */
 class Grain : public al::SynthVoice {
- public:
+public:
   Grain();
   /**
    * @brief Initialize voice. This function will only be called once per voice
@@ -499,7 +531,7 @@ class Grain : public al::SynthVoice {
 
   float getDurationS() const { return mDurationS; }
 
- private:
+private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
   gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
@@ -538,7 +570,7 @@ class Grain : public al::SynthVoice {
  * Class used to schedule the emission of an arbitrary voice.
  */
 class voiceScheduler {
- public:
+public:
   /**
    * @brief Constructor of the voice scheduler.
    *
@@ -611,7 +643,7 @@ class voiceScheduler {
    */
   void setPolyStream(consts::streamType type, int numStreams);
 
- private:
+private:
   gam::LFO<> mPulse;
   al::rnd::Random<> rand;
 
@@ -627,8 +659,10 @@ class Clipper : public al::AudioCallback {
   virtual void onAudioCB(al::AudioIOData &io) override {
     while (io()) {
       for (unsigned i = 0; i < io.channelsOut(); ++i) {
-        if (io.out(i) > 1) io.sum(-1 * io.out(i) + 1, i);
-        if (io.out(i) < -1) io.sum(-1 * io.out(i) - 1, i);
+        if (io.out(i) > 1)
+          io.sum(-1 * io.out(i) + 1, i);
+        if (io.out(i) < -1)
+          io.sum(-1 * io.out(i) - 1, i);
       }
     }
   }
@@ -644,7 +678,7 @@ class Clipper : public al::AudioCallback {
  */
 class flowControl {
   // friend class Granular;
- public:
+public:
   /**
    * This class will be calculate if it is necessary to reduce grain
    * rate/duration. Run at the audio rate (tentative).
@@ -662,7 +696,7 @@ class flowControl {
 
   float getAvgCPU() { return -11992.1; }
 
- private:
+private:
   // float mSamplingRate;
   // int mCounter;
   // float targetDuration;
@@ -676,7 +710,7 @@ class flowControl {
 
 // a struct to wrap LFO parameters
 class LFOstruct {
- public:
+public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;

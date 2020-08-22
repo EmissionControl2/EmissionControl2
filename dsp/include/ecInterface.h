@@ -97,7 +97,9 @@ private:
   Clipper mHardClip;
 
   RtMidiIn midiIn;
-  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ParametersMIDI;
+  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ECParametersMIDI;
+  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ECModParametersMIDI;
+  std::array<std::vector<al::MIDIMessage>, consts::NUM_LFOS> LFOParametersMIDI;
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
   al::File f;
