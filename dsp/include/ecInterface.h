@@ -97,9 +97,22 @@ private:
   Clipper mHardClip;
 
   RtMidiIn midiIn;
+
+  /*
+    This does not scale well if we want to include other paramters besides the
+      sliders.
+    Also somewhat inefficent since checking entire list of params. Maybe make a
+      list of pointers that hold an "active list".
+    I think you will need a struct to keep track of what is what. This struct
+      will likely include MIDIMessage as well as some enum or string indicating
+      what UI thing it points to. Things to ponder.
+  */
   std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ECParametersMIDI;
-  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ECModParametersMIDI;
+  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS>
+      ECModParametersMIDI;
   std::array<std::vector<al::MIDIMessage>, consts::NUM_LFOS> LFOParametersMIDI;
+  std::array<std::vector<al::MIDIMessage>, consts::NUM_LFOS>
+      LFODutyParametersMIDI;
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
   al::File f;
