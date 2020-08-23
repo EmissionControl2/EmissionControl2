@@ -620,14 +620,17 @@ void ecInterface::initMIDI() {
     printf("Error: No MIDI devices found.\n");
   }
 
+  /** Some dummy variables before we have MIDI learn set up. **/
   al::MIDIMessage dummy(0.0, 5721, '\0', 48, '~');
   al::MIDIMessage dummy1(0.0, 5721, '\0', 49, '~');
   al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
   al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
+  al::MIDIMessage dummy4(0.0, 5721, '\0', 52, '~');
   ECParametersMIDI[consts::GRAIN_RATE].push_back(dummy);
-  ECParametersMIDI[consts::SCAN_POS].push_back(dummy1);
+  ECParametersMIDI[consts::STREAMS].push_back(dummy1);
   ECModParametersMIDI[consts::SCAN_POS].push_back(dummy2);
-  ECModParametersMIDI[consts::SCAN_POS].push_back(dummy3);
+  LFOParametersMIDI[0].push_back(dummy3);
+  LFODutyParametersMIDI[0].push_back(dummy4);
 }
 
 void ecInterface::updateParametersMIDI(const MIDIMessage &m) {
@@ -677,6 +680,15 @@ void ecInterface::updateParametersMIDI(const MIDIMessage &m) {
         granulator.LFOParameters[index]->frequency->setParam(val);
       }
     }
+
+    for (int jndex = 0; jndex < LFODutyParametersMIDI[index].size(); jndex++) {
+      if (LFODutyParametersMIDI[index][jndex].channel() == m.channel() &&
+          LFODutyParametersMIDI[index][jndex].controlNumber() ==
+              m.controlNumber()) {
+        float val = m.controlValue();
+        granulator.LFOParameters[index]->duty->set(val);
+      }
+    }
   }
 }
 
@@ -698,8 +710,8 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   // Control messages need to be parsed again...
   case MIDIByte::CONTROL_CHANGE:
     // m.print();
-    std::cout << static_cast<unsigned>(m.channel()) << std::endl;
-    std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
+    // std::cout << static_cast<unsigned>(m.channel()) << std::endl;
+    // std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
     // std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
     updateParametersMIDI(m);
     break;
