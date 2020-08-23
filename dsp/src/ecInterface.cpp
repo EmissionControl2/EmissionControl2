@@ -626,67 +626,39 @@ void ecInterface::initMIDI() {
   al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
   al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
   al::MIDIMessage dummy4(0.0, 5721, '\0', 52, '~');
-  ECParametersMIDI[consts::GRAIN_RATE].push_back(dummy);
-  ECParametersMIDI[consts::STREAMS].push_back(dummy1);
-  ECModParametersMIDI[consts::SCAN_POS].push_back(dummy2);
-  LFOParametersMIDI[0].push_back(dummy3);
-  LFODutyParametersMIDI[0].push_back(dummy4);
+ 
+  ActiveMIDI.push_back( MIDIKey(dummy, consts::GRAIN_RATE, consts::M_PARAM));
+  ActiveMIDI.push_back( MIDIKey(dummy1, consts::SCAN_POS, consts::M_PARAM));
+  ActiveMIDI.push_back( MIDIKey(dummy2, consts::SCAN_POS, consts::M_MOD));
+  ActiveMIDI.push_back( MIDIKey(dummy3, 0, consts::M_LFO));
+  ActiveMIDI.push_back( MIDIKey(dummy4, 0, consts::M_DUTY));
 }
 
-void ecInterface::updateParametersMIDI(const MIDIMessage &m) {
+void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
+  for (int index = 0; index < ActiveMIDI.size(); index++) {
+    for (int jndex = 0; jndex < ActiveMIDI[index].mInfo.size(); jndex++) {
+      if (ActiveMIDI[index].mInfo[jndex].channel() == m.channel() &&
+          ActiveMIDI[index].mInfo[jndex].controlNumber() == m.controlNumber()) {
 
-  for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    // Check if we need to update any ecparameters.
-
-    for (int jndex = 0; jndex < ECParametersMIDI[index].size(); jndex++) {
-      if (ECParametersMIDI[index][jndex].channel() == m.channel() &&
-          ECParametersMIDI[index][jndex].controlNumber() == m.controlNumber()) {
-        float val = m.controlValue(); // Returns a value between 0 and 1.
-        val = granulator.ECParameters[index]->getCurrentMin() +
-              (val * abs(granulator.ECParameters[index]->getCurrentMax() -
-                         granulator.ECParameters[index]->getCurrentMin()));
-        granulator.ECParameters[index]->setParam(val);
-      }
-    }
-
-    // Check if we need to update any modulation parameters.
-
-    for (int jndex = 0; jndex < ECModParametersMIDI[index].size(); jndex++) {
-      if (ECModParametersMIDI[index][jndex].channel() == m.channel() &&
-          ECModParametersMIDI[index][jndex].controlNumber() ==
-              m.controlNumber()) {
-        float val = m.controlValue();
-        val = granulator.ECModParameters[index]->param.getCurrentMin() +
-              (val *
-               abs(granulator.ECModParameters[index]->param.getCurrentMax() -
-                   granulator.ECModParameters[index]->param.getCurrentMin()));
-        granulator.ECModParameters[index]->param.setParam(val);
-      }
-    }
-  }
-
-  // Check if we need to update any LFO parameters.
-  for (int index = 0; index < consts::NUM_LFOS; index++) {
-    for (int jndex = 0; jndex < LFOParametersMIDI[index].size(); jndex++) {
-      if (LFOParametersMIDI[index][jndex].channel() == m.channel() &&
-          LFOParametersMIDI[index][jndex].controlNumber() ==
-              m.controlNumber()) {
-        float val = m.controlValue();
-        val =
-            granulator.LFOParameters[index]->frequency->getCurrentMin() +
-            (val *
-             abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
-                 granulator.LFOParameters[index]->frequency->getCurrentMin()));
-        granulator.LFOParameters[index]->frequency->setParam(val);
-      }
-    }
-
-    for (int jndex = 0; jndex < LFODutyParametersMIDI[index].size(); jndex++) {
-      if (LFODutyParametersMIDI[index][jndex].channel() == m.channel() &&
-          LFODutyParametersMIDI[index][jndex].controlNumber() ==
-              m.controlNumber()) {
-        float val = m.controlValue();
-        granulator.LFOParameters[index]->duty->set(val);
+        switch (ActiveMIDI[index].getType()) {
+        case M_PARAM:
+          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+          break;
+        case M_MOD:
+          updateECModParamMIDI(m.controlValue(),
+                               ActiveMIDI[index].getKeysIndex());
+          break;
+        case M_LFO:
+          updateLFOParamMIDI(m.controlValue(),
+                             ActiveMIDI[index].getKeysIndex());
+          break;
+        case M_DUTY:
+          updateLFODutyParamMIDI(m.controlValue(),
+                                 ActiveMIDI[index].getKeysIndex());
+          break;
+        default:
+          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+        }
       }
     }
   }
@@ -713,7 +685,8 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
     // std::cout << static_cast<unsigned>(m.channel()) << std::endl;
     // std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
     // std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
-    updateParametersMIDI(m);
+    // updateParametersMIDI(m);
+    updateActiveMIDIParams(m);
     break;
   default:;
   }
