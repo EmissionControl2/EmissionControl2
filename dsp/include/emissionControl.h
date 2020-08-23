@@ -389,7 +389,7 @@ public:
    * @return Max value.
    */
   float getCurrentMin() const { return mMin; }
-  
+
   /**
    * @brief Get current max value.
    *
@@ -704,6 +704,30 @@ private:
   // float mAvgActiveVoices;
   // float mPeakCPU;
   // float mAvgCPU;
+};
+
+/*** MIDI Objects ***/
+
+class MIDIKey {
+public:
+  std::vector<al::MIDIMessage> mInfo;
+
+  MIDIKey(){};
+  MIDIKey(al::MIDIMessage m, int paramIndex, consts::MIDIType type) {
+    mInfo.push_back(m);
+    setKeysIndex(paramIndex, type);
+  }
+  // NOTE: the index is highly depenent on on the mType. USE with caution.
+  int getKeysIndex() { return mKeysIndex; }
+  consts::MIDIType getType() { return mType; }
+  void setKeysIndex(int index, consts::MIDIType type) {
+    mKeysIndex = index;
+    mType = type;
+  }
+
+private:
+  int mKeysIndex;
+  consts::MIDIType mType;
 };
 
 /*** GUI ELEMENTS ***/

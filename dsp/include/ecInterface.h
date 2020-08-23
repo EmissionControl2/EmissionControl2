@@ -47,7 +47,7 @@ public:
 
   /** MIDI Stuff **/
   void initMIDI();
-  void updateParametersMIDI(const al::MIDIMessage &m);
+  void updateActiveMIDIParams(const al::MIDIMessage &m);
 
   /**
    * @brief Called everytime a MIDI message is sent.
@@ -97,22 +97,56 @@ private:
   Clipper mHardClip;
 
   RtMidiIn midiIn;
+  std::vector<MIDIKey> ActiveMIDI;
+  /**
+   * @brief: Update ECParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in ECParameters structure.
+   */
+  void updateECParamMIDI(float val, int index) {
+    val = granulator.ECParameters[index]->getCurrentMin() +
+          (val * abs(granulator.ECParameters[index]->getCurrentMax() -
+                     granulator.ECParameters[index]->getCurrentMin()));
+    granulator.ECParameters[index]->setParam(val);
+  }
 
-  /*
-    This does not scale well if we want to include other paramters besides the
-      sliders.
-    Also somewhat inefficent since checking entire list of params. Maybe make a
-      list of pointers that hold an "active list".
-    I think you will need a struct to keep track of what is what. This struct
-      will likely include MIDIMessage as well as some enum or string indicating
-      what UI thing it points to. Things to ponder.
-  */
-  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS> ECParametersMIDI;
-  std::array<std::vector<al::MIDIMessage>, consts::NUM_PARAMS>
-      ECModParametersMIDI;
-  std::array<std::vector<al::MIDIMessage>, consts::NUM_LFOS> LFOParametersMIDI;
-  std::array<std::vector<al::MIDIMessage>, consts::NUM_LFOS>
-      LFODutyParametersMIDI;
+  /**
+   * @brief: Update ECModParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in ECModParameters structure.
+   */
+  void updateECModParamMIDI(float val, int index) {
+    val = granulator.ECModParameters[index]->param.getCurrentMin() +
+          (val * abs(granulator.ECModParameters[index]->param.getCurrentMax() -
+                     granulator.ECModParameters[index]->param.getCurrentMin()));
+    granulator.ECModParameters[index]->param.setParam(val);
+  }
+
+  /**
+   * @brief: Update LFOParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in LFOParameters structure.
+   */
+  void updateLFOParamMIDI(float val, int index) {
+    val = granulator.LFOParameters[index]->frequency->getCurrentMin() +
+          (val *
+           abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
+               granulator.LFOParameters[index]->frequency->getCurrentMin()));
+    granulator.LFOParameters[index]->frequency->setParam(val);
+  }
+
+  /**
+   * @brief: Update duty cycle of LFOParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in LFOParameters structure.
+   */
+  void updateLFODutyParamMIDI(float val, int index) {
+    granulator.LFOParameters[index]->duty->set(val);
+  }
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
   al::File f;

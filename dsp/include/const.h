@@ -5,8 +5,8 @@
 
 namespace consts {
 
-enum sliderType{ PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
-
+enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
+enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
 
 enum paramNames {
   GRAIN_RATE = 0,
