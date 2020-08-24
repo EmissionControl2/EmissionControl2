@@ -103,10 +103,6 @@ private:
   bool mIsMIDILearn = false, mIsLinkingParamAndMIDI = false;
   MIDIKey mCurrentLearningMIDIKey;
 
-  void linkParamAndMIDIControl(int paramIndex, consts::MIDIType type) {
-    mCurrentLearningMIDIKey.setKeysIndex(paramIndex, type);
-  }
-
   /**
    * @brief: Update ECParameters object at index based on value.
    *
