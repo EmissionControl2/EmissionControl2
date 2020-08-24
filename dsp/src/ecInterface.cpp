@@ -855,15 +855,6 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber, bool *isMIDILear
   }
 }
 
-void ecInterface::drawModulationControl(al::ParameterMenu &menu,
-                                        ecParameter &slider, bool *isMIDILearn) {
-  ImGui::PushItemWidth(70 * fontScale);
-  ParameterGUI::drawMenu(&menu);
-  ImGui::PopItemWidth();
-  ImGui::SameLine();
-  slider.drawRangeSlider(isMIDILearn);
-}
-
 void ecInterface::setGUIParams() {
   ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)*PrimaryColor);

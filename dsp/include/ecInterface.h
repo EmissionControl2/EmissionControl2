@@ -227,14 +227,6 @@ private:
    */
   void drawLFOcontrol(ecSynth &synth, int lfoNumber, bool *isMIDILearn);
 
-   /**
-   * @brief Draw Modulation control
-   * 
-   * @param[out] isMIDILearn: Returns true if main slider needs to be learned, false ow.
-   */
-  void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider,
-                             bool *isMIDILearn);
-
   void setGUIParams();
 
   int getSampleRateIndex();
