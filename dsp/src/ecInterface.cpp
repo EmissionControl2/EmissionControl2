@@ -115,8 +115,8 @@ void ecInterface::onDraw(Graphics &g) {
   g.clear(background);
 
   // Get window height and width (for responsive sizing)
-  float windowWidth = width();
-  float windowHeight = height();
+  windowWidth = width();
+  windowHeight = height();
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
@@ -272,7 +272,11 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECParameters[index]->drawRangeSlider(&mIsMIDILearn);
     if (mIsMIDILearn) {
-      std::cout << index << std::endl;
+
+      // This inits. the onMidiMessage loop to listen for midi input.
+      // This first MIDI input to come through will be linked.
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
+      mIsLinkingParamAndMIDI = true;
     }
   }
   ImGui::PopFont();
@@ -293,6 +297,9 @@ void ecInterface::onDraw(Graphics &g) {
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECModParameters[index]->drawModulationControl(&mIsMIDILearn);
+    if (mIsMIDILearn) {
+      std::cout << index << std::endl;
+    }
   }
   ImGui::PopFont();
   float NextWindowYPosition = firstRowHeight + menuBarHeight;
@@ -336,6 +343,9 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
     granulator.LFOParameters[index]->drawLFOControl(&mIsMIDILearn);
+    if (mIsMIDILearn) {
+      std::cout << index << std::endl;
+    }
   }
 
   ImGui::PopFont();
@@ -624,17 +634,17 @@ void ecInterface::initMIDI() {
   }
 
   /** Some dummy variables before we have MIDI learn set up. **/
-  al::MIDIMessage dummy(0.0, 5721, '\0', 48, '~');
-  al::MIDIMessage dummy1(0.0, 5721, '\0', 49, '~');
-  al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
-  al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
-  al::MIDIMessage dummy4(0.0, 5721, '\0', 52, '~');
+  // al::MIDIMessage dummy(0.0, 5721, '\0', 48, '~');
+  // al::MIDIMessage dummy1(0.0, 5721, '\0', 49, '~');
+  // al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
+  // al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
+  // al::MIDIMessage dummy4(0.0, 5721, '\0', 52, '~');
 
-  ActiveMIDI.push_back(MIDIKey(dummy, consts::GRAIN_RATE, consts::M_PARAM));
-  ActiveMIDI.push_back(MIDIKey(dummy1, consts::SCAN_POS, consts::M_PARAM));
-  ActiveMIDI.push_back(MIDIKey(dummy2, consts::SCAN_POS, consts::M_MOD));
-  ActiveMIDI.push_back(MIDIKey(dummy3, 0, consts::M_LFO));
-  ActiveMIDI.push_back(MIDIKey(dummy4, 0, consts::M_DUTY));
+  // ActiveMIDI.push_back(MIDIKey(dummy, consts::GRAIN_RATE, consts::M_PARAM));
+  // ActiveMIDI.push_back(MIDIKey(dummy1, consts::SCAN_POS, consts::M_PARAM));
+  // ActiveMIDI.push_back(MIDIKey(dummy2, consts::SCAN_POS, consts::M_MOD));
+  // ActiveMIDI.push_back(MIDIKey(dummy3, 0, consts::M_LFO));
+  // ActiveMIDI.push_back(MIDIKey(dummy4, 0, consts::M_DUTY));
 }
 
 void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
@@ -668,7 +678,6 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
 }
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
-  // std::cout << static_cast<unsigned>(m.type()) << std::endl;
   switch (m.type()) {
   case MIDIByte::NOTE_ON:
     printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
@@ -684,6 +693,22 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
 
   // Control messages need to be parsed again...
   case MIDIByte::CONTROL_CHANGE:
+    if (mIsLinkingParamAndMIDI) {
+      bool isKeyPresent = false;
+      for (int index = 0; index < ActiveMIDI.size(); index++) {
+        if (ActiveMIDI[index].getKeysIndex() ==
+                mCurrentLearningMIDIKey.getKeysIndex() &&
+            ActiveMIDI[index].getType() == mCurrentLearningMIDIKey.getType()) {
+          isKeyPresent = true;
+          ActiveMIDI[index].mInfo.push_back(m);
+        }
+      }
+      if (!isKeyPresent) {
+        mCurrentLearningMIDIKey.mInfo = std::vector<al::MIDIMessage>(1, m);
+        ActiveMIDI.push_back(mCurrentLearningMIDIKey);
+      }
+      mIsLinkingParamAndMIDI = false;
+    }
     // m.print();
     // std::cout << static_cast<unsigned>(m.channel()) << std::endl;
     // std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;

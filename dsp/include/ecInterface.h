@@ -89,6 +89,8 @@ public:
                           uint32_t bufferSize = 0);
 
 private:
+  float windowWidth, windowHeight;
+
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
@@ -98,7 +100,13 @@ private:
 
   RtMidiIn midiIn;
   std::vector<MIDIKey> ActiveMIDI;
-  bool mIsMIDILearn;
+  bool mIsMIDILearn = false, mIsLinkingParamAndMIDI = false;
+  MIDIKey mCurrentLearningMIDIKey;
+
+  void linkParamAndMIDIControl(int paramIndex, consts::MIDIType type) {
+    mCurrentLearningMIDIKey.setKeysIndex(paramIndex, type);
+  }
+
   /**
    * @brief: Update ECParameters object at index based on value.
    *
@@ -140,7 +148,8 @@ private:
   }
 
   /**
-   * @brief: Update duty cycle of LFOParameters object at index based on value.
+   * @brief: Update duty cycle of LFOParameters object at index based on
+   * value.
    *
    * @param[in] value: A value between 0 and 1. Percentage of parameter range.
    * @param[in] index: Index in LFOParameters structure.
