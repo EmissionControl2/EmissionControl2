@@ -271,7 +271,7 @@ void ecInterface::onDraw(Graphics &g) {
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECParameters[index]->drawRangeSlider(&mIsMIDILearn);
-    if(mIsMIDILearn) {
+    if (mIsMIDILearn) {
       std::cout << index << std::endl;
     }
   }
@@ -335,7 +335,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
-    drawLFOcontrol(granulator, index, &mIsMIDILearn);
+    granulator.LFOParameters[index]->drawLFOControl(&mIsMIDILearn);
   }
 
   ImGui::PopFont();
@@ -629,12 +629,12 @@ void ecInterface::initMIDI() {
   al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
   al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
   al::MIDIMessage dummy4(0.0, 5721, '\0', 52, '~');
- 
-  ActiveMIDI.push_back( MIDIKey(dummy, consts::GRAIN_RATE, consts::M_PARAM));
-  ActiveMIDI.push_back( MIDIKey(dummy1, consts::SCAN_POS, consts::M_PARAM));
-  ActiveMIDI.push_back( MIDIKey(dummy2, consts::SCAN_POS, consts::M_MOD));
-  ActiveMIDI.push_back( MIDIKey(dummy3, 0, consts::M_LFO));
-  ActiveMIDI.push_back( MIDIKey(dummy4, 0, consts::M_DUTY));
+
+  ActiveMIDI.push_back(MIDIKey(dummy, consts::GRAIN_RATE, consts::M_PARAM));
+  ActiveMIDI.push_back(MIDIKey(dummy1, consts::SCAN_POS, consts::M_PARAM));
+  ActiveMIDI.push_back(MIDIKey(dummy2, consts::SCAN_POS, consts::M_MOD));
+  ActiveMIDI.push_back(MIDIKey(dummy3, 0, consts::M_LFO));
+  ActiveMIDI.push_back(MIDIKey(dummy4, 0, consts::M_DUTY));
 }
 
 void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
@@ -828,31 +828,6 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder,
   ImGui::TextWrapped("%s", directory.c_str());
 
   ImGui::PopID();
-}
-
-void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber, bool *isMIDILearn) {
-  ImGui::Text("LFO%i", lfoNumber + 1);
-  ImGui::SameLine();
-  ImGui::PushItemWidth(70 * fontScale);
-  ParameterGUI::drawMenu(synth.LFOParameters[lfoNumber]->shape);
-  ImGui::PopItemWidth();
-  ImGui::SameLine();
-  ImGui::PushItemWidth(55 * fontScale);
-  ParameterGUI::drawMenu(synth.LFOParameters[lfoNumber]->polarity);
-  ImGui::PopItemWidth();
-  ImGui::SameLine();
-  int sliderPos = ImGui::GetCursorPosX();
-  synth.LFOParameters[lfoNumber]->frequency->drawRangeSlider(isMIDILearn);
-  if (*synth.LFOParameters[lfoNumber]->shape == 1) {
-    ImGui::SetCursorPosX(sliderPos - (35 * fontScale));
-    ImGui::Text("Duty");
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(sliderPos);
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * fontScale) +
-                         8);
-    ParameterGUI::drawParameter(synth.LFOParameters[lfoNumber]->duty);
-    ImGui::PopItemWidth();
-  }
 }
 
 void ecInterface::setGUIParams() {

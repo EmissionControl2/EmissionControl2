@@ -220,13 +220,6 @@ private:
 
   void drawAudioIO(al::AudioIO *io);
 
-  /**
-   * @brief Draw LFO control
-   * 
-   *  @param[out] isMIDILearn: Returns true if main slider needs to be learned, false ow.
-   */
-  void drawLFOcontrol(ecSynth &synth, int lfoNumber, bool *isMIDILearn);
-
   void setGUIParams();
 
   int getSampleRateIndex();

@@ -414,8 +414,9 @@ public:
 
   /**
    * @brief Draw the parameter range slider.
-   * 
-   * @param[out] isMIDILearn: Returns true if main slider needs to be learned, false ow.
+   *
+   * @param[out] isMIDILearn: Returns true if main slider needs to be learned,
+   * false ow.
    */
   void drawRangeSlider(bool *isMIDILearn);
 
@@ -741,9 +742,11 @@ public:
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
   al::Parameter *duty = nullptr;
+  int mLFONumber;
 
   // constructor
   LFOstruct(int lfoNumber) {
+    mLFONumber = lfoNumber;
     std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
     std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
     std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
@@ -757,6 +760,32 @@ public:
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
     polarity->setElements({"BI", "UNI+", "UNI-"});
+  }
+
+  void drawLFOControl(bool* isMIDILearn) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::Text("LFO%i", mLFONumber + 1);
+    ImGui::SameLine();
+    ImGui::PushItemWidth(70 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(shape);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::PushItemWidth(55 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(polarity);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    int sliderPos = ImGui::GetCursorPosX();
+    frequency->drawRangeSlider(isMIDILearn);
+    if (*shape == 1) {
+      ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
+      ImGui::Text("Duty");
+      ImGui::SameLine();
+      ImGui::SetCursorPosX(sliderPos);
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x -
+                           (35 * io.FontGlobalScale) + 8);
+      al::ParameterGUI::drawParameter(duty);
+      ImGui::PopItemWidth();
+    }
   }
 
   // destructor
