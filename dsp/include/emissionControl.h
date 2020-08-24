@@ -414,8 +414,10 @@ public:
 
   /**
    * @brief Draw the parameter range slider.
+   * 
+   * @param[out] isMIDILearn: Returns true if main slider needs to be learned, false ow.
    */
-  void drawRangeSlider();
+  void drawRangeSlider(bool *isMIDILearn);
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -457,12 +459,12 @@ struct ecModParameter {
     presetHandler.registerParameter(lfoMenu);
   }
 
-  void drawModulationControl() {
+  void drawModulationControl(bool *isMIDILearn) {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    param.drawRangeSlider();
+    param.drawRangeSlider(isMIDILearn);
   }
 
   ecParameter param;

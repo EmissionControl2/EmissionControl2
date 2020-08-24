@@ -98,6 +98,7 @@ private:
 
   RtMidiIn midiIn;
   std::vector<MIDIKey> ActiveMIDI;
+  bool mIsMIDILearn;
   /**
    * @brief: Update ECParameters object at index based on value.
    *
@@ -219,9 +220,20 @@ private:
 
   void drawAudioIO(al::AudioIO *io);
 
-  void drawLFOcontrol(ecSynth &synth, int lfoNumber);
+  /**
+   * @brief Draw LFO control
+   * 
+   *  @param[out] isMIDILearn: Returns true if main slider needs to be learned, false ow.
+   */
+  void drawLFOcontrol(ecSynth &synth, int lfoNumber, bool *isMIDILearn);
 
-  void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider);
+   /**
+   * @brief Draw Modulation control
+   * 
+   * @param[out] isMIDILearn: Returns true if main slider needs to be learned, false ow.
+   */
+  void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider,
+                             bool *isMIDILearn);
 
   void setGUIParams();
 
