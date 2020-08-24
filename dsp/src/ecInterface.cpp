@@ -270,7 +270,10 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    granulator.ECParameters[index]->drawRangeSlider();
+    granulator.ECParameters[index]->drawRangeSlider(&mIsMIDILearn);
+    if(mIsMIDILearn) {
+      std::cout << index << std::endl;
+    }
   }
   ImGui::PopFont();
   ParameterGUI::endPanel();
@@ -289,7 +292,7 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    granulator.ECModParameters[index]->drawModulationControl();
+    granulator.ECModParameters[index]->drawModulationControl(&mIsMIDILearn);
   }
   ImGui::PopFont();
   float NextWindowYPosition = firstRowHeight + menuBarHeight;
@@ -332,7 +335,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
-    drawLFOcontrol(granulator, index);
+    drawLFOcontrol(granulator, index, &mIsMIDILearn);
   }
 
   ImGui::PopFont();
@@ -827,7 +830,7 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder,
   ImGui::PopID();
 }
 
-void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
+void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber, bool *isMIDILearn) {
   ImGui::Text("LFO%i", lfoNumber + 1);
   ImGui::SameLine();
   ImGui::PushItemWidth(70 * fontScale);
@@ -839,7 +842,7 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
   ImGui::PopItemWidth();
   ImGui::SameLine();
   int sliderPos = ImGui::GetCursorPosX();
-  synth.LFOParameters[lfoNumber]->frequency->drawRangeSlider();
+  synth.LFOParameters[lfoNumber]->frequency->drawRangeSlider(isMIDILearn);
   if (*synth.LFOParameters[lfoNumber]->shape == 1) {
     ImGui::SetCursorPosX(sliderPos - (35 * fontScale));
     ImGui::Text("Duty");
@@ -853,12 +856,12 @@ void ecInterface::drawLFOcontrol(ecSynth &synth, int lfoNumber) {
 }
 
 void ecInterface::drawModulationControl(al::ParameterMenu &menu,
-                                        ecParameter &slider) {
+                                        ecParameter &slider, bool *isMIDILearn) {
   ImGui::PushItemWidth(70 * fontScale);
   ParameterGUI::drawMenu(&menu);
   ImGui::PopItemWidth();
   ImGui::SameLine();
-  slider.drawRangeSlider();
+  slider.drawRangeSlider(isMIDILearn);
 }
 
 void ecInterface::setGUIParams() {

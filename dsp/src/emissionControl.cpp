@@ -7,6 +7,9 @@
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
 
+/**** External LIB ****/
+#include "imgui_internal.h"
+
 /**** CSTD LIB ****/
 #include <iostream>
 
@@ -22,23 +25,23 @@ void grainEnvelope::setSamplingRate(float samplingRate) {
 }
 
 float grainEnvelope::operator()() {
-  if (mEnvelope < 0 || mEnvelope > 1)  // exponential envelope case
+  if (mEnvelope < 0 || mEnvelope > 1) // exponential envelope case
     mEnvelope = 0;
 
-  if (mEnvelope < 0.5) {  // exponetial and turkey envelope interpolation
+  if (mEnvelope < 0.5) { // exponetial and turkey envelope interpolation
     mRExpoEnv.increment();
     return ((mExpoEnv() * (1 - mEnvelope * 2)) +
             (mTurkeyEnv() * mEnvelope * 2));
-  } else if (mEnvelope == 0.5) {  // turkey envelope case
+  } else if (mEnvelope == 0.5) { // turkey envelope case
     mRExpoEnv.increment();
     mExpoEnv.increment();
     return mTurkeyEnv();
   } else if (mEnvelope <=
-             1) {  // turkey and reverse exponential envelope interpolation
+             1) { // turkey and reverse exponential envelope interpolation
     mExpoEnv.increment();
     return ((mTurkeyEnv() * (1 - (mEnvelope - 0.5) * 2)) +
             (mRExpoEnv() * (mEnvelope - 0.5) * 2));
-  } else {  // fails silently but gracefully
+  } else { // fails silently but gracefully
     mRExpoEnv.increment();
     mExpoEnv.increment();
     return mTurkeyEnv();
@@ -124,21 +127,21 @@ void ecModulator::setWaveform(unsigned modWaveformIndex) {
   }
 
   switch (modWaveformIndex) {
-    case 0:
-      mModWaveform = consts::SINE;
-      break;
-    case 1:
-      mModWaveform = consts::SQUARE;
-      break;
-    case 2:
-      mModWaveform = consts::ASCEND;
-      break;
-    case 3:
-      mModWaveform = consts::DESCEND;
-      break;
-    case 4:
-      mModWaveform = consts::NOISE;
-      break;
+  case 0:
+    mModWaveform = consts::SINE;
+    break;
+  case 1:
+    mModWaveform = consts::SQUARE;
+    break;
+  case 2:
+    mModWaveform = consts::ASCEND;
+    break;
+  case 3:
+    mModWaveform = consts::DESCEND;
+    break;
+  case 4:
+    mModWaveform = consts::NOISE;
+    break;
   }
 }
 
@@ -156,7 +159,7 @@ void ecModulator::setPolarity(consts::polarity modPolarity) {
     mSign = -1;
   } else {
     mPolarity = modPolarity;
-    mSign = 1;  // THIS IS A DONT CARE
+    mSign = 1; // THIS IS A DONT CARE
   }
 }
 
@@ -167,18 +170,18 @@ void ecModulator::setPolarity(unsigned modPolarityIndex) {
   }
 
   switch (modPolarityIndex) {
-    case 0:
-      setPolarity(consts::BI);
-      break;
-    case 1:
-      setPolarity(consts::UNI_POS);
-      break;
-    case 2:
-      setPolarity(consts::UNI_NEG);
-      break;
-    default:
-      setPolarity(consts::BI);
-      break;
+  case 0:
+    setPolarity(consts::BI);
+    break;
+  case 1:
+    setPolarity(consts::UNI_POS);
+    break;
+  case 2:
+    setPolarity(consts::UNI_NEG);
+    break;
+  default:
+    setPolarity(consts::BI);
+    break;
   }
 }
 
@@ -210,7 +213,7 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
                          consts::sliderType slideType, std::string sliderText,
                          bool independentMod) {
   mParameter =
-    new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
+      new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
   mDisplayName = displayName;
   mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin,
@@ -222,7 +225,7 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
   mSliderType = slideType;
   mSliderText = sliderText;
   mIndependentMod = independentMod;
-  if (mIndependentMod)  // if true, this parameter will have its own modulator
+  if (mIndependentMod) // if true, this parameter will have its own modulator
     mModulator = new ecModulator();
 }
 
@@ -253,7 +256,7 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName,
   mSliderType = slideType;
   mSliderText = sliderText;
   mIndependentMod = independentMod;
-  if (mIndependentMod)  // if true, this parameter will have its own modulator
+  if (mIndependentMod) // if true, this parameter will have its own modulator
     mModulator = new ecModulator();
 }
 
@@ -261,7 +264,8 @@ ecParameter::~ecParameter() {
   delete mParameter;
   delete mLowRange;
   delete mHighRange;
-  if (mIndependentMod) delete mModulator;
+  if (mIndependentMod)
+    delete mModulator;
 }
 
 void ecParameter::setIndependentMod(bool independentMod) {
@@ -299,11 +303,12 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameter::drawRangeSlider() {
+void ecParameter::drawRangeSlider(bool *isMIDILearn) {
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
   bool changed, isInt = false;
-  if (mSliderType > 2) isInt = true;
+  if (mSliderType > 2)
+    isInt = true;
   ImGuiIO &io = ImGui::GetIO();
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
   if (isInt) {
@@ -341,7 +346,7 @@ void ecParameter::drawRangeSlider() {
                            (190 * io.FontGlobalScale));
     else
       ImGui::PushItemWidth(80);
-  if (isInt) {  // Draw int slider.
+  if (isInt) { // Draw int slider.
     valueSlideri = static_cast<int>(mParameter->get());
     if (mSliderText != "") {
       changed = ImGui::SliderInt((mParameter->displayName()).c_str(),
@@ -349,10 +354,10 @@ void ecParameter::drawRangeSlider() {
                                  mParameter->max(), (mSliderText).c_str());
     } else {
       changed =
-        ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri,
-                         mParameter->min(), mParameter->max());
+          ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri,
+                           mParameter->min(), mParameter->max());
     }
-  } else {  // Draw float slider.
+  } else { // Draw float slider.
     valueSliderf = mParameter->get();
     if (mSliderText != "") {
       changed = ImGui::SliderFloat((mParameter->displayName()).c_str(),
@@ -360,8 +365,8 @@ void ecParameter::drawRangeSlider() {
                                    mParameter->max(), mSliderText.c_str());
     } else {
       changed =
-        ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
-                           mParameter->min(), mParameter->max(), "%0.3f");
+          ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
+                             mParameter->min(), mParameter->max(), "%0.3f");
     }
   }
   if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD) {
@@ -392,6 +397,26 @@ void ecParameter::drawRangeSlider() {
   else if (changed && !isInt)
     mParameter->set(valueSliderf);
 
+  // MIDI LEARN Functionality
+  *isMIDILearn = false;
+  if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
+    ImGui::OpenPopup(("midiLearn" + mParameter->getName()).c_str());
+  }
+  if (ImGui::BeginPopup(("midiLearn" + mParameter->getName()).c_str())) {
+    // ImGuiDir
+    if (ImGui::Selectable("MIDI Learn")) {
+      *isMIDILearn = true;
+    }
+    ImGui::EndPopup();
+  }
+
+  // if(mParameter->getName() == "grainRate") {
+  //   std::cout << test << std::endl;
+  // }
+
+  // ImGui::OpenPopupEx("test", false);
+  // ImGui::BeginPopup("test");
+
   ImGui::PopItemWidth();
 
   ImGui::SameLine();
@@ -400,13 +425,13 @@ void ecParameter::drawRangeSlider() {
   if (isInt) {
     valueHighi = static_cast<int>(mHighRange->get());
     changed =
-      ImGui::DragInt((mHighRange->displayName()).c_str(), &valueHighi, 0.1,
-                     (int)mHighRange->min(), (int)mHighRange->max());
+        ImGui::DragInt((mHighRange->displayName()).c_str(), &valueHighi, 0.1,
+                       (int)mHighRange->min(), (int)mHighRange->max());
   } else {
     valueHighf = mHighRange->get();
     changed =
-      ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHighf, 0.1,
-                       mHighRange->min(), mHighRange->max(), "%.3f");
+        ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHighf, 0.1,
+                         mHighRange->min(), mHighRange->max(), "%.3f");
   }
 
   ImGui::SameLine();
@@ -429,6 +454,7 @@ void ecParameter::drawRangeSlider() {
     ImGui::Text("");
   else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
     ImGui::Text((getDisplayName()).c_str());
+  
 }
 
 /******* Grain Class *******/
@@ -487,14 +513,14 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     if (floor(sourceIndex) >= source->frames - source->channels) {
       sourceIndex =
-        fmod(sourceIndex, (float)(source->frames - source->channels));
+          fmod(sourceIndex, (float)(source->frames - source->channels));
       iSourceIndex = iSourceIndex % (source->frames - source->channels);
     }
 
     if (source->channels == 1) {
       currentSample = source->getInterpolate(sourceIndex);
       currentSample =
-        filterSample(currentSample, bypassFilter, cascadeFilter, 0);
+          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
       io.out(1) += currentSample * envVal * mRight * mAmp;
     } else if (source->channels == 2) {
@@ -503,7 +529,7 @@ void Grain::onProcess(al::AudioIOData &io) {
       dec = sourceIndex - iSourceIndex;
       currentSample = before * (1 - dec) + after * dec;
       currentSample =
-        filterSample(currentSample, bypassFilter, cascadeFilter, 0);
+          filterSample(currentSample, bypassFilter, cascadeFilter, 0);
       io.out(0) += currentSample * envVal * mLeft * mAmp;
 
       before = source->get((iSourceIndex + 1) * 2);
@@ -511,12 +537,12 @@ void Grain::onProcess(al::AudioIOData &io) {
       dec = (sourceIndex + 1) - (iSourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
       currentSample =
-        filterSample(currentSample, bypassFilter, cascadeFilter, 1);
+          filterSample(currentSample, bypassFilter, cascadeFilter, 1);
       io.out(1) += currentSample * envVal * mRight * mAmp;
     }
 
     if (gEnv.done()) {
-      *mPActiveVoices -= 1;  // This will remove a grain from the active list.
+      *mPActiveVoices -= 1; // This will remove a grain from the active list.
       free();
       break;
     }
@@ -533,10 +559,9 @@ void Grain::configureIndex(const grainParameters &list) {
   startSample = list.mCurrentIndex;
 
   if (list.modTranspositionDepth > 0)
-    endSample =
-      floor(startSample +
-            (mDurationS * mSamplingRate *
-             abs(list.transposition->getModParam(list.modTranspositionDepth))));
+    endSample = floor(startSample + (mDurationS * mSamplingRate *
+                                     abs(list.transposition->getModParam(
+                                         list.modTranspositionDepth))));
   else {
     endSample = floor(startSample + (mDurationS * mSamplingRate *
                                      abs(list.transposition->getParam())));
@@ -550,9 +575,9 @@ void Grain::configureIndex(const grainParameters &list) {
 void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
   mAmp = powf(10, dbIn / 20);
-  mAmp =
-    mAmp * powf(*mPActiveVoices + 1,
-                -0.367877);  //  1/e PERFECT FOR grain overlap gain compensation
+  mAmp = mAmp *
+         powf(*mPActiveVoices + 1,
+              -0.367877); //  1/e PERFECT FOR grain overlap gain compensation
 }
 
 /* PAN PROCESS
@@ -577,8 +602,8 @@ void Grain::configureFilter(float freq, float resonance) {
 
   float res_process;
   res_process =
-    powf(13, 2.9 * (resonance - 0.5));    // 13^{2.9\cdot\left(x-0.5\right)}
-  cascadeFilter = res_process / 41.2304;  // Normalize by max resonance.
+      powf(13, 2.9 * (resonance - 0.5)); // 13^{2.9\cdot\left(x-0.5\right)}
+  cascadeFilter = res_process / 41.2304; // Normalize by max resonance.
 
   bpf_1_l.freq(freq);
   bpf_2_l.freq(freq);
@@ -600,7 +625,8 @@ void Grain::configureFilter(float freq, float resonance) {
 
 float Grain::filterSample(float sample, bool isBypass, float cascadeMix,
                           bool isRight) {
-  if (isBypass) return sample;
+  if (isBypass)
+    return sample;
 
   float solo, cascade;
   if (!isRight) {
@@ -660,7 +686,8 @@ void voiceScheduler::configure(double frequency, double async,
 bool voiceScheduler::trigger() {
   if (mCounter >= 1.0) {
     mCounter -= 1.0;
-    if (rand.uniform() < mIntermittence) return false;
+    if (rand.uniform() < mIntermittence)
+      return false;
     mCounter += rand.uniform(-mAsync, mAsync);
     mCounter += mIncrement;
     return true;
