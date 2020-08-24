@@ -272,7 +272,6 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECParameters[index]->drawRangeSlider(&mIsMIDILearn);
     if (mIsMIDILearn) {
-
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
@@ -298,7 +297,10 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     granulator.ECModParameters[index]->drawModulationControl(&mIsMIDILearn);
     if (mIsMIDILearn) {
-      std::cout << index << std::endl;
+      // This inits. the onMidiMessage loop to listen for midi input.
+      // This first MIDI input to come through will be linked.
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
+      mIsLinkingParamAndMIDI = true;
     }
   }
   ImGui::PopFont();
@@ -344,7 +346,10 @@ void ecInterface::onDraw(Graphics &g) {
   for (int index = 0; index < consts::NUM_LFOS; index++) {
     granulator.LFOParameters[index]->drawLFOControl(&mIsMIDILearn);
     if (mIsMIDILearn) {
-      std::cout << index << std::endl;
+      // This inits. the onMidiMessage loop to listen for midi input.
+      // This first MIDI input to come through will be linked.
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
+      mIsLinkingParamAndMIDI = true;
     }
   }
 
@@ -709,11 +714,6 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
       }
       mIsLinkingParamAndMIDI = false;
     }
-    // m.print();
-    // std::cout << static_cast<unsigned>(m.channel()) << std::endl;
-    // std::cout << static_cast<unsigned>(m.controlNumber()) << std::endl;
-    // std::cout << static_cast<unsigned>(m.controlValue(1.0)) << std::endl;
-    // updateParametersMIDI(m);
     updateActiveMIDIParams(m);
     break;
   default:;
