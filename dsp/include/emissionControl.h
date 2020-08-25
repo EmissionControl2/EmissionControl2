@@ -25,6 +25,34 @@
 /**** CSTD LIB ****/
 #include <string>
 
+/*** MIDI Objects ***/
+struct MIDILearnBool {
+  bool mParamAdd = false;
+  bool mParamDel = false;
+};
+
+class MIDIKey {
+public:
+  std::vector<al::MIDIMessage> mInfo;
+
+  MIDIKey(){};
+  MIDIKey(al::MIDIMessage m, int paramIndex, consts::MIDIType type) {
+    mInfo.push_back(m);
+    setKeysIndex(paramIndex, type);
+  }
+  // NOTE: the index is highly depenent on on the mType. USE with caution.
+  int getKeysIndex() { return mKeysIndex; }
+  consts::MIDIType getType() { return mType; }
+  void setKeysIndex(int index, consts::MIDIType type) {
+    mKeysIndex = index;
+    mType = type;
+  }
+
+private:
+  int mKeysIndex;
+  consts::MIDIType mType;
+};
+
 /**
  * Wrapper class of three envelopes:
  *  expo,
@@ -418,7 +446,7 @@ public:
    * @param[out] isMIDILearn: Returns true if main slider needs to be learned,
    * false ow.
    */
-  void drawRangeSlider(bool *isMIDILearn);
+  void drawRangeSlider(MIDILearnBool *isMIDILearn);
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -460,7 +488,7 @@ struct ecModParameter {
     presetHandler.registerParameter(lfoMenu);
   }
 
-  void drawModulationControl(bool *isMIDILearn) {
+  void drawModulationControl(MIDILearnBool *isMIDILearn) {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);
     ImGui::PopItemWidth();
@@ -709,30 +737,6 @@ private:
   // float mAvgCPU;
 };
 
-/*** MIDI Objects ***/
-
-class MIDIKey {
-public:
-  std::vector<al::MIDIMessage> mInfo;
-
-  MIDIKey(){};
-  MIDIKey(al::MIDIMessage m, int paramIndex, consts::MIDIType type) {
-    mInfo.push_back(m);
-    setKeysIndex(paramIndex, type);
-  }
-  // NOTE: the index is highly depenent on on the mType. USE with caution.
-  int getKeysIndex() { return mKeysIndex; }
-  consts::MIDIType getType() { return mType; }
-  void setKeysIndex(int index, consts::MIDIType type) {
-    mKeysIndex = index;
-    mType = type;
-  }
-
-private:
-  int mKeysIndex;
-  consts::MIDIType mType;
-};
-
 /*** GUI ELEMENTS ***/
 
 // a struct to wrap LFO parameters
@@ -762,7 +766,7 @@ public:
     polarity->setElements({"BI", "UNI+", "UNI-"});
   }
 
-  void drawLFOControl(bool* isMIDILearn) {
+  void drawLFOControl(MIDILearnBool *isMIDILearn) {
     ImGuiIO &io = ImGui::GetIO();
     ImGui::Text("LFO%i", mLFONumber + 1);
     ImGui::SameLine();

@@ -270,8 +270,8 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    granulator.ECParameters[index]->drawRangeSlider(&mIsMIDILearn);
-    if (mIsMIDILearn) {
+    granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn);
+    if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
@@ -295,8 +295,8 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    granulator.ECModParameters[index]->drawModulationControl(&mIsMIDILearn);
-    if (mIsMIDILearn) {
+    granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn);
+    if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
@@ -344,8 +344,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
-    granulator.LFOParameters[index]->drawLFOControl(&mIsMIDILearn);
-    if (mIsMIDILearn) {
+    granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn);
+    if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);

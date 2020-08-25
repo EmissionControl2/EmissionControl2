@@ -100,7 +100,8 @@ private:
 
   RtMidiIn midiIn;
   std::vector<MIDIKey> ActiveMIDI;
-  bool mIsMIDILearn = false, mIsLinkingParamAndMIDI = false;
+  bool mIsLinkingParamAndMIDI = false;
+  MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
 
   /**
