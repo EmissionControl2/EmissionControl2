@@ -303,7 +303,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameter::drawRangeSlider(bool *isMIDILearn) {
+void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
   bool changed, isInt = false;
@@ -398,14 +398,18 @@ void ecParameter::drawRangeSlider(bool *isMIDILearn) {
     mParameter->set(valueSliderf);
 
   // MIDI LEARN Functionality
-  *isMIDILearn = false;
+  isMIDILearn->mParamAdd = false;
+  isMIDILearn->mParamDel = false;
   if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
     ImGui::OpenPopup(("midiLearn" + mParameter->getName()).c_str());
   }
   if (ImGui::BeginPopup(("midiLearn" + mParameter->getName()).c_str())) {
     // ImGuiDir
     if (ImGui::Selectable("MIDI Learn")) {
-      *isMIDILearn = true;
+      isMIDILearn->mParamAdd = true;
+    }
+    if (ImGui::Selectable("MIDI Unlearn")) {
+      isMIDILearn->mParamDel = true;
     }
     ImGui::EndPopup();
   }
