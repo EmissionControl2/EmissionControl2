@@ -105,6 +105,23 @@ private:
   MIDIKey mCurrentLearningMIDIKey;
 
   /**
+   * @brief: Removes all MIDI tied to paramKey in the ActiveMIDI vector.
+   */
+  void unlinkParamAndMIDI(MIDIKey &paramKey) {
+    int index;
+    bool found = false;
+    for (index = 0; index < ActiveMIDI.size(); index++) {
+      if (ActiveMIDI[index].getKeysIndex() == paramKey.getKeysIndex() &&
+          ActiveMIDI[index].getType() == paramKey.getType()) {
+        found = true;
+        break;
+      }
+    }
+    if(found)
+      ActiveMIDI.erase(ActiveMIDI.begin() + index);
+  }
+
+  /**
    * @brief: Update ECParameters object at index based on value.
    *
    * @param[in] value: A value between 0 and 1. Percentage of parameter range.

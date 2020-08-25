@@ -277,6 +277,10 @@ void ecInterface::onDraw(Graphics &g) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
       mIsLinkingParamAndMIDI = true;
     }
+    if (mMIDILearn.mParamDel) {
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
+      unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+    }
   }
   ImGui::PopFont();
   ParameterGUI::endPanel();
@@ -301,6 +305,10 @@ void ecInterface::onDraw(Graphics &g) {
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
       mIsLinkingParamAndMIDI = true;
+    }
+    if (mMIDILearn.mParamDel) {
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
+      unlinkParamAndMIDI(mCurrentLearningMIDIKey);
     }
   }
   ImGui::PopFont();
@@ -350,6 +358,10 @@ void ecInterface::onDraw(Graphics &g) {
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
       mIsLinkingParamAndMIDI = true;
+    }
+    if (mMIDILearn.mParamDel) {
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
+      unlinkParamAndMIDI(mCurrentLearningMIDIKey);
     }
   }
 
