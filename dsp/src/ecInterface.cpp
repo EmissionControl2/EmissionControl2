@@ -649,19 +649,6 @@ void ecInterface::initMIDI() {
   } else {
     printf("Error: No MIDI devices found.\n");
   }
-
-  /** Some dummy variables before we have MIDI learn set up. **/
-  // al::MIDIMessage dummy(0.0, 5721, '\0', 48, '~');
-  // al::MIDIMessage dummy1(0.0, 5721, '\0', 49, '~');
-  // al::MIDIMessage dummy2(0.0, 5721, '\0', 50, '~');
-  // al::MIDIMessage dummy3(0.0, 5721, '\0', 51, '~');
-  // al::MIDIMessage dummy4(0.0, 5721, '\0', 52, '~');
-
-  // ActiveMIDI.push_back(MIDIKey(dummy, consts::GRAIN_RATE, consts::M_PARAM));
-  // ActiveMIDI.push_back(MIDIKey(dummy1, consts::SCAN_POS, consts::M_PARAM));
-  // ActiveMIDI.push_back(MIDIKey(dummy2, consts::SCAN_POS, consts::M_MOD));
-  // ActiveMIDI.push_back(MIDIKey(dummy3, 0, consts::M_LFO));
-  // ActiveMIDI.push_back(MIDIKey(dummy4, 0, consts::M_DUTY));
 }
 
 void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
