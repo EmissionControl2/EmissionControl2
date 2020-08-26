@@ -11,8 +11,6 @@
 /**** ALLOLIB ****/
 #include "al/io/al_File.hpp"
 
-using namespace al;
-
 /**** ecSynth Implementation ****/
 
 void ecSynth::setIO(al::AudioIOData *io) {
@@ -26,7 +24,7 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   for (int index = 0; index < consts::NUM_LFOS; index++) {
     Modulators.push_back(std::make_shared<ecModulator>());
-    LFOparameters.push_back(std::make_shared<LFOstruct>(index));
+    LFOParameters.push_back(std::make_shared<LFOstruct>(index));
   }
 
   mGlobalSamplingRate = io->fps();
@@ -36,7 +34,6 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   mScanner.setSamplingRate(mGlobalSamplingRate);
 
-  // MUST USE THIS ORDER
   std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4"};
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     ECParameters[index]->setModulationSource(Modulators[0]);
@@ -48,17 +45,17 @@ void ecSynth::initialize(al::AudioIOData *io) {
   }
 
   for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
-    LFOparameters[index]->shape->registerChangeCallback(
-        [this, index](int value) { Modulators[index]->setWaveform(value); });
+    LFOParameters[index]->shape->registerChangeCallback(
+        [&, index](int value) { Modulators[index]->setWaveform(value); });
 
-    LFOparameters[index]->polarity->registerChangeCallback(
-        [this, index](int value) { Modulators[index]->setPolarity(value); });
+    LFOParameters[index]->polarity->registerChangeCallback(
+        [&, index](int value) { Modulators[index]->setPolarity(value); });
 
-    LFOparameters[index]->frequency->mParameter->registerChangeCallback(
-        [this, index](float value) { Modulators[index]->setFrequency(value); });
+    LFOParameters[index]->frequency->mParameter->registerChangeCallback(
+        [&, index](float value) { Modulators[index]->setFrequency(value); });
 
-    LFOparameters[index]->duty->registerChangeCallback(
-        [this, index](float value) { Modulators[index]->setWidth(value); });
+    LFOParameters[index]->duty->registerChangeCallback(
+        [&, index](float value) { Modulators[index]->setWidth(value); });
   }
 
   grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
@@ -71,7 +68,7 @@ void ecSynth::initialize(al::AudioIOData *io) {
   grainSynth.setDefaultUserData(this);
 }
 
-void ecSynth::onProcess(AudioIOData &io) {
+void ecSynth::onProcess(al::AudioIOData &io) {
   //        updateFromParameters();
   /* Manipulate on a Grain Level */
 
@@ -169,7 +166,6 @@ void ecSynth::onProcess(AudioIOData &io) {
           mCurrentIndex = mCurrentIndex - frames;
       }
 
-
       /* Experiments For when Tape Head Changes
 
       if (prevTapeHeadVal != nowTapeHeadVal) {
@@ -221,6 +217,22 @@ void ecSynth::onProcess(AudioIOData &io) {
             mPActiveVoices,
             mCurrentIndex,
         };
+
+        // Store parameters for scan display.
+        grainDisplayCounter =
+            (grainDisplayCounter + 1) % consts::MAX_GRAIN_DISPLAY;
+
+        float temp_dur = ECParameters[consts::GRAIN_DUR]->getModParam(
+            ECModParameters[consts::GRAIN_DUR]->getWidthParam());
+            
+        GrainDisplayInfo[grainDisplayCounter].grainStart = mCurrentIndex;
+        GrainDisplayInfo[grainDisplayCounter].grainEnd = floor(
+            mCurrentIndex +
+            (temp_dur * mGlobalSamplingRate *
+             abs(ECParameters[consts::PITCH_SHIFT]->getModParam(
+                 ECModParameters[consts::PITCH_SHIFT]->getWidthParam()))));
+        GrainDisplayInfo[grainDisplayCounter].grainDuration = temp_dur;
+        GrainDisplayInfo[grainDisplayCounter].readyToDisplay = true;
 
         voice->configureGrain(list, mGlobalSamplingRate);
 
@@ -302,7 +314,7 @@ void ecSynth::loadSoundFileOffline(std::string fileName) {
 }
 
 bool ecSynth::loadInitSoundFiles(std::string directory) {
-  FileList initAudioFiles = fileListFromDir(directory);
+  al::FileList initAudioFiles = al::fileListFromDir(directory);
   initAudioFiles.sort(util::compareFileNoCase);
 
   bool success = false;

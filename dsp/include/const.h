@@ -5,8 +5,8 @@
 
 namespace consts {
 
-enum sliderType{ PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
-
+enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
+enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
 
 enum paramNames {
   GRAIN_RATE = 0,
@@ -27,6 +27,7 @@ enum paramNames {
 };
 const int NUM_PARAMS = 15;
 const int NUM_LFOS = 4;
+const int MAX_GRAIN_DISPLAY = 100;
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
@@ -47,6 +48,7 @@ const std::string SOUND_OUTPUT_PATH_KEY = "USER_SOUND_OUTPUT_PATH";
 const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
+const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
 
 /**
  *  DEFAULT USER PATHS
@@ -61,6 +63,8 @@ const std::string DEFAULT_SOUND_OUTPUT_PATH =
     "/Library/Application Support/EmissionControl2/soundOutput/";
 const std::string DEFAULT_PRESETS_PATH =
     "/Library/Application Support/EmissionControl2/presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH =
+    "/Library/Application Support/EmissionControl2/midi_presets/";
 const std::string DEFAULT_CONFIG_PATH =
     "/Library/Application Support/EmissionControl2/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
@@ -79,6 +83,8 @@ const std::string DEFAULT_SAMPLE_PATH =
     "/Library/Application Support/EmissionControl2/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
     "/Library/Application Support/EmissionControl2/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH =
+    "/Library/Application Support/EmissionControl2/presets/";
 const std::string DEFAULT_PRESETS_PATH =
     "/Library/Application Support/EmissionControl2/presets/";
 const std::string DEFAULT_CONFIG_PATH =

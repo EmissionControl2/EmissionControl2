@@ -21,9 +21,67 @@
 #include "al/ui/al_Parameter.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 /**** CSTD LIB ****/
 #include <string>
+
+/*** MIDI Objects ***/
+struct MIDILearnBool {
+  bool mParamAdd = false;
+  bool mParamDel = false;
+
+  bool mParamListen = false;
+};
+
+class MIDIKey {
+public:
+  std::vector<al::MIDIMessage> mInfo;
+
+  MIDIKey(){};
+  MIDIKey(al::MIDIMessage m, int paramIndex, consts::MIDIType type) {
+    mInfo.push_back(m);
+    setKeysIndex(paramIndex, type);
+  }
+  // NOTE: the index is highly depenent on on the mType. USE with caution.
+  int getKeysIndex() { return mKeysIndex; }
+  consts::MIDIType getType() { return mType; }
+  void setKeysIndex(int index, consts::MIDIType type) {
+    mKeysIndex = index;
+    mType = type;
+  }
+
+  void toJSON(json &j) {
+    j["MIDI_TYPE"] = mType;
+    j["MIDI_INDEX"] = mKeysIndex;
+
+    json infoArray = json::array();
+    for (int index = 0; index < mInfo.size(); index++) {
+      json data;
+      data["MIDI_DATA"] = mInfo[index].bytes;
+      data["PORT"] = mInfo[index].port();
+      infoArray.push_back(data);
+    }
+    j["MIDI_INFO"] = infoArray;
+  }
+
+  void fromJSON(const json &j) {
+    mType = j.at("MIDI_TYPE");
+    mKeysIndex = j.at("MIDI_INDEX");
+    for (int index = 0; index < j.at("MIDI_INFO").size(); index++) {
+      al::MIDIMessage temp(0, j.at("MIDI_INFO")[index].at("PORT"),
+                           j.at("MIDI_INFO")[index].at("MIDI_DATA")[0],
+                           j.at("MIDI_INFO")[index].at("MIDI_DATA")[1],
+                           j.at("MIDI_INFO")[index].at("MIDI_DATA")[2]);
+      mInfo.push_back(temp);
+    }
+  }
+
+private:
+  int mKeysIndex;
+  consts::MIDIType mType;
+};
 
 /**
  * Wrapper class of three envelopes:
@@ -34,7 +92,7 @@
  * Allows for a single value [0,1] to interpolate between all three envelopes.
  */
 class grainEnvelope {
- public:
+public:
   void setSamplingRate(float samplingRate);
 
   float getSamplingRate() { return mSamplingRate; }
@@ -93,13 +151,13 @@ class grainEnvelope {
 
   float getDuration() const { return mDuration; }
 
- private:
+private:
   float mSamplingRate;
   util::expo mExpoEnv;
   util::tukey mTurkeyEnv;
   util::expo mRExpoEnv;
-  float mEnvelope;  // assumes between 0 and 1
-  float mDuration;  // in seconds
+  float mEnvelope; // assumes between 0 and 1
+  float mDuration; // in seconds
 };
 
 /**
@@ -107,7 +165,7 @@ class grainEnvelope {
  * grain/voiceScheduler parameters/
  */
 class ecModulator {
- public:
+public:
   /**
    * @brief Constructor for ecModulator.
    *
@@ -225,7 +283,7 @@ class ecModulator {
 
   float getPhase() const { return mLFO.phase(); }
 
- private:
+private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
@@ -245,18 +303,18 @@ class ecModulator {
  * sources).
  */
 class ecParameter {
- public:
+public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
   al::Parameter *mParameter = nullptr;
   al::Parameter *mLowRange =
-    nullptr;  // Parameter designed to bound low mParameter.
+      nullptr; // Parameter designed to bound low mParameter.
   al::Parameter *mHighRange =
-    nullptr;  // Parameter designed to bound high mParameter.
+      nullptr; // Parameter designed to bound high mParameter.
 
   /**
    * @brief ecParameter Constructor.
@@ -366,6 +424,38 @@ class ecParameter {
   float getModParam(float modDepth);
 
   /**
+   * @brief Set current min value of range slider.
+   *
+   */
+  void setCurrentMin(float min) {
+    mMin = min;
+    mLowRange->set(mMin);
+  }
+
+  /**
+   * @brief Set current max value of range slider.
+   *
+   */
+  void setCurrentMax(float max) {
+    mMax = max;
+    mHighRange->set(mMax);
+  }
+
+  /**
+   * @brief Get current max value.
+   *
+   * @return Max value.
+   */
+  float getCurrentMin() const { return mMin; }
+
+  /**
+   * @brief Get current max value.
+   *
+   * @return Max value.
+   */
+  float getCurrentMax() const { return mMax; }
+
+  /**
    * @brief Registers all parameters within ecParameter to a preset
    * handler.
    *
@@ -382,8 +472,11 @@ class ecParameter {
 
   /**
    * @brief Draw the parameter range slider.
+   *
+   * @param[out] isMIDILearn: Returns true if main slider needs to be learned,
+   * false ow.
    */
-  void drawRangeSlider();
+  void drawRangeSlider(MIDILearnBool *isMIDILearn);
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -393,7 +486,7 @@ class ecParameter {
 
   void getSliderType(consts::sliderType s) { mSliderType = s; }
 
- private:
+private:
   std::string mDisplayName;
   std::string mSliderText;
   consts::sliderType mSliderType;
@@ -406,8 +499,8 @@ class ecParameter {
 
 struct ecModParameter {
   ecModParameter(std::string parameterName, std::string displayName)
-    : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
-      lfoMenu("##lfo" + parameterName) {}
+      : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
+        lfoMenu("##lfo" + parameterName) {}
 
   void setMenuElements(std::vector<std::string> elements) {
     lfoMenu.setElements(elements);
@@ -425,17 +518,31 @@ struct ecModParameter {
     presetHandler.registerParameter(lfoMenu);
   }
 
-  void drawModulationControl() {
+  void drawModulationControl(MIDILearnBool *isMIDILearn) {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    param.drawRangeSlider();
+    param.drawRangeSlider(isMIDILearn);
   }
 
   ecParameter param;
   al::ParameterMenu lfoMenu;
 };
+
+
+struct grainDisplayInfo {
+  float grainStart;
+  float grainEnd;
+  float grainDuration;
+
+  bool readyToDisplay;
+};
+
+// line(grainStart, grainEnd, grainDuration);
+
+// sample = line() % source->size;
+
 
 struct grainParameters {
   std::shared_ptr<ecParameter> grainDurationMs;
@@ -462,7 +569,7 @@ struct grainParameters {
  * the voiceScheduler class
  */
 class Grain : public al::SynthVoice {
- public:
+public:
   Grain();
   /**
    * @brief Initialize voice. This function will only be called once per voice
@@ -499,7 +606,7 @@ class Grain : public al::SynthVoice {
 
   float getDurationS() const { return mDurationS; }
 
- private:
+private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
   gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
@@ -538,7 +645,7 @@ class Grain : public al::SynthVoice {
  * Class used to schedule the emission of an arbitrary voice.
  */
 class voiceScheduler {
- public:
+public:
   /**
    * @brief Constructor of the voice scheduler.
    *
@@ -611,7 +718,7 @@ class voiceScheduler {
    */
   void setPolyStream(consts::streamType type, int numStreams);
 
- private:
+private:
   gam::LFO<> mPulse;
   al::rnd::Random<> rand;
 
@@ -627,8 +734,10 @@ class Clipper : public al::AudioCallback {
   virtual void onAudioCB(al::AudioIOData &io) override {
     while (io()) {
       for (unsigned i = 0; i < io.channelsOut(); ++i) {
-        if (io.out(i) > 1) io.sum(-1 * io.out(i) + 1, i);
-        if (io.out(i) < -1) io.sum(-1 * io.out(i) - 1, i);
+        if (io.out(i) > 1)
+          io.sum(-1 * io.out(i) + 1, i);
+        if (io.out(i) < -1)
+          io.sum(-1 * io.out(i) - 1, i);
       }
     }
   }
@@ -644,7 +753,7 @@ class Clipper : public al::AudioCallback {
  */
 class flowControl {
   // friend class Granular;
- public:
+public:
   /**
    * This class will be calculate if it is necessary to reduce grain
    * rate/duration. Run at the audio rate (tentative).
@@ -662,7 +771,7 @@ class flowControl {
 
   float getAvgCPU() { return -11992.1; }
 
- private:
+private:
   // float mSamplingRate;
   // int mCounter;
   // float targetDuration;
@@ -676,14 +785,16 @@ class flowControl {
 
 // a struct to wrap LFO parameters
 class LFOstruct {
- public:
+public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
   al::Parameter *duty = nullptr;
+  int mLFONumber;
 
   // constructor
   LFOstruct(int lfoNumber) {
+    mLFONumber = lfoNumber;
     std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
     std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
     std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
@@ -697,6 +808,32 @@ class LFOstruct {
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
     polarity->setElements({"BI", "UNI+", "UNI-"});
+  }
+
+  void drawLFOControl(MIDILearnBool *isMIDILearn) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::Text("LFO%i", mLFONumber + 1);
+    ImGui::SameLine();
+    ImGui::PushItemWidth(70 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(shape);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::PushItemWidth(55 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(polarity);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    int sliderPos = ImGui::GetCursorPosX();
+    frequency->drawRangeSlider(isMIDILearn);
+    if (*shape == 1) {
+      ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
+      ImGui::Text("Duty");
+      ImGui::SameLine();
+      ImGui::SetCursorPosX(sliderPos);
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x -
+                           (35 * io.FontGlobalScale) + 8);
+      al::ParameterGUI::drawParameter(duty);
+      ImGui::PopItemWidth();
+    }
   }
 
   // destructor

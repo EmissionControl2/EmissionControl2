@@ -198,7 +198,7 @@ bool util::load(std::string fileName,
       conversion->data_out = b->data;
       conversion->output_frames = b->size / b->channels;
       conversion->src_ratio = samplingRate / soundFile.frameRate();
-      src_simple(conversion, 2,
+      src_simple(conversion, SRC_SINC_FASTEST,
                  soundFile.channels()); // const value changes quality of sample
                                         // rate conversion
       buf.push_back(b);
