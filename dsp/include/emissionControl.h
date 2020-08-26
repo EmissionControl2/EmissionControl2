@@ -21,6 +21,8 @@
 #include "al/ui/al_Parameter.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 /**** CSTD LIB ****/
 #include <string>
@@ -46,6 +48,36 @@ public:
   void setKeysIndex(int index, consts::MIDIType type) {
     mKeysIndex = index;
     mType = type;
+  }
+
+  void toJSON(json &j) {
+    j["MIDI_TYPE"] = mType;
+    j["MIDI_INDEX"] = mKeysIndex;
+
+    json infoArray = json::array();
+    for (int index = 0; index < mInfo.size(); index++) {
+      // json channel_ctrl_num_pair;
+      // channel_ctrl_num_pair["CHANNEL"] = mInfo[index].channel();
+      // channel_ctrl_num_pair["CTRL_NUM"] = mInfo[index].controlNumber();
+
+      json data;
+      data["MIDI_DATA"] = mInfo[index].bytes;
+      data["PORT"] = mInfo[index].port();
+      infoArray.push_back(data);
+    }
+    j["MIDI_INFO"] = infoArray;
+  }
+
+  void fromJSON(const json &j) {
+    mType = j.at("MIDI_TYPE");
+    mKeysIndex = j.at("MIDI_INDEX");
+    for (int index = 0; index < j.at("MIDI_INFO").size(); index++) {
+      al::MIDIMessage temp(0, j.at("MIDI_INFO")[index].at("PORT"),
+                           j.at("MIDI_INFO")[index].at("MIDI_DATA")[0],
+                           j.at("MIDI_INFO")[index].at("MIDI_DATA")[1],
+                           j.at("MIDI_INFO")[index].at("MIDI_DATA")[2]);
+      mInfo.push_back(temp);
+    }
   }
 
 private:
