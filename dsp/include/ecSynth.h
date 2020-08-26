@@ -16,9 +16,12 @@
 #include "al/ui/al_Parameter.hpp"
 
 /**** CSTD LIB ****/
+#include <array>
 #include <math.h>
 #include <array>
 #include <memory>
+
+using namespace consts;
 
 class ecSynth : public al::SynthVoice {
  public:
@@ -54,7 +57,7 @@ class ecSynth : public al::SynthVoice {
   const static int NUM_MODULATORS = 4;
 
   // array of lfo parameters to draw later
-  std::vector<std::shared_ptr<LFOstruct>> LFOparameters;
+  std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
 
   std::vector<std::shared_ptr<util::buffer<float>>>
     soundClip;      /* Store audio buffers in memory */
@@ -65,11 +68,14 @@ class ecSynth : public al::SynthVoice {
   std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
     ECModParameters;
 
+  std::array<grainDisplayInfo,consts::MAX_GRAIN_DISPLAY> GrainDisplayInfo;
+  int grainDisplayCounter = 0;
+  
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
 
-  ecSynth() {}
+  ecSynth() {};
 
   void initParameters() {
     using namespace consts;
@@ -285,7 +291,6 @@ class ecSynth : public al::SynthVoice {
   // float mPeakCPU;
   // float mAvgCPU;
   int *mPActiveVoices = nullptr;
-
   std::vector<std::shared_ptr<ecModulator>> Modulators;
 
   /***localAudioThread variables***/
