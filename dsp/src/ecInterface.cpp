@@ -682,6 +682,12 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
 }
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
+  //// TESTS
+  if(ActiveMIDI.size() == 3) {
+    // tests();
+  }
+
+  //// END TESTS
   switch (m.type()) {
   case MIDIByte::NOTE_ON:
     printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());

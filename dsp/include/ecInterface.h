@@ -105,6 +105,32 @@ private:
   MIDIKey mCurrentLearningMIDIKey;
 
   /**
+   * TESTING MIDI Presets
+   */
+
+  void writeMIDIPreset(std::string name) {
+    json midi_config = json::array();
+    std::ifstream ifs(userPath + "/Desktop/test.json");
+    if (ifs.is_open()) {
+      json temp;
+      for (int index = 0; index < ActiveMIDI.size(); index++) {
+        ActiveMIDI[index].toJSON(temp);
+        midi_config.push_back(temp);
+      }
+    } else {
+      json temp;
+      for (int index = 0; index < ActiveMIDI.size(); index++) {
+        ActiveMIDI[index].toJSON(temp);
+        midi_config.push_back(temp);
+      }
+    }
+
+    std::ofstream file((userPath + "/Desktop/test.json").c_str());
+    if (file.is_open())
+      file << midi_config;
+  }
+
+  /**
    * @brief: Removes all MIDI tied to paramKey in the ActiveMIDI vector.
    */
   void unlinkParamAndMIDI(MIDIKey &paramKey) {
@@ -117,7 +143,7 @@ private:
         break;
       }
     }
-    if(found)
+    if (found)
       ActiveMIDI.erase(ActiveMIDI.begin() + index);
   }
 
