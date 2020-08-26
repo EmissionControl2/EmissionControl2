@@ -31,6 +31,8 @@ using json = nlohmann::json;
 struct MIDILearnBool {
   bool mParamAdd = false;
   bool mParamDel = false;
+
+  bool mParamListen = false;
 };
 
 class MIDIKey {
@@ -527,6 +529,20 @@ struct ecModParameter {
   ecParameter param;
   al::ParameterMenu lfoMenu;
 };
+
+
+struct grainDisplayInfo {
+  float grainStart;
+  float grainEnd;
+  float grainDuration;
+
+  bool readyToDisplay;
+};
+
+// line(grainStart, grainEnd, grainDuration);
+
+// sample = line() % source->size;
+
 
 struct grainParameters {
   std::shared_ptr<ecParameter> grainDurationMs;

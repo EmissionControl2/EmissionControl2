@@ -67,6 +67,9 @@ class ecSynth : public al::SynthVoice {
   std::array<std::shared_ptr<ecParameter>, consts::NUM_PARAMS> ECParameters;
   std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
     ECModParameters;
+
+  std::array<grainDisplayInfo,consts::MAX_GRAIN_DISPLAY> GrainDisplayInfo;
+  int grainDisplayCounter = 0;
   
   /**
    * PUBLIC PARAMETERS OF SYNTH

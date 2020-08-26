@@ -81,6 +81,8 @@ void ecInterface::onInit() {
 
 void ecInterface::onCreate() {
   al::imguiInit();
+  
+  // fullScreen(1);
 
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     granulator.ECParameters[index]->addToPresetHandler(mPresets);
@@ -349,6 +351,7 @@ void ecInterface::onDraw(Graphics &g) {
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
       mIsLinkingParamAndMIDI = true;
+      mMIDILearn.mParamListen = true;
     }
     if (mMIDILearn.mParamDel) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
