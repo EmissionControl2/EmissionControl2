@@ -37,10 +37,12 @@ void ecInterface::onInit() {
   }
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
+  midiPresetsPath = configPath + "/midi_presets";
 
   // create config directories if needed
   system(("mkdir -p " + userPath + configPath + "/config").c_str());
   system(("mkdir -p " + userPath + presetsPath).c_str());
+  system(("mkdir -p " + userPath + midiPresetsPath).c_str());
 #endif
 
   initJsonConfig();
@@ -126,7 +128,6 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Initialize MIDI write preset to false
   bool isMIDIWriteWindow = false;
-
 
   al::imguiBeginFrame();
 
@@ -223,21 +224,30 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndMainMenuBar();
   }
 
-
-  if(isMIDIWriteWindow) {
+  if (isMIDIWriteWindow) {
     ImGui::OpenPopup("Save MIDI Preset");
   }
   bool isMIDIWriteOpen = true;
-  char preset_name[50];
+  bool isWriteJSON = false;
   if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
     ImGui::PushItemWidth(windowWidth / 3);
-    ImGui::InputText("Enter Preset Name", preset_name,50);
+    ImGui::InputText("Enter Preset Name", mCurrentPresetName, 50,
+                     ImGuiInputTextFlags_CtrlEnterForNewLine |
+                         ImGuiInputTextFlags_CharsNoBlank);
     ImGui::PopItemWidth();
+    if (ImGui::Button("Save")) {
+      ImGui::CloseCurrentPopup();
+      isMIDIWriteOpen = false;
+      isWriteJSON = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel"))
+      ImGui::CloseCurrentPopup();
     ImGui::EndPopup();
   }
-
-  if (!isMIDIWriteOpen) {
-    writeMIDIPreset(preset_name);
+  if (!isMIDIWriteOpen && isWriteJSON) {
+    writeMIDIPreset(mCurrentPresetName);
+    isWriteJSON = false;
   }
 
   // PopUp Font scale window
@@ -708,7 +718,7 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   //// TESTS
-  if(ActiveMIDI.size() == 3) {
+  if (ActiveMIDI.size() == 3) {
     // tests();
   }
 

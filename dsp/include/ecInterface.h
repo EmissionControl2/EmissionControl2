@@ -101,6 +101,7 @@ private:
   RtMidiIn midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
+  char mCurrentPresetName[50];
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
 
@@ -198,7 +199,7 @@ private:
     granulator.LFOParameters[index]->duty->set(val);
   }
 
-  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
+  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
