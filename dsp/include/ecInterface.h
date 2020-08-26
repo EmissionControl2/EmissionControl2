@@ -131,6 +131,8 @@ private:
       file << midi_config;
   }
 
+  void clearActiveMIDI() { ActiveMIDI.clear(); }
+
   /**
    * @brief: Removes all MIDI tied to paramKey in the ActiveMIDI vector.
    */
@@ -199,7 +201,8 @@ private:
     granulator.LFOParameters[index]->duty->set(val);
   }
 
-  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
+  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath,
+      midiPresetsPath;
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;

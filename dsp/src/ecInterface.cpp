@@ -217,6 +217,10 @@ void ecInterface::onDraw(Graphics &g) {
         fontScaleWindow = true;
       }
 
+      if (ImGui::MenuItem("Clear MIDI", "")) {
+        clearActiveMIDI();
+      }
+
       if (ImGui::MenuItem("Save MIDI Preset", "")) {
         isMIDIWriteWindow = true;
       }
