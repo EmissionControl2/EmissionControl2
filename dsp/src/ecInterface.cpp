@@ -27,6 +27,7 @@ void ecInterface::onInit() {
   execDir = util::getContentPath(execDir);
   system(f.conformPathToOS((execDir + consts::CONFIG_DIR_SCRIPT_PATH)).c_str());
   configFile = consts::DEFAULT_CONFIG_FILE;
+  midiPresetsPath = userPath + consts::DEFAULT_MIDI_PRESETS_PATH;
 #endif
 
 #ifdef __linux__
@@ -37,12 +38,12 @@ void ecInterface::onInit() {
   }
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
-  midiPresetsPath = configPath + "/midi_presets";
+  midiPresetsPath = userPath + configPath + "/midi_presets";
 
   // create config directories if needed
   system(("mkdir -p " + userPath + configPath + "/config").c_str());
   system(("mkdir -p " + userPath + presetsPath).c_str());
-  system(("mkdir -p " + userPath + midiPresetsPath).c_str());
+  system(("mkdir -p " + midiPresetsPath).c_str());
 #endif
 
   initJsonConfig();
