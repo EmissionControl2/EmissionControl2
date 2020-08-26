@@ -124,6 +124,10 @@ void ecInterface::onDraw(Graphics &g) {
   // Initialize Font scale popup to false
   bool fontScaleWindow = false;
 
+  // Initialize MIDI write preset to false
+  bool isMIDIWriteWindow = false;
+
+
   al::imguiBeginFrame();
 
   ImGui::GetIO().FontGlobalScale = fontScale;
@@ -210,9 +214,30 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Font Size", "")) {
         fontScaleWindow = true;
       }
+
+      if (ImGui::MenuItem("Save MIDI Preset", "")) {
+        isMIDIWriteWindow = true;
+      }
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
+  }
+
+
+  if(isMIDIWriteWindow) {
+    ImGui::OpenPopup("Save MIDI Preset");
+  }
+  bool isMIDIWriteOpen = true;
+  char preset_name[50];
+  if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
+    ImGui::PushItemWidth(windowWidth / 3);
+    ImGui::InputText("Enter Preset Name", preset_name,50);
+    ImGui::PopItemWidth();
+    ImGui::EndPopup();
+  }
+
+  if (!isMIDIWriteOpen) {
+    writeMIDIPreset(preset_name);
   }
 
   // PopUp Font scale window
