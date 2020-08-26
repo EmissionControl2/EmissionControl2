@@ -111,7 +111,7 @@ private:
 
   void writeMIDIPreset(std::string name) {
     json midi_config = json::array();
-    std::ifstream ifs(userPath + "/Desktop/test.json");
+    std::ifstream ifs(midiPresetsPath + name + ".json");
     if (ifs.is_open()) {
       json temp;
       for (int index = 0; index < ActiveMIDI.size(); index++) {
@@ -126,7 +126,7 @@ private:
       }
     }
 
-    std::ofstream file((userPath + "/Desktop/test.json").c_str());
+    std::ofstream file((midiPresetsPath + name + ".json").c_str());
     if (file.is_open())
       file << midi_config;
   }
