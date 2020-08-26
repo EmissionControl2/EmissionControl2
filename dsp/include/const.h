@@ -47,6 +47,7 @@ const std::string SOUND_OUTPUT_PATH_KEY = "USER_SOUND_OUTPUT_PATH";
 const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
+const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
 
 /**
  *  DEFAULT USER PATHS

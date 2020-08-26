@@ -22,6 +22,7 @@
 
 /**** C STD LIB ****/
 #include <array>
+#include <unordered_set>
 
 class ecInterface : public al::App, public al::MIDIMessageHandler {
 public:
@@ -104,14 +105,14 @@ private:
   char mCurrentPresetName[50];
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
+  std::unordered_set<std::string> MIDIPresetNames;
 
-  /**
-   * TESTING MIDI Presets
-   */
+  void writeJSONMIDIPreset(std::string name) {
+    MIDIPresetNames.insert(name);
+    jsonWriteMIDIPresetNames(MIDIPresetNames);
 
-  void writeMIDIPreset(std::string name) {
     json midi_config = json::array();
-    std::ifstream ifs(midiPresetsPath + name + ".json");
+    std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
     if (ifs.is_open()) {
       json temp;
       for (int index = 0; index < ActiveMIDI.size(); index++) {
@@ -126,9 +127,26 @@ private:
       }
     }
 
-    std::ofstream file((midiPresetsPath + name + ".json").c_str());
+    std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
     if (file.is_open())
       file << midi_config;
+  }
+
+  void loadJSONMIDIPreset(std::string midi_preset_name) {
+    std::ifstream ifs(userPath + midiPresetsPath + midi_preset_name + ".json");
+
+    json midi_config;
+
+    if (ifs.is_open())
+      midi_config = json::parse(ifs);
+    else
+      return;
+    
+    for(int index = 0; index < midi_config.size(); index++) {
+      MIDIKey temp;
+      temp.fromJSON(midi_config[index]);
+      ActiveMIDI.push_back(temp);
+    }
   }
 
   void clearActiveMIDI() { ActiveMIDI.clear(); }
@@ -287,12 +305,15 @@ private:
 
   template <typename T> bool jsonWriteToConfig(T value, std::string key);
 
+  bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
+
   /**
    * @brief Read json config file and write output path to soundOutput member
    * variable.
    *
    *
    */
+  void jsonReadAndSetMIDIPresetNames();
   void jsonReadAndSetSoundOutputPath();
   void jsonReadAndSetAudioSettings();
   void jsonReadAndSetColorSchemeMode();

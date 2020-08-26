@@ -56,10 +56,6 @@ public:
 
     json infoArray = json::array();
     for (int index = 0; index < mInfo.size(); index++) {
-      // json channel_ctrl_num_pair;
-      // channel_ctrl_num_pair["CHANNEL"] = mInfo[index].channel();
-      // channel_ctrl_num_pair["CTRL_NUM"] = mInfo[index].controlNumber();
-
       json data;
       data["MIDI_DATA"] = mInfo[index].bytes;
       data["PORT"] = mInfo[index].port();
