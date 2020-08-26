@@ -46,16 +46,16 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
     LFOParameters[index]->shape->registerChangeCallback(
-        [this, index](int value) { Modulators[index]->setWaveform(value); });
+        [&, index](int value) { Modulators[index]->setWaveform(value); });
 
     LFOParameters[index]->polarity->registerChangeCallback(
-        [this, index](int value) { Modulators[index]->setPolarity(value); });
+        [&, index](int value) { Modulators[index]->setPolarity(value); });
 
     LFOParameters[index]->frequency->mParameter->registerChangeCallback(
-        [this, index](float value) { Modulators[index]->setFrequency(value); });
+        [&, index](float value) { Modulators[index]->setFrequency(value); });
 
     LFOParameters[index]->duty->registerChangeCallback(
-        [this, index](float value) { Modulators[index]->setWidth(value); });
+        [&, index](float value) { Modulators[index]->setWidth(value); });
   }
 
   grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
@@ -166,7 +166,6 @@ void ecSynth::onProcess(al::AudioIOData &io) {
           mCurrentIndex = mCurrentIndex - frames;
       }
 
-
       /* Experiments For when Tape Head Changes
 
       if (prevTapeHeadVal != nowTapeHeadVal) {
@@ -218,6 +217,22 @@ void ecSynth::onProcess(al::AudioIOData &io) {
             mPActiveVoices,
             mCurrentIndex,
         };
+
+        // Store parameters for scan display.
+        grainDisplayCounter =
+            (grainDisplayCounter + 1) % consts::MAX_GRAIN_DISPLAY;
+
+        float temp_dur = ECParameters[consts::GRAIN_DUR]->getModParam(
+            ECModParameters[consts::GRAIN_DUR]->getWidthParam());
+            
+        GrainDisplayInfo[grainDisplayCounter].grainStart = mCurrentIndex;
+        GrainDisplayInfo[grainDisplayCounter].grainEnd = floor(
+            mCurrentIndex +
+            (temp_dur * mGlobalSamplingRate *
+             abs(ECParameters[consts::PITCH_SHIFT]->getModParam(
+                 ECModParameters[consts::PITCH_SHIFT]->getWidthParam()))));
+        GrainDisplayInfo[grainDisplayCounter].grainDuration = temp_dur;
+        GrainDisplayInfo[grainDisplayCounter].readyToDisplay = true;
 
         voice->configureGrain(list, mGlobalSamplingRate);
 
