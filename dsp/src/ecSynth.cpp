@@ -207,20 +207,6 @@ void ecSynth::onProcess(al::AudioIOData &io) {
             mCurrentIndex,
         };
 
-        // Store parameters for scan display.
-        grainDisplayCounter = (grainDisplayCounter + 1) % consts::MAX_GRAIN_DISPLAY;
-
-        float temp_dur = ECParameters[consts::GRAIN_DUR]->getModParam(
-                             ECModParameters[consts::GRAIN_DUR]->getWidthParam()) /
-                         1000;
-        GrainDisplayInfo[grainDisplayCounter].grainStart = mCurrentIndex;
-        GrainDisplayInfo[grainDisplayCounter].grainEnd =
-            floor(mCurrentIndex + (temp_dur * mGlobalSamplingRate *
-                                   ECParameters[consts::PITCH_SHIFT]->getModParam(
-                                       ECModParameters[consts::PITCH_SHIFT]->getWidthParam())));
-        GrainDisplayInfo[grainDisplayCounter].grainDuration = temp_dur;
-        GrainDisplayInfo[grainDisplayCounter].readyToDisplay = true;
-
         voice->configureGrain(list, mGlobalSamplingRate);
 
         mActiveVoices++;

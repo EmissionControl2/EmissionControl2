@@ -520,18 +520,6 @@ struct ecModParameter {
   al::ParameterMenu lfoMenu;
 };
 
-struct grainDisplayInfo {
-  float grainStart = 0;
-  float grainEnd = 0;
-  float grainDuration = 0;
-
-  bool readyToDisplay = false;
-};
-
-// line(grainStart, grainEnd, grainDuration);
-
-// sample = line() % source->size;
-
 struct grainParameters {
   std::shared_ptr<ecParameter> grainDurationMs;
   float modGrainDurationDepth;
