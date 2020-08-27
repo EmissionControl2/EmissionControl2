@@ -606,6 +606,8 @@ public:
 
   float getDurationS() const { return mDurationS; }
 
+  float getSourceIndex() const {return sourceIndex;}
+
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
   util::line index;
