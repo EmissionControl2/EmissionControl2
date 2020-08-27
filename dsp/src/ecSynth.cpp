@@ -46,16 +46,16 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
     LFOParameters[index]->shape->registerChangeCallback(
-        [&, index](int value) { Modulators[index]->setWaveform(value); });
+        [this, index](int value) { Modulators[index]->setWaveform(value); });
 
     LFOParameters[index]->polarity->registerChangeCallback(
-        [&, index](int value) { Modulators[index]->setPolarity(value); });
+        [this, index](int value) { Modulators[index]->setPolarity(value); });
 
     LFOParameters[index]->frequency->mParameter->registerChangeCallback(
-        [&, index](float value) { Modulators[index]->setFrequency(value); });
+        [this, index](float value) { Modulators[index]->setFrequency(value); });
 
     LFOParameters[index]->duty->registerChangeCallback(
-        [&, index](float value) { Modulators[index]->setWidth(value); });
+        [this, index](float value) { Modulators[index]->setWidth(value); });
   }
 
   grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0,
@@ -224,7 +224,7 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
         float temp_dur = ECParameters[consts::GRAIN_DUR]->getModParam(
             ECModParameters[consts::GRAIN_DUR]->getWidthParam());
-            
+
         GrainDisplayInfo[grainDisplayCounter].grainStart = mCurrentIndex;
         GrainDisplayInfo[grainDisplayCounter].grainEnd = floor(
             mCurrentIndex +
@@ -238,6 +238,8 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
         mActiveVoices++;
         grainSynth.triggerOn(voice, io.frame());
+
+        testing();
 
       } else {
         std::cout << "out of voices!" << std::endl;
@@ -279,6 +281,20 @@ void ecSynth::onProcess(al::AudioIOData &io) {
     vuBufferL.push_back(pow(io.out(0), 2));
     vuBufferR.push_back(pow(io.out(1), 2));
   }
+}
+
+void ecSynth::testing() {
+  std::unique_lock<std::mutex> lk(
+      mVoicePassLock);
+  auto tester = (grainSynth.getActiveVoices());
+  auto tes = static_cast<Grain *>(tester);
+  unsigned counter = 0;
+  while(tes && counter < consts::MAX_GRAIN_DISPLAY) {
+    // std::cout << tes->getSourceIndex() << std::endl;
+    tes = static_cast<Grain *>(tes->next);
+    counter++;
+  }
+  // std::cout << counter << std::endl;
 }
 
 void ecSynth::onTriggerOn() {}

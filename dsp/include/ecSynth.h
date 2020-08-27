@@ -293,6 +293,10 @@ class ecSynth : public al::SynthVoice {
   int *mPActiveVoices = nullptr;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
 
+  /**Accesing Audio Thread Tests**/
+  void testing();
+  std::mutex mVoicePassLock;
+
   /***localAudioThread variables***/
   float width;
 
