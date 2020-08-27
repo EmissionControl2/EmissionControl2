@@ -117,8 +117,8 @@ public:
   void increment() { mX += mIncrementX; }
 
 private:
-  float mIncrementX, mX = 0, mY = 0.001, mThresholdX = -1 * std::log(0.001),
-                     mThresholdY = 0.001, mSamplingRate = consts::SAMPLE_RATE;
+  float mIncrementX, mX = 0, mY = 0.001, mThresholdX = -1 * std::log(0.001), mThresholdY = 0.001,
+                     mSamplingRate = consts::SAMPLE_RATE;
   bool mReverse = 0;
   int mTotalS = 1;
 };
@@ -243,8 +243,7 @@ public:
   T raw(const float index) const {
     const unsigned i = floor(index);
     const T x0 = data[i];
-    const T x1 =
-        data[(i >= (size - channels)) ? 0 : i + channels]; // looping semantics
+    const T x1 = data[(i >= (size - channels)) ? 0 : i + channels]; // looping semantics
     const T t = index - i;
     return x1 * t + x0 * (1 - t);
   }
@@ -259,8 +258,7 @@ public:
    */
   void add(const float index, const T value) {
     const unsigned i = floor(index);
-    const unsigned j =
-        (i == (size - 1)) ? 0 : i + channels; // looping semantics
+    const unsigned j = (i == (size - 1)) ? 0 : i + channels; // looping semantics
     const float t = index - i;
     data[i] += value * (1 - t);
     data[j] += value * t;
@@ -340,8 +338,7 @@ private:
  * @param[in] The filename. An absolute filename is preferred.
  * @param[out] A vector holding the audio buffers.
  */
-bool load(std::string fileName,
-          std::vector<std::shared_ptr<buffer<float>>> &buf,
+bool load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf,
           float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
 
 /**
