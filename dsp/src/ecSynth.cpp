@@ -376,7 +376,7 @@ void ecSynth::copyActiveGrainIndicies(float *array, int *outSize, int maxSize) {
     voices = static_cast<Grain *>(voices->next);
     counter++;
   }
-  *outSize = counter - 1;
+  *outSize = counter;
 }
 
 void ecSynth::hardClip(al::AudioIOData &io) {

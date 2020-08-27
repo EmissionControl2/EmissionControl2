@@ -508,6 +508,8 @@ void Grain::onProcess(al::AudioIOData &io) {
       currentSample = before * (1 - dec) + after * dec;
       currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 1);
       io.out(1) += currentSample * envVal * mRight * mAmp;
+
+      mSourceIndex = sourceIndex;
     }
 
     if (gEnv.done()) {

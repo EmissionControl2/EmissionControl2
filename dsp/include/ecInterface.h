@@ -106,66 +106,12 @@ private:
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
 
-  void writeJSONMIDIPreset(std::string name) {
-    MIDIPresetNames.insert(name);
-    jsonWriteMIDIPresetNames(MIDIPresetNames);
-
-    json midi_config = json::array();
-    std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
-    if (ifs.is_open()) {
-      json temp;
-      for (int index = 0; index < ActiveMIDI.size(); index++) {
-        ActiveMIDI[index].toJSON(temp);
-        midi_config.push_back(temp);
-      }
-    } else {
-      json temp;
-      for (int index = 0; index < ActiveMIDI.size(); index++) {
-        ActiveMIDI[index].toJSON(temp);
-        midi_config.push_back(temp);
-      }
-    }
-
-    std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
-    if (file.is_open())
-      file << midi_config;
-  }
-
-  void loadJSONMIDIPreset(std::string midi_preset_name) {
-    std::ifstream ifs(userPath + midiPresetsPath + midi_preset_name + ".json");
-
-    json midi_config;
-
-    if (ifs.is_open())
-      midi_config = json::parse(ifs);
-    else
-      return;
-
-    for (int index = 0; index < midi_config.size(); index++) {
-      MIDIKey temp;
-      temp.fromJSON(midi_config[index]);
-      ActiveMIDI.push_back(temp);
-    }
-  }
-
   void clearActiveMIDI() { ActiveMIDI.clear(); }
 
   /**
    * @brief: Removes all MIDI tied to paramKey in the ActiveMIDI vector.
    */
-  void unlinkParamAndMIDI(MIDIKey &paramKey) {
-    int index;
-    bool found = false;
-    for (index = 0; index < ActiveMIDI.size(); index++) {
-      if (ActiveMIDI[index].getKeysIndex() == paramKey.getKeysIndex() &&
-          ActiveMIDI[index].getType() == paramKey.getType()) {
-        found = true;
-        break;
-      }
-    }
-    if (found)
-      ActiveMIDI.erase(ActiveMIDI.begin() + index);
-  }
+  void unlinkParamAndMIDI(MIDIKey &paramKey);
 
   /**
    * @brief: Update ECParameters object at index based on value.
@@ -253,10 +199,8 @@ private:
   std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
   std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
 
-  std::array<util::line, consts::MAX_GRAIN_DISPLAY> grainScanDisplay;
   float GrainDisplayIndicies[consts::MAX_GRAIN_DISPLAY];
   int numGrainsToDisplay;
-  int nextGrainLine = 0;
 
   // Colors
 
@@ -307,12 +251,16 @@ private:
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
+  void writeJSONMIDIPreset(std::string name);
+
+
   /**
    * @brief Read json config file and write output path to soundOutput member
    * variable.
    *
    *
    */
+  void loadJSONMIDIPreset(std::string midi_preset_name);
   void jsonReadAndSetMIDIPresetNames();
   void jsonReadAndSetSoundOutputPath();
   void jsonReadAndSetAudioSettings();
