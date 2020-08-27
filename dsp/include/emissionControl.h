@@ -21,9 +21,66 @@
 #include "al/ui/al_Parameter.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 /**** CSTD LIB ****/
 #include <string>
+
+/*** MIDI Objects ***/
+struct MIDILearnBool {
+  bool mParamAdd = false;
+  bool mParamDel = false;
+
+  bool mParamListen = false;
+};
+
+class MIDIKey {
+ public:
+  std::vector<al::MIDIMessage> mInfo;
+
+  MIDIKey(){};
+  MIDIKey(al::MIDIMessage m, int paramIndex, consts::MIDIType type) {
+    mInfo.push_back(m);
+    setKeysIndex(paramIndex, type);
+  }
+  // NOTE: the index is highly depenent on on the mType. USE with caution.
+  int getKeysIndex() { return mKeysIndex; }
+  consts::MIDIType getType() { return mType; }
+  void setKeysIndex(int index, consts::MIDIType type) {
+    mKeysIndex = index;
+    mType = type;
+  }
+
+  void toJSON(json &j) {
+    j["MIDI_TYPE"] = mType;
+    j["MIDI_INDEX"] = mKeysIndex;
+
+    json infoArray = json::array();
+    for (int index = 0; index < mInfo.size(); index++) {
+      json data;
+      data["MIDI_DATA"] = mInfo[index].bytes;
+      data["PORT"] = mInfo[index].port();
+      infoArray.push_back(data);
+    }
+    j["MIDI_INFO"] = infoArray;
+  }
+
+  void fromJSON(const json &j) {
+    mType = j.at("MIDI_TYPE");
+    mKeysIndex = j.at("MIDI_INDEX");
+    for (int index = 0; index < j.at("MIDI_INFO").size(); index++) {
+      al::MIDIMessage temp(
+        0, j.at("MIDI_INFO")[index].at("PORT"), j.at("MIDI_INFO")[index].at("MIDI_DATA")[0],
+        j.at("MIDI_INFO")[index].at("MIDI_DATA")[1], j.at("MIDI_INFO")[index].at("MIDI_DATA")[2]);
+      mInfo.push_back(temp);
+    }
+  }
+
+ private:
+  int mKeysIndex;
+  consts::MIDIType mType;
+};
 
 /**
  * Wrapper class of three envelopes:
@@ -117,8 +174,7 @@ class ecModulator {
    * @param[in] The width of the modulator.
    */
   ecModulator(consts::waveform modWaveform = consts::SINE,
-              consts::polarity modPolarity = consts::BI, float frequency = 1,
-              float width = 1) {
+              consts::polarity modPolarity = consts::BI, float frequency = 1, float width = 1) {
     this->setWaveform(modWaveform);
     this->setPolarity(modPolarity);
     mLFO.set(frequency, 0, width);
@@ -253,10 +309,8 @@ class ecParameter {
   ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
                                       // parameter's own modulator.
   al::Parameter *mParameter = nullptr;
-  al::Parameter *mLowRange =
-    nullptr;  // Parameter designed to bound low mParameter.
-  al::Parameter *mHighRange =
-    nullptr;  // Parameter designed to bound high mParameter.
+  al::Parameter *mLowRange = nullptr;   // Parameter designed to bound low mParameter.
+  al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
 
   /**
    * @brief ecParameter Constructor.
@@ -277,11 +331,9 @@ class ecParameter {
    *            If false, must input data on an outside modulator when calling
    *              getParamMod().
    */
-  ecParameter(std::string parameterName, std::string displayName,
-              float defaultValue = 0, float defaultMin = -99999.0,
-              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX,
-              consts::sliderType slideType = consts::PARAM,
+  ecParameter(std::string parameterName, std::string displayName, float defaultValue = 0,
+              float defaultMin = -99999.0, float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
+              float absMax = FLT_MAX, consts::sliderType slideType = consts::PARAM,
               std::string sliderText = "", bool independentMod = 0);
 
   /**
@@ -308,13 +360,11 @@ class ecParameter {
    *            If false, must input data on an outside modulator when calling
    *              getParamMod().
    */
-  ecParameter(std::string parameterName, std::string displayName,
-              std::string Group, float defaultValue = 0,
-              std::string prefix = "", float defaultMin = -99999.0,
-              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
-              float absMax = FLT_MAX,
-              consts::sliderType slideType = consts::PARAM,
-              std::string sliderText = "", bool independentMod = 0);
+  ecParameter(std::string parameterName, std::string displayName, std::string Group,
+              float defaultValue = 0, std::string prefix = "", float defaultMin = -99999.0,
+              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
+              consts::sliderType slideType = consts::PARAM, std::string sliderText = "",
+              bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -366,6 +416,38 @@ class ecParameter {
   float getModParam(float modDepth);
 
   /**
+   * @brief Set current min value of range slider.
+   *
+   */
+  void setCurrentMin(float min) {
+    mMin = min;
+    mLowRange->set(mMin);
+  }
+
+  /**
+   * @brief Set current max value of range slider.
+   *
+   */
+  void setCurrentMax(float max) {
+    mMax = max;
+    mHighRange->set(mMax);
+  }
+
+  /**
+   * @brief Get current max value.
+   *
+   * @return Max value.
+   */
+  float getCurrentMin() const { return mMin; }
+
+  /**
+   * @brief Get current max value.
+   *
+   * @return Max value.
+   */
+  float getCurrentMax() const { return mMax; }
+
+  /**
    * @brief Registers all parameters within ecParameter to a preset
    * handler.
    *
@@ -382,8 +464,11 @@ class ecParameter {
 
   /**
    * @brief Draw the parameter range slider.
+   *
+   * @param[out] isMIDILearn: Returns true if main slider needs to be learned,
+   * false ow.
    */
-  void drawRangeSlider();
+  void drawRangeSlider(MIDILearnBool *isMIDILearn);
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -409,9 +494,7 @@ struct ecModParameter {
     : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
       lfoMenu("##lfo" + parameterName) {}
 
-  void setMenuElements(std::vector<std::string> elements) {
-    lfoMenu.setElements(elements);
-  }
+  void setMenuElements(std::vector<std::string> elements) { lfoMenu.setElements(elements); }
 
   float getWidthParam() { return param.getParam(); }
 
@@ -425,17 +508,29 @@ struct ecModParameter {
     presetHandler.registerParameter(lfoMenu);
   }
 
-  void drawModulationControl() {
+  void drawModulationControl(MIDILearnBool *isMIDILearn) {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    param.drawRangeSlider();
+    param.drawRangeSlider(isMIDILearn);
   }
 
   ecParameter param;
   al::ParameterMenu lfoMenu;
 };
+
+struct grainDisplayInfo {
+  float grainStart = 0;
+  float grainEnd = 0;
+  float grainDuration = 0;
+
+  bool readyToDisplay = false;
+};
+
+// line(grainStart, grainEnd, grainDuration);
+
+// sample = line() % source->size;
 
 struct grainParameters {
   std::shared_ptr<ecParameter> grainDurationMs;
@@ -524,8 +619,7 @@ class Grain : public al::SynthVoice {
 
   void configureFilter(float freq, float resonance);
 
-  float filterSample(float sample, bool isBypass, float cascadeMix,
-                     bool isRight);
+  float filterSample(float sample, bool isBypass, float cascadeMix, bool isRight);
 
   void initEffects(float sr);
 
@@ -571,9 +665,7 @@ class voiceScheduler {
   /**
    * Sets frequency in which voices are emitted.
    */
-  void setFrequency(double frequency) {
-    configure(frequency, mAsync, mIntermittence);
-  }
+  void setFrequency(double frequency) { configure(frequency, mAsync, mIntermittence); }
 
   /**
    * Sets the asynchronicity parameter.
@@ -600,9 +692,7 @@ class voiceScheduler {
    *
    * AFFECTS DENSITY OF EMISSION.
    */
-  void setIntermittence(double intermittence) {
-    configure(mFrequency, mAsync, intermittence);
-  }
+  void setIntermittence(double intermittence) { configure(mFrequency, mAsync, intermittence); }
 
   /**
    * @brief Set the amount of voices running in parallel.
@@ -681,9 +771,11 @@ class LFOstruct {
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
   al::Parameter *duty = nullptr;
+  int mLFONumber;
 
   // constructor
   LFOstruct(int lfoNumber) {
+    mLFONumber = lfoNumber;
     std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
     std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
     std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
@@ -691,12 +783,37 @@ class LFOstruct {
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
-    frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001,
-                                10000, consts::LFO, "%.3f Hz");
+    frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000, consts::LFO,
+                                "%.3f Hz");
     duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
     polarity->setElements({"BI", "UNI+", "UNI-"});
+  }
+
+  void drawLFOControl(MIDILearnBool *isMIDILearn) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::Text("LFO%i", mLFONumber + 1);
+    ImGui::SameLine();
+    ImGui::PushItemWidth(70 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(shape);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::PushItemWidth(55 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(polarity);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    int sliderPos = ImGui::GetCursorPosX();
+    frequency->drawRangeSlider(isMIDILearn);
+    if (*shape == 1) {
+      ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
+      ImGui::Text("Duty");
+      ImGui::SameLine();
+      ImGui::SetCursorPosX(sliderPos);
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * io.FontGlobalScale) + 8);
+      al::ParameterGUI::drawParameter(duty);
+      ImGui::PopItemWidth();
+    }
   }
 
   // destructor
