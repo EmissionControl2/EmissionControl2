@@ -223,6 +223,7 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
         mActiveVoices++;
         grainSynth.triggerOn(voice, io.frame());
+        grainCounter ++;
 
         testing();
 

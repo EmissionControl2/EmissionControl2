@@ -18,19 +18,18 @@
 /**** CSTD LIB ****/
 #include <array>
 #include <math.h>
-#include <array>
 #include <memory>
 
 using namespace consts;
 
 class ecSynth : public al::SynthVoice {
- public:
+public:
   /**
    * Ringbuffers for oscilloscope
    */
-  unsigned int oscBufferSize = 96001 * 3;  // max size of scope window plus a
-                                           // few samples because I'm paranoid -
-                                           // Rodney
+  unsigned int oscBufferSize = 96001 * 3; // max size of scope window plus a
+                                          // few samples because I'm paranoid -
+                                          // Rodney
   util::RingBuffer oscBufferL{oscBufferSize};
   util::RingBuffer oscBufferR{oscBufferSize};
 
@@ -50,7 +49,11 @@ class ecSynth : public al::SynthVoice {
    */
   float peakL, peakR = 0;
   int peakResetL, peakResetR = 0;
-
+  
+  /**
+   * Grain Counter
+   */
+  int grainCounter = 0;
   /**
    * The number of modulators in ecSynth.
    */
@@ -59,108 +62,106 @@ class ecSynth : public al::SynthVoice {
   // array of lfo parameters to draw later
   std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
 
-  // Array of Active Grain Current Index
-  // std
-
   std::vector<std::shared_ptr<util::buffer<float>>>
-    soundClip;      /* Store audio buffers in memory */
+      soundClip;    /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip = 0;
 
   std::array<std::shared_ptr<ecParameter>, consts::NUM_PARAMS> ECParameters;
   std::array<std::unique_ptr<ecModParameter>, consts::NUM_PARAMS>
-    ECModParameters;
+      ECModParameters;
 
-  std::array<grainDisplayInfo,consts::MAX_GRAIN_DISPLAY> GrainDisplayInfo;
+  std::array<grainDisplayInfo, consts::MAX_GRAIN_DISPLAY> GrainDisplayInfo;
   int grainDisplayCounter = 0;
-  
+
   /**
    * PUBLIC PARAMETERS OF SYNTH
    */
 
-  ecSynth() {};
+  ecSynth(){};
 
   void initParameters() {
     using namespace consts;
 
     ECParameters[GRAIN_RATE] = std::make_shared<ecParameter>(
-      "grainRate", "1. Grain Rate", 1, 0.1, 100, 0, 500, PARAM, "%.3f Hz");
+        "grainRate", "1. Grain Rate", 1, 0.1, 100, 0, 500, PARAM, "%.3f Hz");
 
     ECModParameters[GRAIN_RATE] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modGrainRateDepth", "Grain Rate"});
+        new ecModParameter{"modGrainRateDepth", "Grain Rate"});
 
     ECParameters[ASYNC] = std::unique_ptr<ecParameter>(new ecParameter{
-      "Asynchronicity", "2. Asynchronicity", 0.0, 0.0, 1.0, 0, 1, PARAM});
+        "Asynchronicity", "2. Asynchronicity", 0.0, 0.0, 1.0, 0, 1, PARAM});
     ECModParameters[ASYNC] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modAsynchronicityDepth", "Asynchronicity"});
+        new ecModParameter{"modAsynchronicityDepth", "Asynchronicity"});
 
     ECParameters[INTERM] = std::unique_ptr<ecParameter>(new ecParameter{
-      "Intermittancy", "3. Intermittancy", 0, 0, 1, 0, 1, PARAM});
+        "Intermittancy", "3. Intermittancy", 0, 0, 1, 0, 1, PARAM});
     ECModParameters[INTERM] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modIntermittencyDepth", "Intermittency"});
+        new ecModParameter{"modIntermittencyDepth", "Intermittency"});
 
     ECParameters[STREAMS] = std::unique_ptr<ecParameter>(
-      new ecParameter{"Streams", "4. Streams", 1, 1, 12, 1, 20, INT_PARAM});
+        new ecParameter{"Streams", "4. Streams", 1, 1, 12, 1, 20, INT_PARAM});
     ECModParameters[STREAMS] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modStreamsDepth", "Streams"});
+        new ecModParameter{"modStreamsDepth", "Streams"});
 
     ECParameters[GRAIN_DUR] = std::unique_ptr<ecParameter>(
-      new ecParameter{"GrainDurms", "5. Grain Duration", 30, 0.01, 1000,
-                      0.0000001, 10000, PARAM, "%.3f ms"});
+        new ecParameter{"GrainDurms", "5. Grain Duration", 30, 0.01, 1000,
+                        0.0000001, 10000, PARAM, "%.3f ms"});
     ECModParameters[GRAIN_DUR] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modGrainDurationDepth", "Grain Duration"});
+        new ecModParameter{"modGrainDurationDepth", "Grain Duration"});
 
     ECParameters[ENVELOPE] = std::unique_ptr<ecParameter>(new ecParameter{
-      "Envelopeshape", "6. Envelope Shape", 0.5, 0, 1, 0, 1, PARAM});
+        "Envelopeshape", "6. Envelope Shape", 0.5, 0, 1, 0, 1, PARAM});
     ECModParameters[ENVELOPE] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modEnvelopeShapeDepth", "Envelope Shape"});
+        new ecModParameter{"modEnvelopeShapeDepth", "Envelope Shape"});
 
     ECParameters[PITCH_SHIFT] = std::unique_ptr<ecParameter>(new ecParameter{
-      "Pitchshift", "7. Pitch Shift", 1, -2, 2, -20, 20, PARAM});
+        "Pitchshift", "7. Pitch Shift", 1, -2, 2, -20, 20, PARAM});
     ECModParameters[PITCH_SHIFT] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modPitchShiftDepth", "Pitch Shift"});
+        new ecModParameter{"modPitchShiftDepth", "Pitch Shift"});
 
     ECParameters[FILTER_CENTER] = std::unique_ptr<ecParameter>(
-      new ecParameter{"Filterfreq", "8. Filter Center", 440, 60, 5000, 20,
-                      24000, PARAM, "%.3f Hz"});
+        new ecParameter{"Filterfreq", "8. Filter Center", 440, 60, 5000, 20,
+                        24000, PARAM, "%.3f Hz"});
     ECModParameters[FILTER_CENTER] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modFilterCenterDepth", "Filter Center"});
+        new ecModParameter{"modFilterCenterDepth", "Filter Center"});
 
     ECParameters[RESONANCE] = std::unique_ptr<ecParameter>(
-      new ecParameter{"Resonance", "9. Resonance", 0, 0, 1, 0, 1, PARAM});
+        new ecParameter{"Resonance", "9. Resonance", 0, 0, 1, 0, 1, PARAM});
     ECModParameters[RESONANCE] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modResonanceDepth", "Resonance"});
+        new ecModParameter{"modResonanceDepth", "Resonance"});
 
     ECParameters[SOUND_FILE] = std::unique_ptr<ecParameter>(new ecParameter{
-      "Soundfile", "10. Sound File", 1, 1, static_cast<float>(mClipNum), 1,
-      static_cast<float>(mClipNum), INT_PARAM});
+        "Soundfile", "10. Sound File", 1, 1, static_cast<float>(mClipNum), 1,
+        static_cast<float>(mClipNum), INT_PARAM});
     ECModParameters[SOUND_FILE] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modSoundFileDepth", "Sound File"});
+        new ecModParameter{"modSoundFileDepth", "Sound File"});
 
     ECParameters[SCAN_POS] = std::unique_ptr<ecParameter>(new ecParameter{
-      "scanPosition", "11. Scan Position", 0.0, 0, 1, 0, 1, PARAM});
+        "scanPosition", "11. Scan Position", 0.0, 0, 1, 0, 1, PARAM});
     ECModParameters[SCAN_POS] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modScanPositionDepth", "Scan Position"});
+        new ecModParameter{"modScanPositionDepth", "Scan Position"});
 
     ECParameters[SCAN_WIDTH] = std::unique_ptr<ecParameter>(
-      new ecParameter{"scanWidth", "12. Scan Width", 0.5, 0, 1, 0, 1, PARAM});
+        new ecParameter{"scanWidth", "12. Scan Width", 0.5, 0, 1, 0, 1, PARAM});
     ECModParameters[SCAN_WIDTH] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modScanWidthDepth", "Scan Width"});
+        new ecModParameter{"modScanWidthDepth", "Scan Width"});
 
-    ECParameters[SCAN_SPEED] = std::unique_ptr<ecParameter>(
-      new ecParameter{"ScanSpeed", "13. Scan Speed", 1, -2, 2, -32, 32, PARAM});
+    ECParameters[SCAN_SPEED] = std::unique_ptr<ecParameter>(new ecParameter{
+        "ScanSpeed", "13. Scan Speed", 1, -2, 2, -32, 32, PARAM});
     ECModParameters[SCAN_SPEED] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modScanSpeedDepth", "Scan Speed"});
+        new ecModParameter{"modScanSpeedDepth", "Scan Speed"});
 
     ECParameters[PAN] = std::unique_ptr<ecParameter>(
-      new ecParameter{"Pan", "14. Pan", 0, -1, 1, -1, 1, PARAM});
-    ECModParameters[PAN] =
-      std::unique_ptr<ecModParameter>(new ecModParameter{"modPanDepth", "Pan"});
+        new ecParameter{"Pan", "14. Pan", 0, -1, 1, -1, 1, PARAM});
+    ECModParameters[PAN] = std::unique_ptr<ecModParameter>(
+        new ecModParameter{"modPanDepth", "Pan"});
 
-    ECParameters[VOLUME] = std::unique_ptr<ecParameter>(new ecParameter{
-      "AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48, PARAM, "%.3f dB"});
+    ECParameters[VOLUME] = std::unique_ptr<ecParameter>(
+        new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48,
+                        PARAM, "%.3f dB"});
     ECModParameters[VOLUME] = std::unique_ptr<ecModParameter>(
-      new ecModParameter{"modAmplitudeDepth", "Amplitude"});
+        new ecModParameter{"modAmplitudeDepth", "Amplitude"});
   }
 
   /**
@@ -245,7 +246,7 @@ class ecSynth : public al::SynthVoice {
    *
    * @return The number of active voices.
    */
-  int getActiveVoices() { return mActiveVoices; }
+  int getNumActiveVoices() { return mActiveVoices; }
 
   /** WIP -- see cpp file
    * @brief Nonlinear cubic distortion used for soft clipping.
@@ -278,7 +279,7 @@ class ecSynth : public al::SynthVoice {
     return filename;
   }
 
- private:
+private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE,
          mPrevSR = consts::SAMPLE_RATE;
 
