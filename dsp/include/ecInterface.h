@@ -12,6 +12,7 @@
 
 /**** AlloLib LIB ****/
 #include "al/app/al_App.hpp"
+#include "al/io/al_MIDI.hpp"
 #include "al/ui/al_ParameterGUI.hpp"
 #include "al/ui/al_PresetHandler.hpp"
 #include "al_ext/soundfile/al_OutputRecorder.hpp"
@@ -19,7 +20,11 @@
 /**** External LIB ****/
 #include "../external/nativefiledialog/src/include/nfd.h"
 
-class ecInterface : public al::App {
+/**** C STD LIB ****/
+#include <array>
+#include <unordered_set>
+
+class ecInterface : public al::App, public al::MIDIMessageHandler {
  public:
   /**
    * @brief Initilialize the synth interface.
@@ -41,6 +46,15 @@ class ecInterface : public al::App {
    */
   virtual void onDraw(al::Graphics &g) override;
 
+  /** MIDI Stuff **/
+  void initMIDI();
+  void updateActiveMIDIParams(const al::MIDIMessage &m);
+
+  /**
+   * @brief Called everytime a MIDI message is sent.
+   */
+  virtual void onMIDIMessage(const al::MIDIMessage &m) override;
+
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
     std::string currentBank;
@@ -54,14 +68,29 @@ class ecInterface : public al::App {
   };
 
   // Custom preset draw function (copied and modified from al_ParameterGUI.hpp)
-  PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
-                                          int presetColumns, int presetRows);
+  PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler, int presetColumns,
+                                          int presetRows);
 
-  void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
-                          uint32_t numChannels, std::string directory = "",
-                          uint32_t bufferSize = 0);
+  /**
+   * @brief Modified version of al's soundfilerecordGUI.
+   *
+   * @param[in] Output recorder object.
+   *
+   * @param[in] Path of directory where the outputted sound files will be
+   * stored.
+   *
+   * @param[in] Frame rate of outputted file.
+   *
+   * @param[in] Number of channels of outputted file.
+   *
+   * @param[in] Amount of space allocated for sound.
+   */
+  void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
+                          std::string directory = "", uint32_t bufferSize = 0);
 
  private:
+  float windowWidth, windowHeight;
+
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
@@ -69,7 +98,124 @@ class ecInterface : public al::App {
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
 
-  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath;
+  RtMidiIn midiIn;
+  std::vector<MIDIKey> ActiveMIDI;
+  bool mIsLinkingParamAndMIDI = false;
+  char mCurrentPresetName[50];
+  MIDILearnBool mMIDILearn;
+  MIDIKey mCurrentLearningMIDIKey;
+  std::unordered_set<std::string> MIDIPresetNames;
+
+  void writeJSONMIDIPreset(std::string name) {
+    MIDIPresetNames.insert(name);
+    jsonWriteMIDIPresetNames(MIDIPresetNames);
+
+    json midi_config = json::array();
+    std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
+    if (ifs.is_open()) {
+      json temp;
+      for (int index = 0; index < ActiveMIDI.size(); index++) {
+        ActiveMIDI[index].toJSON(temp);
+        midi_config.push_back(temp);
+      }
+    } else {
+      json temp;
+      for (int index = 0; index < ActiveMIDI.size(); index++) {
+        ActiveMIDI[index].toJSON(temp);
+        midi_config.push_back(temp);
+      }
+    }
+
+    std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
+    if (file.is_open()) file << midi_config;
+  }
+
+  void loadJSONMIDIPreset(std::string midi_preset_name) {
+    std::ifstream ifs(userPath + midiPresetsPath + midi_preset_name + ".json");
+
+    json midi_config;
+
+    if (ifs.is_open())
+      midi_config = json::parse(ifs);
+    else
+      return;
+
+    for (int index = 0; index < midi_config.size(); index++) {
+      MIDIKey temp;
+      temp.fromJSON(midi_config[index]);
+      ActiveMIDI.push_back(temp);
+    }
+  }
+
+  void clearActiveMIDI() { ActiveMIDI.clear(); }
+
+  /**
+   * @brief: Removes all MIDI tied to paramKey in the ActiveMIDI vector.
+   */
+  void unlinkParamAndMIDI(MIDIKey &paramKey) {
+    int index;
+    bool found = false;
+    for (index = 0; index < ActiveMIDI.size(); index++) {
+      if (ActiveMIDI[index].getKeysIndex() == paramKey.getKeysIndex() &&
+          ActiveMIDI[index].getType() == paramKey.getType()) {
+        found = true;
+        break;
+      }
+    }
+    if (found) ActiveMIDI.erase(ActiveMIDI.begin() + index);
+  }
+
+  /**
+   * @brief: Update ECParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in ECParameters structure.
+   */
+  void updateECParamMIDI(float val, int index) {
+    val = granulator.ECParameters[index]->getCurrentMin() +
+          (val * abs(granulator.ECParameters[index]->getCurrentMax() -
+                     granulator.ECParameters[index]->getCurrentMin()));
+    granulator.ECParameters[index]->setParam(val);
+  }
+
+  /**
+   * @brief: Update ECModParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in ECModParameters structure.
+   */
+  void updateECModParamMIDI(float val, int index) {
+    val = granulator.ECModParameters[index]->param.getCurrentMin() +
+          (val * abs(granulator.ECModParameters[index]->param.getCurrentMax() -
+                     granulator.ECModParameters[index]->param.getCurrentMin()));
+    granulator.ECModParameters[index]->param.setParam(val);
+  }
+
+  /**
+   * @brief: Update LFOParameters object at index based on value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in LFOParameters structure.
+   */
+  void updateLFOParamMIDI(float val, int index) {
+    val = granulator.LFOParameters[index]->frequency->getCurrentMin() +
+          (val * abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
+                     granulator.LFOParameters[index]->frequency->getCurrentMin()));
+    granulator.LFOParameters[index]->frequency->setParam(val);
+  }
+
+  /**
+   * @brief: Update duty cycle of LFOParameters object at index based on
+   * value.
+   *
+   * @param[in] value: A value between 0 and 1. Percentage of parameter range.
+   * @param[in] index: Index in LFOParameters structure.
+   */
+  void updateLFODutyParamMIDI(float val, int index) {
+    granulator.LFOParameters[index]->duty->set(val);
+  }
+
+  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
@@ -83,9 +229,8 @@ class ecInterface : public al::App {
 
   double globalSamplingRate = consts::SAMPLE_RATE;
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
-                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-                           ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
+                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
   ImGuiWindowFlags graphFlags = flags;
 
   int framecounter = 0;
@@ -96,10 +241,8 @@ class ecInterface : public al::App {
   float oscFrame = 1;
   double lastSamplingRate = globalSamplingRate;
 
-  std::vector<float> oscDataL =
-    std::vector<float>(int(oscFrame *globalSamplingRate), 0);
-  std::vector<float> oscDataR =
-    std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
   int VUdataSize = globalSamplingRate / 30;
@@ -107,6 +250,9 @@ class ecInterface : public al::App {
 
   std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
   std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
+
+  std::array<util::line, consts::MAX_GRAIN_DISPLAY> grainScanDisplay;
+  int nextGrainLine = 0;
 
   // Colors
 
@@ -141,10 +287,6 @@ class ecInterface : public al::App {
 
   void drawAudioIO(al::AudioIO *io);
 
-  void drawLFOcontrol(ecSynth &synth, int lfoNumber);
-
-  void drawModulationControl(al::ParameterMenu &menu, ecParameter &slider);
-
   void setGUIParams();
 
   int getSampleRateIndex();
@@ -160,30 +302,19 @@ class ecInterface : public al::App {
   template <typename T>
   bool jsonWriteToConfig(T value, std::string key);
 
+  bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
+
   /**
    * @brief Read json config file and write output path to soundOutput member
    * variable.
    *
    *
    */
+  void jsonReadAndSetMIDIPresetNames();
   void jsonReadAndSetSoundOutputPath();
   void jsonReadAndSetAudioSettings();
   void jsonReadAndSetColorSchemeMode();
   void jsonReadAndSetFontScale();
 };
-
-/**
- * @brief Modified version of al's soundfilerecordGUI.
- *
- * @param[in] Output recorder object.
- *
- * @param[in] Path of directory where the outputted sound files will be stored.
- *
- * @param[in] Frame rate of outputted file.
- *
- * @param[in] Number of channels of outputted file.
- *
- * @param[in] Amount of space allocated for sound.
- */
 
 #endif
