@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 class ecInterface : public al::App, public al::MIDIMessageHandler {
- public:
+public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -88,7 +88,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
                           std::string directory = "", uint32_t bufferSize = 0);
 
- private:
+private:
   float windowWidth, windowHeight;
 
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
@@ -127,7 +127,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     }
 
     std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
-    if (file.is_open()) file << midi_config;
+    if (file.is_open())
+      file << midi_config;
   }
 
   void loadJSONMIDIPreset(std::string midi_preset_name) {
@@ -162,7 +163,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
         break;
       }
     }
-    if (found) ActiveMIDI.erase(ActiveMIDI.begin() + index);
+    if (found)
+      ActiveMIDI.erase(ActiveMIDI.begin() + index);
   }
 
   /**
@@ -253,29 +255,30 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   std::array<util::line, consts::MAX_GRAIN_DISPLAY> grainScanDisplay;
   float GrainDisplayIndicies[consts::MAX_GRAIN_DISPLAY];
+  int numGrainsToDisplay;
   int nextGrainLine = 0;
 
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
-  ImColor YellowLight = ImColor(181, 137, 0);     // Yellow
-  ImColor RedLight = ImColor(120, 29, 57);        // Red
-  ImColor GreenLight = ImColor(58, 106, 10);      // Green
-  ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
-  ImColor Shade3Light = ImColor(227, 231, 232);   // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
+  ImColor PrimaryLight = ImColor(143, 157, 163); // Background
+  ImColor YellowLight = ImColor(181, 137, 0);    // Yellow
+  ImColor RedLight = ImColor(120, 29, 57);       // Red
+  ImColor GreenLight = ImColor(58, 106, 10);     // Green
+  ImColor Shade1Light = ImColor(171, 182, 186);  // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 206, 209);  // Slider Color 2
+  ImColor Shade3Light = ImColor(227, 231, 232);  // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);    // Background
-  ImColor YellowDark = ImColor(208, 193, 113);  // Yellow
-  ImColor RedDark = ImColor(184, 100, 128);     // Red
-  ImColor GreenDark = ImColor(106, 154, 60);    // Green
-  ImColor Shade1Dark = ImColor(55, 63, 66);     // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);     // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);   // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);    // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
+  ImColor YellowDark = ImColor(208, 193, 113); // Yellow
+  ImColor RedDark = ImColor(184, 100, 128);    // Red
+  ImColor GreenDark = ImColor(106, 154, 60);   // Green
+  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
@@ -300,8 +303,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T>
-  bool jsonWriteToConfig(T value, std::string key);
+  template <typename T> bool jsonWriteToConfig(T value, std::string key);
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 

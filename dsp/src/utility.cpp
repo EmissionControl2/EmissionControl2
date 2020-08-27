@@ -55,9 +55,7 @@ float expo::operator()() {
       mY = powf(M_E, 100 * mX - mThresholdX); // bias needed to reach that
       mX += mIncrementX;                      // value in time (SEE DESMOS)
     } else if (mX < mThresholdX) {
-      mY = powf(M_E,
-                -1 * mX + (mThresholdX *
-                           0.01)); // this compensates for initial ramp up
+      mY = powf(M_E, -1 * mX + (mThresholdX * 0.01)); // this compensates for initial ramp up
       mX += mIncrementX;
     } else {
       mY = mThresholdY;
@@ -65,13 +63,10 @@ float expo::operator()() {
     }
   } else { // reversed Logic
     if (mX < mThresholdX * 0.92761758634) {
-      mY = powf(M_E,
-                0.9 * (mX - mThresholdX +
-                       0.5)); // (mx - thresh + bias ) where bias determines
-      mX += mIncrementX;      // the ratio of envelope (mThresholdX * ratio)
-    } else if (mX <
-               mThresholdX * 0.95) { // small sustain to makeup for percieved
-                                     // volume loss (in relation to expodec).
+      mY = powf(M_E, 0.9 * (mX - mThresholdX + 0.5)); // (mx - thresh + bias ) where bias determines
+      mX += mIncrementX;                              // the ratio of envelope (mThresholdX * ratio)
+    } else if (mX < mThresholdX * 0.95) {             // small sustain to makeup for percieved
+                                                      // volume loss (in relation to expodec).
       mY = 1;
       mX += mIncrementX;
     } else if (mX < mThresholdX) { // quickly bring envelope down to zero //
@@ -125,8 +120,7 @@ float tukey::operator()() {
     value = 1;
     currentS++;
   } else if (currentS <= totalS) {
-    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) -
-                                        (2 / alpha) + 1)));
+    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
     currentS++;
   } else
     currentS = 0;
@@ -152,8 +146,7 @@ void tukey::set(float seconds) {
 }
 
 /**** Load Soundfile into Memory ****/
-bool util::load(std::string fileName,
-                std::vector<std::shared_ptr<buffer<float>>> &buf,
+bool util::load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf,
                 float samplingRate, bool resample) {
 
   al::SearchPaths searchPaths;
@@ -268,8 +261,7 @@ bool util::compareFileNoCase(al::FilePath s1, al::FilePath s2) {
 std::string util::getUserHomePath() {
   char homedir[PATH_MAX];
 #ifdef _WIN32
-  snprintf(homedir, sizeof(homedir), "%s%s", getenv("HOMEDRIVE"),
-           getenv("HOMEPATH"));
+  snprintf(homedir, sizeof(homedir), "%s%s", getenv("HOMEDRIVE"), getenv("HOMEPATH"));
 #else
   snprintf(homedir, sizeof(homedir), "%s", getenv("HOME"));
 #endif

@@ -36,7 +36,7 @@ struct MIDILearnBool {
 };
 
 class MIDIKey {
- public:
+public:
   std::vector<al::MIDIMessage> mInfo;
 
   MIDIKey(){};
@@ -71,13 +71,13 @@ class MIDIKey {
     mKeysIndex = j.at("MIDI_INDEX");
     for (int index = 0; index < j.at("MIDI_INFO").size(); index++) {
       al::MIDIMessage temp(
-        0, j.at("MIDI_INFO")[index].at("PORT"), j.at("MIDI_INFO")[index].at("MIDI_DATA")[0],
-        j.at("MIDI_INFO")[index].at("MIDI_DATA")[1], j.at("MIDI_INFO")[index].at("MIDI_DATA")[2]);
+          0, j.at("MIDI_INFO")[index].at("PORT"), j.at("MIDI_INFO")[index].at("MIDI_DATA")[0],
+          j.at("MIDI_INFO")[index].at("MIDI_DATA")[1], j.at("MIDI_INFO")[index].at("MIDI_DATA")[2]);
       mInfo.push_back(temp);
     }
   }
 
- private:
+private:
   int mKeysIndex;
   consts::MIDIType mType;
 };
@@ -91,7 +91,7 @@ class MIDIKey {
  * Allows for a single value [0,1] to interpolate between all three envelopes.
  */
 class grainEnvelope {
- public:
+public:
   void setSamplingRate(float samplingRate);
 
   float getSamplingRate() { return mSamplingRate; }
@@ -150,13 +150,13 @@ class grainEnvelope {
 
   float getDuration() const { return mDuration; }
 
- private:
+private:
   float mSamplingRate;
   util::expo mExpoEnv;
   util::tukey mTurkeyEnv;
   util::expo mRExpoEnv;
-  float mEnvelope;  // assumes between 0 and 1
-  float mDuration;  // in seconds
+  float mEnvelope; // assumes between 0 and 1
+  float mDuration; // in seconds
 };
 
 /**
@@ -164,7 +164,7 @@ class grainEnvelope {
  * grain/voiceScheduler parameters/
  */
 class ecModulator {
- public:
+public:
   /**
    * @brief Constructor for ecModulator.
    *
@@ -281,7 +281,7 @@ class ecModulator {
 
   float getPhase() const { return mLFO.phase(); }
 
- private:
+private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
   consts::waveform mModWaveform;
@@ -301,16 +301,16 @@ class ecModulator {
  * sources).
  */
 class ecParameter {
- public:
+public:
   /**
    * PUBLIC OBJECTS
    *
    */
-  ecModulator *mModulator = nullptr;  // This is for dynamically allocating a
-                                      // parameter's own modulator.
+  ecModulator *mModulator = nullptr; // This is for dynamically allocating a
+                                     // parameter's own modulator.
   al::Parameter *mParameter = nullptr;
-  al::Parameter *mLowRange = nullptr;   // Parameter designed to bound low mParameter.
-  al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
+  al::Parameter *mLowRange = nullptr;  // Parameter designed to bound low mParameter.
+  al::Parameter *mHighRange = nullptr; // Parameter designed to bound high mParameter.
 
   /**
    * @brief ecParameter Constructor.
@@ -478,7 +478,7 @@ class ecParameter {
 
   void getSliderType(consts::sliderType s) { mSliderType = s; }
 
- private:
+private:
   std::string mDisplayName;
   std::string mSliderText;
   consts::sliderType mSliderType;
@@ -491,8 +491,8 @@ class ecParameter {
 
 struct ecModParameter {
   ecModParameter(std::string parameterName, std::string displayName)
-    : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
-      lfoMenu("##lfo" + parameterName) {}
+      : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
+        lfoMenu("##lfo" + parameterName) {}
 
   void setMenuElements(std::vector<std::string> elements) { lfoMenu.setElements(elements); }
 
@@ -557,7 +557,7 @@ struct grainParameters {
  * the voiceScheduler class
  */
 class Grain : public al::SynthVoice {
- public:
+public:
   Grain();
   /**
    * @brief Initialize voice. This function will only be called once per voice
@@ -594,7 +594,7 @@ class Grain : public al::SynthVoice {
 
   float getDurationS() const { return mDurationS; }
 
-  float getSourceIndex() const {return sourceIndex;}
+  float getSourceIndex() const { return sourceIndex; }
 
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
@@ -634,7 +634,7 @@ private:
  * Class used to schedule the emission of an arbitrary voice.
  */
 class voiceScheduler {
- public:
+public:
   /**
    * @brief Constructor of the voice scheduler.
    *
@@ -703,7 +703,7 @@ class voiceScheduler {
    */
   void setPolyStream(consts::streamType type, int numStreams);
 
- private:
+private:
   gam::LFO<> mPulse;
   al::rnd::Random<> rand;
 
@@ -719,8 +719,10 @@ class Clipper : public al::AudioCallback {
   virtual void onAudioCB(al::AudioIOData &io) override {
     while (io()) {
       for (unsigned i = 0; i < io.channelsOut(); ++i) {
-        if (io.out(i) > 1) io.sum(-1 * io.out(i) + 1, i);
-        if (io.out(i) < -1) io.sum(-1 * io.out(i) - 1, i);
+        if (io.out(i) > 1)
+          io.sum(-1 * io.out(i) + 1, i);
+        if (io.out(i) < -1)
+          io.sum(-1 * io.out(i) - 1, i);
       }
     }
   }
@@ -736,7 +738,7 @@ class Clipper : public al::AudioCallback {
  */
 class flowControl {
   // friend class Granular;
- public:
+public:
   /**
    * This class will be calculate if it is necessary to reduce grain
    * rate/duration. Run at the audio rate (tentative).
@@ -754,7 +756,7 @@ class flowControl {
 
   float getAvgCPU() { return -11992.1; }
 
- private:
+private:
   // float mSamplingRate;
   // int mCounter;
   // float targetDuration;
@@ -768,7 +770,7 @@ class flowControl {
 
 // a struct to wrap LFO parameters
 class LFOstruct {
- public:
+public:
   al::ParameterMenu *shape = nullptr;
   al::ParameterMenu *polarity = nullptr;
   ecParameter *frequency = nullptr;
