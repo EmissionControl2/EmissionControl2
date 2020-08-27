@@ -544,9 +544,9 @@ void ecInterface::onDraw(Graphics &g) {
                              graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
-    ImGui::Text("Counter: %.1i ", granulator.getActiveVoices());
+    ImGui::Text("Counter: %.1i ", granulator.getNumActiveVoices());
 
-    if (grainAccum < granulator.getActiveVoices()) grainAccum = granulator.getActiveVoices();
+    if (grainAccum < granulator.getNumActiveVoices()) grainAccum = granulator.getNumActiveVoices();
     if (framecounter % 2 == 0) {
       streamHistory.erase(streamHistory.begin());
       streamHistory.push_back(grainAccum);

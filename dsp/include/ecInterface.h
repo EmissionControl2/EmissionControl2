@@ -252,6 +252,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
 
   std::array<util::line, consts::MAX_GRAIN_DISPLAY> grainScanDisplay;
+  float GrainDisplayIndicies[consts::MAX_GRAIN_DISPLAY];
   int nextGrainLine = 0;
 
   // Colors
