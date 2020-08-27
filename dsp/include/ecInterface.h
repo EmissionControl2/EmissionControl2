@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 class ecInterface : public al::App, public al::MIDIMessageHandler {
-public:
+ public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -68,8 +68,8 @@ public:
   };
 
   // Custom preset draw function (copied and modified from al_ParameterGUI.hpp)
-  PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler,
-                                          int presetColumns, int presetRows);
+  PresetHandlerState &ECdrawPresetHandler(al::PresetHandler *presetHandler, int presetColumns,
+                                          int presetRows);
 
   /**
    * @brief Modified version of al's soundfilerecordGUI.
@@ -85,11 +85,10 @@ public:
    *
    * @param[in] Amount of space allocated for sound.
    */
-  void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate,
-                          uint32_t numChannels, std::string directory = "",
-                          uint32_t bufferSize = 0);
+  void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
+                          std::string directory = "", uint32_t bufferSize = 0);
 
-private:
+ private:
   float windowWidth, windowHeight;
 
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
@@ -128,8 +127,7 @@ private:
     }
 
     std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
-    if (file.is_open())
-      file << midi_config;
+    if (file.is_open()) file << midi_config;
   }
 
   void loadJSONMIDIPreset(std::string midi_preset_name) {
@@ -141,8 +139,8 @@ private:
       midi_config = json::parse(ifs);
     else
       return;
-    
-    for(int index = 0; index < midi_config.size(); index++) {
+
+    for (int index = 0; index < midi_config.size(); index++) {
       MIDIKey temp;
       temp.fromJSON(midi_config[index]);
       ActiveMIDI.push_back(temp);
@@ -164,8 +162,7 @@ private:
         break;
       }
     }
-    if (found)
-      ActiveMIDI.erase(ActiveMIDI.begin() + index);
+    if (found) ActiveMIDI.erase(ActiveMIDI.begin() + index);
   }
 
   /**
@@ -202,9 +199,8 @@ private:
    */
   void updateLFOParamMIDI(float val, int index) {
     val = granulator.LFOParameters[index]->frequency->getCurrentMin() +
-          (val *
-           abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
-               granulator.LFOParameters[index]->frequency->getCurrentMin()));
+          (val * abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
+                     granulator.LFOParameters[index]->frequency->getCurrentMin()));
     granulator.LFOParameters[index]->frequency->setParam(val);
   }
 
@@ -219,8 +215,7 @@ private:
     granulator.LFOParameters[index]->duty->set(val);
   }
 
-  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath,
-      midiPresetsPath;
+  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
   al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
@@ -234,22 +229,20 @@ private:
 
   double globalSamplingRate = consts::SAMPLE_RATE;
 
-  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse |
-                           ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-                           ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
+                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
   ImGuiWindowFlags graphFlags = flags;
 
   int framecounter = 0;
   std::vector<float> streamHistory = std::vector<float>(80, 0);
   int highestStreamCount = 2;
   int grainAccum = 0;
+  int grainsPerSecond = 0;
   float oscFrame = 1;
   double lastSamplingRate = globalSamplingRate;
 
-  std::vector<float> oscDataL =
-      std::vector<float>(int(oscFrame *globalSamplingRate), 0);
-  std::vector<float> oscDataR =
-      std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
+  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
   int VUdataSize = globalSamplingRate / 30;
@@ -258,27 +251,30 @@ private:
   std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
   std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
 
+  std::array<util::line, consts::MAX_GRAIN_DISPLAY> grainScanDisplay;
+  int nextGrainLine = 0;
+
   // Colors
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(143, 157, 163); // Background
-  ImColor YellowLight = ImColor(181, 137, 0);    // Yellow
-  ImColor RedLight = ImColor(120, 29, 57);       // Red
-  ImColor GreenLight = ImColor(58, 106, 10);     // Green
-  ImColor Shade1Light = ImColor(171, 182, 186);  // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 206, 209);  // Slider Color 2
-  ImColor Shade3Light = ImColor(227, 231, 232);  // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
+  ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
+  ImColor YellowLight = ImColor(181, 137, 0);     // Yellow
+  ImColor RedLight = ImColor(120, 29, 57);        // Red
+  ImColor GreenLight = ImColor(58, 106, 10);      // Green
+  ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
+  ImColor Shade3Light = ImColor(227, 231, 232);   // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
-  ImColor YellowDark = ImColor(208, 193, 113); // Yellow
-  ImColor RedDark = ImColor(184, 100, 128);    // Red
-  ImColor GreenDark = ImColor(106, 154, 60);   // Green
-  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);    // Background
+  ImColor YellowDark = ImColor(208, 193, 113);  // Yellow
+  ImColor RedDark = ImColor(184, 100, 128);     // Red
+  ImColor GreenDark = ImColor(106, 154, 60);    // Green
+  ImColor Shade1Dark = ImColor(55, 63, 66);     // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);     // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);   // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);    // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
@@ -303,7 +299,8 @@ private:
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T> bool jsonWriteToConfig(T value, std::string key);
+  template <typename T>
+  bool jsonWriteToConfig(T value, std::string key);
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
