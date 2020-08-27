@@ -509,6 +509,7 @@ void ecInterface::onDraw(Graphics &g) {
                               semitransGreen);
     }
 
+    // Draw Individual Grains
     granulator.copyActiveGrainIndicies(GrainDisplayIndicies, &numGrainsToDisplay,
                                        consts::MAX_GRAIN_DISPLAY);
 
