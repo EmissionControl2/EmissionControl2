@@ -59,6 +59,9 @@ class ecSynth : public al::SynthVoice {
   // array of lfo parameters to draw later
   std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
 
+  // Array of Active Grain Current Index
+  // std
+
   std::vector<std::shared_ptr<util::buffer<float>>>
     soundClip;      /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
