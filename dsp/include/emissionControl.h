@@ -594,7 +594,7 @@ public:
 
   float getDurationS() const { return mDurationS; }
 
-  float getSourceIndex() const { return sourceIndex; }
+  float getSourceIndex() const { return mSourceIndex; }
 
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
@@ -605,7 +605,7 @@ private:
   float currentSample, cascadeFilter = 0;
   int *mPActiveVoices;
   float *mLastEndScanPos;
-  float envVal, sourceIndex, tapeHead, mDurationS, mLeft, mRight, mAmp;
+  float envVal, sourceIndex, mSourceIndex, tapeHead, mDurationS, mLeft, mRight, mAmp;
   float PAN_CONST = std::sqrt(2) / 2;
   int iSourceIndex;
   float mSamplingRate = consts::SAMPLE_RATE;

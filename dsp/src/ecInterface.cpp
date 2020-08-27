@@ -94,11 +94,6 @@ void ecInterface::onCreate() {
              << *granulator.LFOParameters[i]->polarity;
   }
 
-  for (int i = 0; i < consts::MAX_GRAIN_DISPLAY; i++) {
-    grainScanDisplay[i].setSamplingRate(60);
-    grainScanDisplay[i].set(0.0f, 0.0f, 1.0f);
-  }
-
 #ifdef __APPLE__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
       (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
@@ -517,33 +512,10 @@ void ecInterface::onDraw(Graphics &g) {
     granulator.copyActiveGrainIndicies(GrainDisplayIndicies, &numGrainsToDisplay,
                                        consts::MAX_GRAIN_DISPLAY);
 
-    std::cout << numGrainsToDisplay << " " << granulator.getNumActiveVoices() << std::endl;
-    for (int i = 0; i < numGrainsToDisplay; i++) {
-      std::cout << GrainDisplayIndicies[i] << std::endl;
-    }
-
-    // start new lines
-    for (int i = 0; i < consts::MAX_GRAIN_DISPLAY; i++) {
-      if (granulator.GrainDisplayInfo[i].readyToDisplay && grainScanDisplay[nextGrainLine].done()) {
-        // startup a new line
-        grainScanDisplay[nextGrainLine].set(granulator.GrainDisplayInfo[i].grainStart,
-                                            granulator.GrainDisplayInfo[i].grainEnd,
-                                            granulator.GrainDisplayInfo[i].grainDuration);
-        // set readytodisplay to false
-        granulator.GrainDisplayInfo[i].readyToDisplay = false;
-        nextGrainLine = (nextGrainLine + 1) % consts::MAX_GRAIN_DISPLAY;
-      }
-    }
-
-    // Draw per-grain scan lines
-    for (int i = 0; i < consts::MAX_GRAIN_DISPLAY; i++) {
-      if (!grainScanDisplay[i].done()) {
-        float temp_line_val =
-            float((int(grainScanDisplay[i]()) % soundFileLength)) / soundFileLength;
-        drawList->AddLine(ImVec2(p.x + (temp_line_val * plotWidth), p.y),
-                          ImVec2(p.x + (temp_line_val * plotWidth), p.y + plotHeight), *ECred,
-                          3.0f);
-      }
+    for (int index = 0; index < numGrainsToDisplay; index++) {
+      float temp_line_val = GrainDisplayIndicies[index] / soundFileLength;
+      drawList->AddLine(ImVec2(p.x + (temp_line_val * plotWidth), p.y),
+                        ImVec2(p.x + (temp_line_val * plotWidth), p.y + plotHeight), *ECred, 3.0f);
     }
 
     ImGui::PopFont();
@@ -806,6 +778,20 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
     break;
   default:;
   }
+}
+
+void ecInterface::unlinkParamAndMIDI(MIDIKey &paramKey) {
+  int index;
+  bool found = false;
+  for (index = 0; index < ActiveMIDI.size(); index++) {
+    if (ActiveMIDI[index].getKeysIndex() == paramKey.getKeysIndex() &&
+        ActiveMIDI[index].getType() == paramKey.getType()) {
+      found = true;
+      break;
+    }
+  }
+  if (found)
+    ActiveMIDI.erase(ActiveMIDI.begin() + index);
 }
 
 void ecInterface::drawAudioIO(AudioIO *io) {
@@ -1231,6 +1217,48 @@ bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &pres
     return true;
   } else {
     return false;
+  }
+}
+
+void ecInterface::writeJSONMIDIPreset(std::string name) {
+  MIDIPresetNames.insert(name);
+  jsonWriteMIDIPresetNames(MIDIPresetNames);
+
+  json midi_config = json::array();
+  std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
+  if (ifs.is_open()) {
+    json temp;
+    for (int index = 0; index < ActiveMIDI.size(); index++) {
+      ActiveMIDI[index].toJSON(temp);
+      midi_config.push_back(temp);
+    }
+  } else {
+    json temp;
+    for (int index = 0; index < ActiveMIDI.size(); index++) {
+      ActiveMIDI[index].toJSON(temp);
+      midi_config.push_back(temp);
+    }
+  }
+
+  std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
+  if (file.is_open())
+    file << midi_config;
+}
+
+void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
+  std::ifstream ifs(userPath + midiPresetsPath + midi_preset_name + ".json");
+
+  json midi_config;
+
+  if (ifs.is_open())
+    midi_config = json::parse(ifs);
+  else
+    return;
+
+  for (int index = 0; index < midi_config.size(); index++) {
+    MIDIKey temp;
+    temp.fromJSON(midi_config[index]);
+    ActiveMIDI.push_back(temp);
   }
 }
 
