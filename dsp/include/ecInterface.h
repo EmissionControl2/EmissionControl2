@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 class ecInterface : public al::App, public al::MIDIMessageHandler {
-public:
+ public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -45,6 +45,8 @@ public:
    * @brief Draw rate processing of synth interface.
    */
   virtual void onDraw(al::Graphics &g) override;
+
+  virtual bool onMouseDown(const al::Mouse &m) override;
 
   /** MIDI Stuff **/
   void initMIDI();
@@ -88,7 +90,7 @@ public:
   void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
                           std::string directory = "", uint32_t bufferSize = 0);
 
-private:
+ private:
   float windowWidth, windowHeight;
 
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
@@ -106,7 +108,10 @@ private:
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
 
-  void clearActiveMIDI() { ActiveMIDI.clear(); }
+  void clearActiveMIDI() {
+    ActiveMIDI.clear();
+    mIsLinkingParamAndMIDI = false;
+  }
 
   /**
    * @brief: Removes all MIDI tied to paramKey in the ActiveMIDI vector.
@@ -199,35 +204,39 @@ private:
   std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
   std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
 
-  float GrainDisplayIndicies[consts::MAX_GRAIN_DISPLAY];
+  float GrainDisplayIndices[consts::MAX_GRAIN_DISPLAY];
   int numGrainsToDisplay;
 
   // Colors
-
+  // colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);
+  // colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
   // light color scheme
-  ImColor PrimaryLight = ImColor(143, 157, 163); // Background
-  ImColor YellowLight = ImColor(181, 137, 0);    // Yellow
-  ImColor RedLight = ImColor(120, 29, 57);       // Red
-  ImColor GreenLight = ImColor(58, 106, 10);     // Green
-  ImColor Shade1Light = ImColor(171, 182, 186);  // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 206, 209);  // Slider Color 2
-  ImColor Shade3Light = ImColor(227, 231, 232);  // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
+  ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
+  ImColor YellowLight = ImColor(181, 137, 0);     // Yellow
+  ImColor RedLight = ImColor(120, 29, 57);        // Red
+  ImColor GreenLight = ImColor(106, 154, 60);     // Green
+  ImColor BlueLight = ImColor(61, 133, 224);      // Blue
+  ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
+  ImColor Shade3Light = ImColor(227, 231, 232);   // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
-  ImColor YellowDark = ImColor(208, 193, 113); // Yellow
-  ImColor RedDark = ImColor(184, 100, 128);    // Red
-  ImColor GreenDark = ImColor(106, 154, 60);   // Green
-  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);    // Background
+  ImColor YellowDark = ImColor(208, 193, 113);  // Yellow
+  ImColor RedDark = ImColor(184, 100, 128);     // Red
+  ImColor GreenDark = ImColor(106, 154, 60);    // Green
+  ImColor BlueDark = ImColor(61, 133, 224);     // Blue
+  ImColor Shade1Dark = ImColor(55, 63, 66);     // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);     // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);   // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);    // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
   ImColor *ECred;
   ImColor *ECgreen;
+  ImColor *ECblue;
   ImColor *Shade1;
   ImColor *Shade2;
   ImColor *Shade3;
@@ -247,12 +256,12 @@ private:
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T> bool jsonWriteToConfig(T value, std::string key);
+  template <typename T>
+  bool jsonWriteToConfig(T value, std::string key);
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
   void writeJSONMIDIPreset(std::string name);
-
 
   /**
    * @brief Read json config file and write output path to soundOutput member
