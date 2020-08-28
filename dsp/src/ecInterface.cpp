@@ -380,6 +380,9 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+    if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
     granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
@@ -434,6 +437,10 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+    if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
     granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
