@@ -31,8 +31,6 @@ using json = nlohmann::json;
 struct MIDILearnBool {
   bool mParamAdd = false;
   bool mParamDel = false;
-
-  bool mParamListen = false;
 };
 
 class MIDIKey {

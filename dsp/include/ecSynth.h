@@ -16,20 +16,20 @@
 #include "al/ui/al_Parameter.hpp"
 
 /**** CSTD LIB ****/
-#include <array>
 #include <math.h>
+#include <array>
 #include <memory>
 
 using namespace consts;
 
 class ecSynth : public al::SynthVoice {
-public:
+ public:
   /**
    * Ringbuffers for oscilloscope
    */
-  unsigned int oscBufferSize = 96001 * 3; // max size of scope window plus a
-                                          // few samples because I'm paranoid -
-                                          // Rodney
+  unsigned int oscBufferSize = 96001 * 3;  // max size of scope window plus a
+                                           // few samples because I'm paranoid -
+                                           // Rodney
   util::RingBuffer oscBufferL{oscBufferSize};
   util::RingBuffer oscBufferR{oscBufferSize};
 
@@ -42,13 +42,13 @@ public:
   /**
    * Vars for indicating clipping
    */
-  int clipL, clipR = 0;
+  int clipL = 0, clipR = 0;
 
   /**
    * Peak values
    */
-  float peakL, peakR = 0;
-  int peakResetL, peakResetR = 0;
+  float peakL = 0, peakR = 0;
+  int peakResetL = 0, peakResetR = 0;
 
   /**
    * Grain Counter
@@ -82,78 +82,78 @@ public:
                                                              100, 0, 500, PARAM, "%.3f Hz");
 
     ECModParameters[GRAIN_RATE] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modGrainRateDepth", "Grain Rate"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modGrainRateDepth", "Grain Rate"});
 
     ECParameters[ASYNC] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Asynchronicity", "2. Asynchronicity", 0.0, 0.0, 1.0, 0, 1, PARAM});
+      new ecParameter{"Asynchronicity", "2. Asynchronicity", 0.0, 0.0, 1.0, 0, 1, PARAM});
     ECModParameters[ASYNC] = std::unique_ptr<ecModParameter>(
-        new ecModParameter{"modAsynchronicityDepth", "Asynchronicity"});
+      new ecModParameter{"modAsynchronicityDepth", "Asynchronicity"});
 
     ECParameters[INTERM] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Intermittancy", "3. Intermittancy", 0, 0, 1, 0, 1, PARAM});
-    ECModParameters[INTERM] = std::unique_ptr<ecModParameter>(
-        new ecModParameter{"modIntermittencyDepth", "Intermittency"});
+      new ecParameter{"Intermittancy", "3. Intermittancy", 0, 0, 1, 0, 1, PARAM});
+    ECModParameters[INTERM] =
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modIntermittencyDepth", "Intermittency"});
 
     ECParameters[STREAMS] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Streams", "4. Streams", 1, 1, 12, 1, 20, INT_PARAM});
+      new ecParameter{"Streams", "4. Streams", 1, 1, 12, 1, 20, INT_PARAM});
     ECModParameters[STREAMS] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modStreamsDepth", "Streams"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modStreamsDepth", "Streams"});
 
     ECParameters[GRAIN_DUR] = std::unique_ptr<ecParameter>(new ecParameter{
-        "GrainDurms", "5. Grain Duration", 30, 0.01, 1000, 0.0000001, 10000, PARAM, "%.3f ms"});
+      "GrainDurms", "5. Grain Duration", 30, 0.01, 1000, 0.0000001, 10000, PARAM, "%.3f ms"});
     ECModParameters[GRAIN_DUR] = std::unique_ptr<ecModParameter>(
-        new ecModParameter{"modGrainDurationDepth", "Grain Duration"});
+      new ecModParameter{"modGrainDurationDepth", "Grain Duration"});
 
     ECParameters[ENVELOPE] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Envelopeshape", "6. Envelope Shape", 0.5, 0, 1, 0, 1, PARAM});
+      new ecParameter{"Envelopeshape", "6. Envelope Shape", 0.5, 0, 1, 0, 1, PARAM});
     ECModParameters[ENVELOPE] = std::unique_ptr<ecModParameter>(
-        new ecModParameter{"modEnvelopeShapeDepth", "Envelope Shape"});
+      new ecModParameter{"modEnvelopeShapeDepth", "Envelope Shape"});
 
     ECParameters[PITCH_SHIFT] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Pitchshift", "7. Pitch Shift", 1, -2, 2, -20, 20, PARAM});
+      new ecParameter{"Pitchshift", "7. Pitch Shift", 1, -2, 2, -20, 20, PARAM});
     ECModParameters[PITCH_SHIFT] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modPitchShiftDepth", "Pitch Shift"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modPitchShiftDepth", "Pitch Shift"});
 
     ECParameters[FILTER_CENTER] = std::unique_ptr<ecParameter>(new ecParameter{
-        "Filterfreq", "8. Filter Center", 440, 60, 5000, 20, 24000, PARAM, "%.3f Hz"});
-    ECModParameters[FILTER_CENTER] = std::unique_ptr<ecModParameter>(
-        new ecModParameter{"modFilterCenterDepth", "Filter Center"});
+      "Filterfreq", "8. Filter Center", 440, 60, 5000, 20, 24000, PARAM, "%.3f Hz"});
+    ECModParameters[FILTER_CENTER] =
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modFilterCenterDepth", "Filter Center"});
 
     ECParameters[RESONANCE] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Resonance", "9. Resonance", 0, 0, 1, 0, 1, PARAM});
+      new ecParameter{"Resonance", "9. Resonance", 0, 0, 1, 0, 1, PARAM});
     ECModParameters[RESONANCE] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modResonanceDepth", "Resonance"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modResonanceDepth", "Resonance"});
 
     ECParameters[SOUND_FILE] = std::unique_ptr<ecParameter>(
-        new ecParameter{"Soundfile", "10. Sound File", 1, 1, static_cast<float>(mClipNum), 1,
-                        static_cast<float>(mClipNum), INT_PARAM});
+      new ecParameter{"Soundfile", "10. Sound File", 1, 1, static_cast<float>(mClipNum), 1,
+                      static_cast<float>(mClipNum), INT_PARAM});
     ECModParameters[SOUND_FILE] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modSoundFileDepth", "Sound File"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modSoundFileDepth", "Sound File"});
 
     ECParameters[SCAN_POS] = std::unique_ptr<ecParameter>(
-        new ecParameter{"scanPosition", "11. Scan Position", 0.0, 0, 1, 0, 1, PARAM});
-    ECModParameters[SCAN_POS] = std::unique_ptr<ecModParameter>(
-        new ecModParameter{"modScanPositionDepth", "Scan Position"});
+      new ecParameter{"scanPosition", "11. Scan Position", 0.0, 0, 1, 0, 1, PARAM});
+    ECModParameters[SCAN_POS] =
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modScanPositionDepth", "Scan Position"});
 
     ECParameters[SCAN_WIDTH] = std::unique_ptr<ecParameter>(
-        new ecParameter{"scanWidth", "12. Scan Width", 0.5, 0, 1, 0, 1, PARAM});
+      new ecParameter{"scanWidth", "12. Scan Width", 0.5, 0, 1, 0, 1, PARAM});
     ECModParameters[SCAN_WIDTH] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modScanWidthDepth", "Scan Width"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modScanWidthDepth", "Scan Width"});
 
     ECParameters[SCAN_SPEED] = std::unique_ptr<ecParameter>(
-        new ecParameter{"ScanSpeed", "13. Scan Speed", 1, -2, 2, -32, 32, PARAM});
+      new ecParameter{"ScanSpeed", "13. Scan Speed", 1, -2, 2, -32, 32, PARAM});
     ECModParameters[SCAN_SPEED] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modScanSpeedDepth", "Scan Speed"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modScanSpeedDepth", "Scan Speed"});
 
     ECParameters[PAN] =
-        std::unique_ptr<ecParameter>(new ecParameter{"Pan", "14. Pan", 0, -1, 1, -1, 1, PARAM});
+      std::unique_ptr<ecParameter>(new ecParameter{"Pan", "14. Pan", 0, -1, 1, -1, 1, PARAM});
     ECModParameters[PAN] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modPanDepth", "Pan"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modPanDepth", "Pan"});
 
     ECParameters[VOLUME] = std::unique_ptr<ecParameter>(
-        new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48, PARAM, "%.3f dB"});
+      new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48, PARAM, "%.3f dB"});
     ECModParameters[VOLUME] =
-        std::unique_ptr<ecModParameter>(new ecModParameter{"modAmplitudeDepth", "Amplitude"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modAmplitudeDepth", "Amplitude"});
   }
 
   /**
@@ -284,7 +284,7 @@ public:
     return filename;
   }
 
-private:
+ private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;
 
   al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
