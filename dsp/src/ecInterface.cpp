@@ -195,18 +195,21 @@ void ecInterface::onDraw(Graphics &g) {
 
     if (ImGui::BeginMenu("MIDI")) {
       if (ImGui::MenuItem("Initialize MIDI", "")) {
-        midiIn[0].cancelCallback();
-        midiIn[0].closePort();
+        for (int index = 0; index < midiIn.size(); index++) {
+          midiIn[index].cancelCallback();
+          midiIn[index].closePort();
+        }
         initMIDI();
       }
 
       if (ImGui::MenuItem("MIDI Devices", "")) {
-        for(int index = 0; index < midiIn.size(); index++) {
-          midiIn[index].cancelCallback();
-          midiIn[index].closePort();
+        MIDIMessageHandler::clearBindings();
+        for (int index = 0; index < midiIn.size(); index++) {
+          if (midiIn[index].isPortOpen()) {
+            midiIn[index].closePort();
+          }
         }
-        SelectedMIDIDevices.resize(defaultMIDIIn.getPortCount());
-        midiIn.resize(defaultMIDIIn.getPortCount());
+        SelectedMIDIDevices.resize(midiIn[0].getPortCount());
         isMIDIDevicesWindow = true;
       }
 
@@ -264,29 +267,29 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDIDevicesOpen = true;
   if (ImGui::BeginPopupModal("MIDI Devices", &isMIDIDevicesOpen)) {
     // Check for connected MIDI devices
-    if (defaultMIDIIn.getPortCount() != SelectedMIDIDevices.size()) {
-      SelectedMIDIDevices.resize(defaultMIDIIn.getPortCount());
-      midiIn.resize(defaultMIDIIn.getPortCount());
+    if (midiIn[0].getPortCount() != SelectedMIDIDevices.size()) {
+      SelectedMIDIDevices.resize(midiIn[0].getPortCount());
     }
-    if (defaultMIDIIn.getPortCount() > 0) {
-      for (int index = 0; index < defaultMIDIIn.getPortCount(); index++) {
+    if (midiIn[0].getPortCount() > 0) {
+      for (int index = 0; index < midiIn[0].getPortCount(); index++) {
         bool temp = SelectedMIDIDevices[index];
-        ImGui::Checkbox(defaultMIDIIn.getPortName(index).c_str(), &temp);
+        ImGui::Checkbox(midiIn[0].getPortName(index).c_str(), &temp);
         SelectedMIDIDevices[index] = temp;
       }
-      // Open the last device found
     } else {
       ImGui::Text("No MIDI devices found.\n");
     }
   }
+  // On Close of MIDI Device Window
   if (!isMIDIDevicesOpen) {
     int temp_counter = -1;
     for (int index = 0; index < SelectedMIDIDevices.size(); index++) {
       if (SelectedMIDIDevices[index]) {
         temp_counter++;
-        MIDIMessageHandler::bindTo(midiIn[temp_counter],index);
-        midiIn[temp_counter].openPort(index);
-        std::cout << midiIn.size() << std::endl;
+        if (temp_counter >= consts::MAX_MIDI_IN)
+          break;
+        MIDIMessageHandler::bindTo(midiIn[temp_counter], index);
+        midiIn[temp_counter].openPort(index, midiIn[temp_counter].getPortName(index));
         printf("Opened port to %s\n", midiIn[temp_counter].getPortName(index).c_str());
       }
     }
@@ -769,16 +772,35 @@ void ecInterface::onDraw(Graphics &g) {
 }
 
 void ecInterface::initMIDI() {
-  midiIn.resize(1);
-  // Check for connected MIDI devices
+
+  /* This is the single stupidest code I have ever written.
+
+   RtMIDI seems to access trash memory, instead of mBindings[index] for the first
+      *consts::MAX_MIDI_IN* setCallback functions.
+
+   This is only seen when we have multiple midi input ports allowed.
+
+   To get around this you simply execute consts::MAX_MIDI_IN dummy bindTo calls and then immediately
+      clear mBinding of this fake data.
+
+   This seems to properly init the pointers to mBindings memory when setCallback uses them. 
+   
+   What the fuck. I hate this, I hate computers. I'm goingg outside.
+  */
+  for (int i = 0; i < consts::MAX_MIDI_IN; i++)
+    MIDIMessageHandler::bindTo(midiIn[0], 0);
+  MIDIMessageHandler::clearBindings();
+  /* End of stupid as shit code. **/
+
   if (midiIn[0].getPortCount() > 0) {
     // Bind ourself to the RtMidiIn[0] object, to have the onMidiMessage()
     // callback called whenever a MIDI message is received
-    MIDIMessageHandler::bindTo(midiIn[0]);
-
     // Open the last device found
-    unsigned int port = midiIn[0].getPortCount() - 1;
+    unsigned int port = 0;
+    MIDIMessageHandler::bindTo(midiIn[0], port);
     midiIn[0].openPort(port);
+    SelectedMIDIDevices.resize(1);
+    SelectedMIDIDevices[port] = true;
     printf("Opened port to %s\n", midiIn[0].getPortName(port).c_str());
   } else {
     printf("Error: No MIDI devices found.\n");
@@ -814,15 +836,15 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   switch (m.type()) {
   case MIDIByte::NOTE_ON:
-    printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+    // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
     break;
 
   case MIDIByte::NOTE_OFF:
-    printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+    // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
     break;
 
   case MIDIByte::PITCH_BEND:
-    printf("Value %f\n", m.pitchBend());
+    // printf("Value %f\n", m.pitchBend());
     break;
 
   // Control messages need to be parsed again...

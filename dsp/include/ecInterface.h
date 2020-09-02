@@ -100,8 +100,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
 
-  std::vector<RtMidiIn> midiIn;
-  RtMidiIn defaultMIDIIn;
+  std::array<RtMidiIn,consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
   char mCurrentPresetName[50];
