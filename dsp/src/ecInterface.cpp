@@ -194,14 +194,6 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     if (ImGui::BeginMenu("MIDI")) {
-      if (ImGui::MenuItem("Initialize MIDI", "")) {
-        for (int index = 0; index < midiIn.size(); index++) {
-          midiIn[index].cancelCallback();
-          midiIn[index].closePort();
-        }
-        initMIDI();
-      }
-
       if (ImGui::MenuItem("MIDI Devices", "")) {
         MIDIMessageHandler::clearBindings();
         for (int index = 0; index < midiIn.size(); index++) {
@@ -213,15 +205,15 @@ void ecInterface::onDraw(Graphics &g) {
         isMIDIDevicesWindow = true;
       }
 
-      if (ImGui::MenuItem("Clear MIDI", "")) {
+      if (ImGui::MenuItem("Clear MIDI Learn", "")) {
         clearActiveMIDI();
       }
 
-      if (ImGui::MenuItem("Save MIDI Preset", "")) {
+      if (ImGui::MenuItem("Save MIDI Learn Preset", "")) {
         isMIDIWriteWindow = true;
       }
 
-      if (ImGui::MenuItem("Load MIDI Preset", "")) {
+      if (ImGui::MenuItem("Load MIDI Learn Preset", "")) {
         isMIDILoadWindow = true;
       }
       ImGui::EndMenu();
@@ -261,10 +253,12 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndMainMenuBar();
   }
 
+  // DRAW MIDI DEVICE WINDOW
   if (isMIDIDevicesWindow) {
     ImGui::OpenPopup("MIDI Devices");
   }
   bool isMIDIDevicesOpen = true;
+  bool isWriteMIDIDevices = false;
   if (ImGui::BeginPopupModal("MIDI Devices", &isMIDIDevicesOpen)) {
     ImGui::Text(("Select Up to " + std::to_string(consts::MAX_MIDI_IN) + " MIDI Inputs:").c_str());
     if (midiIn[0].getPortCount() != SelectedMIDIDevices.size()) {
@@ -278,7 +272,7 @@ void ecInterface::onDraw(Graphics &g) {
         if (temp) {
           truth_count++;
 
-          //Limit the amount of MIDI devices allowed.
+          // Limit the amount of MIDI devices allowed.
           if (truth_count > consts::MAX_MIDI_IN) {
             truth_count--;
             temp = 0;
@@ -287,7 +281,7 @@ void ecInterface::onDraw(Graphics &g) {
         }
         ImGui::Checkbox(midiIn[0].getPortName(index).c_str(), &temp);
 
-        //Make sure device doesn't connect in the backend.
+        // Make sure device doesn't connect in the backend.
         if (setDeviceFalse) {
           SelectedMIDIDevices[index] = 0;
           setDeviceFalse = false;
@@ -298,9 +292,21 @@ void ecInterface::onDraw(Graphics &g) {
     } else {
       ImGui::Text("No MIDI devices found.\n");
     }
+    if (ImGui::Button("Cancel"))
+      ImGui::CloseCurrentPopup();
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Confirm")) {
+      ImGui::CloseCurrentPopup();
+      isMIDIDevicesOpen = false;
+      isWriteMIDIDevices = true;
+    }
+    ImGui::EndPopup();
   }
+
   // On Close of MIDI Device Window
-  if (!isMIDIDevicesOpen) {
+  if (!isMIDIDevicesOpen && isWriteMIDIDevices) {
     int temp_counter = -1;
     for (int index = 0; index < SelectedMIDIDevices.size(); index++) {
       if (SelectedMIDIDevices[index]) {
@@ -313,6 +319,8 @@ void ecInterface::onDraw(Graphics &g) {
       }
     }
   }
+
+  // END DRAW MIDI DEVICE WINDOW
 
   if (isMIDILoadWindow) {
     ImGui::OpenPopup("Load MIDI Preset");
@@ -348,14 +356,17 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::InputText("Enter Preset Name", mCurrentPresetName, 50,
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
     ImGui::PopItemWidth();
+
+    if (ImGui::Button("Cancel"))
+      ImGui::CloseCurrentPopup();
+
+    ImGui::SameLine();
+
     if (ImGui::Button("Save")) {
       ImGui::CloseCurrentPopup();
       isMIDIWriteOpen = false;
       isWriteJSON = true;
     }
-    ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
-      ImGui::CloseCurrentPopup();
     ImGui::EndPopup();
   }
   if (!isMIDIWriteOpen && isWriteJSON) {
