@@ -266,15 +266,34 @@ void ecInterface::onDraw(Graphics &g) {
   }
   bool isMIDIDevicesOpen = true;
   if (ImGui::BeginPopupModal("MIDI Devices", &isMIDIDevicesOpen)) {
-    // Check for connected MIDI devices
+    ImGui::Text(("Select Up to " + std::to_string(consts::MAX_MIDI_IN) + " MIDI Inputs:").c_str());
     if (midiIn[0].getPortCount() != SelectedMIDIDevices.size()) {
       SelectedMIDIDevices.resize(midiIn[0].getPortCount());
     }
+    int truth_count = 0;
+    bool setDeviceFalse = false;
     if (midiIn[0].getPortCount() > 0) {
       for (int index = 0; index < midiIn[0].getPortCount(); index++) {
         bool temp = SelectedMIDIDevices[index];
+        if (temp) {
+          truth_count++;
+
+          //Limit the amount of MIDI devices allowed.
+          if (truth_count > consts::MAX_MIDI_IN) {
+            truth_count--;
+            temp = 0;
+            setDeviceFalse = true;
+          }
+        }
         ImGui::Checkbox(midiIn[0].getPortName(index).c_str(), &temp);
-        SelectedMIDIDevices[index] = temp;
+
+        //Make sure device doesn't connect in the backend.
+        if (setDeviceFalse) {
+          SelectedMIDIDevices[index] = 0;
+          setDeviceFalse = false;
+        } else {
+          SelectedMIDIDevices[index] = temp;
+        }
       }
     } else {
       ImGui::Text("No MIDI devices found.\n");
@@ -783,8 +802,8 @@ void ecInterface::initMIDI() {
    To get around this you simply execute consts::MAX_MIDI_IN dummy bindTo calls and then immediately
       clear mBinding of this fake data.
 
-   This seems to properly init the pointers to mBindings memory when setCallback uses them. 
-   
+   This seems to properly init the pointers to mBindings memory when setCallback uses them.
+
    What the fuck. I hate this, I hate computers. I'm goingg outside.
   */
   for (int i = 0; i < consts::MAX_MIDI_IN; i++)
