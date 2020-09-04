@@ -94,6 +94,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
  private:
   float windowWidth, windowHeight;
+  bool isFullScreen;
 
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
@@ -278,6 +279,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setColorSchemeMode(bool is_light);
   void setFontScale(float font_scale);
   void setWindowDimensions(float width, float height);
+  void setInitFullscreen(bool fullscreen){isFullScreen = fullscreen;}
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name);

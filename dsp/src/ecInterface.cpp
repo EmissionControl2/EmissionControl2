@@ -21,7 +21,6 @@ void ecInterface::onInit() {
 
   execDir = f.directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
-
 #ifdef __APPLE__
   execDir = util::getContentPath(execDir);
   system(f.conformPathToOS((execDir + consts::CONFIG_DIR_SCRIPT_PATH)).c_str());
@@ -53,6 +52,7 @@ void ecInterface::onInit() {
   setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
   setFontScale(config.at(consts::FONT_SCALE_KEY));
   setWindowDimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
+  setInitFullscreen(false);
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
@@ -82,7 +82,8 @@ void ecInterface::onInit() {
 void ecInterface::onCreate() {
   al::imguiInit();
 
-  // fullScreen(1);
+  // Set if fullscreen or not.
+  fullScreen(isFullScreen);
 
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     granulator.ECParameters[index]->addToPresetHandler(mPresets);
@@ -116,6 +117,7 @@ void ecInterface::onExit() {
   // Write Window Dimensions to JSON on exit.
   jsonWriteToConfig(windowWidth, consts::WINDOW_WIDTH_KEY);
   jsonWriteToConfig(windowHeight, consts::WINDOW_HEIGHT_KEY);
+  jsonWriteToConfig(isFullScreen, consts::FULLSCREEN_KEY);
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -128,6 +130,10 @@ void ecInterface::onDraw(Graphics &g) {
   // Get window height and width (for responsive sizing)
   windowWidth = width();
   windowHeight = height();
+
+  // Get Window Full Screen ; BROKEN
+  // if (fullScreen() != isFullScreen)
+  //   isFullScreen = fullScreen();
 
   // Initialize Audio IO popup to false
   bool displayIO = false;
@@ -1328,6 +1334,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::WINDOW_HEIGHT_KEY) == config.end())
       config[consts::WINDOW_HEIGHT_KEY] = consts::WINDOW_HEIGHT;
 
+    if (config.find(consts::FULLSCREEN_KEY) == config.end())
+      config[consts::FULLSCREEN_KEY] = consts::FULLSCREEN;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -1343,6 +1352,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::WINDOW_WIDTH_KEY] = consts::WINDOW_WIDTH;
 
     config[consts::WINDOW_HEIGHT_KEY] = consts::WINDOW_HEIGHT;
+
+    config[consts::FULLSCREEN_KEY] = consts::FULLSCREEN;
   }
 
   std::ofstream file((userPath + configFile).c_str());
@@ -1412,11 +1423,11 @@ void ecInterface::setMIDIPresetNames(json preset_names) {
 }
 
 void ecInterface::setSoundOutputPath(std::string sound_output_path) {
-  soundOutput = f.conformPathToOS(sound_output_path); 
+  soundOutput = f.conformPathToOS(sound_output_path);
 }
 
 void ecInterface::setAudioSettings(float sample_rate) {
-  globalSamplingRate = sample_rate; 
+  globalSamplingRate = sample_rate;
 
   configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
 
@@ -1448,9 +1459,7 @@ void ecInterface::setColorSchemeMode(bool is_light) {
   }
 }
 
-void ecInterface::setFontScale(float font_scale) {
-  fontScale = font_scale;
-}
+void ecInterface::setFontScale(float font_scale) { fontScale = font_scale; }
 
 void ecInterface::setWindowDimensions(float width, float height) {
   windowWidth = width;
