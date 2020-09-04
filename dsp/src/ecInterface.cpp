@@ -390,6 +390,8 @@ void ecInterface::onDraw(Graphics &g) {
     isDeleteJSON = false;
   }
 
+  // Save MIDI Preset
+
   if (isMIDIWriteWindow) {
     ImGui::OpenPopup("Save MIDI Preset");
   }
@@ -411,10 +413,15 @@ void ecInterface::onDraw(Graphics &g) {
       isMIDIWriteOpen = false;
       isWriteJSON = true;
     }
+
+    ImGui::SameLine();
+
+    ImGui::Checkbox("Overwrite", &allowMIDIPresetOverwrite);
+
     ImGui::EndPopup();
   }
   if (!isMIDIWriteOpen && isWriteJSON) {
-    writeJSONMIDIPreset(mCurrentPresetName);
+    writeJSONMIDIPreset(mCurrentPresetName, allowMIDIPresetOverwrite);
     isWriteJSON = false;
   }
 
@@ -835,7 +842,6 @@ void ecInterface::onDraw(Graphics &g) {
         NFD_PathSet_Free(&pathSet);
       }
     }
-    // ImGui::Text(execDir.c_str()); //DEBUG
     ImGui::EndPopup();
   }
 
@@ -1066,12 +1072,12 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
       std::string filename;
       if (!state.overwriteButton) {
         filename = buf1;
-        int counter = 0;
+        int counter = 1;
         while (File::exists(directory + filename) && counter < 9999) {
           filename = buf1;
           int lastDot = filename.find_last_of(".");
-          filename =
-              filename.substr(0, lastDot) + std::to_string(counter++) + filename.substr(lastDot);
+          filename = filename.substr(0, lastDot) + "_" + std::to_string(counter++) +
+                     filename.substr(lastDot);
         }
       }
       if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize,
@@ -1468,27 +1474,29 @@ void ecInterface::setWindowDimensions(float width, float height) {
 }
 
 // MIDI Preset Jsons
-void ecInterface::writeJSONMIDIPreset(std::string name) {
-  MIDIPresetNames.insert(name);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
+void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
+  if (name == "")
+    return;
 
-  json midi_config = json::array();
-  std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
-  if (ifs.is_open()) {
-    json temp;
-    for (int index = 0; index < ActiveMIDI.size(); index++) {
-      ActiveMIDI[index].toJSON(temp);
-      midi_config.push_back(temp);
-    }
-  } else {
-    json temp;
-    for (int index = 0; index < ActiveMIDI.size(); index++) {
-      ActiveMIDI[index].toJSON(temp);
-      midi_config.push_back(temp);
+  std::string filename = name;
+  if (!allowOverwrite) {
+    int counter = 1;
+    while (File::exists(userPath + midiPresetsPath + filename + ".json") && counter < 9999) {
+      filename = name + "_" + std::to_string(counter++);
     }
   }
 
-  std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
+  MIDIPresetNames.insert(filename);
+  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  json midi_config = json::array();
+
+  json temp;
+  for (int index = 0; index < ActiveMIDI.size(); index++) {
+    ActiveMIDI[index].toJSON(temp);
+    midi_config.push_back(temp);
+  }
+
+  std::ofstream file((userPath + midiPresetsPath + filename + ".json").c_str());
   if (file.is_open())
     file << midi_config;
 }

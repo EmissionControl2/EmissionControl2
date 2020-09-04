@@ -106,7 +106,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::array<RtMidiIn,consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
-  char mCurrentPresetName[50];
+  char mCurrentPresetName[64];
+  bool allowMIDIPresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
@@ -282,7 +283,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setInitFullscreen(bool fullscreen){isFullScreen = fullscreen;}
 
   // MIDI Preset Json files
-  void writeJSONMIDIPreset(std::string name);
+  void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
 
