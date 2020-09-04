@@ -355,6 +355,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndPopup();
   }
   if (!isMIDILoadOpen && isLoadJSON) {
+    clearActiveMIDI();
     loadJSONMIDIPreset(midi_preset_name);
     isLoadJSON = false;
   }
