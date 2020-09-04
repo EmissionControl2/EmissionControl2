@@ -264,7 +264,6 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
-  void writeJSONMIDIPreset(std::string name);
 
   /**
    * @brief Read json config file and write output path to soundOutput member
@@ -272,14 +271,16 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    *
    *
    */
-  void loadJSONMIDIPreset(std::string midi_preset_name);
   void jsonReadAndSetMIDIPresetNames();
   void jsonReadAndSetSoundOutputPath();
   void jsonReadAndSetAudioSettings();
   void jsonReadAndSetColorSchemeMode();
   void jsonReadAndSetFontScale();
+  void jsonReadAndSetWindowDimensions();
 
-  // Delete json 
+  // MIDI Preset Json files
+  void writeJSONMIDIPreset(std::string name);
+  void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
 
 };

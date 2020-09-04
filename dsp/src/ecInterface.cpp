@@ -18,7 +18,6 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
-  dimensions(1920, 1080);
 
   execDir = f.directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
@@ -52,6 +51,7 @@ void ecInterface::onInit() {
   jsonReadAndSetAudioSettings();
   jsonReadAndSetColorSchemeMode();
   jsonReadAndSetFontScale();
+  jsonReadAndSetWindowDimensions();
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
@@ -111,8 +111,10 @@ void ecInterface::onCreate() {
   setGUIParams();
 }
 
-void ecInterface::onExit() { 
-  std::cout << "kaskds\n"; 
+void ecInterface::onExit() {
+  // Write Window Dimensions to JSON on exit.
+  jsonWriteToConfig(windowWidth, consts::WINDOW_WIDTH_KEY);
+  jsonWriteToConfig(windowHeight, consts::WINDOW_HEIGHT_KEY);
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -1288,6 +1290,12 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
   return state;
 }
 
+bool ecInterface::onMouseDown(const Mouse &m) {
+  if (mIsLinkingParamAndMIDI)
+    mIsLinkingParamAndMIDI = false;
+  return true;
+}
+
 /**** Configuration File Stuff -- Implementation****/
 
 bool ecInterface::initJsonConfig() {
@@ -1312,6 +1320,12 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::FONT_SCALE_KEY) == config.end())
       config[consts::FONT_SCALE_KEY] = consts::FONT_SCALE;
 
+    if (config.find(consts::WINDOW_WIDTH_KEY) == config.end())
+      config[consts::WINDOW_WIDTH_KEY] = consts::WINDOW_WIDTH;
+
+    if (config.find(consts::WINDOW_HEIGHT_KEY) == config.end())
+      config[consts::WINDOW_HEIGHT_KEY] = consts::WINDOW_HEIGHT;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -1323,6 +1337,10 @@ bool ecInterface::initJsonConfig() {
     config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
 
     config[consts::FONT_SCALE_KEY] = consts::FONT_SCALE;
+
+    config[consts::WINDOW_WIDTH_KEY] = consts::WINDOW_WIDTH;
+
+    config[consts::WINDOW_HEIGHT_KEY] = consts::WINDOW_HEIGHT;
   }
 
   std::ofstream file((userPath + configFile).c_str());
@@ -1372,67 +1390,6 @@ bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &pres
   } else {
     return false;
   }
-}
-
-void ecInterface::writeJSONMIDIPreset(std::string name) {
-  MIDIPresetNames.insert(name);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
-
-  json midi_config = json::array();
-  std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
-  if (ifs.is_open()) {
-    json temp;
-    for (int index = 0; index < ActiveMIDI.size(); index++) {
-      ActiveMIDI[index].toJSON(temp);
-      midi_config.push_back(temp);
-    }
-  } else {
-    json temp;
-    for (int index = 0; index < ActiveMIDI.size(); index++) {
-      ActiveMIDI[index].toJSON(temp);
-      midi_config.push_back(temp);
-    }
-  }
-
-  std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
-  if (file.is_open())
-    file << midi_config;
-}
-
-void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
-  std::ifstream ifs(userPath + midiPresetsPath + midi_preset_name + ".json");
-
-  json midi_config;
-
-  if (ifs.is_open())
-    midi_config = json::parse(ifs);
-  else
-    return;
-
-  for (int index = 0; index < midi_config.size(); index++) {
-    MIDIKey temp;
-    temp.fromJSON(midi_config[index]);
-    ActiveMIDI.push_back(temp);
-  }
-}
-
-void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
-  MIDIPresetNames.erase(midi_preset_name);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
-  std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
-}
-
-void ecInterface::jsonReadAndSetFontScale() {
-  json config;
-
-  std::ifstream ifs(userPath + configFile);
-
-  if (ifs.is_open())
-    config = json::parse(ifs);
-  else
-    return;
-
-  fontScale = config.at(consts::FONT_SCALE_KEY);
 }
 
 void ecInterface::jsonReadAndSetColorSchemeMode() {
@@ -1515,8 +1472,77 @@ void ecInterface::jsonReadAndSetAudioSettings() {
   granulator.setIO(&audioIO());
 }
 
-bool ecInterface::onMouseDown(const Mouse &m) {
-  if (mIsLinkingParamAndMIDI)
-    mIsLinkingParamAndMIDI = false;
-  return true;
+void ecInterface::jsonReadAndSetWindowDimensions() {
+  json config;
+
+  std::ifstream ifs(userPath + configFile);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  dimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
+}
+
+// MIDI Preset Jsons
+void ecInterface::writeJSONMIDIPreset(std::string name) {
+  MIDIPresetNames.insert(name);
+  jsonWriteMIDIPresetNames(MIDIPresetNames);
+
+  json midi_config = json::array();
+  std::ifstream ifs(userPath + midiPresetsPath + name + ".json");
+  if (ifs.is_open()) {
+    json temp;
+    for (int index = 0; index < ActiveMIDI.size(); index++) {
+      ActiveMIDI[index].toJSON(temp);
+      midi_config.push_back(temp);
+    }
+  } else {
+    json temp;
+    for (int index = 0; index < ActiveMIDI.size(); index++) {
+      ActiveMIDI[index].toJSON(temp);
+      midi_config.push_back(temp);
+    }
+  }
+
+  std::ofstream file((userPath + midiPresetsPath + name + ".json").c_str());
+  if (file.is_open())
+    file << midi_config;
+}
+
+void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
+  std::ifstream ifs(userPath + midiPresetsPath + midi_preset_name + ".json");
+
+  json midi_config;
+
+  if (ifs.is_open())
+    midi_config = json::parse(ifs);
+  else
+    return;
+
+  for (int index = 0; index < midi_config.size(); index++) {
+    MIDIKey temp;
+    temp.fromJSON(midi_config[index]);
+    ActiveMIDI.push_back(temp);
+  }
+}
+
+void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
+  MIDIPresetNames.erase(midi_preset_name);
+  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
+}
+
+void ecInterface::jsonReadAndSetFontScale() {
+  json config;
+
+  std::ifstream ifs(userPath + configFile);
+
+  if (ifs.is_open())
+    config = json::parse(ifs);
+  else
+    return;
+
+  fontScale = config.at(consts::FONT_SCALE_KEY);
 }
