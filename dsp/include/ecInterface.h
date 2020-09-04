@@ -57,6 +57,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   virtual void onMIDIMessage(const al::MIDIMessage &m) override;
 
+  virtual void onExit () override;
+
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
     std::string currentBank;

@@ -111,6 +111,10 @@ void ecInterface::onCreate() {
   setGUIParams();
 }
 
+void ecInterface::onExit() {
+  std::cout << "kaskds\n";
+}
+
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
