@@ -818,7 +818,7 @@ void ecInterface::initMIDI() {
    What the fuck. I hate this, I hate computers. I'm goingg outside.
   */
   for (int i = 0; i < consts::MAX_MIDI_IN; i++)
-    MIDIMessageHandler::bindTo(midiIn[0], 0);
+    MIDIMessageHandler::bindTo(midiIn[i], 0);
   MIDIMessageHandler::clearBindings();
   /* End of stupid as shit code. **/
 
@@ -834,32 +834,6 @@ void ecInterface::initMIDI() {
     printf("Opened port to %s\n", midiIn[0].getPortName(port).c_str());
   } else {
     printf("Error: No MIDI devices found.\n");
-  }
-}
-
-void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
-  for (int index = 0; index < ActiveMIDI.size(); index++) {
-    for (int jndex = 0; jndex < ActiveMIDI[index].mInfo.size(); jndex++) {
-      if (ActiveMIDI[index].mInfo[jndex].channel() == m.channel() &&
-          ActiveMIDI[index].mInfo[jndex].controlNumber() == m.controlNumber()) {
-        switch (ActiveMIDI[index].getType()) {
-        case M_PARAM:
-          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        case M_MOD:
-          updateECModParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        case M_LFO:
-          updateLFOParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        case M_DUTY:
-          updateLFODutyParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        default:
-          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-        }
-      }
-    }
   }
 }
 
@@ -897,6 +871,32 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
     updateActiveMIDIParams(m);
     break;
   default:;
+  }
+}
+
+void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
+  for (int index = 0; index < ActiveMIDI.size(); index++) {
+    for (int jndex = 0; jndex < ActiveMIDI[index].mInfo.size(); jndex++) {
+      if (ActiveMIDI[index].mInfo[jndex].channel() == m.channel() &&
+          ActiveMIDI[index].mInfo[jndex].controlNumber() == m.controlNumber()) {
+        switch (ActiveMIDI[index].getType()) {
+        case M_PARAM:
+          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+          break;
+        case M_MOD:
+          updateECModParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+          break;
+        case M_LFO:
+          updateLFOParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+          break;
+        case M_DUTY:
+          updateLFODutyParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+          break;
+        default:
+          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+        }
+      }
+    }
   }
 }
 
