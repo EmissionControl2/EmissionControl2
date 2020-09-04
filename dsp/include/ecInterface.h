@@ -106,7 +106,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::array<RtMidiIn,consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
-  char mCurrentPresetName[64];
+  char mCurrentPresetName[64] = "midi_preset";
   bool allowMIDIPresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
