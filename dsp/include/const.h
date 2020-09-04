@@ -51,6 +51,8 @@ const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
 const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
+const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
+const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
 
 /**
  *  DEFAULT USER PATHS
