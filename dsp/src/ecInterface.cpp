@@ -18,6 +18,7 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
+  title("Emission Control 2");
 
   execDir = f.directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
@@ -74,9 +75,12 @@ void ecInterface::onInit() {
 
   initMIDI();
 
+  gam::sampleRate(audioIO().framesPerSecond());
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
   audioIO().append(mHardClip);
+  audioIO().print();
+  std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
 
 void ecInterface::onCreate() {
