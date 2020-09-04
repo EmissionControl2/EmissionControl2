@@ -39,6 +39,7 @@ const bool LIGHT_MODE = false;
 const float FONT_SCALE = 1.0;
 const float WINDOW_WIDTH = 1920;
 const float WINDOW_HEIGHT = 1080;
+const bool FULLSCREEN = false;
 enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
@@ -55,6 +56,7 @@ const std::string FONT_SCALE_KEY = "FONT_SCALE";
 const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
 const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
 const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
+const std::string FULLSCREEN_KEY = "FULLSCREEN";
 
 /**
  *  DEFAULT USER PATHS
