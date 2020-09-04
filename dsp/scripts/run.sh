@@ -29,9 +29,7 @@ if [ ${result} == 0 ]; then
     if [ ${DEBUG} == "-g" ]; then
       ./EmissionControl2.app/Contents/MacOS/EmissionControl2
     else
-
       open EmissionControl2.app
     fi
   fi
-
 fi
