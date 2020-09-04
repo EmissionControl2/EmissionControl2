@@ -17,6 +17,7 @@ void ecSynth::setIO(al::AudioIOData *io) {
   mPrevSR = mGlobalSamplingRate;
   grainScheduler.setSamplingRate(io->fps());
   mGlobalSamplingRate = io->fps();
+  mScanner.setSamplingRate(mGlobalSamplingRate);
 }
 
 void ecSynth::initialize(al::AudioIOData *io) {
@@ -154,36 +155,6 @@ void ecSynth::onProcess(al::AudioIOData &io) {
         if (mCurrentIndex >= frames)
           mCurrentIndex = mCurrentIndex - frames;
       }
-
-      /* Experiments For when Tape Head Changes
-
-      if (prevTapeHeadVal != nowTapeHeadVal) {
-        start = mScanner.getValue();
-        end = (nowTapeHeadVal * frames) +
-              ((frames - (nowTapeHeadVal * frames)) * scan_width);
-        mScanner.set(start, end,
-                     (end - start) / (mGlobalSamplingRate * scan_speed));
-      }
-
-      */
-
-      /* Experiment: Quick attack to new tapehead position.
-      if (prevTapeHeadVal != nowTapeHeadVal) {
-        if (mScanner.getValue() < nowTapeHeadVal * frames) {
-          start = mScanner.getValue();
-          end = nowTapeHeadVal * frames;
-          mScanner.set(start, end,
-                       abs(end - start) / (mGlobalSamplingRate * scan_speed) /
-                           (scan_speed * 16));
-        } else {
-          start = nowTapeHeadVal * frames;
-          end = mScanner.getValue();
-          mScanner.set(start, end,
-                       abs(start - end) / (mGlobalSamplingRate * scan_speed) /
-                           (scan_speed * 16));
-        }
-      }
-      */
 
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
