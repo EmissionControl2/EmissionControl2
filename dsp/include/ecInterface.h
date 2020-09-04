@@ -57,6 +57,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   virtual void onMIDIMessage(const al::MIDIMessage &m) override;
 
+  virtual void onExit () override;
+
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
     std::string currentBank;
@@ -92,6 +94,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
  private:
   float windowWidth, windowHeight;
+  bool isFullScreen;
 
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
   float background = 0.21;
@@ -100,13 +103,15 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
 
-  RtMidiIn midiIn;
+  std::array<RtMidiIn,consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
-  char mCurrentPresetName[50];
+  char mCurrentPresetName[64] = "midi_preset";
+  bool allowMIDIPresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
+  std::vector<bool> SelectedMIDIDevices;
 
   void clearActiveMIDI() {
     ActiveMIDI.clear();
@@ -261,7 +266,6 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
-  void writeJSONMIDIPreset(std::string name);
 
   /**
    * @brief Read json config file and write output path to soundOutput member
@@ -269,12 +273,20 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    *
    *
    */
+  json jsonReadConfig();
+  void setMIDIPresetNames(json preset_names);
+  void setSoundOutputPath(std::string sound_output_path);
+  void setAudioSettings(float sample_rate);
+  void setColorSchemeMode(bool is_light);
+  void setFontScale(float font_scale);
+  void setWindowDimensions(float width, float height);
+  void setInitFullscreen(bool fullscreen){isFullScreen = fullscreen;}
+
+  // MIDI Preset Json files
+  void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
   void loadJSONMIDIPreset(std::string midi_preset_name);
-  void jsonReadAndSetMIDIPresetNames();
-  void jsonReadAndSetSoundOutputPath();
-  void jsonReadAndSetAudioSettings();
-  void jsonReadAndSetColorSchemeMode();
-  void jsonReadAndSetFontScale();
+  void deleteJSONMIDIPreset(std::string midi_preset_name);
+
 };
 
 #endif

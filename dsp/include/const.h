@@ -29,13 +29,17 @@ enum paramNames {
 const int NUM_PARAMS = 15;
 const int NUM_LFOS = 4;
 const int MAX_GRAIN_DISPLAY = 100;
+const int MAX_MIDI_IN = 5;
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
 const int AUDIO_OUTS = 2;
 const int DEVICE_NUM = -1;
-const bool LIGHT_MODE = true;
+const bool LIGHT_MODE = false;
 const float FONT_SCALE = 1.0;
+const float WINDOW_WIDTH = 1920;
+const float WINDOW_HEIGHT = 1080;
+const bool FULLSCREEN = false;
 enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
@@ -50,6 +54,9 @@ const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
 const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
+const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
+const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
+const std::string FULLSCREEN_KEY = "FULLSCREEN";
 
 /**
  *  DEFAULT USER PATHS
