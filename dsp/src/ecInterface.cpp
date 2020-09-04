@@ -46,12 +46,13 @@ void ecInterface::onInit() {
 #endif
 
   initJsonConfig();
-  jsonReadAndSetMIDIPresetNames();
-  jsonReadAndSetSoundOutputPath();
-  jsonReadAndSetAudioSettings();
-  jsonReadAndSetColorSchemeMode();
-  jsonReadAndSetFontScale();
-  jsonReadAndSetWindowDimensions();
+  json config = jsonReadConfig();
+  setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
+  setSoundOutputPath(config.at(consts::SOUND_OUTPUT_PATH_KEY));
+  setAudioSettings(config.at(consts::SAMPLE_RATE_KEY));
+  setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
+  setFontScale(config.at(consts::FONT_SCALE_KEY));
+  setWindowDimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
@@ -175,7 +176,7 @@ void ecInterface::onDraw(Graphics &g) {
         if (result == NFD_OKAY) {
           std::string temp = outPath;
           jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
-          jsonReadAndSetSoundOutputPath();
+          setSoundOutputPath(outPath);
         }
       }
       if (ImGui::MenuItem("Load Sound File", "")) {
@@ -540,7 +541,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (result == NFD_OKAY) {
       std::string temp = outPath;
       jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
-      jsonReadAndSetSoundOutputPath();
+      setSoundOutputPath(outPath);
     }
   }
   ImGui::PopFont();
@@ -1392,17 +1393,37 @@ bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &pres
   }
 }
 
-void ecInterface::jsonReadAndSetColorSchemeMode() {
+json ecInterface::jsonReadConfig() {
   json config;
 
   std::ifstream ifs(userPath + configFile);
 
   if (ifs.is_open())
     config = json::parse(ifs);
-  else
-    return;
 
-  light = config.at(consts::LIGHT_MODE_KEY);
+  return config;
+}
+
+void ecInterface::setMIDIPresetNames(json preset_names) {
+  for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
+    MIDIPresetNames.insert((std::string)*iter);
+  }
+}
+
+void ecInterface::setSoundOutputPath(std::string sound_output_path) {
+  soundOutput = f.conformPathToOS(sound_output_path); 
+}
+
+void ecInterface::setAudioSettings(float sample_rate) {
+  globalSamplingRate = sample_rate; 
+
+  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
+
+  granulator.setIO(&audioIO());
+}
+
+void ecInterface::setColorSchemeMode(bool is_light) {
+  light = is_light;
   if (!light) {
     PrimaryColor = &PrimaryDark;
     ECyellow = &YellowDark;
@@ -1425,64 +1446,15 @@ void ecInterface::jsonReadAndSetColorSchemeMode() {
     Text = &TextLight;
   }
 }
-void ecInterface::jsonReadAndSetMIDIPresetNames() {
-  json config;
 
-  std::ifstream ifs(userPath + configFile);
-
-  if (ifs.is_open())
-    config = json::parse(ifs);
-  else
-    return;
-
-  json preset_names = json::array();
-  preset_names = config.at(consts::MIDI_PRESET_NAMES_KEY);
-  for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
-    MIDIPresetNames.insert((std::string)*iter);
-  }
+void ecInterface::setFontScale(float font_scale) {
+  fontScale = font_scale;
 }
 
-void ecInterface::jsonReadAndSetSoundOutputPath() {
-  json config;
-
-  std::ifstream ifs(userPath + configFile);
-
-  if (ifs.is_open())
-    config = json::parse(ifs);
-  else
-    return;
-
-  soundOutput = f.conformPathToOS(config.at(consts::SOUND_OUTPUT_PATH_KEY));
-}
-
-void ecInterface::jsonReadAndSetAudioSettings() {
-  json config;
-
-  std::ifstream ifs(userPath + configFile);
-
-  if (ifs.is_open())
-    config = json::parse(ifs);
-  else
-    return;
-
-  globalSamplingRate = config.at(consts::SAMPLE_RATE_KEY);
-
-  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
-
-  granulator.setIO(&audioIO());
-}
-
-void ecInterface::jsonReadAndSetWindowDimensions() {
-  json config;
-
-  std::ifstream ifs(userPath + configFile);
-
-  if (ifs.is_open())
-    config = json::parse(ifs);
-  else
-    return;
-
-  dimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
+void ecInterface::setWindowDimensions(float width, float height) {
+  windowWidth = width;
+  windowHeight = height;
+  dimensions(width, height);
 }
 
 // MIDI Preset Jsons
@@ -1532,17 +1504,4 @@ void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
   MIDIPresetNames.erase(midi_preset_name);
   jsonWriteMIDIPresetNames(MIDIPresetNames);
   std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
-}
-
-void ecInterface::jsonReadAndSetFontScale() {
-  json config;
-
-  std::ifstream ifs(userPath + configFile);
-
-  if (ifs.is_open())
-    config = json::parse(ifs);
-  else
-    return;
-
-  fontScale = config.at(consts::FONT_SCALE_KEY);
 }

@@ -271,12 +271,13 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    *
    *
    */
-  void jsonReadAndSetMIDIPresetNames();
-  void jsonReadAndSetSoundOutputPath();
-  void jsonReadAndSetAudioSettings();
-  void jsonReadAndSetColorSchemeMode();
-  void jsonReadAndSetFontScale();
-  void jsonReadAndSetWindowDimensions();
+  json jsonReadConfig();
+  void setMIDIPresetNames(json preset_names);
+  void setSoundOutputPath(std::string sound_output_path);
+  void setAudioSettings(float sample_rate);
+  void setColorSchemeMode(bool is_light);
+  void setFontScale(float font_scale);
+  void setWindowDimensions(float width, float height);
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name);
