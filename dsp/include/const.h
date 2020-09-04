@@ -37,6 +37,8 @@ const int AUDIO_OUTS = 2;
 const int DEVICE_NUM = -1;
 const bool LIGHT_MODE = true;
 const float FONT_SCALE = 1.0;
+const float WINDOW_WIDTH = 1920;
+const float WINDOW_HEIGHT = 1080;
 enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
