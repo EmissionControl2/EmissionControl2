@@ -278,6 +278,10 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void jsonReadAndSetAudioSettings();
   void jsonReadAndSetColorSchemeMode();
   void jsonReadAndSetFontScale();
+
+  // Delete json 
+  void deleteJSONMIDIPreset(std::string midi_preset_name);
+
 };
 
 #endif

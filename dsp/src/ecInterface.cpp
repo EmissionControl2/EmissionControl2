@@ -111,8 +111,8 @@ void ecInterface::onCreate() {
   setGUIParams();
 }
 
-void ecInterface::onExit() {
-  std::cout << "kaskds\n";
+void ecInterface::onExit() { 
+  std::cout << "kaskds\n"; 
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -135,6 +135,7 @@ void ecInterface::onDraw(Graphics &g) {
   // Initialize MIDI windows to false
   bool isMIDIWriteWindow = false;
   bool isMIDILoadWindow = false;
+  bool isMIDIDeleteWindow = false;
   bool isMIDIDevicesWindow = false;
 
   al::imguiBeginFrame();
@@ -219,6 +220,10 @@ void ecInterface::onDraw(Graphics &g) {
 
       if (ImGui::MenuItem("Load MIDI Learn Preset", "")) {
         isMIDILoadWindow = true;
+      }
+
+      if (ImGui::MenuItem("Delete MIDI Learn Preset", "")) {
+        isMIDIDeleteWindow = true;
       }
       ImGui::EndMenu();
     }
@@ -330,6 +335,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::OpenPopup("Load MIDI Preset");
   }
 
+  // MIDI Load Preset Window
   bool isMIDILoadOpen = true;
   bool isLoadJSON = false;
   std::string midi_preset_name = "";
@@ -348,6 +354,30 @@ void ecInterface::onDraw(Graphics &g) {
   if (!isMIDILoadOpen && isLoadJSON) {
     loadJSONMIDIPreset(midi_preset_name);
     isLoadJSON = false;
+  }
+
+  // MIDI Delete Preset Window
+  if (isMIDIDeleteWindow) {
+    ImGui::OpenPopup("Delete MIDI Preset");
+  }
+  bool isMIDIDeleteOpen = true;
+  bool isDeleteJSON = false;
+  midi_preset_name = "";
+  if (ImGui::BeginPopupModal("Delete MIDI Preset", &isMIDIDeleteOpen)) {
+    ImGui::PushItemWidth(windowWidth / 3);
+
+    for (auto iter = MIDIPresetNames.begin(); iter != MIDIPresetNames.end(); iter++) {
+      if (ImGui::Selectable(iter->c_str())) {
+        isMIDIDeleteOpen = false;
+        isDeleteJSON = true;
+        midi_preset_name = *iter;
+      }
+    }
+    ImGui::EndPopup();
+  }
+  if (!isMIDIDeleteOpen && isDeleteJSON) {
+    deleteJSONMIDIPreset(midi_preset_name);
+    isDeleteJSON = false;
   }
 
   if (isMIDIWriteWindow) {
@@ -1384,6 +1414,12 @@ void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
     temp.fromJSON(midi_config[index]);
     ActiveMIDI.push_back(temp);
   }
+}
+
+void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
+  MIDIPresetNames.erase(midi_preset_name);
+  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
 }
 
 void ecInterface::jsonReadAndSetFontScale() {
