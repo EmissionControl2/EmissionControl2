@@ -609,7 +609,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
 
-    float plotWidth = ImGui::GetContentRegionAvail().x * 0.99;
+    float plotWidth = ImGui::GetContentRegionAvail().x;
     float plotHeight = ImGui::GetContentRegionAvail().y;
     ImVec2 p = ImGui::GetCursorScreenPos();
     float scanPos = granulator.ECParameters[consts::SCAN_POS]->getModParam(
@@ -681,18 +681,6 @@ void ecInterface::onDraw(Graphics &g) {
 
     ImGui::PopFont();
     NextWindowYPosition += graphHeight / 3;
-
-    bool temp;
-    char* test[2] = {"L", "R"};
-    int switcher = 0;
-    if (granulator.soundClip[granulator.mModClip]->channels == 2) {
-      ImGui::SameLine();
-      ImGui::PushFont(bodyFont);
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-      ImGui::ListBox("", &switcher, test, 2);
-      ImGui::PopItemWidth();
-      ImGui::PopFont();
-    }
 
     ParameterGUI::endPanel();
 
