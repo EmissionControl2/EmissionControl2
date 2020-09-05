@@ -621,10 +621,11 @@ void ecInterface::onDraw(Graphics &g) {
       scanWidth *= -1;
     ImU32 semitransBlue =
         IM_COL32(ECblue->Value.x * 255, ECblue->Value.y * 255, ECblue->Value.z * 255, 100);
-    int soundFileLength = granulator.soundClip[granulator.mModClip]->frames;
+    int soundFileLength = granulator.soundClip[granulator.mModClip]->size;
+    int soundFileFrames = granulator.soundClip[granulator.mModClip]->frames;
 
     // Downsample value
-    int sampleSkip = 1;
+    int sampleSkip = granulator.soundClip[granulator.mModClip]->channels;
 
     // Increase downsample value based on file length
     if (soundFileLength > ImGui::GetContentRegionAvail().x)
@@ -673,13 +674,13 @@ void ecInterface::onDraw(Graphics &g) {
                                        consts::MAX_GRAIN_DISPLAY);
 
     for (int grain = 0; grain < numGrainsToDisplay; grain++) {
-      float temp_line_val = GrainDisplayIndices[grain] / soundFileLength;
+      float temp_line_val = GrainDisplayIndices[grain] / soundFileFrames;
       drawList->AddLine(ImVec2(p.x + (temp_line_val * plotWidth), p.y),
                         ImVec2(p.x + (temp_line_val * plotWidth), p.y + plotHeight), *ECred, 3.0f);
     }
 
     ImGui::PopFont();
-    NextWindowYPosition += graphHeight / 3;
+  
     ParameterGUI::endPanel();
 
     // Draw grain histogram window --------------------------------------
