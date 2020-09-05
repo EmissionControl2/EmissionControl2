@@ -609,7 +609,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
 
-    float plotWidth = ImGui::GetContentRegionAvail().x;
+    float plotWidth = ImGui::GetContentRegionAvail().x * 0.99;
     float plotHeight = ImGui::GetContentRegionAvail().y;
     ImVec2 p = ImGui::GetCursorScreenPos();
     float scanPos = granulator.ECParameters[consts::SCAN_POS]->getModParam(
@@ -625,12 +625,12 @@ void ecInterface::onDraw(Graphics &g) {
     int soundFileFrames = granulator.soundClip[granulator.mModClip]->frames;
 
     // Downsample value
-    int sampleSkip = granulator.soundClip[granulator.mModClip]->channels;
+    int sampleSkip = 1;
 
     // Increase downsample value based on file length
-    if (soundFileLength > ImGui::GetContentRegionAvail().x)
-      sampleSkip = int(soundFileLength / ImGui::GetContentRegionAvail().x);
-
+    if (soundFileLength > plotWidth)
+      sampleSkip += int(soundFileLength / plotWidth);
+    
     // Draw Waveform
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::PlotLines("##scanDisplay", granulator.soundClip[granulator.mModClip]->data,
@@ -681,6 +681,18 @@ void ecInterface::onDraw(Graphics &g) {
 
     ImGui::PopFont();
     NextWindowYPosition += graphHeight / 3;
+
+    bool temp;
+    char* test[2] = {"L", "R"};
+    int switcher = 0;
+    if (granulator.soundClip[granulator.mModClip]->channels == 2) {
+      ImGui::SameLine();
+      ImGui::PushFont(bodyFont);
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+      ImGui::ListBox("", &switcher, test, 2);
+      ImGui::PopItemWidth();
+      ImGui::PopFont();
+    }
 
     ParameterGUI::endPanel();
 
