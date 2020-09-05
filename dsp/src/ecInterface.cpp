@@ -680,7 +680,8 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     ImGui::PopFont();
-  
+    NextWindowYPosition += graphHeight / 3;
+
     ParameterGUI::endPanel();
 
     // Draw grain histogram window --------------------------------------
