@@ -74,6 +74,8 @@ void ecInterface::onInit() {
   mPresets.setRootPath(userPath + presetsPath);
 #endif
 
+  for (int i = 0; i < granulator.soundClip.size(); i++)
+    createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
   initMIDI();
 
   gam::sampleRate(audioIO().framesPerSecond());
@@ -621,20 +623,13 @@ void ecInterface::onDraw(Graphics &g) {
       scanWidth *= -1;
     ImU32 semitransBlue =
       IM_COL32(ECblue->Value.x * 255, ECblue->Value.y * 255, ECblue->Value.z * 255, 100);
-    int soundFileLength = granulator.soundClip[granulator.mModClip]->size;
     int soundFileFrames = granulator.soundClip[granulator.mModClip]->frames;
-
-    // Downsample value
-    int sampleSkip = 1;
-
-    // Increase downsample value based on file length
-    if (soundFileLength > plotWidth) sampleSkip += int(soundFileLength / plotWidth);
 
     // Draw Waveform
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    ImGui::PlotLines("##scanDisplay", granulator.soundClip[granulator.mModClip]->data,
-                     soundFileLength / sampleSkip, 0, nullptr, -1, 1, ImVec2(plotWidth, plotHeight),
-                     sizeof(float) * sampleSkip);
+    ImGui::PlotLines("##scanDisplay", audioThumbnails[granulator.mModClip]->data(),
+                     audioThumbnails[granulator.mModClip]->size(), 0, nullptr, -1, 1,
+                     ImVec2(plotWidth, plotHeight), sizeof(float));
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
 
     if (ImGui::IsItemHovered())
@@ -1515,13 +1510,16 @@ void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
   // size of chunks to find min/max over
   float chunkSize = float(lengthInSamples) / thumbnailLength;
   int startChunk, endChunk;
+  // add a new empty audiothumbnail to array
   audioThumbnails.push_back(std::make_unique<std::vector<float>>(thumbnailLength * 2, 0.0f));
   for (int i = 0; i < thumbnailLength; i++) {
     startChunk = i * chunkSize;
     endChunk = startChunk + chunkSize - 1;
-    audioThumbnails.back()->at(i * 2) =
-      std::min_element(soundfile[startChunk], soundfile[endChunk]);
-    audioThumbnails.back()->at(i * 2 + 1) =
-      std::max_element(soundfile[startChunk], soundfile[endChunk]);
+    // int thing[] = {5, 2, 3, 1, 4, 6, 42, 0};
+    // std::cout << *std::min_element(thing + 4, thing + 8) << std::endl;
+    audioThumbnails.back()->data()[i * 2] =
+      *std::min_element(soundfile + startChunk, soundfile + endChunk);
+    audioThumbnails.back()->data()[i * 2 + 1] =
+      *std::max_element(soundfile + startChunk, soundfile + endChunk);
   }
 }
