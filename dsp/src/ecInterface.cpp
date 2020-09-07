@@ -627,10 +627,17 @@ void ecInterface::onDraw(Graphics &g) {
 
     // Draw Waveform
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-    ImGui::PlotLines("##scanDisplay", audioThumbnails[granulator.mModClip]->data(),
-                     audioThumbnails[granulator.mModClip]->size(), 0, nullptr, -1, 1,
-                     ImVec2(plotWidth, plotHeight), sizeof(float));
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
+    float displayPosX = ImGui::GetCursorPosX();
+    ImGui::PlotHistogram("##scanDisplayPos", audioThumbnails[granulator.mModClip]->data() + 1,
+                         audioThumbnails[granulator.mModClip]->size() / 2, 0, nullptr, -1, 1,
+                         ImVec2(plotWidth, plotHeight), sizeof(float) * 2);
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(displayPosX);
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
+    ImGui::PlotHistogram("##scanDisplayNeg", audioThumbnails[granulator.mModClip]->data(),
+                         audioThumbnails[granulator.mModClip]->size() / 2, 0, nullptr, -1, 1,
+                         ImVec2(plotWidth, plotHeight), sizeof(float) * 2);
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
 
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip("Scan Pos: %i\% \nScan Width: %i\%", int(scanPos * 100),
@@ -1505,21 +1512,20 @@ void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
 }
 
 void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
-  // cap thumbnail lenght to 1000 samples
+  // cap thumbnail length to 1000 samples
   int thumbnailLength = lengthInSamples > 1000 ? 1000 : lengthInSamples;
   // size of chunks to find min/max over
   float chunkSize = float(lengthInSamples) / thumbnailLength;
   int startChunk, endChunk;
   // add a new empty audiothumbnail to array
   audioThumbnails.push_back(std::make_unique<std::vector<float>>(thumbnailLength * 2, 0.0f));
+
   for (int i = 0; i < thumbnailLength; i++) {
     startChunk = i * chunkSize;
     endChunk = startChunk + chunkSize - 1;
-    // int thing[] = {5, 2, 3, 1, 4, 6, 42, 0};
-    // std::cout << *std::min_element(thing + 4, thing + 8) << std::endl;
     audioThumbnails.back()->data()[i * 2] =
-      *std::min_element(soundfile + startChunk, soundfile + endChunk);
+      std::min(0.0f, *std::min_element(soundfile + startChunk, soundfile + endChunk));
     audioThumbnails.back()->data()[i * 2 + 1] =
-      *std::max_element(soundfile + startChunk, soundfile + endChunk);
+      std::max(0.0f, *std::max_element(soundfile + startChunk, soundfile + endChunk));
   }
 }
