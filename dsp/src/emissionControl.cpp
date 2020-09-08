@@ -197,7 +197,10 @@ void ecModulator::setFrequency(float frequency) {
   mFrequency = frequency;
 }
 
-void ecModulator::setWidth(float width) { mLFO.mod(width); mWidth = width;}
+void ecModulator::setWidth(float width) {
+  mLFO.mod(width);
+  mWidth = width;
+}
 
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
@@ -383,7 +386,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
   // MIDI LEARN Functionality
   isMIDILearn->mParamAdd = false;
   isMIDILearn->mParamDel = false;
-  if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
+  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
     ImGui::OpenPopup(("midiLearn" + mParameter->getName()).c_str());
   }
   if (ImGui::BeginPopup(("midiLearn" + mParameter->getName()).c_str())) {
