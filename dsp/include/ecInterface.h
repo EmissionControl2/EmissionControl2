@@ -57,7 +57,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   virtual void onMIDIMessage(const al::MIDIMessage &m) override;
 
-  virtual void onExit () override;
+  virtual void onExit() override;
 
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
@@ -103,7 +103,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
 
-  std::array<RtMidiIn,consts::MAX_MIDI_IN> midiIn;
+  std::array<RtMidiIn, consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
   char mCurrentPresetName[64] = "midi_preset";
@@ -209,6 +209,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
   std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
 
+  std::vector<std::unique_ptr<std::vector<float>>> audioThumbnails;
+
   float GrainDisplayIndices[consts::MAX_GRAIN_DISPLAY];
   int numGrainsToDisplay;
 
@@ -266,7 +268,6 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
-
   /**
    * @brief Read json config file and write output path to soundOutput member
    * variable.
@@ -280,13 +281,15 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setColorSchemeMode(bool is_light);
   void setFontScale(float font_scale);
   void setWindowDimensions(float width, float height);
-  void setInitFullscreen(bool fullscreen){isFullScreen = fullscreen;}
+  void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
 
+  // make a new audioThumbnail when a new sound file is loaded.
+  void createAudioThumbnail(float *soundFile, int lengthInSamples);
 };
 
 #endif
