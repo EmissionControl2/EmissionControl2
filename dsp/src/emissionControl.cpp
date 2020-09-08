@@ -386,7 +386,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
   // MIDI LEARN Functionality
   isMIDILearn->mParamAdd = false;
   isMIDILearn->mParamDel = false;
-  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
+  if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
     ImGui::OpenPopup(("midiLearn" + mParameter->getName()).c_str());
   }
   if (ImGui::BeginPopup(("midiLearn" + mParameter->getName()).c_str())) {
