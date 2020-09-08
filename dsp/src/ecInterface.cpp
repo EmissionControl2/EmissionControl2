@@ -666,11 +666,11 @@ void ecInterface::onDraw(Graphics &g) {
                          audioThumbnails[granulator.mModClip]->size() / 2, 0, nullptr, -1, 1,
                          ImVec2(plotWidth, plotHeight), sizeof(float) * 2);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip("Scan Pos: %i\% \nScan Width: %i\%", int(scanPos * 100),
                         int(scanWidth * 100));
-
+    ImGui::PopStyleVar();
     ImDrawList *drawList = ImGui::GetWindowDrawList();
 
     // Draw scan position
@@ -735,7 +735,9 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
                          highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Grains Per Second: %i", grainsPerSecond);
+    ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();
@@ -785,7 +787,7 @@ void ecInterface::onDraw(Graphics &g) {
                      ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Oscilloscope");
-    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1);
+    ImGui::PopStyleVar();
     ImGui::PopItemWidth();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
@@ -841,13 +843,17 @@ void ecInterface::onDraw(Graphics &g) {
       ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4, ImGui::GetContentRegionAvail().y),
       sizeof(float));
     ImGui::SameLine();
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("L Peak: %f", granulator.peakL);
+    ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUrightCol);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUrightCol);
     ImGui::PlotHistogram("##VUright", &VUright, 1, 0, nullptr, 0, 1,
                          ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y),
                          sizeof(float));
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("R Peak: %f", granulator.peakR);
+    ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();

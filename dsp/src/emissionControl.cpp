@@ -357,7 +357,9 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
   }
   if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD ||
       mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM) {
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", (getDisplayName()).c_str());
+    ImGui::PopStyleVar();
   }
 
   if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
