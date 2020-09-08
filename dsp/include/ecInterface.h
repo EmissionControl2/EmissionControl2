@@ -249,6 +249,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   ImColor *Shade3;
   ImColor *Text;
 
+
   void drawAudioIO(al::AudioIO *io);
 
   void setGUIParams();
