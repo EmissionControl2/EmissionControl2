@@ -83,6 +83,7 @@ void ecInterface::onInit() {
   audioIO().append(mRecorder);
   audioIO().append(mHardClip);
   audioIO().print();
+  audioIO().channelsIn(0);
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
 
@@ -984,9 +985,9 @@ void ecInterface::drawAudioIO(AudioIO *io) {
 
   if (io->isOpen()) {
     std::string text;
-    text += "Sampling Rate: " + std::to_string(int(io->fps()));
+    text += "Device: " + state.devices.at(state.currentDevice);
+    text += "\nSampling Rate: " + std::to_string(int(io->fps()));
     text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
-    text += "\nInput Channels: " + std::to_string(io->channelsIn());
     text += "\nOutput Channels:" + std::to_string(io->channelsOut());
     ImGui::Text("%s", text.c_str());
     if (ImGui::Button("Stop")) {
