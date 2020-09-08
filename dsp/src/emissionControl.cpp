@@ -197,7 +197,10 @@ void ecModulator::setFrequency(float frequency) {
   mFrequency = frequency;
 }
 
-void ecModulator::setWidth(float width) { mLFO.mod(width); mWidth = width;}
+void ecModulator::setWidth(float width) {
+  mLFO.mod(width);
+  mWidth = width;
+}
 
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
