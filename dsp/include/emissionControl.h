@@ -484,7 +484,7 @@ private:
   float mMax, mMin;
   bool mIndependentMod;
   // Draw flags
-  bool editing = false;
+  bool editing,is_right_click = false;
 };
 
 struct ecModParameter {
