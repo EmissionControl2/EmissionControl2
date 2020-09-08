@@ -355,7 +355,8 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
                                    mParameter->min(), mParameter->max(), "%0.3f");
     }
   }
-  if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD) {
+  if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD ||
+      mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM) {
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", (getDisplayName()).c_str());
   }
 
