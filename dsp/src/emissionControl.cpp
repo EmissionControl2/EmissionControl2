@@ -383,6 +383,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
   }
 
   is_right_click = ImGui::IsItemClicked() && io.KeyShift;
+  // Need ot use ImGuiSliderFlags_ReadOnly in SliderFloat but imgui isnt updated.
 
   if (changed && isInt && !is_right_click)
     mParameter->set(valueSlideri);
