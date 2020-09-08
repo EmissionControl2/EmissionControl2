@@ -279,6 +279,33 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::EndMenu();
     }
+    if (audioIO().isRunning())
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
+    else
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0, 0.0, 0.0, 1.0));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(*ECred));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8, 0.5, 0.5, 1.0));
+    if (ImGui::Button("Engine Start")) {
+      if (!audioIO().isRunning()) {
+        if (granulator.getNumberOfAudioFiles() != 0) {
+          isPaused = false;
+          audioIO().open();
+          audioIO().start();
+          noSoundFiles = false;
+        } else {
+          ImGui::OpenPopup("No Sound File");
+          noSoundFiles = true;
+        }
+      } else if (audioIO().isRunning()) {
+        isPaused = true;
+        audioIO().stop();
+        audioIO().close();
+      }
+    }
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
     ImGui::EndMainMenuBar();
   }
 
@@ -859,8 +886,8 @@ void ecInterface::initMIDI() {
 
    This is only seen when we have multiple midi input ports allowed.
 
-   To get around this you simply execute consts::MAX_MIDI_IN dummy bindTo calls and then immediately
-      clear mBinding of this fake data.
+   To get around this you simply execute consts::MAX_MIDI_IN dummy bindTo calls and then
+   immediately clear mBinding of this fake data.
 
    This seems to properly init the pointers to mBindings memory when setCallback uses them.
 
@@ -1048,11 +1075,13 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
 
   if (state.recordButton) {
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*ECred);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0, 0.5, 0.5, 1.0));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8, 0.5, 0.5, 1.0));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 1.0, 1.0, 1.0));
   }
   std::string buttonText = state.recordButton ? "Stop" : "Record";
   bool recordButtonClicked = ImGui::Button(buttonText.c_str());
   if (state.recordButton) {
+    ImGui::PopStyleColor();
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
   }
