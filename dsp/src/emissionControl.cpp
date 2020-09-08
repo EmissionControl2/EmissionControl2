@@ -299,12 +299,13 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
 }
 
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
+  ImGuiIO &io = ImGui::GetIO();
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
+
   bool changed, isInt = false;
   if (mSliderType > 2)
     isInt = true;
-  ImGuiIO &io = ImGui::GetIO();
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
   if (isInt) {
     valueLowi = static_cast<int>(mLowRange->get());
@@ -328,6 +329,8 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
     mParameter->min(valueLowf);
 
   ImGui::PopItemWidth();
+
+  // DRAW MAIN SLIDER
   ImGui::SameLine();
   if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (85 * io.FontGlobalScale));
@@ -338,6 +341,10 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
       ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (165 * io.FontGlobalScale));
     else
       ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (45 * io.FontGlobalScale));
+
+  if (is_right_click) // Doesnt work
+    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+
   if (isInt) { // Draw int slider.
     valueSlideri = static_cast<int>(mParameter->get());
     if (mSliderText != "") {
@@ -357,6 +364,10 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
                                    mParameter->min(), mParameter->max(), "%0.3f");
     }
   }
+  if (is_right_click)
+    ImGui::PopItemFlag();
+  
+  is_right_click = ImGui::IsItemClicked() && io.KeyShift;
 
   if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD ||
       mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM) {
@@ -382,8 +393,6 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
       changed = false;
   }
 
-  is_right_click = ImGui::IsItemClicked() && io.KeyShift;
-  // Need ot use ImGuiSliderFlags_ReadOnly in SliderFloat but imgui isnt updated.
 
   if (changed && isInt && !is_right_click)
     mParameter->set(valueSlideri);
