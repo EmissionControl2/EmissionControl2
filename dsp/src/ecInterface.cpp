@@ -508,12 +508,18 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (index % 3 == 0)
+    if (index % 3 == 0) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else if (index % 3 == 1)
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+    } else if (index % 3 == 1) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
+
+    } else {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
+    }
+
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
@@ -539,12 +545,16 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (index % 3 == 0)
+    if (index % 3 == 0) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else if (index % 3 == 1)
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+    } else if (index % 3 == 1) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
+    } else {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
+    }
     if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
@@ -563,7 +573,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   float NextWindowYPosition = firstRowHeight + menuBarHeight;
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-
+  ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0, 0, 0, 130));
   ParameterGUI::endPanel();
 
   // Draw preset window -----------------------------------------------
@@ -1131,6 +1141,8 @@ void ecInterface::setGUIParams() {
   ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImVec4)*PrimaryColor);
   ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+  ImGui::PushStyleColor(ImGuiCol_FrameBgHovered,
+                        (ImVec4)ImColor(ECblue->Value.x, ECblue->Value.y, ECblue->Value.z, 0.3));
   ImGui::PushStyleColor(ImGuiCol_MenuBarBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0, 0, 0, 130));
   ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, (ImVec4)ImColor(0, 0, 0, 150));
