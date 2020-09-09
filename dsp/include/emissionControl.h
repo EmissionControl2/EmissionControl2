@@ -27,6 +27,14 @@ using json = nlohmann::json;
 /**** CSTD LIB ****/
 #include <string>
 
+
+/*** Keyboard Objects ***/
+struct KeyDown {
+  al::Keyboard key;
+  bool readyToTrig = false;
+  bool lastParamCheck = false;
+};
+
 /*** MIDI Objects ***/
 struct MIDILearnBool {
   bool mParamAdd = false;
@@ -466,7 +474,7 @@ public:
    * @param[out] isMIDILearn: Returns true if main slider needs to be learned,
    * false ow.
    */
-  void drawRangeSlider(MIDILearnBool *isMIDILearn);
+  void drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown* k);
 
   std::string getDisplayName() const { return mDisplayName; }
 
@@ -506,12 +514,12 @@ struct ecModParameter {
     presetHandler.registerParameter(lfoMenu);
   }
 
-  void drawModulationControl(MIDILearnBool *isMIDILearn) {
+  void drawModulationControl(MIDILearnBool *isMIDILearn, KeyDown* k) {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    param.drawRangeSlider(isMIDILearn);
+    param.drawRangeSlider(isMIDILearn, k);
   }
 
   ecParameter param;
@@ -781,7 +789,7 @@ public:
     polarity->setElements({"BI", "UNI+", "UNI-"});
   }
 
-  void drawLFOControl(MIDILearnBool *isMIDILearn) {
+  void drawLFOControl(MIDILearnBool *isMIDILearn, KeyDown* k) {
     ImGuiIO &io = ImGui::GetIO();
     ImGui::Text("LFO%i", mLFONumber + 1);
     ImGui::SameLine();
@@ -794,7 +802,7 @@ public:
     ImGui::PopItemWidth();
     ImGui::SameLine();
     int sliderPos = ImGui::GetCursorPosX();
-    frequency->drawRangeSlider(isMIDILearn);
+    frequency->drawRangeSlider(isMIDILearn, k);
     if (*shape == 1) {
       ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
       ImGui::Text("Duty");
