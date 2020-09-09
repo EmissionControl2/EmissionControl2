@@ -57,6 +57,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   virtual void onMIDIMessage(const al::MIDIMessage &m) override;
 
+  virtual bool onKeyDown(al::Keyboard const & k) override;
+
   virtual void onExit() override;
 
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
@@ -102,6 +104,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   al::PresetHandler mPresets;
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
+
+  KeyDown mLastKeyDown;
 
   std::array<RtMidiIn, consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
