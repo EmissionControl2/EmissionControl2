@@ -5,6 +5,9 @@
 
 namespace consts {
 
+const char KEYBOARD_MIDI_LEARN = 'm'; // Hover over param - m
+const char KEYBOARD_MIDI_UNLEARN = 'm'; // Hover over param - Shift - m
+
 enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
 enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
 

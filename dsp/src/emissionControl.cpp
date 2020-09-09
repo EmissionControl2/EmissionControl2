@@ -390,9 +390,9 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
       changed = false;
   }
 
-  if (changed && isInt && !is_right_click)
+  if (changed && isInt)
     mParameter->set(valueSlideri);
-  else if (changed && !isInt && !is_right_click)
+  else if (changed && !isInt)
     mParameter->set(valueSliderf);
 
   // MIDI LEARN Functionality
@@ -400,14 +400,14 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   isMIDILearn->mParamDel = false;
 
   // Press m while hovering over a parameter to start midi learn.
-  if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>('m') && !k->key.shift() &&
-      k->readyToTrig) {
+  if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
+      !k->key.shift() && k->readyToTrig) {
     isMIDILearn->mParamAdd = true;
   }
 
   // Press shift-m while hovering over a parameter to midi unlearn.
-  if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>('m') && k->key.shift() &&
-      k->readyToTrig) {
+  if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>(consts::KEYBOARD_MIDI_UNLEARN) &&
+      k->key.shift() && k->readyToTrig) {
     isMIDILearn->mParamDel = true;
   }
 
