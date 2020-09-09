@@ -299,16 +299,16 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
 }
 
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
-  ImGuiIO &io = ImGui::GetIO();
 
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
+  bool changed = false, isInt = false;
 
-  bool changed, isInt = false;
   if (mSliderType > 2)
     isInt = true;
 
   // Draw left most range box.
+  ImGuiIO &io = ImGui::GetIO();
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
   if (isInt) {
     valueLowi = static_cast<int>(mLowRange->get());
@@ -375,6 +375,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   }
 
   if (io.KeyCtrl && ImGui::IsItemClicked() && editing == false) {
+
     editing = true;
   }
   if (editing) {
@@ -386,8 +387,9 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
                (ImGui::IsMouseDown(0) || ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))) {
       changed = false;
       editing = false;
-    } else
+    } else {
       changed = false;
+    }
   }
 
   if (changed && isInt)
