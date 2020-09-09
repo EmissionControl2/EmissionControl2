@@ -298,14 +298,17 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
+void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   ImGuiIO &io = ImGui::GetIO();
+
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
 
   bool changed, isInt = false;
   if (mSliderType > 2)
     isInt = true;
+
+  // Draw left most range box.
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
   if (isInt) {
     valueLowi = static_cast<int>(mLowRange->get());
@@ -316,7 +319,6 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
     changed = ImGui::DragFloat((mLowRange->displayName()).c_str(), &valueLowf, 0.1,
                                mLowRange->min(), mLowRange->max(), "%.3f");
   }
-
   ImGui::SameLine();
   if (changed && isInt) {
     setCurrentMin(valueLowi);
@@ -332,18 +334,17 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
 
   // DRAW MAIN SLIDER
   ImGui::SameLine();
-  if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
+  if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (85 * io.FontGlobalScale));
-  else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
+  } else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (58 * io.FontGlobalScale));
-  else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
-    if (ImGui::GetContentRegionAvail().x > (250 * io.FontGlobalScale))
+  } else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM) {
+    if (ImGui::GetContentRegionAvail().x > (250 * io.FontGlobalScale)) {
       ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (165 * io.FontGlobalScale));
-    else
+    } else {
       ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (45 * io.FontGlobalScale));
-
-  if (is_right_click) // Doesnt work
-    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+    }
+  }
 
   if (isInt) { // Draw int slider.
     valueSlideri = static_cast<int>(mParameter->get());
@@ -364,10 +365,6 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
                                    mParameter->min(), mParameter->max(), "%0.3f");
     }
   }
-  if (is_right_click)
-    ImGui::PopItemFlag();
-  
-  is_right_click = ImGui::IsItemClicked() && io.KeyShift;
 
   if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD ||
       mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM) {
@@ -393,7 +390,6 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
       changed = false;
   }
 
-
   if (changed && isInt && !is_right_click)
     mParameter->set(valueSlideri);
   else if (changed && !isInt && !is_right_click)
@@ -402,7 +398,20 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
   // MIDI LEARN Functionality
   isMIDILearn->mParamAdd = false;
   isMIDILearn->mParamDel = false;
-  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) || (is_right_click)) {
+
+  // Press m while hovering over a parameter to start midi learn.
+  if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>('m') && !k->key.shift() &&
+      k->readyToTrig) {
+    isMIDILearn->mParamAdd = true;
+  }
+
+  // Press shift-m while hovering over a parameter to midi unlearn.
+  if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>('m') && k->key.shift() &&
+      k->readyToTrig) {
+    isMIDILearn->mParamDel = true;
+  }
+
+  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
     ImGui::OpenPopup(("midiLearn" + mParameter->getName()).c_str());
   }
   if (ImGui::BeginPopup(("midiLearn" + mParameter->getName()).c_str())) {
@@ -417,6 +426,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
 
   ImGui::PopItemWidth();
 
+  // Draw right most range box.
   ImGui::SameLine();
 
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
@@ -429,7 +439,6 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
     changed = ImGui::DragFloat((mHighRange->displayName()).c_str(), &valueHighf, 0.1,
                                mHighRange->min(), mHighRange->max(), "%.3f");
   }
-
   ImGui::SameLine();
   if (changed && isInt) {
     setCurrentMax(valueHighi);
@@ -443,13 +452,21 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn) {
 
   ImGui::PopItemWidth();
 
+  // Display name if necessary.
   ImGui::SameLine();
   if (mSliderType == consts::LFO || mSliderType == consts::INT_LFO)
     ImGui::Text("");
   else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
     ImGui::Text("");
   else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
-    ImGui::Text((getDisplayName()).c_str());
+    ImGui::Text(getDisplayName().c_str());
+
+  // A bit hacky, but...you know, ok.
+  // If last parameter, allow readyToTrig to be false.
+  if (k->lastParamCheck) {
+    k->readyToTrig = false;
+    k->lastParamCheck = false;
+  }
 }
 
 /******* Grain Class *******/
