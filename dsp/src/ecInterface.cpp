@@ -46,6 +46,16 @@ void ecInterface::onInit() {
   system(("mkdir -p " + userPath + midiPresetsPath).c_str());
 #endif
 
+#ifdef _WIN32
+  std::string configPath = "/.config/EmissionControl2";
+  configFile = configPath + "/config/config.json";
+  presetsPath = configPath + "/presets";
+  midiPresetsPath = configPath + "/midi_presets";
+  Dir::make(userPath + configPath + "/config");
+  Dir::make(userPath + presetsPath);
+  Dir::make(userPath + midiPresetsPath);
+#endif
+
   initJsonConfig();
   json config = jsonReadConfig();
   setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
@@ -1449,7 +1459,7 @@ json ecInterface::jsonReadConfig() {
 
 void ecInterface::setMIDIPresetNames(json preset_names) {
   for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
-    MIDIPresetNames.insert((std::string)*iter);
+    MIDIPresetNames.insert(iter->get<std::string>());
   }
 }
 
