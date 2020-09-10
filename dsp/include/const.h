@@ -17,7 +17,6 @@ enum paramNames {
   INTERM,
   STREAMS,
   GRAIN_DUR,
-  ENVELOPE,
   GRAIN_SPEED,
   FILTER_CENTER,
   RESONANCE,
@@ -25,6 +24,7 @@ enum paramNames {
   SCAN_HEAD,
   SCAN_RANGE,
   SCAN_SPEED,
+  ENVELOPE,
   PAN,
   AMPLITUDE
 };

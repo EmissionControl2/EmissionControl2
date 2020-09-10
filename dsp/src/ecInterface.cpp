@@ -119,6 +119,8 @@ void ecInterface::onCreate() {
     (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
     (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+    (execDir + "Resources/Fonts/ferrari.ttf").c_str(), 16.0f);
 #endif
 
 #ifdef __linux__
@@ -126,6 +128,8 @@ void ecInterface::onCreate() {
     ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
     ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
+  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+    ("/usr/local/share/fonts/EmissionControl2/ferrari.ttf"), 16.0f);
 #endif
 
   setGUIParams();
@@ -295,7 +299,9 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0, 0.0, 0.0, 1.0));
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(*ECred));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8, 0.5, 0.5, 1.0));
-    if (ImGui::Button("Engine Start")) {
+    ImGui::PushFont(ferrariFont);
+    ImGui::SetCursorPosX((width() / 2) - 53 * fontScale);
+    if (ImGui::Button("ENGINE START")) {
       if (!audioIO().isRunning()) {
         if (granulator.getNumberOfAudioFiles() != 0) {
           isPaused = false;
@@ -312,9 +318,8 @@ void ecInterface::onDraw(Graphics &g) {
         audioIO().close();
       }
     }
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
+    ImGui::PopStyleColor(3);
+    ImGui::PopFont();
 
     ImGui::EndMainMenuBar();
   }
@@ -518,21 +523,25 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (index % 3 == 0) {
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
-    } else if (index % 3 == 1) {
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-
-    } else {
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    }
-
+    // set alternating slider background shade
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
-        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
+    else if (index % 3 == 0)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+    else if (index % 3 == 1)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+    else
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+
+    // set slider colors
+    if (index < 3 || index > 11)
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
+    else if ((index > 2 && index < 6) || (index > 8 && index < 12))
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
+    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+
     granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
@@ -544,6 +553,7 @@ void ecInterface::onDraw(Graphics &g) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
     }
+    ImGui::PopStyleColor(2);
   }
   ImGui::PopFont();
   ParameterGUI::endPanel();
@@ -555,19 +565,25 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (index % 3 == 0) {
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
-    } else if (index % 3 == 1) {
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-    } else {
-      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    }
+    // set alternating slider background shade
     if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
-        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
+    else if (index % 3 == 0)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
+    else if (index % 3 == 1)
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+    else
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+
+    // set slider colors
+    if (index < 3 || index > 11)
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
+    else if ((index > 2 && index < 6) || (index > 8 && index < 12))
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
+    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+
     granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
@@ -579,11 +595,11 @@ void ecInterface::onDraw(Graphics &g) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
     }
+    ImGui::PopStyleColor(2);
   }
   ImGui::PopFont();
   float NextWindowYPosition = firstRowHeight + menuBarHeight;
-  ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)ImColor(0, 0, 0, 130));
+
   ParameterGUI::endPanel();
 
   // Draw preset window -----------------------------------------------
@@ -622,7 +638,6 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
@@ -643,6 +658,9 @@ void ecInterface::onDraw(Graphics &g) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
     }
+    if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
+      ImGui::PopStyleColor();
   }
 
   ImGui::PopFont();
@@ -691,7 +709,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PlotHistogram("##scanDisplayNeg", audioThumbnails[granulator.mModClip]->data(),
                          audioThumbnails[granulator.mModClip]->size() / 2, 0, nullptr, -1, 1,
                          ImVec2(plotWidth, plotHeight), sizeof(float) * 2);
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+    ImGui::PopStyleColor(2);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip("Scan Head: %i\% \nScan Range: %i\%", int(scanPos * 100),
@@ -764,7 +782,6 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Grains Per Second: %i", grainsPerSecond);
     ImGui::PopStyleVar();
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
     ParameterGUI::endPanel();
 
@@ -815,8 +832,8 @@ void ecInterface::onDraw(Graphics &g) {
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Oscilloscope");
     ImGui::PopStyleVar();
     ImGui::PopItemWidth();
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
+    ImGui::PopStyleColor(6);
+    ImGui::PopStyleVar();
 
     ImGui::PopFont();
     ParameterGUI::endPanel();
@@ -880,7 +897,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("R Peak: %f", granulator.peakR);
     ImGui::PopStyleVar();
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
+    ImGui::PopStyleColor(5);
     ImGui::PopFont();
     ParameterGUI::endPanel();
   }
@@ -903,8 +920,8 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::EndPopup();
   }
-
-  ImGui::End();
+  ImGui::PopStyleColor(17);
+  ImGui::PopStyleVar(3);
   al::imguiEndFrame();
 
   al::imguiDraw();
