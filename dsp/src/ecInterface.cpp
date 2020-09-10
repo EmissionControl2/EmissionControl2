@@ -515,17 +515,21 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (index % 3 == 0) {
+    // set alternating slider background shade
+    if (index % 3 == 0)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
-    } else if (index % 3 == 1) {
+    else if (index % 3 == 1)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-
-    } else {
+    else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+
+    // set slider colors
+    if (index < 3 || index > 11)
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    }
+    else if ((index > 2 && index < 6) || (index > 8 && index < 12))
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
+    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
 
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
@@ -552,16 +556,22 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    if (index % 3 == 0) {
+    // set alternating slider background shade
+    if (index % 3 == 0)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
-    } else if (index % 3 == 1) {
+    else if (index % 3 == 1)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-    } else {
+    else
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+
+    // set slider colors
+    if (index < 3 || index > 11)
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    }
+    else if ((index > 2 && index < 6) || (index > 8 && index < 12))
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
+    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+
     if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
