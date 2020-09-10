@@ -685,10 +685,10 @@ void ecInterface::onDraw(Graphics &g) {
     float plotWidth = ImGui::GetContentRegionAvail().x;
     float plotHeight = ImGui::GetContentRegionAvail().y;
     ImVec2 p = ImGui::GetCursorScreenPos();
-    float scanPos = granulator.ECParameters[consts::SCAN_POS]->getModParam(
-      granulator.ECModParameters[consts::SCAN_POS]->getWidthParam());
-    float scanWidth = granulator.ECParameters[consts::SCAN_WIDTH]->getModParam(
-      granulator.ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
+    float scanPos = granulator.ECParameters[consts::SCAN_HEAD]->getModParam(
+      granulator.ECModParameters[consts::SCAN_HEAD]->getWidthParam());
+    float scanWidth = granulator.ECParameters[consts::SCAN_RANGE]->getModParam(
+      granulator.ECModParameters[consts::SCAN_RANGE]->getWidthParam());
     if (granulator.ECParameters[consts::SCAN_SPEED]->getModParam(
           granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
       scanWidth *= -1;
@@ -711,7 +711,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("Scan Pos: %i\% \nScan Width: %i\%", int(scanPos * 100),
+      ImGui::SetTooltip("Scan Head: %i\% \nScan Range: %i\%", int(scanPos * 100),
                         int(scanWidth * 100));
     ImGui::PopStyleVar();
     ImDrawList *drawList = ImGui::GetWindowDrawList();
