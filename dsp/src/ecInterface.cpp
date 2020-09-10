@@ -109,6 +109,8 @@ void ecInterface::onCreate() {
     (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
     (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+    (execDir + "Resources/Fonts/ferrari.ttf").c_str(), 16.0f);
 #endif
 
 #ifdef __linux__
@@ -116,6 +118,8 @@ void ecInterface::onCreate() {
     ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
     ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
+  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+    ("/usr/local/share/fonts/EmissionControl2/ferrari.ttf"), 16.0f);
 #endif
 
   setGUIParams();
@@ -285,7 +289,9 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0, 0.0, 0.0, 1.0));
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(*ECred));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8, 0.5, 0.5, 1.0));
-    if (ImGui::Button("Engine Start")) {
+    ImGui::PushFont(ferrariFont);
+    ImGui::SetCursorPosX((width() / 2) - 53 * fontScale);
+    if (ImGui::Button("ENGINE START")) {
       if (!audioIO().isRunning()) {
         if (granulator.getNumberOfAudioFiles() != 0) {
           isPaused = false;
@@ -302,6 +308,7 @@ void ecInterface::onDraw(Graphics &g) {
         audioIO().close();
       }
     }
+    ImGui::PopFont();
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
