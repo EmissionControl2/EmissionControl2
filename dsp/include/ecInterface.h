@@ -220,7 +220,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
   // light color scheme
   ImColor PrimaryLight = ImColor(149, 176, 176);  // Background
-  ImColor YellowLight = ImColor(237, 233, 39);    // Yellow
+  ImColor YellowLight = ImColor(199, 181, 10);    // Yellow
   ImColor RedLight = ImColor(170, 8, 76);         // Red
   ImColor GreenLight = ImColor(8, 159, 8);        // Green
   ImColor BlueLight = ImColor(15, 75, 129);       // Blue
