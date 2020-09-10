@@ -116,16 +116,16 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
 #endif
 
 #ifdef __linux__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
+    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-      ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
+    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
 #endif
 
   setGUIParams();
@@ -358,8 +358,7 @@ void ecInterface::onDraw(Graphics &g) {
     } else {
       ImGui::Text("No MIDI devices found.\n");
     }
-    if (ImGui::Button("Cancel"))
-      ImGui::CloseCurrentPopup();
+    if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
 
     ImGui::SameLine();
 
@@ -377,8 +376,7 @@ void ecInterface::onDraw(Graphics &g) {
     for (int index = 0; index < SelectedMIDIDevices.size(); index++) {
       if (SelectedMIDIDevices[index]) {
         temp_counter++;
-        if (temp_counter >= consts::MAX_MIDI_IN)
-          break;
+        if (temp_counter >= consts::MAX_MIDI_IN) break;
         MIDIMessageHandler::bindTo(midiIn[temp_counter], index);
         midiIn[temp_counter].openPort(index, midiIn[temp_counter].getPortName(index));
         printf("Opened port to %s\n", midiIn[temp_counter].getPortName(index).c_str());
@@ -451,8 +449,7 @@ void ecInterface::onDraw(Graphics &g) {
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
     ImGui::PopItemWidth();
 
-    if (ImGui::Button("Cancel"))
-      ImGui::CloseCurrentPopup();
+    if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
 
     ImGui::SameLine();
 
@@ -484,8 +481,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopItemWidth();
     ImGui::EndPopup();
   }
-  if (!fontScaleOpen)
-    jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
+  if (!fontScaleOpen) jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
 
   // PopUp Audio IO window --------------------------------------------
   // This enables starting and stopping audio as well as selecting
@@ -537,7 +533,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
-    granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn,&mLastKeyDown);
+    granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
@@ -634,8 +630,7 @@ void ecInterface::onDraw(Graphics &g) {
     // WARNING, hacky as fuck.
     // This is to tell the drawRangeSlider that this is the last parameter to check.
     // This allows mLasyKeyDown.readyToTrig to be set to false.
-    if(index == consts::NUM_LFOS - 1)
-      mLastKeyDown.lastParamCheck = true;
+    if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
 
     granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
@@ -673,15 +668,15 @@ void ecInterface::onDraw(Graphics &g) {
     float plotWidth = ImGui::GetContentRegionAvail().x;
     float plotHeight = ImGui::GetContentRegionAvail().y;
     ImVec2 p = ImGui::GetCursorScreenPos();
-    float scanPos = granulator.ECParameters[consts::SCAN_POS]->getModParam(
-        granulator.ECModParameters[consts::SCAN_POS]->getWidthParam());
-    float scanWidth = granulator.ECParameters[consts::SCAN_WIDTH]->getModParam(
-        granulator.ECModParameters[consts::SCAN_WIDTH]->getWidthParam());
+    float scanPos = granulator.ECParameters[consts::SCAN_HEAD]->getModParam(
+      granulator.ECModParameters[consts::SCAN_HEAD]->getWidthParam());
+    float scanWidth = granulator.ECParameters[consts::SCAN_RANGE]->getModParam(
+      granulator.ECModParameters[consts::SCAN_RANGE]->getWidthParam());
     if (granulator.ECParameters[consts::SCAN_SPEED]->getModParam(
-            granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
+          granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
       scanWidth *= -1;
     ImU32 semitransBlue =
-        IM_COL32(ECblue->Value.x * 255, ECblue->Value.y * 255, ECblue->Value.z * 255, 100);
+      IM_COL32(ECblue->Value.x * 255, ECblue->Value.y * 255, ECblue->Value.z * 255, 100);
     int soundFileFrames = granulator.soundClip[granulator.mModClip]->frames;
 
     // Draw Waveform
@@ -699,7 +694,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("Scan Pos: %i\% \nScan Width: %i\%", int(scanPos * 100),
+      ImGui::SetTooltip("Scan Head: %i\% \nScan Range: %i\%", int(scanPos * 100),
                         int(scanWidth * 100));
     ImGui::PopStyleVar();
     ImDrawList *drawList = ImGui::GetWindowDrawList();
@@ -713,16 +708,14 @@ void ecInterface::onDraw(Graphics &g) {
       drawList->AddRectFilled(ImVec2(p.x + (scanPos * plotWidth), p.y),
                               ImVec2(p.x + plotWidth, p.y + plotHeight), semitransBlue);
       drawList->AddRectFilled(
-          ImVec2(p.x, p.y),
-          ImVec2(p.x + ((scanPos + scanWidth - 1.0f) * plotWidth), p.y + plotHeight),
-          semitransBlue);
+        ImVec2(p.x, p.y),
+        ImVec2(p.x + ((scanPos + scanWidth - 1.0f) * plotWidth), p.y + plotHeight), semitransBlue);
     } else if (scanPos + scanWidth < 0.0f) {
       drawList->AddRectFilled(ImVec2(p.x + (scanPos * plotWidth), p.y),
                               ImVec2(p.x, p.y + plotHeight), semitransBlue);
       drawList->AddRectFilled(
-          ImVec2(p.x + plotWidth, p.y),
-          ImVec2(p.x + ((scanPos + scanWidth + 1.0f) * plotWidth), p.y + plotHeight),
-          semitransBlue);
+        ImVec2(p.x + plotWidth, p.y),
+        ImVec2(p.x + ((scanPos + scanWidth + 1.0f) * plotWidth), p.y + plotHeight), semitransBlue);
     } else {
       drawList->AddRectFilled(ImVec2(p.x + (scanPos * plotWidth), p.y),
                               ImVec2(p.x + ((scanPos + scanWidth) * plotWidth), p.y + plotHeight),
@@ -752,14 +745,12 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushFont(bodyFont);
     ImGui::Text("Counter: %.1i ", granulator.getNumActiveVoices());
 
-    if (grainAccum < granulator.getNumActiveVoices())
-      grainAccum = granulator.getNumActiveVoices();
+    if (grainAccum < granulator.getNumActiveVoices()) grainAccum = granulator.getNumActiveVoices();
     if (framecounter % 2 == 0) {
       streamHistory.erase(streamHistory.begin());
       streamHistory.push_back(grainAccum);
       highestStreamCount = *max_element(streamHistory.begin(), streamHistory.end());
-      if (highestStreamCount < 2)
-        highestStreamCount = 2;
+      if (highestStreamCount < 2) highestStreamCount = 2;
       grainAccum = 0;
     }
     if (framecounter % 60 == 0) {
@@ -771,8 +762,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PlotHistogram("##Active Streams", &streamHistory[0], streamHistory.size(), 0, nullptr, 0,
                          highestStreamCount, ImGui::GetContentRegionAvail(), sizeof(int));
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("Grains Per Second: %i", grainsPerSecond);
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Grains Per Second: %i", grainsPerSecond);
     ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
@@ -822,8 +812,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
                      ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0);
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("Oscilloscope");
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Oscilloscope");
     ImGui::PopStyleVar();
     ImGui::PopItemWidth();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
@@ -876,13 +865,12 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUleftCol);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ((ImVec4)ImColor(0, 0, 0, 180)));
     ImGui::PlotHistogram(
-        "##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
-        ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4, ImGui::GetContentRegionAvail().y),
-        sizeof(float));
+      "##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
+      ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4, ImGui::GetContentRegionAvail().y),
+      sizeof(float));
     ImGui::SameLine();
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("L Peak: %f", granulator.peakL);
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("L Peak: %f", granulator.peakL);
     ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUrightCol);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUrightCol);
@@ -890,8 +878,7 @@ void ecInterface::onDraw(Graphics &g) {
                          ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y),
                          sizeof(float));
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("R Peak: %f", granulator.peakR);
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("R Peak: %f", granulator.peakR);
     ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
     ImGui::PopFont();
@@ -923,7 +910,7 @@ void ecInterface::onDraw(Graphics &g) {
   al::imguiDraw();
 }
 
-bool ecInterface::onKeyDown(Keyboard const & k) {
+bool ecInterface::onKeyDown(Keyboard const &k) {
   mLastKeyDown.key = k;
   mLastKeyDown.readyToTrig = true;
   mLastKeyDown.lastParamCheck = false;
@@ -944,8 +931,7 @@ void ecInterface::initMIDI() {
 
    What the fuck. I hate this, I hate computers. I'm goingg outside.
   */
-  for (int i = 0; i < consts::MAX_MIDI_IN; i++)
-    MIDIMessageHandler::bindTo(midiIn[i], 0);
+  for (int i = 0; i < consts::MAX_MIDI_IN; i++) MIDIMessageHandler::bindTo(midiIn[i], 0);
   MIDIMessageHandler::clearBindings();
   /* End of stupid as shit code. **/
 
@@ -966,38 +952,38 @@ void ecInterface::initMIDI() {
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   switch (m.type()) {
-  case MIDIByte::NOTE_ON:
-    // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
-    break;
+    case MIDIByte::NOTE_ON:
+      // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+      break;
 
-  case MIDIByte::NOTE_OFF:
-    // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
-    break;
+    case MIDIByte::NOTE_OFF:
+      // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
+      break;
 
-  case MIDIByte::PITCH_BEND:
-    // printf("Value %f\n", m.pitchBend());
-    break;
+    case MIDIByte::PITCH_BEND:
+      // printf("Value %f\n", m.pitchBend());
+      break;
 
-  // Control messages need to be parsed again...
-  case MIDIByte::CONTROL_CHANGE:
-    if (mIsLinkingParamAndMIDI) {
-      bool isKeyPresent = false;
-      for (int index = 0; index < ActiveMIDI.size(); index++) {
-        if (ActiveMIDI[index].getKeysIndex() == mCurrentLearningMIDIKey.getKeysIndex() &&
-            ActiveMIDI[index].getType() == mCurrentLearningMIDIKey.getType()) {
-          isKeyPresent = true;
-          ActiveMIDI[index].mInfo.push_back(m);
+    // Control messages need to be parsed again...
+    case MIDIByte::CONTROL_CHANGE:
+      if (mIsLinkingParamAndMIDI) {
+        bool isKeyPresent = false;
+        for (int index = 0; index < ActiveMIDI.size(); index++) {
+          if (ActiveMIDI[index].getKeysIndex() == mCurrentLearningMIDIKey.getKeysIndex() &&
+              ActiveMIDI[index].getType() == mCurrentLearningMIDIKey.getType()) {
+            isKeyPresent = true;
+            ActiveMIDI[index].mInfo.push_back(m);
+          }
         }
+        if (!isKeyPresent) {
+          mCurrentLearningMIDIKey.mInfo = std::vector<al::MIDIMessage>(1, m);
+          ActiveMIDI.push_back(mCurrentLearningMIDIKey);
+        }
+        mIsLinkingParamAndMIDI = false;
       }
-      if (!isKeyPresent) {
-        mCurrentLearningMIDIKey.mInfo = std::vector<al::MIDIMessage>(1, m);
-        ActiveMIDI.push_back(mCurrentLearningMIDIKey);
-      }
-      mIsLinkingParamAndMIDI = false;
-    }
-    updateActiveMIDIParams(m);
-    break;
-  default:;
+      updateActiveMIDIParams(m);
+      break;
+    default:;
   }
 }
 
@@ -1007,20 +993,20 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
       if (ActiveMIDI[index].mInfo[jndex].channel() == m.channel() &&
           ActiveMIDI[index].mInfo[jndex].controlNumber() == m.controlNumber()) {
         switch (ActiveMIDI[index].getType()) {
-        case M_PARAM:
-          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        case M_MOD:
-          updateECModParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        case M_LFO:
-          updateLFOParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        case M_DUTY:
-          updateLFODutyParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
-          break;
-        default:
-          updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+          case M_PARAM:
+            updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+            break;
+          case M_MOD:
+            updateECModParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+            break;
+          case M_LFO:
+            updateLFOParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+            break;
+          case M_DUTY:
+            updateLFODutyParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+            break;
+          default:
+            updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
         }
       }
     }
@@ -1037,8 +1023,7 @@ void ecInterface::unlinkParamAndMIDI(MIDIKey &paramKey) {
       break;
     }
   }
-  if (found)
-    ActiveMIDI.erase(ActiveMIDI.begin() + index);
+  if (found) ActiveMIDI.erase(ActiveMIDI.begin() + index);
 }
 
 void ecInterface::drawAudioIO(AudioIO *io) {
@@ -1093,8 +1078,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.currentDevice));
       granulator.setIO(io);
-      if (writeSampleRate)
-        jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+      if (writeSampleRate) jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
 
       granulator.resampleSoundFiles();
 
@@ -1191,9 +1175,8 @@ void ecInterface::setGUIParams() {
   ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram,
-                        light ? (ImVec4)ImColor(0, 0, 0, 150)
-                              : (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, light ? (ImVec4)ImColor(0, 0, 0, 150)
+                                                      : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
@@ -1204,35 +1187,36 @@ void ecInterface::setGUIParams() {
 int ecInterface::getSampleRateIndex() {
   unsigned s_r = (unsigned)globalSamplingRate;
   switch (s_r) {
-  case 44100:
-    return 0;
-  case 48000:
-    return 1;
-  case 88100:
-    return 2;
-  case 96000:
-    return 3;
-  default:
-    return 0;
+    case 44100:
+      return 0;
+    case 48000:
+      return 1;
+    case 88100:
+      return 2;
+    case 96000:
+      return 3;
+    default:
+      return 0;
   }
 }
 
 /**** Borrowed and modified from al_ParameterGUI.cpp****/
-ecInterface::PresetHandlerState &
-ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns, int presetRows) {
+ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
+                                                                  int presetColumns,
+                                                                  int presetRows) {
   static std::map<PresetHandler *, ecInterface::PresetHandlerState> stateMap;
   if (stateMap.find(presetHandler) == stateMap.end()) {
     //        std::cout << "Created state for " << (unsigned long)
     //        presetHandler
     //        << std::endl;
     stateMap[presetHandler] =
-        ecInterface::PresetHandlerState{"", 0, presetHandler->availablePresetMaps()};
+      ecInterface::PresetHandlerState{"", 0, presetHandler->availablePresetMaps()};
     if (stateMap[presetHandler].mapList.size() > 0) {
       stateMap[presetHandler].currentBank = stateMap[presetHandler].mapList[0];
       stateMap[presetHandler].currentBankIndex = 0;
     }
     presetHandler->registerPresetMapCallback(
-        [&](std::string mapName) { stateMap[presetHandler].currentBank = mapName; });
+      [&](std::string mapName) { stateMap[presetHandler].currentBank = mapName; });
   }
   ecInterface::PresetHandlerState &state = stateMap[presetHandler];
 
@@ -1242,8 +1226,7 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
 
   int selection = presetHandler->getCurrentPresetIndex();
   std::string currentPresetName = presetHandler->getCurrentPresetName();
-  if (currentPresetName.length() == 0)
-    currentPresetName = "none";
+  if (currentPresetName.length() == 0) currentPresetName = "none";
   ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
@@ -1272,7 +1255,7 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
           ImGui::PopStyleColor();
           state.enteredText.clear();
         } else {
-          if (presetHandler->recallPreset(counter) != "") { // Preset is available
+          if (presetHandler->recallPreset(counter) != "") {  // Preset is available
             selection = counter;
           }
         }
@@ -1281,8 +1264,7 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
         ImGui::PopStyleColor(1);
       }
 
-      if (column < presetColumns - 1)
-        ImGui::SameLine();
+      if (column < presetColumns - 1) ImGui::SameLine();
       counter++;
       ImGui::PopID();
     }
@@ -1366,8 +1348,8 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
       ImGui::PopItemWidth();
       ImGui::SameLine();
       if (ImGui::Button("Create")) {
-        auto path = File::conformDirectory(presetHandler->getCurrentPath()) + state.newMapText +
-                    ".presetMap";
+        auto path =
+          File::conformDirectory(presetHandler->getCurrentPath()) + state.newMapText + ".presetMap";
         // Create an empty file
         std::ofstream file;
         file.open(path, std::ios::out);
@@ -1386,8 +1368,7 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
 }
 
 bool ecInterface::onMouseDown(const Mouse &m) {
-  if (mIsLinkingParamAndMIDI)
-    mIsLinkingParamAndMIDI = false;
+  if (mIsLinkingParamAndMIDI) mIsLinkingParamAndMIDI = false;
   return true;
 }
 
@@ -1404,9 +1385,9 @@ void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
     startChunk = i * chunkSize;
     endChunk = startChunk + chunkSize - 1;
     audioThumbnails.back()->data()[i * 2] =
-        std::min(0.0f, *std::min_element(soundfile + startChunk, soundfile + endChunk));
+      std::min(0.0f, *std::min_element(soundfile + startChunk, soundfile + endChunk));
     audioThumbnails.back()->data()[i * 2 + 1] =
-        std::max(0.0f, *std::max_element(soundfile + startChunk, soundfile + endChunk));
+      std::max(0.0f, *std::max_element(soundfile + startChunk, soundfile + endChunk));
   }
 }
 
@@ -1423,7 +1404,7 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
       config[consts::SOUND_OUTPUT_PATH_KEY] =
-          f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     if (config.find(consts::SAMPLE_RATE_KEY) == config.end())
       config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
@@ -1447,7 +1428,7 @@ bool ecInterface::initJsonConfig() {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
     config[consts::SOUND_OUTPUT_PATH_KEY] =
-        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+      f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
@@ -1463,19 +1444,18 @@ bool ecInterface::initJsonConfig() {
   }
 
   std::ofstream file((userPath + configFile).c_str());
-  if (file.is_open())
-    file << config;
+  if (file.is_open()) file << config;
 
   return false;
 }
 
-template <typename T> bool ecInterface::jsonWriteToConfig(T value, std::string key) {
+template <typename T>
+bool ecInterface::jsonWriteToConfig(T value, std::string key) {
   json config;
 
   std::ifstream ifs(userPath + configFile);
 
-  if (ifs.is_open())
-    config = json::parse(ifs);
+  if (ifs.is_open()) config = json::parse(ifs);
 
   config[key] = value;
 
@@ -1493,8 +1473,7 @@ bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &pres
   json config;
 
   std::ifstream ifs(userPath + configFile);
-  if (ifs.is_open())
-    config = json::parse(ifs);
+  if (ifs.is_open()) config = json::parse(ifs);
 
   json preset_names = json::array();
   for (auto iter = presetNames.begin(); iter != presetNames.end(); iter++) {
@@ -1516,8 +1495,7 @@ json ecInterface::jsonReadConfig() {
 
   std::ifstream ifs(userPath + configFile);
 
-  if (ifs.is_open())
-    config = json::parse(ifs);
+  if (ifs.is_open()) config = json::parse(ifs);
 
   return config;
 }
@@ -1575,8 +1553,7 @@ void ecInterface::setWindowDimensions(float width, float height) {
 
 // MIDI Preset Jsons
 void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
-  if (name == "")
-    return;
+  if (name == "") return;
 
   std::string filename = name;
   if (!allowOverwrite) {
@@ -1597,8 +1574,7 @@ void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
   }
 
   std::ofstream file((userPath + midiPresetsPath + filename + ".json").c_str());
-  if (file.is_open())
-    file << midi_config;
+  if (file.is_open()) file << midi_config;
 }
 
 void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
