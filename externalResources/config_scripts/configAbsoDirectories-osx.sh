@@ -1,25 +1,25 @@
 #!/bin/bash
 
-if [ ! -d "$HOME/Library/Application Support/EmissionControl2/" ]; then
-  mkdir "$HOME/Library/Application Support/EmissionControl2/"
+if [ ! -d "$HOME/Music/EmissionControl2/" ]; then
+  mkdir -p "$HOME/Music/EmissionControl2/"
 fi
 
-if [ ! -d "$HOME/Library/Application Support/EmissionControl2/presets" ]; then
-  mkdir "$HOME/Library/Application Support/EmissionControl2/presets"
+if [ ! -d "$HOME/Music/EmissionControl2/presets" ]; then
+  mkdir -p "$HOME/Music/EmissionControl2/presets"
 fi
 
-if [ ! -d "$HOME/Library/Application Support/EmissionControl2/midi_presets" ]; then
-  mkdir "$HOME/Library/Application Support/EmissionControl2/midi_presets"
+if [ ! -d "$HOME/Music/EmissionControl2/midi_presets" ]; then
+  mkdir -p "$HOME/Music/EmissionControl2/midi_presets"
 fi
 
-if [ ! -d "$HOME/Library/Application Support/EmissionControl2/soundOutput" ]; then
-  mkdir "$HOME/Library/Application Support/EmissionControl2/soundOutput"
+if [ ! -d "$HOME/Music/EmissionControl2/soundOutput" ]; then
+  mkdir -p "$HOME/Music/EmissionControl2/soundOutput"
 fi
 
-if [ ! -d "$HOME/Library/Application Support/EmissionControl2/samples" ]; then
-  cp -r "samples" "$HOME/Library/Application Support/EmissionControl2/"
+if [ ! -d "$HOME/Music/EmissionControl2/samples" ]; then
+  cp -r "samples" "$HOME/Music/EmissionControl2/"
 fi
 
-if [ ! -d "$HOME/Library/Application Support/EmissionControl2/configs" ]; then
-  mkdir "$HOME/Library/Application Support/EmissionControl2/configs"
+if [ ! -d "$HOME/Music/EmissionControl2/configs" ]; then
+  mkdir -p "$HOME/Music/EmissionControl2/configs"
 fi
