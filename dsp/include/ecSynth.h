@@ -55,10 +55,6 @@ class ecSynth : public al::SynthVoice {
    * Grain Counter
    */
   int grainCounter = 0;
-  /**
-   * The number of modulators in ecSynth.
-   */
-  const static int NUM_MODULATORS = 4;
 
   // array of lfo parameters to draw later
   std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
