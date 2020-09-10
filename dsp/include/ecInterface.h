@@ -186,6 +186,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::string previousFile = "No file selected";
   ImFont *bodyFont;
   ImFont *titleFont;
+  ImFont *ferrariFont;
   float fontScale = 1.0;
   float adjustScaleY = 1.0;
 
@@ -222,14 +223,14 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);
   // colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
   // light color scheme
-  ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
-  ImColor YellowLight = ImColor(188, 188, 118);   // Yellow
-  ImColor RedLight = ImColor(120, 29, 57);        // Red
-  ImColor GreenLight = ImColor(114, 159, 100);    // Green
-  ImColor BlueLight = ImColor(61, 133, 224);      // Blue
-  ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
-  ImColor Shade3Light = ImColor(227, 231, 232);   // Slider Color 3
+  ImColor PrimaryLight = ImColor(149, 176, 176);  // Background
+  ImColor YellowLight = ImColor(199, 181, 10);    // Yellow
+  ImColor RedLight = ImColor(170, 8, 76);         // Red
+  ImColor GreenLight = ImColor(8, 159, 8);        // Green
+  ImColor BlueLight = ImColor(15, 75, 129);       // Blue
+  ImColor Shade1Light = ImColor(176, 196, 196);   // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 213, 213);   // Slider Color 2
+  ImColor Shade3Light = ImColor(221, 230, 230);   // Slider Color 3
   ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
