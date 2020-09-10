@@ -182,6 +182,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::string previousFile = "No file selected";
   ImFont *bodyFont;
   ImFont *titleFont;
+  ImFont *ferrariFont;
   float fontScale = 1.0;
   float adjustScaleY = 1.0;
 
