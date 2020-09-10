@@ -46,6 +46,16 @@ void ecInterface::onInit() {
   system(("mkdir -p " + userPath + midiPresetsPath).c_str());
 #endif
 
+#ifdef _WIN32
+  std::string configPath = "/.config/EmissionControl2";
+  configFile = configPath + "/config/config.json";
+  presetsPath = configPath + "/presets";
+  midiPresetsPath = configPath + "/midi_presets";
+  Dir::make(userPath + configPath + "/config");
+  Dir::make(userPath + presetsPath);
+  Dir::make(userPath + midiPresetsPath);
+#endif
+
   initJsonConfig();
   json config = jsonReadConfig();
   setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
@@ -534,7 +544,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
-    granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn);
+    granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
@@ -575,7 +585,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
-    granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn);
+    granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
@@ -633,7 +643,13 @@ void ecInterface::onDraw(Graphics &g) {
     if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
-    granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn);
+
+    // WARNING, hacky as fuck.
+    // This is to tell the drawRangeSlider that this is the last parameter to check.
+    // This allows mLasyKeyDown.readyToTrig to be set to false.
+    if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
+
+    granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
@@ -909,6 +925,12 @@ void ecInterface::onDraw(Graphics &g) {
   al::imguiEndFrame();
 
   al::imguiDraw();
+}
+
+bool ecInterface::onKeyDown(Keyboard const &k) {
+  mLastKeyDown.key = k;
+  mLastKeyDown.readyToTrig = true;
+  mLastKeyDown.lastParamCheck = false;
 }
 
 void ecInterface::initMIDI() {
@@ -1367,6 +1389,25 @@ bool ecInterface::onMouseDown(const Mouse &m) {
   return true;
 }
 
+void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
+  // cap thumbnail length to 1000 samples
+  int thumbnailLength = lengthInSamples > 1000 ? 1000 : lengthInSamples;
+  // size of chunks to find min/max over
+  float chunkSize = float(lengthInSamples) / thumbnailLength;
+  int startChunk, endChunk;
+  // add a new empty audiothumbnail to array
+  audioThumbnails.push_back(std::make_unique<std::vector<float>>(thumbnailLength * 2, 0.0f));
+
+  for (int i = 0; i < thumbnailLength; i++) {
+    startChunk = i * chunkSize;
+    endChunk = startChunk + chunkSize - 1;
+    audioThumbnails.back()->data()[i * 2] =
+      std::min(0.0f, *std::min_element(soundfile + startChunk, soundfile + endChunk));
+    audioThumbnails.back()->data()[i * 2 + 1] =
+      std::max(0.0f, *std::max_element(soundfile + startChunk, soundfile + endChunk));
+  }
+}
+
 /**** Configuration File Stuff -- Implementation****/
 
 bool ecInterface::initJsonConfig() {
@@ -1478,7 +1519,7 @@ json ecInterface::jsonReadConfig() {
 
 void ecInterface::setMIDIPresetNames(json preset_names) {
   for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
-    MIDIPresetNames.insert((std::string)*iter);
+    MIDIPresetNames.insert(iter->get<std::string>());
   }
 }
 
@@ -1574,23 +1615,4 @@ void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
   MIDIPresetNames.erase(midi_preset_name);
   jsonWriteMIDIPresetNames(MIDIPresetNames);
   std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
-}
-
-void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
-  // cap thumbnail length to 1000 samples
-  int thumbnailLength = lengthInSamples > 1000 ? 1000 : lengthInSamples;
-  // size of chunks to find min/max over
-  float chunkSize = float(lengthInSamples) / thumbnailLength;
-  int startChunk, endChunk;
-  // add a new empty audiothumbnail to array
-  audioThumbnails.push_back(std::make_unique<std::vector<float>>(thumbnailLength * 2, 0.0f));
-
-  for (int i = 0; i < thumbnailLength; i++) {
-    startChunk = i * chunkSize;
-    endChunk = startChunk + chunkSize - 1;
-    audioThumbnails.back()->data()[i * 2] =
-      std::min(0.0f, *std::min_element(soundfile + startChunk, soundfile + endChunk));
-    audioThumbnails.back()->data()[i * 2 + 1] =
-      std::max(0.0f, *std::max_element(soundfile + startChunk, soundfile + endChunk));
-  }
 }

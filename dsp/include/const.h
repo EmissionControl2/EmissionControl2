@@ -5,6 +5,9 @@
 
 namespace consts {
 
+const char KEYBOARD_MIDI_LEARN = 'm'; // Hover over param - m
+const char KEYBOARD_MIDI_UNLEARN = 'm'; // Hover over param - Shift - m
+
 enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
 enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
 
@@ -27,7 +30,7 @@ enum paramNames {
 };
 
 const int NUM_PARAMS = 15;
-const int NUM_LFOS = 4;
+const int NUM_LFOS = 6;
 const int MAX_GRAIN_DISPLAY = 100;
 const int MAX_MIDI_IN = 5;
 
@@ -64,13 +67,13 @@ const std::string FULLSCREEN_KEY = "FULLSCREEN";
 
 #ifdef __APPLE__
 const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
-const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl2/samples/";
+const std::string DEFAULT_SAMPLE_PATH = "/Music/EmissionControl2/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
-    "/Library/Application Support/EmissionControl2/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
+    "/Music/EmissionControl2/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = "/Music/EmissionControl2/presets/";
 const std::string DEFAULT_MIDI_PRESETS_PATH =
-    "/Library/Application Support/EmissionControl2/midi_presets/";
-const std::string DEFAULT_CONFIG_PATH = "/Library/Application Support/EmissionControl2/configs/";
+    "/Music/EmissionControl2/midi_presets/";
+const std::string DEFAULT_CONFIG_PATH = "/Music/EmissionControl2/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 
@@ -79,13 +82,13 @@ const std::string DEFAULT_SAMPLE_PATH = "/usr/local/share/EmissionControl2/sampl
 const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
-#ifdef _WIN32_
+#ifdef _WIN32
 const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
 const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl2/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
     "/Library/Application Support/EmissionControl2/soundOutput/";
 const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
-const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
+//const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
 const std::string DEFAULT_CONFIG_PATH = "/Library/Application Support/EmissionControl2/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif

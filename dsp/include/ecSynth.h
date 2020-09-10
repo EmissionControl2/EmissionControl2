@@ -17,6 +17,7 @@
 
 /**** CSTD LIB ****/
 #include <math.h>
+
 #include <array>
 #include <memory>
 
@@ -54,10 +55,6 @@ class ecSynth : public al::SynthVoice {
    * Grain Counter
    */
   int grainCounter = 0;
-  /**
-   * The number of modulators in ecSynth.
-   */
-  const static int NUM_MODULATORS = 4;
 
   // array of lfo parameters to draw later
   std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
@@ -90,7 +87,7 @@ class ecSynth : public al::SynthVoice {
       new ecModParameter{"modAsynchronicityDepth", "Asynchronicity"});
 
     ECParameters[INTERM] = std::unique_ptr<ecParameter>(
-      new ecParameter{"Intermittancy", "3. Intermittancy", 0, 0, 1, 0, 1, PARAM});
+      new ecParameter{"Intermittency", "3. Intermittency", 0, 0, 1, 0, 1, PARAM});
     ECModParameters[INTERM] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modIntermittencyDepth", "Intermittency"});
 
@@ -100,7 +97,7 @@ class ecSynth : public al::SynthVoice {
       std::unique_ptr<ecModParameter>(new ecModParameter{"modStreamsDepth", "Streams"});
 
     ECParameters[GRAIN_DUR] = std::unique_ptr<ecParameter>(new ecParameter{
-      "GrainDurms", "5. Grain Duration", 30, 0.01, 1000, 0.0000001, 10000, PARAM, "%.3f ms"});
+      "GrainDurs", "5. Grain Duration", 30, 0.01, 1000, 0.0000001, 10000, PARAM, "%.3f ms"});
     ECModParameters[GRAIN_DUR] = std::unique_ptr<ecModParameter>(
       new ecModParameter{"modGrainDurationDepth", "Grain Duration"});
 
