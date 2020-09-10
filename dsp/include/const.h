@@ -30,7 +30,7 @@ enum paramNames {
 };
 
 const int NUM_PARAMS = 15;
-const int NUM_LFOS = 4;
+const int NUM_LFOS = 6;
 const int MAX_GRAIN_DISPLAY = 100;
 const int MAX_MIDI_IN = 5;
 

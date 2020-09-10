@@ -35,7 +35,7 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
   mScanner.setSamplingRate(mGlobalSamplingRate);
 
-  std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4"};
+  std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4", "LFO5", "LFO6"};
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     ECParameters[index]->setModulationSource(Modulators[0]);
     ECModParameters[index]->setMenuElements(lfo_names);
@@ -70,7 +70,7 @@ void ecSynth::onProcess(al::AudioIOData &io) {
   /* Manipulate on a Grain Level */
 
   while (io()) {
-    for (int index = 0; index < NUM_MODULATORS; ++index)
+    for (int index = 0; index < consts::NUM_LFOS; ++index)
       Modulators[index]->sampleAndStore();
 
     // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
