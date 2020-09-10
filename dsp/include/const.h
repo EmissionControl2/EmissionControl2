@@ -82,13 +82,13 @@ const std::string DEFAULT_SAMPLE_PATH = "/usr/local/share/EmissionControl2/sampl
 const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
-#ifdef _WIN32_
+#ifdef _WIN32
 const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
 const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl2/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
     "/Library/Application Support/EmissionControl2/soundOutput/";
 const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
-const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
+//const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
 const std::string DEFAULT_CONFIG_PATH = "/Library/Application Support/EmissionControl2/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif

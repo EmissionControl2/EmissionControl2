@@ -4,9 +4,12 @@
 
 /**** C STANDARD ****/
 #include <string>
+#include <string.h>
 
 #ifdef AL_WINDOWS
 #include <stdlib.h>
+#define strcasecmp _stricmp
+#define PATH_MAX 1024
 #elif (AL_LINUX)
 #include <limits.h>
 #include <unistd.h>

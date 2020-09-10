@@ -223,9 +223,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
   // light color scheme
   ImColor PrimaryLight = ImColor(143, 157, 163);  // Background
-  ImColor YellowLight = ImColor(181, 137, 0);     // Yellow
+  ImColor YellowLight = ImColor(188, 188, 118);   // Yellow
   ImColor RedLight = ImColor(120, 29, 57);        // Red
-  ImColor GreenLight = ImColor(106, 154, 60);     // Green
+  ImColor GreenLight = ImColor(114, 159, 100);    // Green
   ImColor BlueLight = ImColor(61, 133, 224);      // Blue
   ImColor Shade1Light = ImColor(171, 182, 186);   // Slider Color 1
   ImColor Shade2Light = ImColor(199, 206, 209);   // Slider Color 2
@@ -252,7 +252,6 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   ImColor *Shade2;
   ImColor *Shade3;
   ImColor *Text;
-
 
   void drawAudioIO(al::AudioIO *io);
 
