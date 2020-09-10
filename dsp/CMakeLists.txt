@@ -93,6 +93,7 @@ target_include_directories(${APP_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/
 )
 
+# TODO add ExternalProject_Add to build nativefiledialog
 target_link_directories(${APP_NAME} PUBLIC 
   /usr/local/lib
   ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
@@ -122,9 +123,9 @@ get_target_property(AL_EXT_LIBRARIES al_ext AL_EXT_LIBRARIES)
 
 target_link_libraries(ecLib PUBLIC 
   al 
-  "${AL_EXT_LIBRARIES}" 
-  ${CMAKE_SOURCE_DIR}/external/libsamplerate/build/libsamplerate.a 
-  libnfd.a
+  "${AL_EXT_LIBRARIES}"
+  samplerate
+  nfd
 ) 
 
 if(APPLE)
