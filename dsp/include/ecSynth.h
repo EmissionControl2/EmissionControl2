@@ -106,9 +106,9 @@ class ecSynth : public al::SynthVoice {
       new ecModParameter{"modEnvelopeShapeDepth", "6. Envelope Shape"});
 
     ECParameters[PITCH_SHIFT] = std::unique_ptr<ecParameter>(
-      new ecParameter{"Pitchshift", "7. Grain Speed", 1, -2, 2, -20, 20, PARAM});
+      new ecParameter{"GrainSpeed", "7. Grain Speed", 1, -2, 2, -20, 20, PARAM});
     ECModParameters[PITCH_SHIFT] =
-      std::unique_ptr<ecModParameter>(new ecModParameter{"modPitchShiftDepth", "7. Pitch Shift"});
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modGrainSpeedDepth", "7. Grain Speed"});
 
     ECParameters[FILTER_CENTER] = std::unique_ptr<ecParameter>(new ecParameter{
       "Filterfreq", "8. Filter Center", 440, 60, 5000, 20, 24000, PARAM, "%.3f Hz"});
