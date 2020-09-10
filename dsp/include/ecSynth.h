@@ -105,13 +105,13 @@ class ecSynth : public al::SynthVoice {
     ECModParameters[ENVELOPE] = std::unique_ptr<ecModParameter>(
       new ecModParameter{"modEnvelopeShapeDepth", "6. Envelope Shape"});
 
-    ECParameters[PITCH_SHIFT] = std::unique_ptr<ecParameter>(
+    ECParameters[GRAIN_SPEED] = std::unique_ptr<ecParameter>(
       new ecParameter{"GrainSpeed", "7. Grain Speed", 1, -2, 2, -20, 20, PARAM});
-    ECModParameters[PITCH_SHIFT] =
+    ECModParameters[GRAIN_SPEED] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modGrainSpeedDepth", "7. Grain Speed"});
 
     ECParameters[FILTER_CENTER] = std::unique_ptr<ecParameter>(new ecParameter{
-      "Filterfreq", "8. Filter Center", 440, 60, 5000, 20, 24000, PARAM, "%.3f Hz"});
+      "FilterCenter", "8. Filter Center", 440, 60, 5000, 20, 24000, PARAM, "%.3f Hz"});
     ECModParameters[FILTER_CENTER] = std::unique_ptr<ecModParameter>(
       new ecModParameter{"modFilterCenterDepth", "8. Filter Center"});
 
@@ -126,14 +126,14 @@ class ecSynth : public al::SynthVoice {
     ECModParameters[SOUND_FILE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modSoundFileDepth", "10. Sound File"});
 
-    ECParameters[SCAN_POS] = std::unique_ptr<ecParameter>(
+    ECParameters[SCAN_HEAD] = std::unique_ptr<ecParameter>(
       new ecParameter{"ScanHead", "11. Scan Head", 0.0, 0, 1, 0, 1, PARAM});
-    ECModParameters[SCAN_POS] =
+    ECModParameters[SCAN_HEAD] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modScanHeadDepth", "11. Scan Head"});
 
-    ECParameters[SCAN_WIDTH] = std::unique_ptr<ecParameter>(
+    ECParameters[SCAN_RANGE] = std::unique_ptr<ecParameter>(
       new ecParameter{"ScanRange", "12. Scan Range", 0.5, 0, 1, 0, 1, PARAM});
-    ECModParameters[SCAN_WIDTH] =
+    ECModParameters[SCAN_RANGE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modScanRangeDepth", "12. Scan Range"});
 
     ECParameters[SCAN_SPEED] = std::unique_ptr<ecParameter>(
@@ -146,9 +146,9 @@ class ecSynth : public al::SynthVoice {
     ECModParameters[PAN] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modPanDepth", "14. Pan"});
 
-    ECParameters[VOLUME] = std::unique_ptr<ecParameter>(
+    ECParameters[AMPLITUDE] = std::unique_ptr<ecParameter>(
       new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48, PARAM, "%.3f dB"});
-    ECModParameters[VOLUME] =
+    ECModParameters[AMPLITUDE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modAmplitudeDepth", "15. Amplitude"});
   }
 
