@@ -57,7 +57,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   virtual void onMIDIMessage(const al::MIDIMessage &m) override;
 
-  virtual bool onKeyDown(al::Keyboard const & k) override;
+  virtual bool onKeyDown(al::Keyboard const &k) override;
 
   virtual void onExit() override;
 
@@ -224,25 +224,25 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
   // light color scheme
   ImColor PrimaryLight = ImColor(149, 176, 176);  // Background
-  ImColor YellowLight = ImColor(199, 181, 10);    // Yellow
-  ImColor RedLight = ImColor(170, 8, 76);         // Red
-  ImColor GreenLight = ImColor(8, 159, 8);        // Green
-  ImColor BlueLight = ImColor(15, 75, 129);       // Blue
+  ImColor YellowLight = ImColor(237, 224, 39);    // Yellow
+  ImColor RedLight = ImColor(212, 35, 89);        // Red
+  ImColor GreenLight = ImColor(69, 201, 69);      // Green
+  ImColor BlueLight = ImColor(44, 113, 175);      // Blue
   ImColor Shade1Light = ImColor(176, 196, 196);   // Slider Color 1
   ImColor Shade2Light = ImColor(199, 213, 213);   // Slider Color 2
   ImColor Shade3Light = ImColor(221, 230, 230);   // Slider Color 3
   ImColor TextLight = ImColor(0, 0, 0);           // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);    // Background
-  ImColor YellowDark = ImColor(208, 193, 113);  // Yellow
-  ImColor RedDark = ImColor(184, 100, 128);     // Red
-  ImColor GreenDark = ImColor(106, 154, 60);    // Green
-  ImColor BlueDark = ImColor(61, 133, 224);     // Blue
-  ImColor Shade1Dark = ImColor(55, 63, 66);     // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);     // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);   // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);    // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
+  ImColor YellowDark = ImColor(122, 114, 0);   // Yellow
+  ImColor RedDark = ImColor(170, 8, 76);       // Red
+  ImColor GreenDark = ImColor(8, 159, 8);      // Green
+  ImColor BlueDark = ImColor(15, 75, 129);     // Blue
+  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
