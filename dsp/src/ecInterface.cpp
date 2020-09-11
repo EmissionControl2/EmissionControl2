@@ -535,12 +535,14 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
 
     // set slider colors
-    if (index < 3 || index > 11)
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    else if ((index > 2 && index < 6) || (index > 8 && index < 12))
+    if (index < 4)
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-    else
+    else if (index > 3 && index < 7)
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
+    else if (index > 6 && index < 11)
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECred);
 
     granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
@@ -577,12 +579,14 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
 
     // set slider colors
-    if (index < 3 || index > 11)
-      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    else if ((index > 2 && index < 6) || (index > 8 && index < 12))
+    if (index < 4)
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-    else
+    else if (index > 3 && index < 7)
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
+    else if (index > 6 && index < 11)
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
+    else
+      ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECred);
 
     granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
@@ -678,7 +682,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
     // Draw Scan Display ------------------------------------------------
     ImGui::PushFont(titleFont);
-    ParameterGUI::beginPanel("Scan Display", 0, NextWindowYPosition, windowWidth, graphHeight / 3,
+    ParameterGUI::beginPanel("SCAN DISPLAY", 0, NextWindowYPosition, windowWidth, graphHeight / 3,
                              graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
