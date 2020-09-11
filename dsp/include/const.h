@@ -16,7 +16,7 @@ enum paramNames {
   ASYNC,
   INTERM,
   STREAMS,
-  GRAIN_READ,
+  PLAYBACK,
   FILTER_CENTER,
   RESONANCE,
   SOUND_FILE,

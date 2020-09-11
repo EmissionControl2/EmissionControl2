@@ -506,11 +506,11 @@ void ecInterface::onDraw(Graphics &g) {
   if (ImGui::GetFrameHeightWithSpacing() * 16.8 > windowHeight / 2)
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
 
-  // get slider width
+  // get slider thickness
   float sliderheight = ImGui::GetFrameHeightWithSpacing();
 
-  float menuBarHeight = 25 * adjustScaleY;
-  float firstRowHeight = sliderheight * 16.8;
+  float menuBarHeight = 22 * adjustScaleY;
+  float firstRowHeight = sliderheight * 16.9;
   float secondRowHeight = sliderheight * 8;
 
   // adjust second row size to fill space if graphs are not drawn
