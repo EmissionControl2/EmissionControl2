@@ -116,6 +116,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
   std::vector<bool> SelectedMIDIDevices;
+  int unlearnFlash = 0;
 
   void clearActiveMIDI() {
     ActiveMIDI.clear();
@@ -220,8 +221,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int numGrainsToDisplay;
 
   // Colors
-  // colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);
-  // colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+  int colPushCount = 0;
+
   // light color scheme
   ImColor PrimaryLight = ImColor(149, 176, 176);  // Background
   ImColor YellowLight = ImColor(237, 224, 39);    // Yellow

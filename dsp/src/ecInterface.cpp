@@ -147,6 +147,7 @@ void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 void ecInterface::onDraw(Graphics &g) {
   setGUIParams();
   framecounter++;
+  if (unlearnFlash > 0) unlearnFlash--;
   g.clear(background);
 
   // Get window height and width (for responsive sizing)
@@ -523,27 +524,43 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    // set alternating slider background shade
+    colPushCount = 0;
+    // set alternating slider background shade (green if midi learning)
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
-        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI)
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
-    else if (index % 3 == 0)
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECgreen);
+      colPushCount += 2;
+    } else if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
+               mCurrentLearningMIDIKey.getKeysIndex() == index && (unlearnFlash % 20) > 10) {
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECred);
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECred);
+      colPushCount += 2;
+    } else if (index % 3 == 0) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else if (index % 3 == 1)
+      colPushCount += 1;
+    } else if (index % 3 == 1) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-    else
+      colPushCount += 1;
+    } else {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+      colPushCount += 1;
+    }
 
     // set slider colors
-    if (index < 4)
+    if (index < 4) {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-    else if (index > 3 && index < 7)
+      colPushCount += 1;
+    } else if (index > 3 && index < 7) {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    else if (index > 6 && index < 11)
+      colPushCount += 1;
+    } else if (index > 6 && index < 11) {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
-    else
+      colPushCount += 1;
+    } else {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECred);
-
+      colPushCount += 1;
+    }
     granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
@@ -554,8 +571,9 @@ void ecInterface::onDraw(Graphics &g) {
     if (mMIDILearn.mParamDel) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+      unlearnFlash = 60;
     }
-    ImGui::PopStyleColor(2);
+    ImGui::PopStyleColor(colPushCount);
   }
   ImGui::PopFont();
   ParameterGUI::endPanel();
@@ -567,27 +585,43 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    // set alternating slider background shade
+    colPushCount = 0;
+    // set alternating slider background shade (green if midi learning)
     if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
-        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI)
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
-    else if (index % 3 == 0)
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECgreen);
+      colPushCount += 2;
+    } else if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
+               mCurrentLearningMIDIKey.getKeysIndex() == index && (unlearnFlash % 20) > 10) {
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECred);
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECred);
+      colPushCount += 2;
+    } else if (index % 3 == 0) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade3);
-    else if (index % 3 == 1)
+      colPushCount += 1;
+    } else if (index % 3 == 1) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade2);
-    else
+      colPushCount += 1;
+    } else {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
+      colPushCount += 1;
+    }
 
     // set slider colors
-    if (index < 4)
+    if (index < 4) {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECblue);
-    else if (index > 3 && index < 7)
+      colPushCount += 1;
+    } else if (index > 3 && index < 7) {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECgreen);
-    else if (index > 6 && index < 11)
+      colPushCount += 1;
+    } else if (index > 6 && index < 11) {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECyellow);
-    else
+      colPushCount += 1;
+    } else {
       ImGui::PushStyleColor(ImGuiCol_SliderGrab, (ImVec4)*ECred);
-
+      colPushCount += 1;
+    }
     granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
@@ -598,8 +632,9 @@ void ecInterface::onDraw(Graphics &g) {
     if (mMIDILearn.mParamDel) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+      unlearnFlash = 60;
     }
-    ImGui::PopStyleColor(2);
+    ImGui::PopStyleColor(colPushCount);
   }
   ImGui::PopFont();
   float NextWindowYPosition = firstRowHeight + menuBarHeight;
@@ -642,9 +677,18 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
+    colPushCount = 0;
     if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
-        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECgreen);
+      colPushCount += 2;
+    } else if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
+               mCurrentLearningMIDIKey.getKeysIndex() == index && (unlearnFlash % 20) > 10) {
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECred);
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECred);
+      colPushCount += 2;
+    }
 
     // WARNING, hacky as fuck.
     // This is to tell the drawRangeSlider that this is the last parameter to check.
@@ -661,10 +705,9 @@ void ecInterface::onDraw(Graphics &g) {
     if (mMIDILearn.mParamDel) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+      unlearnFlash = 60;
     }
-    if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
-        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI == true)
-      ImGui::PopStyleColor();
+    ImGui::PopStyleColor(colPushCount);
   }
 
   ImGui::PopFont();
