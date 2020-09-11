@@ -1091,7 +1091,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
                      static_cast<void *>(&state.devices), state.devices.size())) {
       // TODO adjust valid number of channels.
     }
-    std::vector<std::string> samplingRates{"44100", "48000", "88100", "96000"};
+    std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
     ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
                  static_cast<void *>(&samplingRates), samplingRates.size());
     if (ImGui::Button("Start")) {
@@ -1213,7 +1213,7 @@ int ecInterface::getSampleRateIndex() {
       return 0;
     case 48000:
       return 1;
-    case 88100:
+    case 88200:
       return 2;
     case 96000:
       return 3;
