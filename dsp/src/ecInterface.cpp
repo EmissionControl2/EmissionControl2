@@ -931,6 +931,7 @@ bool ecInterface::onKeyDown(Keyboard const &k) {
   mLastKeyDown.key = k;
   mLastKeyDown.readyToTrig = true;
   mLastKeyDown.lastParamCheck = false;
+  return true;
 }
 
 void ecInterface::initMIDI() {
