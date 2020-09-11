@@ -147,7 +147,7 @@ class ecSynth : public al::SynthVoice {
       std::unique_ptr<ecModParameter>(new ecModParameter{"modPanDepth", "14. Pan"});
 
     ECParameters[AMPLITUDE] = std::unique_ptr<ecParameter>(
-      new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 6, -180, 48, PARAM, "%.3f dB"});
+      new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 24, -180, 48, PARAM, "%.3f dB"});
     ECModParameters[AMPLITUDE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modAmplitudeDepth", "15. Amplitude"});
   }
