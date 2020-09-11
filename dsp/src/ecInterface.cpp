@@ -481,6 +481,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::OpenPopup("Font Size");
   }
   bool fontScaleOpen = true;
+  // ImGui::SetNextWindowSize()
   if (ImGui::BeginPopupModal("Font Size", &fontScaleOpen)) {
     ImGui::PushItemWidth(windowWidth / 3);
     ImGui::SliderFloat("Scale", &fontScale, 0.5, 3.0, "%.1f");
@@ -888,6 +889,7 @@ void ecInterface::onDraw(Graphics &g) {
     // Draw VU Meter window
     // ---------------------------------------------
     ImGui::PushFont(titleFont);
+    if (width() < 1250) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 12));
     ParameterGUI::beginPanel("VU", windowWidth * 15 / 16, NextWindowYPosition, windowWidth * 1 / 16,
                              graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
@@ -948,6 +950,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ParameterGUI::endPanel();
   }
+  if (width() < 1250) ImGui::PopStyleVar();
 
   // Throw popup to remind user to load in sound files if none are
   // present.
