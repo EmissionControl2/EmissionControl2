@@ -131,7 +131,7 @@ void ecInterface::onCreate() {
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
     ("/usr/local/share/fonts/EmissionControl2/ferrari.ttf"), 16.0f);
 #endif
-
+  currentPresetMap = mPresets.readPresetMap("default");
   setGUIParams();
 }
 
@@ -967,7 +967,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::EndPopup();
   }
-  ImGui::PopStyleColor(17);
+  ImGui::PopStyleColor(18);
   ImGui::PopStyleVar(3);
   al::imguiEndFrame();
 
@@ -1244,6 +1244,8 @@ void ecInterface::setGUIParams() {
                                                       : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
+  ImGui::PushStyleColor(ImGuiCol_CheckMark, light ? (ImVec4)ImColor(0, 0, 0, 150)
+                                                  : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
@@ -1295,18 +1297,21 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
-    ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*ECgreen);
+    ImGui::PushStyleColor(ImGuiCol_Text, light ? (ImVec4)*ECblue : (ImVec4)*ECgreen);
   }
   float presetWidth = (ImGui::GetContentRegionAvail().x / 12.0f) - 8.0f;
   for (int row = 0; row < presetRows; row++) {
     for (int column = 0; column < presetColumns; column++) {
       std::string name = std::to_string(counter);
       ImGui::PushID(counter);
+      if (currentPresetMap.find(counter) != currentPresetMap.end())
+        ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*ECred);
 
       bool is_selected = selection == counter;
       if (is_selected) {
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
+
       if (ImGui::Selectable(name.c_str(), is_selected, 0,
                             ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f))) {
         if (state.storeButtonState) {
@@ -1319,15 +1324,15 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
           state.storeButtonState = false;
           ImGui::PopStyleColor();
           state.enteredText.clear();
+          currentPresetMap = presetHandler->readPresetMap(state.currentBank);
         } else {
           if (presetHandler->recallPreset(counter) != "") {  // Preset is available
             selection = counter;
           }
         }
       }
-      if (is_selected) {
-        ImGui::PopStyleColor(1);
-      }
+      if (currentPresetMap.find(counter) != currentPresetMap.end()) ImGui::PopStyleColor();
+      if (is_selected) ImGui::PopStyleColor(1);
 
       if (column < presetColumns - 1) ImGui::SameLine();
       counter++;
@@ -1389,6 +1394,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         if (ImGui::Selectable(mapName.data(), isSelected)) {
           state.currentBank = mapName;
           presetHandler->setCurrentPresetMap(mapName);
+          currentPresetMap = presetHandler->readPresetMap(mapName);
         }
         if (isSelected) {
           ImGui::SetItemDefaultFocus();

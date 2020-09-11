@@ -102,6 +102,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   float background = 0.21;
   ecSynth granulator;
   al::PresetHandler mPresets;
+  std::map<int, std::string> currentPresetMap;
   al::OutputRecorder mRecorder;
   Clipper mHardClip;
 
