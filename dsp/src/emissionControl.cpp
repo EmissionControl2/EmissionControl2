@@ -219,7 +219,7 @@ float ecModulator::sampleAndHoldUniform(float low, float high) {
 
 ecParameter::ecParameter(std::string parameterName, std::string displayName, float defaultValue,
                          float defaultMin, float defaultMax, float absMin, float absMax,
-                         consts::sliderType slideType, std::string sliderText,
+                         consts::sliderType slideType, bool isLog, std::string sliderText,
                          bool independentMod) {
   mParameter = new Parameter{parameterName, defaultValue, defaultMin, defaultMax};
   mDisplayName = displayName;
@@ -229,6 +229,7 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, flo
   mMin = defaultMin;
   mMax = defaultMax;
   mSliderType = slideType;
+  mIsLog = isLog;
   mSliderText = sliderText;
   mIndependentMod = independentMod;
   if (mIndependentMod)  // if true, this parameter will have its own modulator
@@ -236,19 +237,20 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, flo
 }
 
 ecParameter::ecParameter(std::string parameterName, std::string displayName, std::string Group,
-                         float defaultValue, std::string prefix, float defaultMin, float defaultMax,
-                         float absMin, float absMax, consts::sliderType slideType,
+                         float defaultValue, float defaultMin, float defaultMax, float absMin,
+                         float absMax, consts::sliderType slideType, bool isLog,
                          std::string sliderText, bool independentMod) {
-  mParameter = new Parameter{parameterName, Group, defaultValue, prefix, defaultMin, defaultMax};
+  mParameter = new Parameter{parameterName, Group, defaultValue, defaultMin, defaultMax};
   mDisplayName = displayName;
   mParameter->displayName("##" + parameterName);
-  mLowRange = new Parameter{
-    ("##" + parameterName + "Low").c_str(), Group, defaultMin, prefix, absMin, absMax};
-  mHighRange = new Parameter{
-    ("##" + parameterName + "High").c_str(), Group, defaultMax, prefix, absMin, absMax};
+  mLowRange =
+    new Parameter{("##" + parameterName + "Low").c_str(), Group, defaultMin, absMin, absMax};
+  mHighRange =
+    new Parameter{("##" + parameterName + "High").c_str(), Group, defaultMax, absMin, absMax};
   mMin = defaultMin;
   mMax = defaultMax;
   mSliderType = slideType;
+  mIsLog = isLog;
   mSliderText = sliderText;
   mIndependentMod = independentMod;
   if (mIndependentMod)  // if true, this parameter will have its own modulator
@@ -354,14 +356,15 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
                                  mParameter->min(), mParameter->max());
     }
   } else {  // Draw float slider.
-    if (mParameter->mIsLog) floatSliderFlag = ImGuiSliderFlags_Logarithmic;
+    if (mIsLog) floatSliderFlag = ImGuiSliderFlags_Logarithmic;
     valueSliderf = mParameter->get();
     if (mSliderText != "") {
-      changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
-                                   mParameter->min(), mParameter->max(), mSliderText.c_str());
+      changed =
+        ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf, mParameter->min(),
+                           mParameter->max(), mSliderText.c_str(), floatSliderFlag);
     } else {
       changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
-                                   mParameter->min(), mParameter->max(), "%0.3f");
+                                   mParameter->min(), mParameter->max(), "%0.3f", floatSliderFlag);
     }
   }
 
@@ -421,8 +424,8 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
       isMIDILearn->mParamDel = true;
     }
     ImGui::Separator();
-    if (ImGui::Checkbox("Logarithmic", &mParamer->mIsLog)) {
-      mParameter->mIsLog ? mParameter->setLog(false) : mParameter->setLog(true);
+    if (ImGui::Selectable("Logarithmic")) {
+      mIsLog ? setLog(false) : setLog(true);
     }
     ImGui::EndPopup();
   }

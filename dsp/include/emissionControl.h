@@ -339,7 +339,7 @@ public:
   ecParameter(std::string parameterName, std::string displayName, float defaultValue = 0,
               float defaultMin = -99999.0, float defaultMax = 99999.0, float absMin = -1 * FLT_MAX,
               float absMax = FLT_MAX, consts::sliderType slideType = consts::PARAM,
-              std::string sliderText = "", bool independentMod = 0);
+              bool isLog = false, std::string sliderText = "", bool independentMod = 0);
 
   /**
    * @brief ecParameter Constructor.
@@ -366,10 +366,10 @@ public:
    *              getParamMod().
    */
   ecParameter(std::string parameterName, std::string displayName, std::string Group,
-              float defaultValue = 0, std::string prefix = "", float defaultMin = -99999.0,
-              float defaultMax = 99999.0, float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
-              consts::sliderType slideType = consts::PARAM, std::string sliderText = "",
-              bool independentMod = 0);
+              float defaultValue = 0, float defaultMin = -99999.0, float defaultMax = 99999.0,
+              float absMin = -1 * FLT_MAX, float absMax = FLT_MAX,
+              consts::sliderType slideType = consts::PARAM, bool isLog = false,
+              std::string sliderText = "", bool independentMod = 0);
 
   /**
    * @brief ecParameter destructor.
@@ -479,6 +479,8 @@ public:
    */
   void addToPresetHandler(al::PresetHandler &presetHandler);
 
+  void setLog(bool isLog) { mIsLog = isLog; }
+
   /**
    * @brief Set the text to be displayed on the slider
    * Example "%i Hz"
@@ -509,13 +511,14 @@ private:
   std::shared_ptr<ecModulator> mModSource;
   float mMax, mMin;
   bool mIndependentMod;
+  bool mIsLog;
   // Draw flags
   bool editing = false;
 };
 
 struct ecModParameter {
   ecModParameter(std::string parameterName, std::string displayName)
-      : param(parameterName, displayName, "", 0, "", 0, 1, 0, 1, consts::MOD),
+      : param(parameterName, displayName, "", 0, 0, 1, 0, 1, consts::MOD, false),
         lfoMenu("##lfo" + parameterName) {}
 
   void setMenuElements(std::vector<std::string> elements) { lfoMenu.setElements(elements); }
@@ -799,9 +802,9 @@ public:
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);
-    frequency = new ecParameter(freqName, freqName, "", 1, "", 0.01, 30, 0.001, 10000, consts::LFO,
-                                "%.3f Hz");
-    duty = new al::Parameter(dutyName, "", 0.5, "", 0, 1);
+    frequency = new ecParameter(freqName, freqName, "", 1, 0.01, 30, 0.001, 10000, consts::LFO,
+                                false, "%.3f Hz");
+    duty = new al::Parameter(dutyName, "", 0.5, 0, 1);
 
     shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
     polarity->setElements({"BI", "UNI+", "UNI-"});
