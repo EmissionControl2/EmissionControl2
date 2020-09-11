@@ -1304,8 +1304,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     for (int column = 0; column < presetColumns; column++) {
       std::string name = std::to_string(counter);
       ImGui::PushID(counter);
-      if (currentPresetMap.find(counter) != currentPresetMap.end())
-        ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*ECred);
+      if (currentPresetMap.find(counter) == currentPresetMap.end())
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.3);
 
       bool is_selected = selection == counter;
       if (is_selected) {
@@ -1331,7 +1331,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
           }
         }
       }
-      if (currentPresetMap.find(counter) != currentPresetMap.end()) ImGui::PopStyleColor();
+      if (currentPresetMap.find(counter) == currentPresetMap.end()) ImGui::PopStyleVar();
       if (is_selected) ImGui::PopStyleColor(1);
 
       if (column < presetColumns - 1) ImGui::SameLine();
