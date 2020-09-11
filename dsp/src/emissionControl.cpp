@@ -301,9 +301,10 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
   bool changed = false, isInt = false;
+  ImGuiItemFlags floatSliderFlag = NULL;
 
   if (mSliderType > 2) isInt = true;
-  
+
   // Draw left most range box.
   ImGuiIO &io = ImGui::GetIO();
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
@@ -353,6 +354,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
                                  mParameter->min(), mParameter->max());
     }
   } else {  // Draw float slider.
+    if (mParameter->mIsLog) floatSliderFlag = ImGuiSliderFlags_Logarithmic;
     valueSliderf = mParameter->get();
     if (mSliderText != "") {
       changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
@@ -409,14 +411,18 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   }
 
   if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
-    ImGui::OpenPopup(("midiLearn" + mParameter->getName()).c_str());
+    ImGui::OpenPopup(("rightClickSlider" + mParameter->getName()).c_str());
   }
-  if (ImGui::BeginPopup(("midiLearn" + mParameter->getName()).c_str())) {
+  if (ImGui::BeginPopup(("rightClickSlider" + mParameter->getName()).c_str())) {
     if (ImGui::Selectable("MIDI Learn")) {
       isMIDILearn->mParamAdd = true;
     }
     if (ImGui::Selectable("MIDI Unlearn")) {
       isMIDILearn->mParamDel = true;
+    }
+    ImGui::Separator();
+    if (ImGui::Checkbox("Logarithmic", &mParamer->mIsLog)) {
+      mParameter->mIsLog ? mParameter->setLog(false) : mParameter->setLog(true);
     }
     ImGui::EndPopup();
   }
