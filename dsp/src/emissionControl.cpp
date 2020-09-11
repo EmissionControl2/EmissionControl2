@@ -427,6 +427,8 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
     if (ImGui::Selectable("Logarithmic")) {
       mIsLog ? setLog(false) : setLog(true);
     }
+    ImGui::SameLine();
+    ImGui::Checkbox("##logIndicator", &mIsLog);
     ImGui::EndPopup();
   }
 
