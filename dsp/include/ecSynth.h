@@ -76,7 +76,7 @@ public:
     using namespace consts;
 
     ECParameters[GRAIN_RATE] = std::make_shared<ecParameter>("GrainRate", "1. Grain Rate", 1, 0.1,
-                                                             100, 0, 500, PARAM, "%.3f Hz");
+                                                             100, 0, 500, PARAM, false, "%.3f Hz");
     ECModParameters[GRAIN_RATE] =
         std::unique_ptr<ecModParameter>(new ecModParameter{"modGrainRateDepth", "1. Grain Rate"});
 
@@ -101,7 +101,7 @@ public:
         std::unique_ptr<ecModParameter>(new ecModParameter{"modGrainReadDepth", "5. Grain Read"});
 
     ECParameters[FILTER_CENTER] = std::unique_ptr<ecParameter>(new ecParameter{
-        "FilterCenter", "6. Filter Center", 440, 60, 5000, 20, 24000, PARAM, "%.3f Hz"});
+        "FilterCenter", "6. Filter Center", 440, 60, 5000, 20, 24000, PARAM, false, "%.3f Hz"});
     ECModParameters[FILTER_CENTER] = std::unique_ptr<ecModParameter>(
         new ecModParameter{"modFilterCenterDepth", "6. Filter Center"});
 
@@ -132,7 +132,7 @@ public:
         std::unique_ptr<ecModParameter>(new ecModParameter{"modScanSpeedDepth", "11. Scan Speed"});
 
     ECParameters[GRAIN_DUR] = std::unique_ptr<ecParameter>(new ecParameter{
-        "GrainDurs", "12. Grain Duration", 30, 0.046, 1000, 0.046, 10000, PARAM, "%.3f ms"});
+        "GrainDurs", "12. Grain Duration", 30, 0.046, 1000, 0.046, 10000, PARAM, false, "%.3f ms"});
     ECModParameters[GRAIN_DUR] = std::unique_ptr<ecModParameter>(
         new ecModParameter{"modGrainDurationDepth", "12. Grain Duration"});
 
@@ -146,8 +146,8 @@ public:
     ECModParameters[PAN] =
         std::unique_ptr<ecModParameter>(new ecModParameter{"modPanDepth", "14. Pan"});
 
-    ECParameters[AMPLITUDE] = std::unique_ptr<ecParameter>(
-        new ecParameter{"AmplitudedB", "15. Amplitude", -6, -60, 24, -180, 48, PARAM, "%.3f dB"});
+    ECParameters[AMPLITUDE] = std::unique_ptr<ecParameter>(new ecParameter{
+        "AmplitudedB", "15. Amplitude", -6, -60, 24, -180, 48, PARAM, false, "%.3f dB"});
     ECModParameters[AMPLITUDE] =
         std::unique_ptr<ecModParameter>(new ecModParameter{"modAmplitudeDepth", "15. Amplitude"});
   }
