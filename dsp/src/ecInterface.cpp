@@ -1536,8 +1536,7 @@ void ecInterface::setAudioSettings(float sample_rate) {
   globalSamplingRate = sample_rate;
 
   configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
-
-  granulator.setIO(&audioIO());
+  granulator.setGlobalSamplingRate(sample_rate);
 }
 
 void ecInterface::setColorSchemeMode(bool is_light) {
