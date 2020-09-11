@@ -303,7 +303,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   bool changed = false, isInt = false;
 
   if (mSliderType > 2) isInt = true;
-
+  
   // Draw left most range box.
   ImGuiIO &io = ImGui::GetIO();
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
