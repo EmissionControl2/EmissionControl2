@@ -131,7 +131,7 @@ void ecInterface::onCreate() {
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
     ("/usr/local/share/fonts/EmissionControl2/ferrari.ttf"), 16.0f);
 #endif
-
+  currentPresetMap = mPresets.readPresetMap("default");
   setGUIParams();
 }
 
@@ -481,6 +481,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::OpenPopup("Font Size");
   }
   bool fontScaleOpen = true;
+  // ImGui::SetNextWindowSize()
   if (ImGui::BeginPopupModal("Font Size", &fontScaleOpen)) {
     ImGui::PushItemWidth(windowWidth / 3);
     ImGui::SliderFloat("Scale", &fontScale, 0.5, 3.0, "%.1f");
@@ -506,11 +507,11 @@ void ecInterface::onDraw(Graphics &g) {
   if (ImGui::GetFrameHeightWithSpacing() * 16.8 > windowHeight / 2)
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
 
-  // get slider width
+  // get slider thickness
   float sliderheight = ImGui::GetFrameHeightWithSpacing();
 
-  float menuBarHeight = 25 * adjustScaleY;
-  float firstRowHeight = sliderheight * 16.8;
+  float menuBarHeight = 22 * adjustScaleY;
+  float firstRowHeight = sliderheight * 16.9;
   float secondRowHeight = sliderheight * 8;
 
   // adjust second row size to fill space if graphs are not drawn
@@ -888,6 +889,7 @@ void ecInterface::onDraw(Graphics &g) {
     // Draw VU Meter window
     // ---------------------------------------------
     ImGui::PushFont(titleFont);
+    if (width() < 1250) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 12));
     ParameterGUI::beginPanel("VU", windowWidth * 15 / 16, NextWindowYPosition, windowWidth * 1 / 16,
                              graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
@@ -948,6 +950,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ParameterGUI::endPanel();
   }
+  if (width() < 1250) ImGui::PopStyleVar();
 
   // Throw popup to remind user to load in sound files if none are
   // present.
@@ -967,7 +970,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::EndPopup();
   }
-  ImGui::PopStyleColor(17);
+  ImGui::PopStyleColor(18);
   ImGui::PopStyleVar(3);
   al::imguiEndFrame();
 
@@ -1244,6 +1247,8 @@ void ecInterface::setGUIParams() {
                                                       : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
+  ImGui::PushStyleColor(ImGuiCol_CheckMark, light ? (ImVec4)ImColor(0, 0, 0, 150)
+                                                  : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
@@ -1295,18 +1300,21 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
-    ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*ECgreen);
+    ImGui::PushStyleColor(ImGuiCol_Text, light ? (ImVec4)*ECblue : (ImVec4)*ECgreen);
   }
   float presetWidth = (ImGui::GetContentRegionAvail().x / 12.0f) - 8.0f;
   for (int row = 0; row < presetRows; row++) {
     for (int column = 0; column < presetColumns; column++) {
       std::string name = std::to_string(counter);
       ImGui::PushID(counter);
+      if (currentPresetMap.find(counter) == currentPresetMap.end())
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.3);
 
       bool is_selected = selection == counter;
       if (is_selected) {
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
+
       if (ImGui::Selectable(name.c_str(), is_selected, 0,
                             ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f))) {
         if (state.storeButtonState) {
@@ -1319,15 +1327,15 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
           state.storeButtonState = false;
           ImGui::PopStyleColor();
           state.enteredText.clear();
+          currentPresetMap = presetHandler->readPresetMap(state.currentBank);
         } else {
           if (presetHandler->recallPreset(counter) != "") {  // Preset is available
             selection = counter;
           }
         }
       }
-      if (is_selected) {
-        ImGui::PopStyleColor(1);
-      }
+      if (currentPresetMap.find(counter) == currentPresetMap.end()) ImGui::PopStyleVar();
+      if (is_selected) ImGui::PopStyleColor(1);
 
       if (column < presetColumns - 1) ImGui::SameLine();
       counter++;
@@ -1389,6 +1397,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         if (ImGui::Selectable(mapName.data(), isSelected)) {
           state.currentBank = mapName;
           presetHandler->setCurrentPresetMap(mapName);
+          currentPresetMap = presetHandler->readPresetMap(mapName);
         }
         if (isSelected) {
           ImGui::SetItemDefaultFocus();
