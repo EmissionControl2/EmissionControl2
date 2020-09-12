@@ -137,77 +137,9 @@ private:
    * @param[in] index: Index in ECParameters structure.
    */
   void updateECParamMIDI(float val, int index) {
-    bool is_logarithmic = granulator.ECParameters[index]->getLog();
-    const int decimal_precision = ImParseFormatPrecision("%0.3f", 3);
-    float logarithmic_zero_epsilon = ImPow(0.1f, (float)decimal_precision);
-    const float zero_deadzone_halfsize = 0.0f;
-    float l_min = granulator.ECParameters[index]->getCurrentMin();
-    float l_max = granulator.ECParameters[index]->getCurrentMax();
-    // float v_min = logf(l_min);
-    // float v_max = logf(l_max);
-    // float scale = (v_max - v_min) / (l_max - l_min);
-    float val_f = l_min + (val * abs(l_max - l_min));
-    // val = expf(v_min + scale * (val - l_min));
-
-    const float v_clamped =
-        (l_min < l_max) ? ImClamp(val_f, l_min, l_max) : ImClamp(val_f, l_max, l_min);
-
-    bool flipped = l_max < l_min;
-
-    if (flipped) // Handle the case where the range is backwards
-      ImSwap(l_min, l_max);
-
-    float l_min_fudged =
-        (ImAbs((float)l_min) < logarithmic_zero_epsilon)
-            ? ((l_min < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
-            : (float)l_min;
-    float l_max_fudged =
-        (ImAbs((float)l_max) < logarithmic_zero_epsilon)
-            ? ((l_max < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
-            : (float)l_max;
-
-    // std::cout << v_clamped << std::endl;
-
-    if ((l_min == 0.0f) && (l_max < 0.0f))
-      l_min_fudged = -logarithmic_zero_epsilon;
-    else if ((l_max == 0.0f) && (l_min < 0.0f))
-      l_max_fudged = -logarithmic_zero_epsilon;
-
-    float result;
-    float v_min = logf(l_min_fudged);
-    float v_max = logf(l_max_fudged);
-    float scale = (v_max - v_min) / (l_max_fudged - l_min_fudged);
-
-    if (v_clamped < l_min_fudged) {
-      result = 0.0f; // Workaround for values that are in-range but below our fudge
-    } else if (v_clamped > l_max_fudged)
-      result = l_max_fudged;         // Workaround for values that are in-range but above our fudge
-    else if ((l_min * l_max) < 0.0f) // Range crosses zero, so split into two portions
-    {
-      float zero_point_center = (abs(l_min) / abs(l_max - l_min));
-      if (val == zero_point_center)
-        val = 0.0f; // Special case for exactly zero
-      else if (val < zero_point_center) {
-        float v_min = logf(abs(l_min_fudged));
-        float scale = (abs(v_min) - logf(logarithmic_zero_epsilon)) / (abs(l_min_fudged));
-        float test = logf(logarithmic_zero_epsilon) + scale * abs(val_f);
-        result = -1 * expf(logf(logarithmic_zero_epsilon) + scale * abs(val_f));
-      } else {
-        float scale = (v_max - logf(logarithmic_zero_epsilon)) / (l_max_fudged);
-        result = expf(logf(logarithmic_zero_epsilon) + scale * (val_f));
-      }
-    } else if ((l_min < 0.0f) || (l_max < 0.0f)) { // Entirely negative slider
-      float v_min = logf(abs(l_min_fudged));
-      float v_max = logf(abs(l_max_fudged));
-      float scale = (v_min - v_max) / (l_min_fudged - l_max_fudged);
-      result = -1 * expf((v_min + scale * (val_f - l_min_fudged))); //- abs(l_max_fudged + l_min_fudged);
-    } else {
-      float v_min = logf(l_min_fudged);
-      float v_max = logf(l_max_fudged);
-      float scale = (v_max - v_min) / (l_max_fudged - l_min_fudged);
-      result = expf(v_max + scale * (val_f - l_max_fudged));
-    }
-
+    float result = util::outputValInRange(val, granulator.ECParameters[index]->getCurrentMin(),
+                                          granulator.ECParameters[index]->getCurrentMax(),
+                                          granulator.ECParameters[index]->getLog(), 3);
     granulator.ECParameters[index]->setParam(result);
   }
 
@@ -218,10 +150,11 @@ private:
    * @param[in] index: Index in ECModParameters structure.
    */
   void updateECModParamMIDI(float val, int index) {
-    val = granulator.ECModParameters[index]->param.getCurrentMin() +
-          (val * abs(granulator.ECModParameters[index]->param.getCurrentMax() -
-                     granulator.ECModParameters[index]->param.getCurrentMin()));
-    granulator.ECModParameters[index]->param.setParam(val);
+    float result =
+        util::outputValInRange(val, granulator.ECModParameters[index]->param.getCurrentMin(),
+                               granulator.ECModParameters[index]->param.getCurrentMax(),
+                               granulator.ECModParameters[index]->param.getLog(), 3);
+    granulator.ECModParameters[index]->param.setParam(result);
   }
 
   /**
@@ -231,10 +164,11 @@ private:
    * @param[in] index: Index in LFOParameters structure.
    */
   void updateLFOParamMIDI(float val, int index) {
-    val = granulator.LFOParameters[index]->frequency->getCurrentMin() +
-          (val * abs(granulator.LFOParameters[index]->frequency->getCurrentMax() -
-                     granulator.LFOParameters[index]->frequency->getCurrentMin()));
-    granulator.LFOParameters[index]->frequency->setParam(val);
+    float result =
+        util::outputValInRange(val, granulator.LFOParameters[index]->frequency->getCurrentMin(),
+                               granulator.LFOParameters[index]->frequency->getCurrentMax(),
+                               granulator.LFOParameters[index]->frequency->getLog(), 3);
+    granulator.LFOParameters[index]->frequency->setParam(result);
   }
 
   /**

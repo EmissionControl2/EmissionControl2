@@ -549,6 +549,67 @@ struct ecModParameter {
   al::ParameterMenu lfoMenu;
 };
 
+// a struct to wrap LFO parameters
+class LFOstruct {
+public:
+  al::ParameterMenu *shape = nullptr;
+  al::ParameterMenu *polarity = nullptr;
+  ecParameter *frequency = nullptr;
+  al::Parameter *duty = nullptr;
+  int mLFONumber;
+
+  // constructor
+  LFOstruct(int lfoNumber) {
+    mLFONumber = lfoNumber;
+    std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
+    std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
+    std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
+    std::string dutyName = "##LFOduty" + std::to_string(lfoNumber);
+
+    shape = new al::ParameterMenu(menuName);
+    polarity = new al::ParameterMenu(polarityName);
+    frequency = new ecParameter(freqName, freqName, "", 1, 0.01, 30, 0.001, 10000, consts::LFO,
+                                false, "%.3f Hz");
+    duty = new al::Parameter(dutyName, "", 0.5, 0, 1);
+
+    shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
+    polarity->setElements({"BI", "UNI+", "UNI-"});
+  }
+
+  void drawLFOControl(MIDILearnBool *isMIDILearn, KeyDown *k) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::Text("LFO%i", mLFONumber + 1);
+    ImGui::SameLine();
+    ImGui::PushItemWidth(70 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(shape);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::PushItemWidth(55 * io.FontGlobalScale);
+    al::ParameterGUI::drawMenu(polarity);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    int sliderPos = ImGui::GetCursorPosX();
+    frequency->drawRangeSlider(isMIDILearn, k);
+    if (*shape == 1) {
+      ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
+      ImGui::Text("Duty");
+      ImGui::SameLine();
+      ImGui::SetCursorPosX(sliderPos);
+      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * io.FontGlobalScale) + 8);
+      al::ParameterGUI::drawParameter(duty);
+      ImGui::PopItemWidth();
+    }
+  }
+
+  // destructor
+  ~LFOstruct() {
+    delete shape;
+    delete frequency;
+    delete polarity;
+    delete duty;
+  }
+};
+
 struct grainParameters {
   std::shared_ptr<ecParameter> transposition;
   float modTranspositionDepth;
@@ -782,68 +843,4 @@ private:
   // float mPeakCPU;
   // float mAvgCPU;
 };
-
-/*** GUI ELEMENTS ***/
-
-// a struct to wrap LFO parameters
-class LFOstruct {
-public:
-  al::ParameterMenu *shape = nullptr;
-  al::ParameterMenu *polarity = nullptr;
-  ecParameter *frequency = nullptr;
-  al::Parameter *duty = nullptr;
-  int mLFONumber;
-
-  // constructor
-  LFOstruct(int lfoNumber) {
-    mLFONumber = lfoNumber;
-    std::string menuName = "##LFOshape" + std::to_string(lfoNumber);
-    std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
-    std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
-    std::string dutyName = "##LFOduty" + std::to_string(lfoNumber);
-
-    shape = new al::ParameterMenu(menuName);
-    polarity = new al::ParameterMenu(polarityName);
-    frequency = new ecParameter(freqName, freqName, "", 1, 0.01, 30, 0.001, 10000, consts::LFO,
-                                false, "%.3f Hz");
-    duty = new al::Parameter(dutyName, "", 0.5, 0, 1);
-
-    shape->setElements({"Sine", "Square", "Rise", "Fall", "Noise"});
-    polarity->setElements({"BI", "UNI+", "UNI-"});
-  }
-
-  void drawLFOControl(MIDILearnBool *isMIDILearn, KeyDown *k) {
-    ImGuiIO &io = ImGui::GetIO();
-    ImGui::Text("LFO%i", mLFONumber + 1);
-    ImGui::SameLine();
-    ImGui::PushItemWidth(70 * io.FontGlobalScale);
-    al::ParameterGUI::drawMenu(shape);
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
-    ImGui::PushItemWidth(55 * io.FontGlobalScale);
-    al::ParameterGUI::drawMenu(polarity);
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
-    int sliderPos = ImGui::GetCursorPosX();
-    frequency->drawRangeSlider(isMIDILearn, k);
-    if (*shape == 1) {
-      ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
-      ImGui::Text("Duty");
-      ImGui::SameLine();
-      ImGui::SetCursorPosX(sliderPos);
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * io.FontGlobalScale) + 8);
-      al::ParameterGUI::drawParameter(duty);
-      ImGui::PopItemWidth();
-    }
-  }
-
-  // destructor
-  ~LFOstruct() {
-    delete shape;
-    delete frequency;
-    delete polarity;
-    delete duty;
-  }
-};
-
 #endif
