@@ -309,7 +309,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
 
   if (mSliderType > 2)
     isInt = true;
-
+    
   // Draw left most range box.
   slider_flags = ImGuiSliderFlags_ClampOnInput;
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
@@ -360,16 +360,23 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
                                  mParameter->min(), mParameter->max(), "%d", slider_flags);
     }
   } else { // Draw float slider.
-    if (mIsLog)
+
+    // Funny way to visualize log versus linear.
+    std::string lin_log_mod;
+    if (isLog()) {
       slider_flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_Logarithmic;
+      lin_log_mod = ""; // (
+    } else
+      lin_log_mod = ""; // /
     valueSliderf = mParameter->get();
     if (mSliderText != "") {
       changed =
           ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf, mParameter->min(),
-                             mParameter->max(), mSliderText.c_str(), slider_flags);
+                             mParameter->max(), (lin_log_mod + mSliderText).c_str(), slider_flags);
     } else {
-      changed = ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf,
-                                   mParameter->min(), mParameter->max(), "%0.3f", slider_flags);
+      changed =
+          ImGui::SliderFloat((mParameter->displayName()).c_str(), &valueSliderf, mParameter->min(),
+                             mParameter->max(), (lin_log_mod + "%0.3f").c_str(), slider_flags);
     }
   }
 
@@ -439,10 +446,9 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
     ImGui::EndPopup();
   }
 
-  // Logarithm Stuff 
+  // Logarithm Stuff
   if (ImGui::IsItemHovered() &&
-      k->key.key() == static_cast<int>(consts::KEYBOARD_PARAM_LOG_TOGGLE) &&
-      k->readyToTrig) {
+      k->key.key() == static_cast<int>(consts::KEYBOARD_PARAM_LOG_TOGGLE) && k->readyToTrig) {
     mIsLog ? setLog(false) : setLog(true);
   }
 
