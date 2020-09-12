@@ -3,8 +3,8 @@
 #include "Gamma/SoundFile.h"
 
 /**** C STANDARD ****/
-#include <string>
 #include <string.h>
+#include <string>
 
 #ifdef AL_WINDOWS
 #include <stdlib.h>
@@ -270,4 +270,68 @@ std::string util::getUserHomePath() {
 #endif
   std::string result = strdup(homedir);
   return result;
+}
+
+float util::outputValInRange(float val, float min, float max, bool isLog, unsigned int precision) {
+  assert(val >= 0 && val <= 1);
+  float logarithmic_zero_epsilon = powf(0.1f, precision);
+  float output_linear = min + (val * abs(max - min));
+
+  // Edge case for if max and min are flipped.
+  if (max < min) {
+    std::swap(min, max);
+  }
+
+  float output;
+  if (isLog) {
+    float min_linear = (abs(min) < logarithmic_zero_epsilon)
+                           ? ((min < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
+                           : min;
+    float max_linear = (abs(max) < logarithmic_zero_epsilon)
+                           ? ((max < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
+                           : max;
+
+    if ((min == 0.0f) && (max < 0.0f))
+      min_linear = -logarithmic_zero_epsilon;
+    else if ((max == 0.0f) && (min < 0.0f))
+      max_linear = -logarithmic_zero_epsilon;
+
+    // Set output.
+    if (output_linear < min_linear) {
+      output = min; 
+    } else if (output_linear > max_linear) {
+      output = max;                  
+    } else if ((min * max) < 0.0f) { // Range is in negative and positive.
+      float zero_point_center = (abs(min) / abs(max - min));
+      if (val > zero_point_center - logarithmic_zero_epsilon &&
+          val < zero_point_center +
+                    logarithmic_zero_epsilon *
+                        10) {               // hacky way to detect an equality with midi precision.
+        output = 0.0f;                      // Special case for exactly zero
+      } else if (val < zero_point_center) { // val less than zero point (negative)
+        float min_log = logf(abs(min_linear));
+        float scale = (abs(min_log) - logf(logarithmic_zero_epsilon)) / (abs(min_linear));
+        float test = logf(logarithmic_zero_epsilon) + scale * abs(output_linear);
+        output = -1 * expf(logf(logarithmic_zero_epsilon) + scale * abs(output_linear));
+      } else { // val less than zero point (positive)
+        float max_log = logf(max_linear);
+        float scale = (max_log - logf(logarithmic_zero_epsilon)) / (max_linear);
+        output = expf(logf(logarithmic_zero_epsilon) + scale * (output_linear));
+      }
+    } else if ((min < 0.0f) || (max < 0.0f)) { // Entirely negative slider
+      float v_min = logf(abs(min_linear));
+      float v_max = logf(abs(max_linear));
+      float scale = (v_min - v_max) / (min_linear - max_linear);
+      output = -1 * expf((v_min + scale * (output_linear - min_linear)));
+    } else { // Entirely positive slider.
+      float v_min = logf(min_linear);
+      float v_max = logf(max_linear);
+      float scale = (v_max - v_min) / (max_linear - min_linear);
+      output = expf(v_max + scale * (output_linear - max_linear));
+    }
+  } else {
+    output = output_linear;
+  }
+
+  return output;
 }
