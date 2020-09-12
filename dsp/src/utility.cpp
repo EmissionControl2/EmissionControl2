@@ -298,15 +298,15 @@ float util::outputValInRange(float val, float min, float max, bool isLog, unsign
 
     // Set output.
     if (output_linear < min_linear) {
-      output = min; // test pls
+      output = min; 
     } else if (output_linear > max_linear) {
-      output = max;                  // test pls
+      output = max;                  
     } else if ((min * max) < 0.0f) { // Range is in negative and positive.
       float zero_point_center = (abs(min) / abs(max - min));
       if (val > zero_point_center - logarithmic_zero_epsilon &&
           val < zero_point_center +
                     logarithmic_zero_epsilon *
-                        10) {               // hacky way to detect an equality in midi precision.
+                        10) {               // hacky way to detect an equality with midi precision.
         output = 0.0f;                      // Special case for exactly zero
       } else if (val < zero_point_center) { // val less than zero point (negative)
         float min_log = logf(abs(min_linear));
