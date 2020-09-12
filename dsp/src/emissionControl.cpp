@@ -352,11 +352,12 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   if (isInt) { // Draw int slider.
     valueSlideri = static_cast<int>(mParameter->get());
     if (mSliderText != "") {
-      changed = ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri,
-                                 mParameter->min(), mParameter->max(), (mSliderText).c_str(),slider_flags);
+      changed =
+          ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri, mParameter->min(),
+                           mParameter->max(), (mSliderText).c_str(), slider_flags);
     } else {
       changed = ImGui::SliderInt((mParameter->displayName()).c_str(), &valueSlideri,
-                                 mParameter->min(), mParameter->max(),"%d", slider_flags);
+                                 mParameter->min(), mParameter->max(), "%d", slider_flags);
     }
   } else { // Draw float slider.
     if (mIsLog)
@@ -436,6 +437,13 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
     ImGui::SameLine();
     ImGui::Checkbox("##logIndicator", &mIsLog);
     ImGui::EndPopup();
+  }
+
+  // Logarithm Stuff 
+  if (ImGui::IsItemHovered() &&
+      k->key.key() == static_cast<int>(consts::KEYBOARD_PARAM_LOG_TOGGLE) &&
+      k->readyToTrig) {
+    mIsLog ? setLog(false) : setLog(true);
   }
 
   ImGui::PopItemWidth();
