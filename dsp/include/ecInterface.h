@@ -19,13 +19,14 @@
 
 /**** External LIB ****/
 #include "../external/nativefiledialog/src/include/nfd.h"
+#include "imgui_internal.h"
 
 /**** C STD LIB ****/
 #include <array>
 #include <unordered_set>
 
 class ecInterface : public al::App, public al::MIDIMessageHandler {
- public:
+public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -94,7 +95,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
                           std::string directory = "", uint32_t bufferSize = 0);
 
- private:
+private:
   float windowWidth, windowHeight;
   bool isFullScreen;
 
@@ -135,10 +136,78 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    * @param[in] index: Index in ECParameters structure.
    */
   void updateECParamMIDI(float val, int index) {
-    val = granulator.ECParameters[index]->getCurrentMin() +
-          (val * abs(granulator.ECParameters[index]->getCurrentMax() -
-                     granulator.ECParameters[index]->getCurrentMin()));
-    granulator.ECParameters[index]->setParam(val);
+    bool is_logarithmic = granulator.ECParameters[index]->getLog();
+    const int decimal_precision = ImParseFormatPrecision("%0.3f", 3);
+    float logarithmic_zero_epsilon = ImPow(0.1f, (float)decimal_precision);
+    const float zero_deadzone_halfsize = 0.0f;
+    float l_min = granulator.ECParameters[index]->getCurrentMin();
+    float l_max = granulator.ECParameters[index]->getCurrentMax();
+    // float v_min = logf(l_min);
+    // float v_max = logf(l_max);
+    // float scale = (v_max - v_min) / (l_max - l_min);
+    float val_f = l_min + (val * abs(l_max - l_min));
+    // val = expf(v_min + scale * (val - l_min));
+
+    const float v_clamped =
+        (l_min < l_max) ? ImClamp(val_f, l_min, l_max) : ImClamp(val_f, l_max, l_min);
+
+    bool flipped = l_max < l_min;
+
+    if (flipped) // Handle the case where the range is backwards
+      ImSwap(l_min, l_max);
+
+    float l_min_fudged =
+        (ImAbs((float)l_min) < logarithmic_zero_epsilon)
+            ? ((l_min < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
+            : (float)l_min;
+    float l_max_fudged =
+        (ImAbs((float)l_max) < logarithmic_zero_epsilon)
+            ? ((l_max < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
+            : (float)l_max;
+
+    // std::cout << v_clamped << std::endl;
+
+    if ((l_min == 0.0f) && (l_max < 0.0f))
+      l_min_fudged = -logarithmic_zero_epsilon;
+    else if ((l_max == 0.0f) && (l_min < 0.0f))
+      l_max_fudged = -logarithmic_zero_epsilon;
+
+    float result;
+    float v_min = logf(l_min_fudged);
+    float v_max = logf(l_max_fudged);
+    float scale = (v_max - v_min) / (l_max_fudged - l_min_fudged);
+
+    if (v_clamped < l_min_fudged) {
+      result = 0.0f; // Workaround for values that are in-range but below our fudge
+    } else if (v_clamped > l_max_fudged)
+      result = l_max_fudged;         // Workaround for values that are in-range but above our fudge
+    else if ((l_min * l_max) < 0.0f) // Range crosses zero, so split into two portions
+    {
+      float zero_point_center = (abs(l_min) / abs(l_max - l_min));
+      if (val == zero_point_center)
+        val = 0.0f; // Special case for exactly zero
+      else if (val < zero_point_center) {
+        float v_min = logf(abs(l_min_fudged));
+        float scale = (abs(v_min) - logf(logarithmic_zero_epsilon)) / (abs(l_min_fudged));
+        float test = logf(logarithmic_zero_epsilon) + scale * abs(val_f);
+        result = -1 * expf(logf(logarithmic_zero_epsilon) + scale * abs(val_f));
+      } else {
+        float scale = (v_max - logf(logarithmic_zero_epsilon)) / (l_max_fudged);
+        result = expf(logf(logarithmic_zero_epsilon) + scale * (val_f));
+      }
+    } else if ((l_min < 0.0f) || (l_max < 0.0f)) { // Entirely negative slider
+      float v_min = logf(abs(l_min_fudged));
+      float v_max = logf(abs(l_max_fudged));
+      float scale = (v_min - v_max) / (l_min_fudged - l_max_fudged);
+      result = -1 * expf((v_min + scale * (val_f - l_min_fudged))); //- abs(l_max_fudged + l_min_fudged);
+    } else {
+      float v_min = logf(l_min_fudged);
+      float v_max = logf(l_max_fudged);
+      float scale = (v_max - v_min) / (l_max_fudged - l_min_fudged);
+      result = expf(v_max + scale * (val_f - l_max_fudged));
+    }
+
+    granulator.ECParameters[index]->setParam(result);
   }
 
   /**
@@ -224,26 +293,26 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int colPushCount = 0;
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(149, 176, 176);  // Background
-  ImColor YellowLight = ImColor(237, 224, 39);    // Yellow
-  ImColor RedLight = ImColor(212, 35, 89);        // Red
-  ImColor GreenLight = ImColor(69, 201, 69);      // Green
-  ImColor BlueLight = ImColor(44, 113, 175);      // Blue
-  ImColor Shade1Light = ImColor(176, 196, 196);   // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 213, 213);   // Slider Color 2
-  ImColor Shade3Light = ImColor(221, 230, 230);   // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
+  ImColor PrimaryLight = ImColor(149, 176, 176); // Background
+  ImColor YellowLight = ImColor(237, 224, 39);   // Yellow
+  ImColor RedLight = ImColor(212, 35, 89);       // Red
+  ImColor GreenLight = ImColor(69, 201, 69);     // Green
+  ImColor BlueLight = ImColor(44, 113, 175);     // Blue
+  ImColor Shade1Light = ImColor(176, 196, 196);  // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 213, 213);  // Slider Color 2
+  ImColor Shade3Light = ImColor(221, 230, 230);  // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
-  ImColor YellowDark = ImColor(122, 114, 0);   // Yellow
-  ImColor RedDark = ImColor(170, 8, 76);       // Red
-  ImColor GreenDark = ImColor(8, 159, 8);      // Green
-  ImColor BlueDark = ImColor(15, 75, 129);     // Blue
-  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);  // Background
+  ImColor YellowDark = ImColor(122, 114, 0);  // Yellow
+  ImColor RedDark = ImColor(170, 8, 76);      // Red
+  ImColor GreenDark = ImColor(8, 159, 8);     // Green
+  ImColor BlueDark = ImColor(15, 75, 129);    // Blue
+  ImColor Shade1Dark = ImColor(55, 63, 66);   // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);   // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118); // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);  // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
@@ -269,8 +338,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T>
-  bool jsonWriteToConfig(T value, std::string key);
+  template <typename T> bool jsonWriteToConfig(T value, std::string key);
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 
