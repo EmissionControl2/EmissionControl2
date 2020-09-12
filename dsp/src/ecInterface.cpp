@@ -175,6 +175,21 @@ void ecInterface::onDraw(Graphics &g) {
 
   adjustScaleY = 1.0f + ((fontScale - 1.0f) / 1.5f);
 
+  // adjust frame padding for smaller screens
+  if (ImGui::GetFrameHeightWithSpacing() * 16.8 > windowHeight / 2)
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
+
+  // get slider thickness
+  float sliderheight = ImGui::GetFrameHeightWithSpacing();
+
+  float menuBarHeight = 22 * adjustScaleY;
+  float firstRowHeight = sliderheight * 16.9;
+  float secondRowHeight = sliderheight * 8;
+
+  // adjust second row size to fill space if graphs are not drawn
+  if (windowHeight - menuBarHeight - firstRowHeight - secondRowHeight < 100)
+    secondRowHeight = windowHeight - firstRowHeight - menuBarHeight;
+
   if (granulator.getNumberOfAudioFiles() == 0 && audioIO().isRunning()) {
     ImGui::OpenPopup("No Sound File");
     audioIO().stop();
@@ -330,6 +345,8 @@ void ecInterface::onDraw(Graphics &g) {
   }
   bool isMIDIDevicesOpen = true;
   bool isWriteMIDIDevices = false;
+  ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                      ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("MIDI Devices", &isMIDIDevicesOpen)) {
     ImGui::Text(("Select Up to " + std::to_string(consts::MAX_MIDI_IN) + " MIDI Inputs:").c_str());
     if (midiIn[0].getPortCount() != SelectedMIDIDevices.size()) {
@@ -399,9 +416,9 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDILoadOpen = true;
   bool isLoadJSON = false;
   std::string midi_preset_name = "";
+  ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                      ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Load MIDI Preset", &isMIDILoadOpen)) {
-    ImGui::PushItemWidth(windowWidth / 3);
-
     for (auto iter = MIDIPresetNames.begin(); iter != MIDIPresetNames.end(); iter++) {
       if (ImGui::Selectable(iter->c_str())) {
         isMIDILoadOpen = false;
@@ -424,9 +441,9 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDIDeleteOpen = true;
   bool isDeleteJSON = false;
   midi_preset_name = "";
+  ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                      ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Delete MIDI Preset", &isMIDIDeleteOpen)) {
-    ImGui::PushItemWidth(windowWidth / 3);
-
     for (auto iter = MIDIPresetNames.begin(); iter != MIDIPresetNames.end(); iter++) {
       if (ImGui::Selectable(iter->c_str())) {
         isMIDIDeleteOpen = false;
@@ -448,11 +465,11 @@ void ecInterface::onDraw(Graphics &g) {
   }
   bool isMIDIWriteOpen = true;
   bool isWriteJSON = false;
+  ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                      ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
-    ImGui::PushItemWidth(windowWidth / 3);
     ImGui::InputText("Enter Preset Name", mCurrentPresetName, 50,
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
-    ImGui::PopItemWidth();
 
     if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
 
@@ -480,9 +497,10 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::OpenPopup("Font Size");
   }
   bool fontScaleOpen = true;
-  // ImGui::SetNextWindowSize()
+  ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 3)),
+                                      ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Font Size", &fontScaleOpen)) {
-    ImGui::PushItemWidth(windowWidth / 3);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (50 * fontScale));
     ImGui::SliderFloat("Scale", &fontScale, 0.5, 3.0, "%.1f");
     ImGui::PopItemWidth();
     ImGui::EndPopup();
@@ -498,24 +516,12 @@ void ecInterface::onDraw(Graphics &g) {
   }
 
   bool audioOpen = true;
+  ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 6)),
+                                      ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Audio Settings", &audioOpen)) {
     drawAudioIO(&audioIO());
     ImGui::EndPopup();
   }
-  // adjust frame padding for smaller screens
-  if (ImGui::GetFrameHeightWithSpacing() * 16.8 > windowHeight / 2)
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
-
-  // get slider thickness
-  float sliderheight = ImGui::GetFrameHeightWithSpacing();
-
-  float menuBarHeight = 22 * adjustScaleY;
-  float firstRowHeight = sliderheight * 16.9;
-  float secondRowHeight = sliderheight * 8;
-
-  // adjust second row size to fill space if graphs are not drawn
-  if (windowHeight - menuBarHeight - firstRowHeight - secondRowHeight < 100)
-    secondRowHeight = windowHeight - firstRowHeight - menuBarHeight;
 
   // Draw Granulator Controls -----------------------------------------
   ImGui::PushFont(titleFont);
@@ -1132,6 +1138,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     if (ImGui::Button("Update Devices")) {
       updateDevices(state);
     }
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
     if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
                      static_cast<void *>(&state.devices), state.devices.size())) {
       // TODO adjust valid number of channels.
@@ -1139,6 +1146,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
     ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
                  static_cast<void *>(&samplingRates), samplingRates.size());
+    ImGui::PopItemWidth();
     if (ImGui::Button("Start")) {
       globalSamplingRate = std::stof(samplingRates[state.currentSr]);
       io->framesPerSecond(globalSamplingRate);
