@@ -38,7 +38,8 @@ using namespace util;
 float line::operator()() {
   if (value != target) {
     value += increment;
-    if ((increment < 0) ? (value < target) : (value > target)) value = target;
+    if ((increment < 0) ? (value < target) : (value > target))
+      value = target;
   }
   return value;
 }
@@ -48,34 +49,34 @@ void line::set(float v, float t, float s) {
   start = v;
   target = t;
   seconds = s;
-  if (seconds <= 0) seconds = 1 / mSamplingRate;
+  if (seconds <= 0)
+    seconds = 1 / mSamplingRate;
   increment = (target - value) / (seconds * mSamplingRate);
 }
 
 /**** expo Class Implementation ****/
 float expo::operator()() {
   if (!mReverse) {
-    if (mX < mThresholdX * 0.01) {             // ratio of initial ramp up to 1
-      mY = powf(M_E, 100 * mX - mThresholdX);  // bias needed to reach that
-      mX += mIncrementX;                       // value in time (SEE DESMOS)
+    if (mX < mThresholdX * 0.01) {            // ratio of initial ramp up to 1
+      mY = powf(M_E, 100 * mX - mThresholdX); // bias needed to reach that
+      mX += mIncrementX;                      // value in time (SEE DESMOS)
     } else if (mX < mThresholdX) {
-      mY = powf(M_E, -1 * mX + (mThresholdX * 0.01));  // this compensates for initial ramp up
+      mY = powf(M_E, -1 * mX + (mThresholdX * 0.01)); // this compensates for initial ramp up
       mX += mIncrementX;
     } else {
       mY = mThresholdY;
       mX = 0;
     }
-  } else {  // reversed Logic
+  } else { // reversed Logic
     if (mX < mThresholdX * 0.92761758634) {
-      mY =
-        powf(M_E, 0.9 * (mX - mThresholdX + 0.5));  // (mx - thresh + bias ) where bias determines
-      mX += mIncrementX;                            // the ratio of envelope (mThresholdX * ratio)
-    } else if (mX < mThresholdX * 0.95) {           // small sustain to makeup for percieved
-                                                    // volume loss (in relation to expodec).
+      mY = powf(M_E, 0.9 * (mX - mThresholdX + 0.5)); // (mx - thresh + bias ) where bias determines
+      mX += mIncrementX;                              // the ratio of envelope (mThresholdX * ratio)
+    } else if (mX < mThresholdX * 0.95) {             // small sustain to makeup for percieved
+                                                      // volume loss (in relation to expodec).
       mY = 1;
       mX += mIncrementX;
-    } else if (mX < mThresholdX) {  // quickly bring envelope down to zero //
-                                    // before marking as done.
+    } else if (mX < mThresholdX) { // quickly bring envelope down to zero //
+                                   // before marking as done.
       mY = powf(M_E, -20 * ((mX) - (mThresholdX * 0.95)));
       mX += mIncrementX;
     } else {
@@ -87,8 +88,10 @@ float expo::operator()() {
 }
 
 void expo::set() {
-  if (mTotalS <= 0) mTotalS = 1;
-  if (mThresholdY <= 0) mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
+  if (mTotalS <= 0)
+    mTotalS = 1;
+  if (mThresholdY <= 0)
+    mThresholdY = 0.001, mThresholdX = -1 * std::log(0.001);
   mX = 0;
   mY = mThresholdY;
   mIncrementX = (mThresholdX / mTotalS);
@@ -131,7 +134,8 @@ float tukey::operator()() {
 }
 
 void tukey::set() {
-  if (totalS <= 0) totalS = 1;
+  if (totalS <= 0)
+    totalS = 1;
   currentS = 0;
   value = 0;
 }
@@ -173,7 +177,7 @@ bool util::load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>
   a->channels = soundFile.channels();
   // a->channels = 1; //Use for loading in non-audio files
   soundFile.read(a->data, a->frames);
-  if (resample) {  // We care about resampling.
+  if (resample) { // We care about resampling.
 
     /**
      * If buffer sample rate is not equal to synth's sample rate, convert.
@@ -193,8 +197,8 @@ bool util::load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>
       conversion->output_frames = b->size / b->channels;
       conversion->src_ratio = samplingRate / soundFile.frameRate();
       src_simple(conversion, SRC_SINC_FASTEST,
-                 soundFile.channels());  // const value changes quality of sample
-                                         // rate conversion
+                 soundFile.channels()); // const value changes quality of sample
+                                        // rate conversion
       buf.push_back(b);
       // delete[] a->data;
       delete conversion;
@@ -203,8 +207,8 @@ bool util::load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>
     }
 
   } else
-    buf.push_back(a);  // We don't care about resampling the audio buffer.
-                       // Note: can be used to load in non-audio files ;)
+    buf.push_back(a); // We don't care about resampling the audio buffer.
+                      // Note: can be used to load in non-audio files ;)
   soundFile.close();
   return 1;
 }
@@ -216,18 +220,20 @@ bool util::load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>
 std::string util::getExecutablePath() {
 #if _WIN32
   char *exePath;
-  if (_get_pgmptr(&exePath) != 0) exePath = "";
+  if (_get_pgmptr(&exePath) != 0)
+    exePath = "";
 
 #elif __linux__
   char exePath[PATH_MAX];
   ssize_t len = ::readlink("/proc/self/exe", exePath, sizeof(exePath));
-  if (len == -1 || len == sizeof(exePath)) len = 0;
+  if (len == -1 || len == sizeof(exePath))
+    len = 0;
   exePath[len] = '\0';
-#else  // THIS MEANS YOU ARE USING A >
+#else // THIS MEANS YOU ARE USING A >
   char exePath[PATH_MAX];
   uint32_t len = sizeof(exePath);
   if (_NSGetExecutablePath(exePath, &len) != 0) {
-    exePath[0] = '\0';  // buffer too small (!)
+    exePath[0] = '\0'; // buffer too small (!)
   } else {
     // resolve symlinks, ., .. if possible
     char *canonicalPath = realpath(exePath, NULL);
@@ -245,7 +251,8 @@ std::string util::getContentPath(std::string s) {
   size_t counter = 0;
   size_t i = s.size() - 1;
   while (counter < 2) {
-    if (s[i] == delim) counter++;
+    if (s[i] == delim)
+      counter++;
     i--;
   }
   return s.substr(0, i + 2);
@@ -279,11 +286,11 @@ float util::outputValInRange(float val, float min, float max, bool isLog, unsign
   float output;
   if (isLog) {
     float min_linear = (abs(min) < logarithmic_zero_epsilon)
-                         ? ((min < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
-                         : min;
+                           ? ((min < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
+                           : min;
     float max_linear = (abs(max) < logarithmic_zero_epsilon)
-                         ? ((max < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
-                         : max;
+                           ? ((max < 0.0f) ? -logarithmic_zero_epsilon : logarithmic_zero_epsilon)
+                           : max;
 
     if ((min == 0.0f) && (max < 0.0f))
       min_linear = -logarithmic_zero_epsilon;
@@ -295,28 +302,29 @@ float util::outputValInRange(float val, float min, float max, bool isLog, unsign
       output = min;
     } else if (output_linear > max_linear) {
       output = max;
-    } else if ((min * max) < 0.0f) {  // Range is in negative and positive.
+    } else if ((min * max) < 0.0f) { // Range is in negative and positive.
       float zero_point_center = (abs(min) / abs(max - min));
       if (val > zero_point_center - logarithmic_zero_epsilon &&
-          val < zero_point_center + logarithmic_zero_epsilon *
-                                      10) {  // hacky way to detect an equality with midi precision.
-        output = 0.0f;                       // Special case for exactly zero
-      } else if (val < zero_point_center) {  // val less than zero point (negative)
+          val < zero_point_center +
+                    logarithmic_zero_epsilon *
+                        10) {               // hacky way to detect an equality with midi precision.
+        output = 0.0f;                      // Special case for exactly zero
+      } else if (val < zero_point_center) { // val less than zero point (negative)
         float min_log = logf(abs(min_linear));
         float scale = (abs(min_log) - logf(logarithmic_zero_epsilon)) / (abs(min_linear));
         float test = logf(logarithmic_zero_epsilon) + scale * abs(output_linear);
         output = -1 * expf(logf(logarithmic_zero_epsilon) + scale * abs(output_linear));
-      } else {  // val less than zero point (positive)
+      } else { // val less than zero point (positive)
         float max_log = logf(max_linear);
         float scale = (max_log - logf(logarithmic_zero_epsilon)) / (max_linear);
         output = expf(logf(logarithmic_zero_epsilon) + scale * (output_linear));
       }
-    } else if ((min < 0.0f) || (max < 0.0f)) {  // Entirely negative slider
+    } else if ((min < 0.0f) || (max < 0.0f)) { // Entirely negative slider
       float v_min = logf(abs(min_linear));
       float v_max = logf(abs(max_linear));
       float scale = (v_min - v_max) / (min_linear - max_linear);
       output = -1 * expf((v_min + scale * (output_linear - min_linear)));
-    } else {  // Entirely positive slider.
+    } else { // Entirely positive slider.
       float v_min = logf(min_linear);
       float v_max = logf(max_linear);
       float scale = (v_max - v_min) / (max_linear - min_linear);
