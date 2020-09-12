@@ -3,8 +3,6 @@
 /**** Emission Control LIB ****/
 #include "ecInterface.h"
 
-#include "utility.h"
-
 /**** AlloLib LIB ****/
 #include "al/io/al_File.hpp"
 #include "nlohmann/json.hpp"

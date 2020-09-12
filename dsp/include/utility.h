@@ -363,6 +363,18 @@ std::string getContentPath(std::string s);
  */
 bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
 
+/**
+ * @brief Return a value between min and max based on val.
+ *
+ * @param[in] val: A value between [0, 1].
+ * @param[in] min: Some minimum value.
+ * @param[in] min: Some maximum value.
+ * @param[in] isLog : If logarithmic, returns a value scaled logarithmically between min and max.
+ *                    Linear otherwise.
+ * @parma[in] precision: Correpsonds to the amount of places after the decimal point in base 10.
+ */
+float outputValInRange(float val, float min, float max, bool isLog = false, unsigned int precision = 3);
+
 } // namespace util
 
 #endif
