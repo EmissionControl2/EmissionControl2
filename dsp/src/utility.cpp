@@ -300,13 +300,15 @@ float util::outputValInRange(float val, float min, float max, bool isLog, unsign
     if (output_linear < min_linear) {
       output = min; // test pls
     } else if (output_linear > max_linear) {
-      output = max; // test pls
+      output = max;                  // test pls
     } else if ((min * max) < 0.0f) { // Range is in negative and positive.
-
       float zero_point_center = (abs(min) / abs(max - min));
-      if (val == zero_point_center) // add floating point precision
-        output = 0.0f; // Special case for exactly zero
-      else if (val < zero_point_center) { // val less than zero point (negative)
+      if (val > zero_point_center - logarithmic_zero_epsilon &&
+          val < zero_point_center +
+                    logarithmic_zero_epsilon *
+                        10) {               // hacky way to detect an equality in midi precision.
+        output = 0.0f;                      // Special case for exactly zero
+      } else if (val < zero_point_center) { // val less than zero point (negative)
         float min_log = logf(abs(min_linear));
         float scale = (abs(min_log) - logf(logarithmic_zero_epsilon)) / (abs(min_linear));
         float test = logf(logarithmic_zero_epsilon) + scale * abs(output_linear);
@@ -315,7 +317,7 @@ float util::outputValInRange(float val, float min, float max, bool isLog, unsign
         float max_log = logf(max_linear);
         float scale = (max_log - logf(logarithmic_zero_epsilon)) / (max_linear);
         output = expf(logf(logarithmic_zero_epsilon) + scale * (output_linear));
-      } 
+      }
     } else if ((min < 0.0f) || (max < 0.0f)) { // Entirely negative slider
       float v_min = logf(abs(min_linear));
       float v_max = logf(abs(max_linear));
