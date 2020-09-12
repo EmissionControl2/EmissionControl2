@@ -92,6 +92,7 @@ void ecInterface::onInit() {
   audioIO().append(mHardClip);
   audioIO().print();
   audioIO().channelsIn(0);
+  audioIO().setStreamName("EmissionControl2");
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
 
