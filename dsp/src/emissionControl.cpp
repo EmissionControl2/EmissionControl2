@@ -361,7 +361,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
     }
   } else { // Draw float slider.
     if (mIsLog)
-      slider_flags = ImGuiSliderFlags_ClampOnInput & ImGuiSliderFlags_Logarithmic;
+      slider_flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_Logarithmic;
     valueSliderf = mParameter->get();
     if (mSliderText != "") {
       changed =
