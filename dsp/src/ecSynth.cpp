@@ -6,9 +6,6 @@
 
 /**** Emission Control LIB ****/
 #include "ecSynth.h"
-
-#include "utility.h"
-
 /**** ALLOLIB ****/
 #include "al/io/al_File.hpp"
 
