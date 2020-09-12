@@ -309,7 +309,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
 
   if (mSliderType > 2)
     isInt = true;
-    
+
   // Draw left most range box.
   slider_flags = ImGuiSliderFlags_ClampOnInput;
   ImGui::PushItemWidth(50 * io.FontGlobalScale);
@@ -550,9 +550,9 @@ void Grain::onProcess(al::AudioIOData &io) {
     sourceIndex = index();
     iSourceIndex = floor(sourceIndex);
 
-    if (floor(sourceIndex) >= source->frames - source->channels) {
+    if (iSourceIndex >= source->frames - source->channels) {
       sourceIndex = fmod(sourceIndex, (float)(source->frames - source->channels));
-      iSourceIndex = iSourceIndex % (source->frames - source->channels);
+      iSourceIndex = floor(sourceIndex);
     }
 
     if (source->channels == 1) {
