@@ -481,7 +481,7 @@ public:
 
   void setLog(bool isLog) { mIsLog = isLog; }
 
-  bool getLog() const { return mIsLog; }
+  bool isLog() const { return mIsLog; }
 
   /**
    * @brief Set the text to be displayed on the slider

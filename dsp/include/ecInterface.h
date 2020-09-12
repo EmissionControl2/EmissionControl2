@@ -139,7 +139,7 @@ private:
   void updateECParamMIDI(float val, int index) {
     float result = util::outputValInRange(val, granulator.ECParameters[index]->getCurrentMin(),
                                           granulator.ECParameters[index]->getCurrentMax(),
-                                          granulator.ECParameters[index]->getLog(), 3);
+                                          granulator.ECParameters[index]->isLog(), 3);
     granulator.ECParameters[index]->setParam(result);
   }
 
@@ -153,7 +153,7 @@ private:
     float result =
         util::outputValInRange(val, granulator.ECModParameters[index]->param.getCurrentMin(),
                                granulator.ECModParameters[index]->param.getCurrentMax(),
-                               granulator.ECModParameters[index]->param.getLog(), 3);
+                               granulator.ECModParameters[index]->param.isLog(), 3);
     granulator.ECModParameters[index]->param.setParam(result);
   }
 
@@ -167,7 +167,7 @@ private:
     float result =
         util::outputValInRange(val, granulator.LFOParameters[index]->frequency->getCurrentMin(),
                                granulator.LFOParameters[index]->frequency->getCurrentMax(),
-                               granulator.LFOParameters[index]->frequency->getLog(), 3);
+                               granulator.LFOParameters[index]->frequency->isLog(), 3);
     granulator.LFOParameters[index]->frequency->setParam(result);
   }
 
