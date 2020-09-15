@@ -10,10 +10,12 @@ add_subdirectory(external/allolib)
 add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
+# OSX library needed for native file dialog.
 if(APPLE)
   find_library(AppKit Appkit)
 endif()
 
+# Linux library needed for native file dialog.
 if(UNIX AND NOT APPLE)
   set(LINUX TRUE)
   find_package(PkgConfig REQUIRED)
@@ -21,6 +23,8 @@ if(UNIX AND NOT APPLE)
   include_directories(${GTK3_INCLUDE_DIRS})
   link_directories(${GTK3_LIBRARY_DIRS})
 endif()
+
+# Windows library needed for native file dialog. **PUT HERE**
 
 set(includes
   include/emissionControl.h
@@ -93,7 +97,7 @@ target_include_directories(${APP_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/
 )
 
-# TODO add ExternalProject_Add to build nativefiledialog
+# Link native file dialog.
 target_link_directories(${APP_NAME} PUBLIC 
   /usr/local/lib
   ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
@@ -136,6 +140,10 @@ if(LINUX)
   target_link_libraries(ecLib PUBLIC ${GTK3_LIBRARIES})
 endif()
 
+# Link windows libraries.
+if(WIN32)
+endif()
+
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
 
 
@@ -155,7 +163,7 @@ set_target_properties(${APP_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
 )
 
-## POST BUILD COMMANDS
+## POST BUILD COMMANDS TO LINK DYNAMIC LIBRARIES
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
