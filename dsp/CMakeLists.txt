@@ -53,7 +53,6 @@ if(APPLE)
   set(RESOURCE_LIST
       "libsndfile"
       "Fonts"
-      "config_scripts"
       "samples"
   )
 

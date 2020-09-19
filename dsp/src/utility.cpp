@@ -246,7 +246,7 @@ std::string util::getExecutablePath() {
   return std::string(exePath);
 }
 
-std::string util::getContentPath(std::string s) {
+std::string util::getContentPath_OSX(std::string s) {
   char delim = '/';
   size_t counter = 0;
   size_t i = s.size() - 1;
