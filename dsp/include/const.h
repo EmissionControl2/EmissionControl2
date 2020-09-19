@@ -68,12 +68,12 @@ const std::string FULLSCREEN_KEY = "FULLSCREEN";
  */
 
 #ifdef __APPLE__
-const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
-const std::string DEFAULT_SAMPLE_PATH = "/Music/EmissionControl2/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH = "/Music/EmissionControl2/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = "/Music/EmissionControl2/presets/";
-const std::string DEFAULT_MIDI_PRESETS_PATH = "/Music/EmissionControl2/midi_presets/";
-const std::string DEFAULT_CONFIG_PATH = "/Music/EmissionControl2/configs/";
+const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2";
+const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "/samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "/presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_presets/";
+const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 

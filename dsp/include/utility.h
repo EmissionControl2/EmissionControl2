@@ -356,7 +356,7 @@ std::string getUserHomePath();
  * Content folder rather than the actual executable.
  * param[in] The directory containing the ACTUAL UNIX EXECUTABLE.
  */
-std::string getContentPath(std::string s);
+std::string getContentPath_OSX(std::string s);
 
 /**
  * @brief a comparator function for sorting the filePaths (case insensitive).

@@ -19,11 +19,11 @@ using namespace al;
 void ecInterface::onInit() {
   title("Emission Control 2");
 
-  execDir = f.directory(util::getExecutablePath());
+  execDir = al::File::directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
-#ifdef __APPLE__
-  execDir = util::getContentPath(execDir);
-  al::Dir::make(userPath + "/Music/EmissionControl2/");
+#ifdef __APPLE__ // Uses userPath
+  execDir = util::getContentPath_OSX(execDir);
+  al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
@@ -46,9 +46,9 @@ void ecInterface::onInit() {
   midiPresetsPath = configPath + "/midi_presets";
 
   // create config directories if needed
-  system(("mkdir -p " + userPath + configPath + "/config").c_str());
-  system(("mkdir -p " + userPath + presetsPath).c_str());
-  system(("mkdir -p " + userPath + midiPresetsPath).c_str());
+  al::Dir::make(userPath + configPath + "/config");
+  al::Dir::make(userPath + presetsPath);
+  al::Dir::make(userPath + midiPresetsPath);
 #endif
 
 #ifdef _WIN32
@@ -76,11 +76,11 @@ void ecInterface::onInit() {
 // Set output directory of recorded files.
 #ifdef __APPLE__
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
-  mPresets.setRootPath(f.conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
+  mPresets.setRootPath(al::File::conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
 #endif
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
-  mPresets.setRootPath(f.conformPathToOS(execDir + "presets/"));
+  mPresets.setRootPath(al::File::conformPathToOS(execDir + "presets/"));
   configFile = consts::DEFAULT_CONFIG_FILE;
 #endif
 
@@ -1519,7 +1519,7 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
       config[consts::SOUND_OUTPUT_PATH_KEY] =
-          f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+          al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     if (config.find(consts::SAMPLE_RATE_KEY) == config.end())
       config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
@@ -1543,7 +1543,7 @@ bool ecInterface::initJsonConfig() {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
     config[consts::SOUND_OUTPUT_PATH_KEY] =
-        f.conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+        al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
@@ -1625,7 +1625,7 @@ void ecInterface::setMIDIPresetNames(json preset_names) {
 }
 
 void ecInterface::setSoundOutputPath(std::string sound_output_path) {
-  soundOutput = f.conformPathToOS(sound_output_path);
+  soundOutput = al::File::conformPathToOS(sound_output_path);
 }
 
 void ecInterface::setAudioSettings(float sample_rate) {
