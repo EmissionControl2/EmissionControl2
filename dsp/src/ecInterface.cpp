@@ -22,6 +22,10 @@ void ecInterface::onInit() {
   execDir = al::File::directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
 #ifdef __APPLE__ // Uses userPath
+  configFile = consts::DEFAULT_CONFIG_FILE;
+  presetsPath = consts::DEFAULT_PRESETS_PATH;
+  midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
+
   execDir = util::getContentPath_OSX(execDir);
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
@@ -31,8 +35,6 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
   al::File::copy(execDir + "Resources/samples/440sine48k.wav",
                  userPath + consts::DEFAULT_SAMPLE_PATH);
-  configFile = consts::DEFAULT_CONFIG_FILE;
-  midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
 #endif
 
 #ifdef __linux__
@@ -41,6 +43,7 @@ void ecInterface::onInit() {
   if (getenv("$XDG_CONFIG_HOME") != NULL) {
     configPath = getenv("$XDG_CONFIG_HOME") + std::string("/EmissionControl2");
   }
+
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
   midiPresetsPath = configPath + "/midi_presets";
@@ -49,6 +52,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + configPath + "/config");
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
+
 #endif
 
 #ifdef _WIN32
@@ -56,9 +60,11 @@ void ecInterface::onInit() {
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
   midiPresetsPath = configPath + "/midi_presets";
+
   Dir::make(userPath + configPath + "/config");
   Dir::make(userPath + presetsPath);
   Dir::make(userPath + midiPresetsPath);
+
 #endif
 
   initJsonConfig();
@@ -76,17 +82,16 @@ void ecInterface::onInit() {
 // Set output directory of recorded files.
 #ifdef __APPLE__
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
-  mPresets.setRootPath(al::File::conformPathToOS(userPath + consts::DEFAULT_PRESETS_PATH));
+  mPresets.setRootPath(al::File::conformPathToOS(userPath + presetsPath));
 #endif
 #ifdef _WIN32_
   granulator.loadInitSoundFiles(execDir + "samples/");
   mPresets.setRootPath(al::File::conformPathToOS(execDir + "presets/"));
-  configFile = consts::DEFAULT_CONFIG_FILE;
 #endif
 
 #ifdef __linux__
   granulator.loadInitSoundFiles(consts::DEFAULT_SAMPLE_PATH);
-  mPresets.setRootPath(userPath + presetsPath);
+  mPresets.setRootPath(al::File::conformPathToOS(userPath + presetsPath));
 #endif
 
   for (int i = 0; i < granulator.soundClip.size(); i++)

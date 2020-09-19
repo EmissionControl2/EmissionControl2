@@ -83,7 +83,6 @@ const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
 #ifdef _WIN32
-const std::string CONFIG_DIR_SCRIPT_PATH = "Resources/config_scripts/configAbsoDirectories-osx.sh";
 const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl2/samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH =
   "/Library/Application Support/EmissionControl2/soundOutput/";
