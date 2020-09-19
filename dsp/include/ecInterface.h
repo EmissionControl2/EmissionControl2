@@ -183,7 +183,6 @@ private:
   }
 
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
-  al::File f;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
   nfdresult_t result;
