@@ -83,6 +83,10 @@ if(APPLE)
   endforeach()
 endif(APPLE)
 
+if(WIN32)
+  set(ICON ../externalResources/windows/ec2-windows.rc)
+endif(WIN32)
+
 add_executable(${APP_NAME} MACOSX_BUNDLE
   src/main.cpp
   ${RESOURCE_FILES}
