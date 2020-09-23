@@ -1068,18 +1068,6 @@ void ecInterface::initMIDI() {
 
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   switch (m.type()) {
-  case MIDIByte::NOTE_ON:
-    // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
-    break;
-
-  case MIDIByte::NOTE_OFF:
-    // printf("Note %u, Vel %f\n", m.noteNumber(), m.velocity());
-    break;
-
-  case MIDIByte::PITCH_BEND:
-    // printf("Value %f\n", m.pitchBend());
-    break;
-
   // Control messages need to be parsed again...
   case MIDIByte::CONTROL_CHANGE:
     if (mIsLinkingParamAndMIDI) {
