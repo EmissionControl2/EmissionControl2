@@ -83,13 +83,12 @@ const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
 #ifdef _WIN32
-const std::string DEFAULT_SAMPLE_PATH = "/Library/Application Support/EmissionControl2/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH =
-  "/Library/Application Support/EmissionControl2/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = "/Library/Application Support/EmissionControl2/presets/";
-// const std::string DEFAULT_PRESETS_PATH = "/Library/Application
-// Support/EmissionControl2/presets/";
-const std::string DEFAULT_CONFIG_PATH = "/Library/Application Support/EmissionControl2/configs/";
+const std::string PERSISTENT_DATA_PATH = "/EmissionControl2";
+const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "/samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "/soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "/presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_presets/";
+const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 }  // namespace consts
