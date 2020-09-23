@@ -7,6 +7,3 @@ url = https://github.com/erikd/libsamplerate.git
 [submodule "ecSource/external/al_ext"]
 path = ecSource/external/al_ext
 url = https://github.com/AlloSphere-Research-Group/al_ext
-[submodule "ecSource/external/nativefiledialog"]
-path = ecSource/external/nativefiledialog
-url = https://github.com/mlabbe/nativefiledialog
