@@ -38,7 +38,7 @@
 	<array>
 	<dict>
 		<key>APFileDestinationPath</key>
-			<string>~/Library/Application\ Support/EmissionControl2/presets/</string>
+			<string>~/Music/EmissionControl2/presets/</string>
 	</dict>
 	</array>
 </dict>

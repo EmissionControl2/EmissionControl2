@@ -4,7 +4,7 @@
 result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
-elif [ $result == "EmissionControlPort" ]; then
+elif [ $result == "EmissionControl2" ]; then
   cd dsp/
 fi
 (
