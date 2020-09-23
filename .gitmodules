@@ -1,15 +1,12 @@
-[submodule "dsp/external/allolib"]
-path = dsp/external/allolib
+[submodule "ecSource/external/allolib"]
+path = ecSource/external/allolib
 url = https://github.com/AlloSphere-Research-Group/allolib.git
-[submodule "dsp/external/libsamplerate"]
-path = dsp/external/libsamplerate
+[submodule "ecSource/external/libsamplerate"]
+path = ecSource/external/libsamplerate
 url = https://github.com/erikd/libsamplerate.git
-[submodule "dsp/external/al_ext"]
-path = dsp/external/al_ext
+[submodule "ecSource/external/al_ext"]
+path = ecSource/external/al_ext
 url = https://github.com/AlloSphere-Research-Group/al_ext
-[submodule "al_ext"]
-path = al_ext
-url = https://github.com/AlloSphere-Research-Group/al_ext
-[submodule "dsp/external/nativefiledialog"]
-path = dsp/external/nativefiledialog
+[submodule "ecSource/external/nativefiledialog"]
+path = ecSource/external/nativefiledialog
 url = https://github.com/mlabbe/nativefiledialog

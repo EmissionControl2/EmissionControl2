@@ -3,7 +3,7 @@ result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
 elif [ $result == "EmissionControl2" ]; then
-  cd dsp/
+  cd ecSource/
 fi
 
 mkdir -p "../deployment/Linux/"
@@ -13,7 +13,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-# make sure we're in dsp
+# make sure we're in ecSource
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 

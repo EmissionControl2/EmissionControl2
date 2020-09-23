@@ -5,7 +5,7 @@ result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
 elif [ $result == "EmissionControl2" ]; then
-  cd dsp/
+  cd ecSource/
 fi
 (
 #  rm -r -f ./external/libsamplerate/build/
