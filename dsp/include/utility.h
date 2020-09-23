@@ -14,7 +14,7 @@ namespace util {
 /**
  * Line class that moves from one point to another over a set period of time.
  */
-class line {
+template <typename T> class line {
 public:
   /**
    * @brief Default constructor.
@@ -26,14 +26,21 @@ public:
    *
    * @param[in] The sample rate needed for operator()
    */
-  line(float samplingRate) : mSamplingRate(samplingRate) {}
+  line(T samplingRate) : mSamplingRate(samplingRate) {}
 
   /**
    * @brief Generate line in real-time.
    *
    * @return Amplitude value at a point in time.
    */
-  float operator()();
+  T operator()() {
+    if (value != target) {
+      value += increment;
+      if ((increment < 0) ? (value < target) : (value > target))
+        value = target;
+    }
+    return value;
+  }
 
   /**
    * @brief Set paramaters of class.
@@ -43,19 +50,27 @@ public:
    * @param[in]: The amount of time to go from the starting value to the target
    * value.
    */
-  void set(float v = 0, float t = 0, float s = 1);
+  void set(T v = 0, T t = 0, T s = 1) {
+    value = v;
+    start = v;
+    target = t;
+    seconds = s;
+    if (seconds <= 0)
+      seconds = 1 / mSamplingRate;
+    increment = (target - value) / (seconds * mSamplingRate);
+  }
 
-  void setSamplingRate(float samplingRate) { mSamplingRate = samplingRate; }
+  void setSamplingRate(T samplingRate) { mSamplingRate = samplingRate; }
 
-  float getSamplingRate() const { return mSamplingRate; }
+  T getSamplingRate() const { return mSamplingRate; }
 
-  float getIncrement() const { return increment; }
+  T getIncrement() const { return increment; }
 
-  float getStart() const { return start; }
+  T getStart() const { return start; }
 
-  float getValue() const { return value; }
+  T getValue() const { return value; }
 
-  float getTarget() const { return target; }
+  T getTarget() const { return target; }
 
   /**
    * @brief Check if the line function is complete.
@@ -65,8 +80,7 @@ public:
   bool const done() { return value == target; }
 
 private:
-  float value = 0, start = 0, target = 0, seconds = 1, increment = 0;
-  float mSamplingRate;
+  T value = 0, start = 0, target = 0, seconds = 1, increment = 0, mSamplingRate;
 };
 
 /**
@@ -373,7 +387,8 @@ bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
  *                    Linear otherwise.
  * @parma[in] precision: Correpsonds to the amount of places after the decimal point in base 10.
  */
-float outputValInRange(float val, float min, float max, bool isLog = false, unsigned int precision = 3);
+float outputValInRange(float val, float min, float max, bool isLog = false,
+                       unsigned int precision = 3);
 
 } // namespace util
 
