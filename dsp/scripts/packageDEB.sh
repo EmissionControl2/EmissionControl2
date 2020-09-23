@@ -1,4 +1,12 @@
 #!/bin/bash
+result=${PWD##*/}
+if [ $result == "scripts" ]; then
+  cd ..
+elif [ $result == "EmissionControl2" ]; then
+  cd dsp/
+fi
+
+mkdir -p "../deployment/Linux/"
 
 if [ $# -eq 0 ]; then
     echo "Error: No version number provided. Version number required in format <MajorVersion>.<MinorVersion>"
