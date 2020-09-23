@@ -1,8 +1,4 @@
-*.dmg
-deployment/Linux/*
-deployment/OSX/*
-deployment/Windows/*
-ec_2019/
+deployment/*
 bin/
 build/
 .DS_STORE
