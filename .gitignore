@@ -1,8 +1,9 @@
 *.dmg
+deployment/Linux/*
+deployment/OSX/*
+deployment/Windows/*
 ec_2019/
 bin/
-deployment/OSX/*
-deployment/Linux/*
 build/
 .DS_STORE
 imgui.ini
