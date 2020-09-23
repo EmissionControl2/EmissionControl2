@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <string>
+#include <cassert>
 
 #ifdef _WIN32
 #include <stdlib.h>

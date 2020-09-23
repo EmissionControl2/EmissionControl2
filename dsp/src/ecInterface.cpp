@@ -56,15 +56,19 @@ void ecInterface::onInit() {
 #endif
 
 #ifdef _WIN32
-  std::string configPath = "/.config/EmissionControl2";
-  configFile = configPath + "/config/config.json";
-  presetsPath = configPath + "/presets";
-  midiPresetsPath = configPath + "/midi_presets";
+  configFile = consts::DEFAULT_CONFIG_FILE;
+  presetsPath = consts::DEFAULT_PRESETS_PATH;
+  midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
 
-  Dir::make(userPath + configPath + "/config");
-  Dir::make(userPath + presetsPath);
-  Dir::make(userPath + midiPresetsPath);
-
+//  execDir = util::getContentPath_OSX(execDir);
+  al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
+  al::File::copy(execDir + "Resources/samples/440sine48k.wav",
+                 userPath + consts::DEFAULT_SAMPLE_PATH);
 #endif
 
   initJsonConfig();
@@ -84,9 +88,9 @@ void ecInterface::onInit() {
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
   mPresets.setRootPath(al::File::conformPathToOS(userPath + presetsPath));
 #endif
-#ifdef _WIN32_
-  granulator.loadInitSoundFiles(execDir + "samples/");
-  mPresets.setRootPath(al::File::conformPathToOS(execDir + "presets/"));
+#ifdef _WIN32
+  granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
+  mPresets.setRootPath(al::File::conformPathToOS(userPath + presetsPath));
 #endif
 
 #ifdef __linux__
@@ -142,6 +146,16 @@ void ecInterface::onCreate() {
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
       ("/usr/local/share/fonts/EmissionControl2/ferrari.ttf"), 16.0f);
 #endif
+
+#ifdef _WIN32
+  bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+  titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (execDir + "Resources/Fonts/ferrari.ttf").c_str(), 16.0f);
+#endif
+
   currentPresetMap = mPresets.readPresetMap("default");
   setGUIParams();
 }
