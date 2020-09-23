@@ -676,7 +676,7 @@ public:
 
 private:
   std::shared_ptr<util::buffer<float>> source = nullptr;
-  util::line index;
+  util::line<double> index;
   gam::Biquad<> bpf_1_l, bpf_1_r, bpf_2_l, bpf_2_r, bpf_3_l, bpf_3_r;
   grainEnvelope gEnv;
   bool bypassFilter = true;

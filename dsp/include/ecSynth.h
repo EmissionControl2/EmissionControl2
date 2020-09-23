@@ -306,8 +306,8 @@ class ecSynth : public al::SynthVoice {
   /***localAudioThread variables***/
   float width;
 
-  /***mScanner Tests***/
-  util::line mScanner;
+  /***mScanner***/
+  util::line<double> mScanner;
   float mCurrentIndex;
   int mPrevModClip;
   float prevTapeHeadVal, nowTapeHeadVal;

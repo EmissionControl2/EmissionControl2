@@ -33,27 +33,6 @@
 
 using namespace util;
 
-/**** line Class Implementation ****/
-
-float line::operator()() {
-  if (value != target) {
-    value += increment;
-    if ((increment < 0) ? (value < target) : (value > target))
-      value = target;
-  }
-  return value;
-}
-
-void line::set(float v, float t, float s) {
-  value = v;
-  start = v;
-  target = t;
-  seconds = s;
-  if (seconds <= 0)
-    seconds = 1 / mSamplingRate;
-  increment = (target - value) / (seconds * mSamplingRate);
-}
-
 /**** expo Class Implementation ****/
 float expo::operator()() {
   if (!mReverse) {

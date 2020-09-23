@@ -142,32 +142,28 @@ void ecSynth::onProcess(al::AudioIOData &io) {
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
           prevTapeHeadVal != nowTapeHeadVal) {
         start = nowTapeHeadVal * frames;
-        end = start + (frames * scan_width);
-        mScanner.set(start, end, (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+        if (scan_speed >= 0)
+          end = start + (frames * scan_width);
+        else
+          end = start - (frames * scan_width);
+        mScanner.set(start, end, abs(end - start) / (mGlobalSamplingRate * abs(scan_speed)));
       }
 
       // On the fly adjustments.
       if (scan_width != prev_scan_width || scan_speed != prev_scan_speed) {
         start = mScanner.getValue();
-        end = (nowTapeHeadVal * frames) + (frames * scan_width);
-        mScanner.set(start, end, (end - start) / (mGlobalSamplingRate * abs(scan_speed)));
+        if (scan_speed >= 0)
+          end = (nowTapeHeadVal * frames) + (frames * scan_width);
+        else
+          end = (nowTapeHeadVal * frames) - (frames * scan_width);
+        mScanner.set(start, end, abs(end - start) / (mGlobalSamplingRate * abs(scan_speed)));
       }
 
-      // Logic for dealing with reversed buffer playthrough.
-      // Note that this is caused by negative scan speed.
-      if (scan_speed < 0) {
-        if (mCurrentIndex >= frames)
-          mCurrentIndex = fmod(mCurrentIndex, (float)frames);
-        mCurrentIndex = 2 * (nowTapeHeadVal * frames) - mCurrentIndex;
-        // Wrapping logic.
+      if (mCurrentIndex >= frames || mCurrentIndex < 0) {
+        mCurrentIndex = fmod(mCurrentIndex, (float)frames);
         if (mCurrentIndex < 0) {
-          mCurrentIndex = frames + mCurrentIndex;
+          mCurrentIndex += frames;
         }
-      }
-      // Wrapping logic for when scan speed is positive.
-      else {
-        if (mCurrentIndex >= frames)
-          mCurrentIndex = fmod(mCurrentIndex, (float)frames);
       }
 
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
