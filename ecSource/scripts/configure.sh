@@ -5,9 +5,8 @@ result=${PWD##*/}
 if [ $result == "scripts" ]; then
   cd ..
 elif [ $result == "EmissionControl2" ]; then
-  cd dsp/
+  cd ecSource/
 fi
-(
 
   if [ $(uname -s) == "Linux" ]; then
     mkdir -p ./bin
@@ -30,17 +29,17 @@ fi
   fi
 
   # Build nativefiledialog if it doesnt exist../external/libsamplerate/build
-  if [ ! -d "./external/nativefiledialog/build/lib" ]; then
-    cd external/nativefiledialog/build/
-    if [ $(uname -s) == "Linux" ]; then
-      cd gmake_linux
-      make config=release_x64
-    elif [ $(uname -s) == "Darwin" ]; then
-      cd gmake_macosx
-      make config=release_x64
-    fi
-    cd ../../../../
-  fi
+  # if [ ! -d "./external/nativefiledialog/build/lib" ]; then
+  #   cd external/nativefiledialog/build/
+  #   if [ $(uname -s) == "Linux" ]; then
+  #     cd gmake_linux
+  #     make config=release_x64
+  #   elif [ $(uname -s) == "Darwin" ]; then
+  #     cd gmake_macosx
+  #     make config=release_x64
+  #   fi
+  #   cd ../../../../
+  # fi
 
   mkdir -p build
   cd build
@@ -54,4 +53,17 @@ fi
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   fi
 
-)
+  cd ../../
+  if [ ! -d "./external/nativefiledialog/build/lib" ]; then
+    cd external/nativefiledialog/build/
+    if [ $(uname -s) == "Linux" ]; then
+      cd gmake_linux
+      make config=release_x64
+    elif [ $(uname -s) == "Darwin" ]; then
+      cd gmake_macosx
+      make config=release_x64
+    fi
+    cd ../../../../
+  fi
+
+
