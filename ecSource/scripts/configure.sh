@@ -10,6 +10,9 @@ fi
 
 git submodule update --init --recursive
 
+rm external/al_ext/assets3d/CMakeLists.txt
+rm external/al_ext/openvr/CMakeLists.txt
+
 if [ $(uname -s) == "Linux" ]; then
   mkdir -p ./bin
   cd ./bin
