@@ -7,8 +7,9 @@ if [ $result == "scripts" ]; then
 elif [ $result == "EmissionControl2" ]; then
   cd ecSource/
 fi
-
+cd ..
 git submodule update --init --recursive
+cd ecSource
 
 rm external/al_ext/assets3d/CMakeLists.txt
 rm external/al_ext/openvr/CMakeLists.txt
@@ -34,17 +35,17 @@ if [ ! -d "./external/libsamplerate/build" ]; then
 fi
 
 # Build nativefiledialog if it doesnt exist../external/libsamplerate/build
-# if [ ! -d "./external/nativefiledialog/build/lib" ]; then
-#   cd external/nativefiledialog/build/
-#   if [ $(uname -s) == "Linux" ]; then
-#     cd gmake_linux
-#     make config=release_x64
-#   elif [ $(uname -s) == "Darwin" ]; then
-#     cd gmake_macosx
-#     make config=release_x64
-#   fi
-#   cd ../../../../
-# fi
+if [ ! -d "./external/nativefiledialog/build/lib" ]; then
+  cd external/nativefiledialog/build/
+  if [ $(uname -s) == "Linux" ]; then
+    cd gmake_linux
+    make config=release_x64
+  elif [ $(uname -s) == "Darwin" ]; then
+    cd gmake_macosx
+    make config=release_x64
+  fi
+  cd ../../../../
+fi
 
 mkdir -p build
 cd build
@@ -56,17 +57,4 @@ fi
 
 if [ $(uname -s) == "Darwin" ]; then
   cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
-fi
-
-cd ../../
-if [ ! -d "./external/nativefiledialog/build/lib" ]; then
-  cd external/nativefiledialog/build/
-  if [ $(uname -s) == "Linux" ]; then
-    cd gmake_linux
-    make config=release_x64
-  elif [ $(uname -s) == "Darwin" ]; then
-    cd gmake_macosx
-    make config=release_x64
-  fi
-  cd ../../../../
 fi
