@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
+
+
 # name of application. replace 'app' with desired app name
 set(APP_NAME EmissionControl2)
 project(${APP_NAME} VERSION 0.5
@@ -11,6 +13,7 @@ add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
 # OSX library needed for native file dialog.
+
 if(APPLE)
   find_library(AppKit Appkit)
 endif()
@@ -99,6 +102,7 @@ target_include_directories(${APP_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/external/nativefiledialog/src/include
   ${CMAKE_SOURCE_DIR}/external/libsamplerate/src/
 )
+
 
 # Link native file dialog.
 target_link_directories(${APP_NAME} PUBLIC 

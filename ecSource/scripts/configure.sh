@@ -11,8 +11,8 @@ cd ..
 git submodule update --init --recursive
 cd ecSource
 
-rm external/al_ext/assets3d/CMakeLists.txt
-rm external/al_ext/openvr/CMakeLists.txt
+rm -f external/al_ext/assets3d/CMakeLists.txt
+rm -f external/al_ext/openvr/CMakeLists.txt
 
 if [ $(uname -s) == "Linux" ]; then
   mkdir -p ./bin
@@ -40,8 +40,9 @@ if [ ! -d "./external/nativefiledialog/build/lib" ]; then
   if [ $(uname -s) == "Linux" ]; then
     cd gmake_linux
     make config=release_x64
-  elif [ $(uname -s) == "Darwin" ]; then
-    cd gmake_macosx
+  elif [ $(uname -s) == "Darwin" ]; then # note: can't get make file to work, relies on xcode bleh
+    cd xcode4
+    xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release
     make config=release_x64
   fi
   cd ../../../../

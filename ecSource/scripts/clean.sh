@@ -8,7 +8,8 @@ elif [ $result == "EmissionControl2" ]; then
   cd ecSource/
 fi
 (
-#  rm -r -f ./external/libsamplerate/build/
+ rm -r -f ./external/libsamplerate/build/
+ rm -r -f ./external/nativefiledialog/build/lib/
  rm -r -f ./bin/ 
  rm -r -f ./build/
 )
