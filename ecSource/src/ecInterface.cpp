@@ -343,7 +343,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(*ECred));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8, 0.5, 0.5, 1.0));
     ImGui::PushFont(ferrariFont);
-    ImGui::SetCursorPosX((width() / 2) - 53 * fontScale);
+    ImGui::SetCursorPosX(width() - 106 * fontScale);
     if (ImGui::Button("ENGINE START")) {
       if (!audioIO().isRunning()) {
         if (granulator.getNumberOfAudioFiles() != 0) {
@@ -827,7 +827,6 @@ void ecInterface::onDraw(Graphics &g) {
                       ImVec2(p.x + (scanHead * plotWidth), p.y + plotHeight), *ECblue, 6.0f);
 
     // Draw Scanner position
-    std::cout << scanPos << std::endl;
     drawList->AddLine(ImVec2(p.x + (scanPos * plotWidth), p.y),
                       ImVec2(p.x + (scanPos * plotWidth), p.y + plotHeight), *ECblue, 3.0f);
 
@@ -1309,9 +1308,6 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
                                                                   int presetRows) {
   static std::map<PresetHandler *, ecInterface::PresetHandlerState> stateMap;
   if (stateMap.find(presetHandler) == stateMap.end()) {
-    //        std::cout << "Created state for " << (unsigned long)
-    //        presetHandler
-    //        << std::endl;
     stateMap[presetHandler] =
       ecInterface::PresetHandlerState{"", 0, presetHandler->availablePresetMaps()};
     if (stateMap[presetHandler].mapList.size() > 0) {
