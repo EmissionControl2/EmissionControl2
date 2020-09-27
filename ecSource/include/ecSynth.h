@@ -283,7 +283,7 @@ class ecSynth : public al::SynthVoice {
     return filename;
   }
 
-  float getCurrentIndex() const { return mCurrentIndex; }
+  float getCurrentIndex() const { return mScanner.getValue(); }
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;

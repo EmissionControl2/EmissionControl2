@@ -774,6 +774,9 @@ void ecInterface::onDraw(Graphics &g) {
     float scanWidth = granulator.ECParameters[consts::SCAN_RANGE]->getModParam(
       granulator.ECModParameters[consts::SCAN_RANGE]->getWidthParam());
     float scanPos = granulator.getCurrentIndex() / soundFileFrames;
+    if (scanPos < 0) scanPos += 1;
+    if (scanPos > 1) scanPos -= 1;
+
     if (granulator.ECParameters[consts::SCAN_SPEED]->getModParam(
           granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
       scanWidth *= -1;
@@ -824,6 +827,7 @@ void ecInterface::onDraw(Graphics &g) {
                       ImVec2(p.x + (scanHead * plotWidth), p.y + plotHeight), *ECblue, 6.0f);
 
     // Draw Scanner position
+    std::cout << scanPos << std::endl;
     drawList->AddLine(ImVec2(p.x + (scanPos * plotWidth), p.y),
                       ImVec2(p.x + (scanPos * plotWidth), p.y + plotHeight), *ECblue, 3.0f);
 
