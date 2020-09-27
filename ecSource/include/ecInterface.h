@@ -99,7 +99,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   float windowWidth, windowHeight;
   bool isFullScreen;
 
-  bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
+  bool noSoundFiles, light, isPaused = true, writeSampleRate = false;
   float background = 0.21;
   ecSynth granulator;
   std::unique_ptr<al::PresetHandler> mPresets;
