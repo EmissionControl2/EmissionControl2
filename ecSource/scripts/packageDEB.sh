@@ -9,8 +9,8 @@ fi
 mkdir -p "../deployment/Linux/"
 
 if [ $# -eq 0 ]; then
-    echo "Error: No version number provided. Version number required in format <MajorVersion>.<MinorVersion>"
-    exit 1
+  echo "Error: No version number provided. Version number required in format <MajorVersion>.<MinorVersion>"
+  exit 1
 fi
 
 # make sure we're in ecSource
@@ -27,7 +27,7 @@ echo "Packaging $RELEASENAME..."
 
 # make directory structure
 
-BUILDDIR="../deployment/$RELEASENAME"
+BUILDDIR="../deployment/Linux/$RELEASENAME"
 
 mkdir -p "$BUILDDIR/DEBIAN"
 mkdir -p "$BUILDDIR/usr/local/bin"
@@ -61,7 +61,7 @@ Exec=EmissionControl2
 Icon=EmissionControl2.png
 Terminal=false
 Type=Application
-Categories=Music;Synthesis;Sound;
+Categories=Music;Synthesis;Sound;Granular;
 Name[en_US]=Emission Control 2" >>"$BUILDDIR/usr/local/share/applications/Emission Control 2.desktop"
 
 # make Debian control file
@@ -71,13 +71,19 @@ Version: $VERSION
 Maintainer: Jack Kilgore <jkilgore@ucsb.edu>, Rodney DuPlessis <rodney@rodneyduplessis.com>
 Architecture: amd64
 Depends: libsndfile1
-Homepage: https://www.curtisroads.net
-Description: Granular Synthesis" >>"$BUILDDIR/DEBIAN/control"
+Homepage: https://github.com/jackkilgore/EmissionControl2
+Description: An advanced granular synthesizer designed by Curtis Roads, Jack Kilgore, and Rodney DuPlessis (2020). Based on Emission Control by Curtis Roads and David Thall (2004-2008)." >>"$BUILDDIR/DEBIAN/control"
 
 echo "Packaging .deb at $BUILDLOCATION..."
 
 # package .deb
-cd ../deployment
-exec dpkg -b "$RELEASENAME" "$RELEASENAME.deb"
+cd ../deployment/Linux
+exec dpkg -b "$RELEASENAME" "$RELEASENAME.deb" &
+
+cp ../../docs/EmissionControl2-Manual.pdf .
+
+zip $RELEASENAME.zip "$RELEASENAME.deb" EmissionControl2-Manual.pdf
+
+rm -rf "$RELEASENAME" "$RELEASENAME.deb" EmissionControl2-Manual.pdf
 
 echo "Packaging Complete!"
