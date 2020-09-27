@@ -821,7 +821,7 @@ void ecInterface::onDraw(Graphics &g) {
 
     // Draw Scan Head
     drawList->AddLine(ImVec2(p.x + (scanHead * plotWidth), p.y),
-                      ImVec2(p.x + (scanHead * plotWidth), p.y + plotHeight), *ECblue, 5.0f);
+                      ImVec2(p.x + (scanHead * plotWidth), p.y + plotHeight), *ECblue, 6.0f);
 
     // Draw Scanner position
     drawList->AddLine(ImVec2(p.x + (scanPos * plotWidth), p.y),
