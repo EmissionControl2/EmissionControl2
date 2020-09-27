@@ -160,6 +160,7 @@ void ecInterface::onCreate() {
 
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
+  audioIO().stop();
 }
 
 void ecInterface::onExit() {
@@ -225,7 +226,6 @@ void ecInterface::onDraw(Graphics &g) {
   }
 
   if (granulator.getNumberOfAudioFiles() != 0 && !audioIO().isRunning() && !isPaused) {
-    audioIO().start();
     noSoundFiles = false;
   }
 
