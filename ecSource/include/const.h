@@ -30,6 +30,7 @@ enum paramNames {
   PAN,
   AMPLITUDE
 };
+const int CR_EVERY_N_SAMPLES = 4;
 
 const int NUM_PARAMS = 15;
 const int NUM_LFOS = 6;

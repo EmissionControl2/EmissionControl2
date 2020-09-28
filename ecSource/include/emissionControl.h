@@ -286,6 +286,8 @@ public:
 
   float getPhase() const { return mLFO.phase(); }
 
+  gam::LFO<>& getLFO() {return mLFO; } 
+
 private:
   gam::LFO<> mLFO{};
   al::rnd::Random<> rand;
@@ -445,7 +447,7 @@ public:
     mHighRange->set(mMax);
   }
 
-  void setAbsolutetMinMax(float min, float max) {
+  void setAbsoluteMinMax(float min, float max) {
     mLowRange->min(min);
     mHighRange->min(min);
 
