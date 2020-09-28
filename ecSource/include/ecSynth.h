@@ -300,6 +300,7 @@ class ecSynth : public al::SynthVoice {
   // float mPeakCPU;
   // float mAvgCPU;
   int *mPActiveVoices = nullptr;
+  gam::Domain ControlRate;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
 
   /**Accesing Audio Thread -- Scary :o **/

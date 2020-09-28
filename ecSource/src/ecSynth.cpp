@@ -16,15 +16,26 @@ void ecSynth::setIO(al::AudioIOData *io) {
   grainScheduler.setSamplingRate(io->fps());
   mGlobalSamplingRate = io->fps();
   mScanner.setSamplingRate(mGlobalSamplingRate);
+  ControlRate.spu(mGlobalSamplingRate / consts::CR_EVERY_N_SAMPLES);
 
   float min_grain_dur_ms = 2000 / mGlobalSamplingRate;
-  ECParameters[GRAIN_DUR]->setAbsolutetMinMax(min_grain_dur_ms,
-                                              ECParameters[GRAIN_DUR]->getAbsoluteMax());
-
+  ECParameters[GRAIN_DUR]->setAbsoluteMinMax(min_grain_dur_ms,
+                                             ECParameters[GRAIN_DUR]->getAbsoluteMax());
   if (ECParameters[GRAIN_DUR]->getCurrentMin() < min_grain_dur_ms)
     ECParameters[GRAIN_DUR]->setCurrentMin(min_grain_dur_ms);
-
+  if (ECParameters[GRAIN_DUR]->getCurrentMax() < min_grain_dur_ms)
+    ECParameters[GRAIN_DUR]->setCurrentMax(min_grain_dur_ms);
   ECParameters[GRAIN_DUR]->setParam(ECParameters[GRAIN_DUR]->getParam());
+
+  float max_lfo_freq = mGlobalSamplingRate / (2 * consts::CR_EVERY_N_SAMPLES);
+  for (int index = 0; index < consts::NUM_LFOS; index++) {
+    LFOParameters[index]->frequency->setAbsoluteMinMax(0.001, max_lfo_freq);
+    if (LFOParameters[index]->frequency->getCurrentMax() > max_lfo_freq)
+      LFOParameters[index]->frequency->setCurrentMax(max_lfo_freq);
+    if (LFOParameters[index]->frequency->getCurrentMin() > max_lfo_freq)
+      LFOParameters[index]->frequency->setCurrentMin(max_lfo_freq);
+    LFOParameters[index]->frequency->setParam(LFOParameters[index]->frequency->getParam());
+  }
 }
 
 void ecSynth::initialize(al::AudioIOData *io) {
@@ -34,28 +45,23 @@ void ecSynth::initialize(al::AudioIOData *io) {
   grainScheduler.setSamplingRate(io->fps());
   mGlobalSamplingRate = io->fps();
   mScanner.setSamplingRate(mGlobalSamplingRate);
+  ControlRate.spu(mGlobalSamplingRate / consts::CR_EVERY_N_SAMPLES);
 
   float min_grain_dur_ms = 2000 / mGlobalSamplingRate;
-  ECParameters[GRAIN_DUR]->setAbsolutetMinMax(min_grain_dur_ms,
-                                              ECParameters[GRAIN_DUR]->getAbsoluteMax());
+  ECParameters[GRAIN_DUR]->setAbsoluteMinMax(min_grain_dur_ms,
+                                             ECParameters[GRAIN_DUR]->getAbsoluteMax());
   ECParameters[GRAIN_DUR]->setCurrentMin(min_grain_dur_ms);
 
   mPActiveVoices = &mActiveVoices;
 
   for (int index = 0; index < consts::NUM_LFOS; index++) {
     Modulators.push_back(std::make_shared<ecModulator>());
+    ControlRate << Modulators[index]->getLFO();
+
     LFOParameters.push_back(std::make_shared<LFOstruct>(index));
-  }
+    LFOParameters[index]->frequency->setAbsoluteMinMax(
+        0.001, mGlobalSamplingRate / (2 * consts::CR_EVERY_N_SAMPLES));
 
-  std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4", "LFO5", "LFO6"};
-  for (int index = 0; index < consts::NUM_PARAMS; index++) {
-    ECParameters[index]->setModulationSource(Modulators[0]);
-    ECModParameters[index]->setMenuElements(lfo_names);
-    ECModParameters[index]->registerMenuChangeCallback(
-        [this, index](int value) { ECParameters[index]->setModulationSource(Modulators[value]); });
-  }
-
-  for (unsigned index = 0; index < consts::NUM_LFOS; index++) {
     LFOParameters[index]->shape->registerChangeCallback(
         [this, index](int value) { Modulators[index]->setWaveform(value); });
 
@@ -67,6 +73,14 @@ void ecSynth::initialize(al::AudioIOData *io) {
 
     LFOParameters[index]->duty->registerChangeCallback(
         [this, index](float value) { Modulators[index]->setWidth(value); });
+  }
+
+  std::vector<std::string> lfo_names{"LFO1", "LFO2", "LFO3", "LFO4", "LFO5", "LFO6"};
+  for (int index = 0; index < consts::NUM_PARAMS; index++) {
+    ECParameters[index]->setModulationSource(Modulators[0]);
+    ECModParameters[index]->setMenuElements(lfo_names);
+    ECModParameters[index]->registerMenuChangeCallback(
+        [this, index](int value) { ECParameters[index]->setModulationSource(Modulators[value]); });
   }
 
   grainScheduler.configure(ECParameters[consts::GRAIN_RATE]->getParam(), 0.0, 0.0);
@@ -82,50 +96,21 @@ void ecSynth::onProcess(al::AudioIOData &io) {
   /* Manipulate on a Grain Level */
 
   while (io()) {
+    mCurrentIndex = mScanner();
     for (int index = 0; index < consts::NUM_LFOS; ++index)
       Modulators[index]->sampleAndStore();
 
-    // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
-    width = ECModParameters[consts::GRAIN_RATE]->getWidthParam();
-    if (width > 0)
-      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(width));
-    else
-      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getParam());
-
-    width = ECModParameters[consts::ASYNC]->getWidthParam();
-    if (width > 0) // modulate the asynchronicity
-      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getModParam(width));
-    else
-      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getParam());
-
-    width = ECModParameters[consts::INTERM]->getWidthParam();
-    if (width > 0) // modulate the intermittency
-      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getModParam(width));
-    else
-      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
-
-    width = ECModParameters[consts::STREAMS]->getWidthParam();
-    if (width > 0) // Modulate the amount of streams playing.
-      grainScheduler.setPolyStream(
-          consts::synchronous, static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
-    else
-      grainScheduler.setPolyStream(consts::synchronous,
-                                   static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
-
-    mCurrentIndex = mScanner();
     // CONTROL RATE LOOP (Executes every 4th sample)
-    if (controlRateCounter == 4) {
+    if (controlRateCounter == consts::CR_EVERY_N_SAMPLES) {
       controlRateCounter = 0;
+      // std::cout << Modulators[0]->getSamplingRate() << std::endl;
+
       mPrevModClip = mModClip;
       mModClip = static_cast<int>(ECParameters[consts::SOUND_FILE]->getModParam(
                      ECModParameters[consts::SOUND_FILE]->getWidthParam())) -
                  1;
-    }
-    controlRateCounter++;
-    /////
 
-    // Grain by Grain Initilization
-    if (grainScheduler.trigger()) {
+      // SCANNER LOGIC
       prevTapeHeadVal = nowTapeHeadVal;
       nowTapeHeadVal = ECParameters[consts::SCAN_HEAD]->getModParam(
           ECModParameters[consts::SCAN_HEAD]->getWidthParam());
@@ -165,6 +150,40 @@ void ecSynth::onProcess(al::AudioIOData &io) {
           mCurrentIndex += frames;
         }
       }
+
+      // END OF SCANNER LOGIC
+    }
+    controlRateCounter++;
+
+    // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
+    width = ECModParameters[consts::GRAIN_RATE]->getWidthParam();
+    if (width > 0)
+      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(width));
+    else
+      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getParam());
+
+    width = ECModParameters[consts::ASYNC]->getWidthParam();
+    if (width > 0) // modulate the asynchronicity
+      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getModParam(width));
+    else
+      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getParam());
+
+    width = ECModParameters[consts::INTERM]->getWidthParam();
+    if (width > 0) // modulate the intermittency
+      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getModParam(width));
+    else
+      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
+
+    width = ECModParameters[consts::STREAMS]->getWidthParam();
+    if (width > 0) // Modulate the amount of streams playing.
+      grainScheduler.setPolyStream(
+          consts::synchronous, static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
+    else
+      grainScheduler.setPolyStream(consts::synchronous,
+                                   static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
+
+    // Grain by Grain Initilization
+    if (grainScheduler.trigger()) {
 
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
@@ -274,9 +293,9 @@ bool ecSynth::loadInitSoundFiles(std::string directory) {
     std::string one = s1.file();
     std::string two = s2.file();
     int min_size = one.size() < two.size() ? one.size() : two.size();
-    for(int i = 0; i < min_size; i++) {
+    for (int i = 0; i < min_size; i++) {
       if (std::tolower(one[i]) != std::tolower(two[i]))
-         return (std::tolower(one[i]) < std::tolower(two[i]));
+        return (std::tolower(one[i]) < std::tolower(two[i]));
     }
     return one.size() < two.size();
   });
