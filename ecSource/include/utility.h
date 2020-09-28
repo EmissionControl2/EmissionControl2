@@ -373,11 +373,6 @@ std::string getUserHomePath();
 std::string getContentPath_OSX(std::string s);
 
 /**
- * @brief a comparator function for sorting the filePaths (case insensitive).
- */
-bool compareFileNoCase(al::FilePath s1, al::FilePath s2);
-
-/**
  * @brief Return a value between min and max based on val.
  *
  * @param[in] val: A value between [0, 1].

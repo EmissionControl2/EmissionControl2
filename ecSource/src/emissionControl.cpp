@@ -503,6 +503,29 @@ Grain::Grain() {}
 
 void Grain::init() { gEnv.reset(); }
 
+void Grain::initEffects(float sr) {
+  bpf_1_r.onDomainChange(1);
+  bpf_2_r.onDomainChange(1);
+  bpf_3_r.onDomainChange(1);
+  bpf_1_l.onDomainChange(1);
+  bpf_2_l.onDomainChange(1);
+  bpf_3_l.onDomainChange(1);
+
+  bpf_1_r.set(440, 1, gam::BAND_PASS);
+  bpf_2_r.set(440, 1, gam::RESONANT);
+  bpf_3_r.set(440, 1, gam::BAND_PASS);
+  bpf_1_l.set(440, 1, gam::BAND_PASS);
+  bpf_2_l.set(440, 1, gam::RESONANT);
+  bpf_3_l.set(440, 1, gam::BAND_PASS);
+
+  bpf_1_l.zero();
+  bpf_2_l.zero();
+  bpf_3_l.zero();
+  bpf_1_r.zero();
+  bpf_2_r.zero();
+  bpf_3_r.zero();
+}
+
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
   mPActiveVoices = list.activeVoices;
   this->source = list.source;
@@ -544,70 +567,16 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
                   list.resonance->getModParam(list.modResonanceDepth));
 }
 
-void Grain::onProcess(al::AudioIOData &io) {
-  while (io()) {
-    envVal = gEnv();
-    sourceIndex = index();
-    iSourceIndex = floor(sourceIndex);
-
-    if (iSourceIndex >= source->frames - source->channels) {
-      sourceIndex = fmod(sourceIndex, (float)(source->frames - source->channels));
-      iSourceIndex = floor(sourceIndex);
-    }
-
-    if (source->channels == 1) {
-      currentSample = source->getInterpolate(sourceIndex);
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
-      io.out(0) += currentSample * envVal * mLeft * mAmp;
-      io.out(1) += currentSample * envVal * mRight * mAmp;
-
-    } else if (source->channels == 2) {
-      before = source->data[iSourceIndex * 2];
-      after = source->data[iSourceIndex * 2 + 2];
-      dec = sourceIndex - iSourceIndex;
-      currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
-      io.out(0) += currentSample * envVal * mLeft * mAmp;
-
-      before = source->get((iSourceIndex + 1) * 2);
-      after = source->get((iSourceIndex + 1) * 2 + 2);
-      dec = (sourceIndex + 1) - (iSourceIndex + 1);
-      currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 1);
-      io.out(1) += currentSample * envVal * mRight * mAmp;
-    }
-    mSourceIndex = sourceIndex;
-
-    if (gEnv.done()) {
-      *mPActiveVoices -= 1; // This will remove a grain from the active list.
-      free();
-      break;
-    }
-  }
-}
-
-void Grain::onTriggerOn() {}
-
 void Grain::configureIndex(const grainParameters &list) {
   float startSample, endSample;
 
   // Set where in the buffer to play.
   index.setSamplingRate(mSamplingRate);
   startSample = list.mCurrentIndex;
-
-  if (list.modTranspositionDepth > 0)
-    endSample =
-        floor(startSample + (mDurationS * mSamplingRate *
-                             abs(list.transposition->getModParam(list.modTranspositionDepth))));
-  else {
-    endSample =
-        floor(startSample + (mDurationS * mSamplingRate * abs(list.transposition->getParam())));
-  }
-  if (list.transposition->getParam() < 0)
-    index.set(endSample, startSample, mDurationS);
-  else
-    index.set(startSample, endSample, mDurationS);
-}
+  endSample = startSample + (mDurationS * mSamplingRate *
+                             list.transposition->getModParam(list.modTranspositionDepth));
+  index.set(startSample, endSample, mDurationS);
+} 
 
 void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
@@ -674,28 +643,52 @@ float Grain::filterSample(float sample, bool isBypass, float cascadeMix, bool is
   return (solo * (1 - cascadeMix)) + (cascade * cascadeMix);
 }
 
-void Grain::initEffects(float sr) {
-  bpf_1_r.onDomainChange(1);
-  bpf_2_r.onDomainChange(1);
-  bpf_3_r.onDomainChange(1);
-  bpf_1_l.onDomainChange(1);
-  bpf_2_l.onDomainChange(1);
-  bpf_3_l.onDomainChange(1);
+void Grain::onProcess(al::AudioIOData &io) {
+  while (io()) {
+    envVal = gEnv();
+    sourceIndex = index();
+    iSourceIndex = floor(sourceIndex);
+    if (iSourceIndex >= source->frames - source->channels || iSourceIndex < 0) {
+      sourceIndex = fmod(sourceIndex, (float)(source->frames - source->channels));
+      iSourceIndex = floor(sourceIndex);
+      if (iSourceIndex < 0) {
+        sourceIndex += (source->frames - source->channels);
+        iSourceIndex += (source->frames - source->channels);
+      }
+    }
 
-  bpf_1_r.set(440, 1, gam::BAND_PASS);
-  bpf_2_r.set(440, 1, gam::RESONANT);
-  bpf_3_r.set(440, 1, gam::BAND_PASS);
-  bpf_1_l.set(440, 1, gam::BAND_PASS);
-  bpf_2_l.set(440, 1, gam::RESONANT);
-  bpf_3_l.set(440, 1, gam::BAND_PASS);
+    if (source->channels == 1) {
+      currentSample = source->getInterpolate(sourceIndex);
+      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
+      io.out(0) += currentSample * envVal * mLeft * mAmp;
+      io.out(1) += currentSample * envVal * mRight * mAmp;
 
-  bpf_1_l.zero();
-  bpf_2_l.zero();
-  bpf_3_l.zero();
-  bpf_1_r.zero();
-  bpf_2_r.zero();
-  bpf_3_r.zero();
+    } else if (source->channels == 2) {
+      before = source->data[iSourceIndex * 2];
+      after = source->data[iSourceIndex * 2 + 2];
+      dec = sourceIndex - iSourceIndex;
+      currentSample = before * (1 - dec) + after * dec;
+      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
+      io.out(0) += currentSample * envVal * mLeft * mAmp;
+
+      before = source->get((iSourceIndex + 1) * 2);
+      after = source->get((iSourceIndex + 1) * 2 + 2);
+      dec = (sourceIndex + 1) - (iSourceIndex + 1);
+      currentSample = before * (1 - dec) + after * dec;
+      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 1);
+      io.out(1) += currentSample * envVal * mRight * mAmp;
+    }
+    mSourceIndex = sourceIndex;
+
+    if (gEnv.done()) {
+      *mPActiveVoices -= 1; // This will remove a grain from the active list.
+      free();
+      break;
+    }
+  }
 }
+
+void Grain::onTriggerOn() {}
 
 /******* voiceScheduler *******/
 

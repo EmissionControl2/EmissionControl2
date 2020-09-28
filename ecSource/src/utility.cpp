@@ -238,10 +238,6 @@ std::string util::getContentPath_OSX(std::string s) {
   return s.substr(0, i + 2);
 }
 
-bool util::compareFileNoCase(al::FilePath s1, al::FilePath s2) {
-  return strcasecmp(s1.file().c_str(), s2.file().c_str()) <= 0;
-}
-
 std::string util::getUserHomePath() {
   char homedir[PATH_MAX];
 #ifdef _WIN32

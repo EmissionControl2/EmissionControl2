@@ -270,7 +270,10 @@ void ecSynth::loadSoundFileOffline(std::string fileName) {
 
 bool ecSynth::loadInitSoundFiles(std::string directory) {
   al::FileList initAudioFiles = al::fileListFromDir(directory);
-  initAudioFiles.sort(util::compareFileNoCase);
+  // initAudioFiles.print(std::cout);
+  initAudioFiles.sort([](al::FilePath s1, al::FilePath s2) {
+    return strcasecmp(s1.file().c_str(), s2.file().c_str()) <= 0;
+  });
 
   bool success = false;
   for (auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
