@@ -270,11 +270,16 @@ void ecSynth::loadSoundFileOffline(std::string fileName) {
 
 bool ecSynth::loadInitSoundFiles(std::string directory) {
   al::FileList initAudioFiles = al::fileListFromDir(directory);
-  // initAudioFiles.print(std::cout);
   initAudioFiles.sort([](al::FilePath s1, al::FilePath s2) {
-    return strcasecmp(s1.file().c_str(), s2.file().c_str()) <= 0;
+    std::string one = s1.file();
+    std::string two = s2.file();
+    int min_size = one.size() < two.size() ? one.size() : two.size();
+    for(int i = 0; i < min_size; i++) {
+      if (std::tolower(one[i]) != std::tolower(two[i]))
+         return (std::tolower(one[i]) < std::tolower(two[i]));
+    }
+    return one.size() < two.size();
   });
-
   bool success = false;
   for (auto i = initAudioFiles.begin(); i != initAudioFiles.end(); i++) {
     if (i->file().substr(i->file().length() - 4) == ".wav" ||
