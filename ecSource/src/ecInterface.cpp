@@ -784,7 +784,6 @@ void ecInterface::onDraw(Graphics &g) {
       IM_COL32(ECblue->Value.x * 255, ECblue->Value.y * 255, ECblue->Value.z * 255, 100);
 
     // Draw Waveform
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
     float displayPosX = ImGui::GetCursorPosX();
     ImGui::PlotHistogram("##scanDisplayPos", audioThumbnails[granulator.mModClip]->data() + 1,
                          audioThumbnails[granulator.mModClip]->size() / 2, 0, nullptr, -1, 1,
@@ -795,7 +794,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PlotHistogram("##scanDisplayNeg", audioThumbnails[granulator.mModClip]->data(),
                          audioThumbnails[granulator.mModClip]->size() / 2, 0, nullptr, -1, 1,
                          ImVec2(plotWidth, plotHeight), sizeof(float) * 2);
-    ImGui::PopStyleColor(2);
+    ImGui::PopStyleColor();
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip("Scan Head: %i\% \nScan Range: %i\%", int(scanHead * 100),
@@ -828,7 +827,7 @@ void ecInterface::onDraw(Graphics &g) {
 
     // Draw Scanner position
     drawList->AddLine(ImVec2(p.x + (scanPos * plotWidth), p.y),
-                      ImVec2(p.x + (scanPos * plotWidth), p.y + plotHeight), *ECblue, 3.0f);
+                      ImVec2(p.x + (scanPos * plotWidth), p.y + plotHeight), *Text, 2.0f);
 
     // Draw Individual Grains
     granulator.copyActiveGrainIndicies(GrainDisplayIndices, &numGrainsToDisplay,
@@ -892,7 +891,6 @@ void ecInterface::onDraw(Graphics &g) {
         lastSamplingRate = globalSamplingRate;
       }
     }
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*Shade1);
 
     oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
     oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
@@ -922,7 +920,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Oscilloscope");
     ImGui::PopStyleVar();
     ImGui::PopItemWidth();
-    ImGui::PopStyleColor(6);
+    ImGui::PopStyleColor(5);
     ImGui::PopStyleVar();
 
     ImGui::PopFont();
