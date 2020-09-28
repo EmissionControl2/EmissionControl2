@@ -17,7 +17,7 @@ using namespace al;
 /**** ecInterface Implementation ****/
 
 void ecInterface::onInit() {
-  title("Emission Control 2");
+  title("EmissionControl2");
 
   execDir = al::File::directory(util::getExecutablePath());
   userPath = util::getUserHomePath();
@@ -192,6 +192,9 @@ void ecInterface::onDraw(Graphics &g) {
   // Initialize Font scale popup to false
   bool fontScaleWindow = false;
 
+  // Initialize About window to false
+  bool aboutWindow = false;
+
   // Initialize MIDI windows to false
   bool isMIDIWriteWindow = false;
   bool isMIDILoadWindow = false;
@@ -333,6 +336,15 @@ void ecInterface::onDraw(Graphics &g) {
       }
       if (ImGui::MenuItem("Font Size", "")) {
         fontScaleWindow = true;
+      }
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Help")) {
+      if (ImGui::MenuItem("Manual", "")) {
+        // open url to manual on github
+      }
+      if (ImGui::MenuItem("About", "")) {
+        aboutWindow = true;
       }
       ImGui::EndMenu();
     }
@@ -548,6 +560,40 @@ void ecInterface::onDraw(Graphics &g) {
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Audio Settings", &audioOpen)) {
     drawAudioIO(&audioIO());
+    ImGui::EndPopup();
+  }
+
+  //
+  if (aboutWindow) {
+    ImGui::OpenPopup("About");
+  }
+
+  bool aboutOpen = true;
+  ImGui::SetNextWindowSize(ImVec2(500 * fontScale, 350 * adjustScaleY));
+  if (ImGui::BeginPopupModal("About", &aboutOpen, ImGuiWindowFlags_NoResize)) {
+    const char *aboutLines[13] = {
+      "Curtis Roads, Jack Kilgore, Rodney DuPlessis",
+      "CREATE (Center for Research in Electronic Art Technology)",
+      "University of California, Santa Barbara",
+      " ",
+      "Thanks to the Allosphere Research Group for their work on Allolib,",
+      "the framework on which this software is built.",
+      "Special thanks to Dr. Andres Cabrera for help and guidance",
+      "and for handling the Windows port of the software",
+      "Supported by a Faculty Research Grant from the UCSB Academic Senate",
+      " ",
+      "Copyright 2020 Curtis Roads, Jack Kilgore, Rodney Duplessis",
+      "This program comes with absolutely no warranty.",
+      "See the GNU General Public License, version 3 or later for details."};
+    ImGui::PushFont(ferrariFont);
+    ImGui::SetCursorPosX((250 * fontScale) - (ImGui::CalcTextSize("EmissionControl2").x / 2));
+    ImGui::Text("EmissionControl2");
+    ImGui::PopFont();
+    for (int i = 0; i < 13; i++) {
+      ImGui::SetCursorPosX((250 * fontScale) - (ImGui::CalcTextSize(aboutLines[i]).x / 2));
+      ImGui::TextUnformatted(aboutLines[i]);
+    }
+
     ImGui::EndPopup();
   }
 
