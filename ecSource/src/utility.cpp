@@ -6,8 +6,8 @@
 /**** C STANDARD ****/
 #include <string.h>
 
-#include <string>
 #include <cassert>
+#include <string>
 
 #ifdef _WIN32
 #include <stdlib.h>
@@ -33,6 +33,49 @@
 #endif
 
 using namespace util;
+
+void FastTrig::buildTrigTable() {
+  for (int i = 0; i < CIRCLE; i++) {
+    COS_TABLE[i] = cos(M_PI * (float)i / HALF_CIRCLE);
+    // std::cout << cos(M_PI * (float)i / CIRCLE) << std::endl;
+  }
+}
+
+double FastTrig::get_cos(double x) {
+  int index = (int)(x * HALF_CIRCLE / M_PI);
+  if (index < 0) {
+    return COS_TABLE[-((-index)&MASK_CIRCLE) + CIRCLE];
+  } else {
+    return COS_TABLE[index&MASK_CIRCLE];
+   
+  }
+
+  assert(0);
+}
+
+double FastTrig::get_cos_lin(double x) {
+  double index = x * HALF_CIRCLE / M_PI;
+  // std::cout << i << " ";
+  // std::cout << (i % CIRCLE) << std::endl;
+  if (index < 0) {
+    index = -fmod((-index), HALF_CIRCLE) + HALF_CIRCLE;
+    unsigned i = floor(index);
+    double x0 = COS_TABLE[i];
+    double x1 = COS_TABLE[(i >= (HALF_CIRCLE)) ? 0 : i + 1]; // looping semantics
+    double t = index - i;
+    return x1 * t + x0 * (1 - t);
+  } else {
+    index = fmod(index, HALF_CIRCLE);
+    // std::cout << index << " HEHRKE\n";
+    unsigned i = floor(index);
+    double x0 = COS_TABLE[i];
+    double x1 = COS_TABLE[(i >= (HALF_CIRCLE)) ? 0 : i + 1]; // looping semantics
+    double t = index - i;
+    return x1 * t + x0 * (1 - t);
+  }
+
+  assert(0);
+}
 
 /**** expo Class Implementation ****/
 float expo::operator()() {
@@ -100,13 +143,14 @@ void expo::set(float seconds) {
 
 float tukey::operator()() {
   if (currentS < (alpha * totalS) / 2) {
-    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
+    value = 0.5 * (1 + fast_trig.get_cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
     currentS++;
   } else if (currentS <= totalS * (1 - alpha / 2)) {
     value = 1;
     currentS++;
   } else if (currentS <= totalS) {
-    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
+    value =
+        0.5 * (1 + fast_trig.get_cos(M_PI * (2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
     currentS++;
   } else
     currentS = 0;
