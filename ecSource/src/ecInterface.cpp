@@ -951,8 +951,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
-    ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
+    // ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
+    //                  ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float)); //before opt
     // Draw right channel oscilloscope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
     ImGui::SetCursorPosY(graphPosY + 1);
@@ -1463,10 +1463,10 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     }
     ImGui::Text("Click on a preset number to store.");
   } else {
-    std::vector<std::string> mapList = presetHandler->availablePresetMaps();
+    // std::vector<std::string> mapList = presetHandler->availablePresetMaps(); // before opt
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x / 2);
     if (ImGui::BeginCombo("Preset Map", state.currentBank.data())) {
-      stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();
+      // stateMap[presetHandler].mapList = presetHandler->availablePresetMaps(); //before opt
       for (auto mapName : stateMap[presetHandler].mapList) {
         bool isSelected = (state.currentBank == mapName);
         if (ImGui::Selectable(mapName.data(), isSelected)) {
