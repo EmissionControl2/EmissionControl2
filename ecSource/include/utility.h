@@ -15,15 +15,13 @@ namespace util {
 class FastTrig {
 public:
   void buildTrigTable();
-
-  double get_cos(double x);
-
+  float get_cos_implied_pi_factor(float x);
 private:
   static const int CIRCLE = 1024;
   static const int MASK_CIRCLE = CIRCLE - 1;
   static const int HALF_CIRCLE = CIRCLE / 2;
   static const int QUARTER_CIRCLE = CIRCLE / 4;
-  double COS_TABLE[CIRCLE];
+  float COS_TABLE[CIRCLE];
 };
 
 /**
