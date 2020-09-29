@@ -18,8 +18,6 @@ public:
 
   double get_cos(double x);
 
-  double get_cos_lin(double x);
-
 private:
   static const int CIRCLE = 1024;
   static const int MASK_CIRCLE = CIRCLE - 1;
