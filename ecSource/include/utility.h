@@ -3,6 +3,7 @@
 
 #include "Gamma/Filter.h"
 #include "Gamma/Gamma.h"
+#include "Gamma/Oscillator.h"
 #include "al/io/al_File.hpp"
 #include "const.h"
 #include <cmath>
@@ -10,6 +11,22 @@
 #include <mutex>
 
 namespace util {
+
+class FastTrig {
+public:
+  void buildTrigTable();
+
+  double get_cos(double x);
+
+  double get_cos_lin(double x);
+
+private:
+  static const int CIRCLE = 1024;
+  static const int MASK_CIRCLE = CIRCLE - 1;
+  static const int HALF_CIRCLE = CIRCLE / 2;
+  static const int QUARTER_CIRCLE = CIRCLE / 4;
+  double COS_TABLE[CIRCLE];
+};
 
 /**
  * Line class that moves from one point to another over a set period of time.
@@ -143,6 +160,9 @@ private:
  */
 class tukey {
 public:
+  tukey() {
+    fast_trig.buildTrigTable();
+  }
   /**
    * @brief Generate tukey envelope in real-time.
    *
@@ -189,6 +209,7 @@ public:
 private:
   float value = 0, alpha = 0.6, mSamplingRate = consts::SAMPLE_RATE;
   int currentS = 0, totalS = 1;
+  FastTrig fast_trig;
 };
 
 /**
