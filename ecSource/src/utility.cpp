@@ -53,30 +53,6 @@ double FastTrig::get_cos(double x) {
   assert(0);
 }
 
-double FastTrig::get_cos_lin(double x) {
-  double index = x * HALF_CIRCLE / M_PI;
-  // std::cout << i << " ";
-  // std::cout << (i % CIRCLE) << std::endl;
-  if (index < 0) {
-    index = -fmod((-index), HALF_CIRCLE) + HALF_CIRCLE;
-    unsigned i = floor(index);
-    double x0 = COS_TABLE[i];
-    double x1 = COS_TABLE[(i >= (HALF_CIRCLE)) ? 0 : i + 1]; // looping semantics
-    double t = index - i;
-    return x1 * t + x0 * (1 - t);
-  } else {
-    index = fmod(index, HALF_CIRCLE);
-    // std::cout << index << " HEHRKE\n";
-    unsigned i = floor(index);
-    double x0 = COS_TABLE[i];
-    double x1 = COS_TABLE[(i >= (HALF_CIRCLE)) ? 0 : i + 1]; // looping semantics
-    double t = index - i;
-    return x1 * t + x0 * (1 - t);
-  }
-
-  assert(0);
-}
-
 /**** expo Class Implementation ****/
 float expo::operator()() {
   if (!mReverse) {
