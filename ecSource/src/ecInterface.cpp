@@ -52,6 +52,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + configPath + "/config");
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
+  al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
 #endif
 
