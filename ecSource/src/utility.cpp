@@ -41,13 +41,13 @@ void FastTrig::buildTrigTable() {
   }
 }
 
-double FastTrig::get_cos(double x) {
-  int index = (int)(x * HALF_CIRCLE / M_PI);
+// For optimization purposes, x is assuemd to be multiplied by a factor of PI.
+float FastTrig::get_cos_implied_pi_factor(float x) {
+  int index = (int)(x * HALF_CIRCLE);
   if (index < 0) {
-    return COS_TABLE[-((-index)&MASK_CIRCLE) + CIRCLE];
+    return COS_TABLE[-((-index) & MASK_CIRCLE) + CIRCLE];
   } else {
-    return COS_TABLE[index&MASK_CIRCLE];
-   
+    return COS_TABLE[index & MASK_CIRCLE];
   }
 
   assert(0);
@@ -119,14 +119,16 @@ void expo::set(float seconds) {
 
 float tukey::operator()() {
   if (currentS < (alpha * totalS) / 2) {
-    value = 0.5 * (1 + fast_trig.get_cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
+    value = 0.5 * (1 + fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha * totalS) - 1)));
     currentS++;
   } else if (currentS <= totalS * (1 - alpha / 2)) {
     value = 1;
     currentS++;
   } else if (currentS <= totalS) {
     value =
-        0.5 * (1 + fast_trig.get_cos(M_PI * (2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
+        0.5 *
+        (1 +
+         fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
     currentS++;
   } else
     currentS = 0;
