@@ -78,7 +78,7 @@ echo "Packaging .deb at $BUILDLOCATION..."
 
 # package .deb
 cd ../deployment/Linux
-exec dpkg -b "$RELEASENAME" "$RELEASENAME.deb" &
+dpkg -b "$RELEASENAME" "$RELEASENAME.deb"
 
 cp ../../docs/EmissionControl2-Manual.pdf .
 
