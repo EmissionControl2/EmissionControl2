@@ -122,7 +122,7 @@ class ecSynth : public al::SynthVoice {
       std::unique_ptr<ecModParameter>(new ecModParameter{"modScanHeadDepth", "9. Scan Head"});
 
     ECParameters[SCAN_RANGE] = std::unique_ptr<ecParameter>(
-      new ecParameter{"ScanRange", "10. Scan Range", 0.5, 0, 1, 0, 1, PARAM});
+      new ecParameter{"ScanRange", "10. Scan Range", 1, -1, 1, -1, 1, PARAM});
     ECModParameters[SCAN_RANGE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modScanRangeDepth", "10. Scan Range"});
 
@@ -283,7 +283,7 @@ class ecSynth : public al::SynthVoice {
     return filename;
   }
 
-  float getCurrentIndex() const { return mScanner.getValue(); }
+  float getCurrentIndex() const { return mCurrentIndex; }
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;

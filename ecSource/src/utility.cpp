@@ -6,8 +6,8 @@
 /**** C STANDARD ****/
 #include <string.h>
 
-#include <string>
 #include <cassert>
+#include <string>
 
 #ifdef _WIN32
 #include <stdlib.h>
@@ -33,6 +33,26 @@
 #endif
 
 using namespace util;
+
+void FastTrig::buildTrigTable() {
+  for (int i = 0; i < CIRCLE; i++) {
+    COS_TABLE[i] = cos(M_PI * (float)i / HALF_CIRCLE);
+  }
+}
+
+// For optimization purposes, x is assuemd to be multiplied by a factor of PI.
+// Based off of 
+// http://www.flipcode.com/archives/Fast_Trigonometry_Functions_Using_Lookup_Tables.shtml
+float FastTrig::get_cos_implied_pi_factor(float x) {
+  int index = (int)(x * HALF_CIRCLE);
+  if (index < 0) {
+    return COS_TABLE[-((-index) & MASK_CIRCLE) + CIRCLE];
+  } else {
+    return COS_TABLE[index & MASK_CIRCLE];
+  }
+
+  assert(0);
+}
 
 /**** expo Class Implementation ****/
 float expo::operator()() {
@@ -100,13 +120,16 @@ void expo::set(float seconds) {
 
 float tukey::operator()() {
   if (currentS < (alpha * totalS) / 2) {
-    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - 1)));
+    value = 0.5 * (1 + fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha * totalS) - 1)));
     currentS++;
   } else if (currentS <= totalS * (1 - alpha / 2)) {
     value = 1;
     currentS++;
   } else if (currentS <= totalS) {
-    value = 0.5 * (1 + std::cos(M_PI * (2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
+    value =
+        0.5 *
+        (1 +
+         fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
     currentS++;
   } else
     currentS = 0;
