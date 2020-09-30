@@ -16,6 +16,7 @@ void ecSynth::setIO(al::AudioIOData *io) {
   grainScheduler.setSamplingRate(io->fps());
   mGlobalSamplingRate = io->fps();
   mScanner.setSamplingRate(mGlobalSamplingRate);
+  pleaseResetScanner = true;
   ControlRate.spu(mGlobalSamplingRate / consts::CR_EVERY_N_SAMPLES);
 
   float min_grain_dur_ms = 2000 / mGlobalSamplingRate;
@@ -97,18 +98,14 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
   while (io()) {
     mCurrentIndex = mScanner();
-    for (int index = 0; index < consts::NUM_LFOS; ++index)
-      Modulators[index]->sampleAndStore();
 
     // CONTROL RATE LOOP (Executes every 4th sample)
     if (controlRateCounter == consts::CR_EVERY_N_SAMPLES) {
       controlRateCounter = 0;
-      // std::cout << Modulators[0]->getSamplingRate() << std::endl;
 
-      mPrevModClip = mModClip;
-      mModClip = static_cast<int>(ECParameters[consts::SOUND_FILE]->getModParam(
-                     ECModParameters[consts::SOUND_FILE]->getWidthParam())) -
-                 1;
+      // Store Modulator Values
+      for (int index = 0; index < consts::NUM_LFOS; ++index)
+        Modulators[index]->sampleAndStore();
 
       // SCANNER LOGIC
       prevTapeHeadVal = nowTapeHeadVal;
@@ -125,7 +122,8 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
       // Case where the scanning head is given a hard reset.
       if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() ||
-          prevTapeHeadVal != nowTapeHeadVal) {
+          prevTapeHeadVal != nowTapeHeadVal || pleaseResetScanner) {
+        pleaseResetScanner = false;
         if ((scan_speed >= 0 && scan_width >= 0) || (scan_speed < 0 && scan_width < 0)) {
           start = nowTapeHeadVal * frames;
           end = start + (frames * scan_width);
@@ -133,7 +131,6 @@ void ecSynth::onProcess(al::AudioIOData &io) {
           start = (nowTapeHeadVal + scan_width) * frames;
           end = nowTapeHeadVal * frames;
         }
-        // end = start - (frames * scan_width);
         mScanner.set(start, end, abs(end - start) / (mGlobalSamplingRate * abs(scan_speed)));
       }
 
@@ -144,7 +141,6 @@ void ecSynth::onProcess(al::AudioIOData &io) {
           end = (nowTapeHeadVal * frames) + (frames * scan_width);
         else
           end = (nowTapeHeadVal * frames);
-        // end = (nowTapeHeadVal * frames) - (frames * scan_width);
         mScanner.set(start, end, abs(end - start) / (mGlobalSamplingRate * abs(scan_speed)));
       }
 
@@ -163,7 +159,6 @@ void ecSynth::onProcess(al::AudioIOData &io) {
           end = (nowTapeHeadVal * frames) + (frames * scan_width);
         else
           end = (nowTapeHeadVal * frames);
-        // end = (nowTapeHeadVal * frames) - (frames * scan_width);
         mScanner.set(start, end, abs(end - start) / (mGlobalSamplingRate * abs(scan_speed)));
       }
 
@@ -174,37 +169,42 @@ void ecSynth::onProcess(al::AudioIOData &io) {
           mCurrentIndex += frames;
         }
       }
-
       // END OF SCANNER LOGIC
+
+      // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
+      width = ECModParameters[consts::GRAIN_RATE]->getWidthParam();
+      if (width > 0)
+        grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(width));
+      else
+        grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getParam());
+
+      width = ECModParameters[consts::ASYNC]->getWidthParam();
+      if (width > 0) // modulate the asynchronicity
+        grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getModParam(width));
+      else
+        grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getParam());
+
+      width = ECModParameters[consts::INTERM]->getWidthParam();
+      if (width > 0) // modulate the intermittency
+        grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getModParam(width));
+      else
+        grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
+
+      width = ECModParameters[consts::STREAMS]->getWidthParam();
+      if (width > 0) // Modulate the amount of streams playing.
+        grainScheduler.setPolyStream(
+            consts::synchronous,
+            static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
+      else
+        grainScheduler.setPolyStream(consts::synchronous,
+                                     static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
+
+      mPrevModClip = mModClip;
+      mModClip = static_cast<int>(ECParameters[consts::SOUND_FILE]->getModParam(
+                     ECModParameters[consts::SOUND_FILE]->getWidthParam())) -
+                 1;
     }
     controlRateCounter++;
-
-    // THIS IS WHERE WE WILL MODULATE THE GRAIN SCHEDULER
-    width = ECModParameters[consts::GRAIN_RATE]->getWidthParam();
-    if (width > 0)
-      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getModParam(width));
-    else
-      grainScheduler.setFrequency(ECParameters[consts::GRAIN_RATE]->getParam());
-
-    width = ECModParameters[consts::ASYNC]->getWidthParam();
-    if (width > 0) // modulate the asynchronicity
-      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getModParam(width));
-    else
-      grainScheduler.setAsynchronicity(ECParameters[consts::ASYNC]->getParam());
-
-    width = ECModParameters[consts::INTERM]->getWidthParam();
-    if (width > 0) // modulate the intermittency
-      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getModParam(width));
-    else
-      grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
-
-    width = ECModParameters[consts::STREAMS]->getWidthParam();
-    if (width > 0) // Modulate the amount of streams playing.
-      grainScheduler.setPolyStream(
-          consts::synchronous, static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
-    else
-      grainScheduler.setPolyStream(consts::synchronous,
-                                   static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
 
     // Grain by Grain Initilization
     if (grainScheduler.trigger()) {
@@ -405,44 +405,4 @@ void ecSynth::hardClip(al::AudioIOData &io) {
     if (io.out(i) < -1)
       io.sum(-1 * io.out(i) - 1, i);
   }
-}
-
-/**
- * WIP -- runs at max 2/3 of full power
- * softClip(currentSample) :
- *    -2/3    if x < -1
- *     2/3    if x > 1
- *     currentSample - (currentSample)**3/3
- */
-void ecSynth::softClip(al::AudioIOData &io) {
-  for (unsigned int i = 0; i < io.channelsOut(); ++i) {
-    float currentSample = io.out(i);
-    if (currentSample > 1)
-      io.sum(-1 * currentSample + (2.0f / 3), i);
-    else if (currentSample < -1)
-      io.sum(-1 * currentSample - (2.0f / 3), i);
-    else
-      io.sum(-1 * powf(currentSample, 3) / 3, i);
-  }
-}
-
-/**** TO DO TO DO TO DO ****/
-void ecSynth::throttle(float time, float ratio) {
-  if (mCounter < time * mGlobalSamplingRate) {
-    mCounter++;
-    mAvgActiveVoices += mActiveVoices;
-    return;
-  } else {
-    mCounter++;
-    mAvgActiveVoices /= mCounter;
-    mCounter = 0;
-  }
-
-  // float adaptThresh;
-
-  // if (mPeakCPU > adaptThresh) {
-  // }
-  // if (mAvgCPU > adaptThresh) {
-  // } else {
-  // }
 }

@@ -252,12 +252,6 @@ class ecSynth : public al::SynthVoice {
    */
   void copyActiveGrainIndicies(float *array, int *outSize, int maxSize);
 
-  /** WIP -- see cpp file
-   * @brief Nonlinear cubic distortion used for soft clipping.
-   *        Applied to the left and right channels.
-   *        !Run in the process block!
-   */
-  void softClip(al::AudioIOData &io);
 
   /**
    * @brief Simple hardclipping to prevent distorting the DAC.
@@ -265,15 +259,6 @@ class ecSynth : public al::SynthVoice {
    *        !Run in the process block!
    */
   void hardClip(al::AudioIOData &io);
-
-  /**
-   * WORK IN PROGRESS
-   * @brief Throttles the amount of grains that can be active at once. TODO
-   *
-   * @param[in] The amount of time to the throttle the synth in seconds.
-   * @param[in] The ratio in which to throttle the synth. A number from 0 to 1.
-   */
-  void throttle(float time, float ratio);
 
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
@@ -297,8 +282,6 @@ class ecSynth : public al::SynthVoice {
   int mActiveVoices = 0;
   int mCounter = 0;
   float mAvgActiveVoices = 0;
-  // float mPeakCPU;
-  // float mAvgCPU;
   int *mPActiveVoices = nullptr;
   gam::Domain ControlRate;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
@@ -315,6 +298,7 @@ class ecSynth : public al::SynthVoice {
   int mPrevModClip;
   float prevTapeHeadVal, nowTapeHeadVal;
   float prev_scan_speed, scan_speed, prev_scan_width, scan_width;
+  bool pleaseResetScanner = false;
 };
 
 #endif
