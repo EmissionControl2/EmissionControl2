@@ -26,7 +26,7 @@
 #include <unordered_set>
 
 class ecInterface : public al::App, public al::MIDIMessageHandler {
- public:
+public:
   /**
    * @brief Initilialize the synth interface.
    */
@@ -95,7 +95,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void drawRecorderWidget(al::OutputRecorder *recorder, double frameRate, uint32_t numChannels,
                           std::string directory = "", uint32_t bufferSize = 0);
 
- private:
+private:
   float windowWidth, windowHeight;
   bool isFullScreen;
 
@@ -151,9 +151,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   void updateECModParamMIDI(float val, int index) {
     float result =
-      util::outputValInRange(val, granulator.ECModParameters[index]->param.getCurrentMin(),
-                             granulator.ECModParameters[index]->param.getCurrentMax(),
-                             granulator.ECModParameters[index]->param.isLog(), 3);
+        util::outputValInRange(val, granulator.ECModParameters[index]->param.getCurrentMin(),
+                               granulator.ECModParameters[index]->param.getCurrentMax(),
+                               granulator.ECModParameters[index]->param.isLog(), 3);
     granulator.ECModParameters[index]->param.setParam(result);
   }
 
@@ -165,9 +165,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   void updateLFOParamMIDI(float val, int index) {
     float result =
-      util::outputValInRange(val, granulator.LFOParameters[index]->frequency->getCurrentMin(),
-                             granulator.LFOParameters[index]->frequency->getCurrentMax(),
-                             granulator.LFOParameters[index]->frequency->isLog(), 3);
+        util::outputValInRange(val, granulator.LFOParameters[index]->frequency->getCurrentMin(),
+                               granulator.LFOParameters[index]->frequency->getCurrentMax(),
+                               granulator.LFOParameters[index]->frequency->isLog(), 3);
     granulator.LFOParameters[index]->frequency->setParam(result);
   }
 
@@ -206,6 +206,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int grainAccum = 0;
   int grainsPerSecond = 0;
   float oscFrame = 1;
+  int oscSize = int(oscFrame * globalSamplingRate);
   double lastSamplingRate = globalSamplingRate;
 
   std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
@@ -227,26 +228,26 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int colPushCount = 0;
 
   // light color scheme
-  ImColor PrimaryLight = ImColor(149, 176, 176);  // Background
-  ImColor YellowLight = ImColor(237, 224, 39);    // Yellow
-  ImColor RedLight = ImColor(212, 35, 89);        // Red
-  ImColor GreenLight = ImColor(69, 201, 69);      // Green
-  ImColor BlueLight = ImColor(44, 113, 175);      // Blue
-  ImColor Shade1Light = ImColor(176, 196, 196);   // Slider Color 1
-  ImColor Shade2Light = ImColor(199, 213, 213);   // Slider Color 2
-  ImColor Shade3Light = ImColor(221, 230, 230);   // Slider Color 3
-  ImColor TextLight = ImColor(0, 0, 0);           // Text Color
+  ImColor PrimaryLight = ImColor(149, 176, 176); // Background
+  ImColor YellowLight = ImColor(237, 224, 39);   // Yellow
+  ImColor RedLight = ImColor(212, 35, 89);       // Red
+  ImColor GreenLight = ImColor(69, 201, 69);     // Green
+  ImColor BlueLight = ImColor(44, 113, 175);     // Blue
+  ImColor Shade1Light = ImColor(176, 196, 196);  // Slider Color 1
+  ImColor Shade2Light = ImColor(199, 213, 213);  // Slider Color 2
+  ImColor Shade3Light = ImColor(221, 230, 230);  // Slider Color 3
+  ImColor TextLight = ImColor(0, 0, 0);          // Text Color
 
   // dark color scheme
-  ImColor PrimaryDark = ImColor(33, 38, 40);   // Background
-  ImColor YellowDark = ImColor(122, 114, 0);   // Yellow
-  ImColor RedDark = ImColor(170, 8, 76);       // Red
-  ImColor GreenDark = ImColor(8, 159, 8);      // Green
-  ImColor BlueDark = ImColor(15, 75, 129);     // Blue
-  ImColor Shade1Dark = ImColor(55, 63, 66);    // Slider Color 1
-  ImColor Shade2Dark = ImColor(76, 88, 92);    // Slider Color 2
-  ImColor Shade3Dark = ImColor(98, 113, 118);  // Slider Color 3
-  ImColor TextDark = ImColor(255, 255, 255);   // Text Color
+  ImColor PrimaryDark = ImColor(33, 38, 40);  // Background
+  ImColor YellowDark = ImColor(122, 114, 0);  // Yellow
+  ImColor RedDark = ImColor(170, 8, 76);      // Red
+  ImColor GreenDark = ImColor(8, 159, 8);     // Green
+  ImColor BlueDark = ImColor(15, 75, 129);    // Blue
+  ImColor Shade1Dark = ImColor(55, 63, 66);   // Slider Color 1
+  ImColor Shade2Dark = ImColor(76, 88, 92);   // Slider Color 2
+  ImColor Shade3Dark = ImColor(98, 113, 118); // Slider Color 3
+  ImColor TextDark = ImColor(255, 255, 255);  // Text Color
 
   ImColor *PrimaryColor;
   ImColor *ECyellow;
@@ -272,8 +273,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   // FIRST.˝
   bool jsonWriteSoundOutputPath(std::string path);
 
-  template <typename T>
-  bool jsonWriteToConfig(T value, std::string key);
+  template <typename T> bool jsonWriteToConfig(T value, std::string key);
 
   bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
 

@@ -16,6 +16,7 @@ class FastTrig {
 public:
   void buildTrigTable();
   float get_cos_implied_pi_factor(float x);
+
 private:
   static const int CIRCLE = 1024;
   static const int MASK_CIRCLE = CIRCLE - 1;
@@ -156,9 +157,7 @@ private:
  */
 class tukey {
 public:
-  tukey() {
-    fast_trig.buildTrigTable();
-  }
+  tukey() { fast_trig.buildTrigTable(); }
   /**
    * @brief Generate tukey envelope in real-time.
    *
@@ -337,15 +336,25 @@ public:
   const float *data() { return mBuffer.data(); }
 
   std::vector<float> getArray(unsigned lookBack) {
-    // std::cout << "got here!" << std::endl;
     std::vector<float> array(lookBack, 0);
     int start = mTail - lookBack;
     if (start < 0)
       start = mMaxSize + start;
     for (unsigned i = 0; i < lookBack; i++)
       array[i] = mBuffer[(start + i) % mMaxSize];
-    // std::cout << "got here too!" << std::endl;
     return array;
+  }
+
+  float getAvg(unsigned lookBackLength) {
+    int start = mTail - lookBackLength;
+    if (start < 0)
+      start = mMaxSize + start;
+
+    float val = 0.0;
+    for (unsigned i = 0; i < lookBackLength; i++) {
+      val += mBuffer[(start + i) % mMaxSize];
+    }
+    return val / lookBackLength;
   }
 
   void print() const {
@@ -362,6 +371,29 @@ private:
 
   std::mutex mMutex;
 };
+
+struct Plot_RingBufferGetterData {
+  const float *Values;
+  int Stride;
+  int RingOffset;
+  int MaxRingSize;
+
+  Plot_RingBufferGetterData(const float *values, int stride, int ring_offset, int max_ring_size) {
+    Values = values;
+    Stride = stride;
+    RingOffset = ring_offset;
+    MaxRingSize = max_ring_size;
+  }
+};
+
+static float Plot_RingBufferGetter(void *data, int idx) {
+  Plot_RingBufferGetterData *plot_data = (Plot_RingBufferGetterData *)data;
+  const float v = *(const float *)(const void *)((const unsigned char *)plot_data->Values +
+                                                 ((size_t)((idx + plot_data->RingOffset) %
+                                                           plot_data->MaxRingSize)) *
+                                                     plot_data->Stride);
+  return v;
+}
 
 /**
  * @brief Load soundfile into a buffer in memory.
