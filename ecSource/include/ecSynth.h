@@ -184,14 +184,14 @@ class ecSynth : public al::SynthVoice {
    *
    * @param[in] The the filepath to the audio file.
    */
-  void loadSoundFileOffline(std::string fileName);
+  bool loadSoundFileOffline(std::string fileName);
 
   /**
    * @brief Load sound file into memory.
    *
    * @param[in] The the filepath to the audio file.
    */
-  void loadSoundFileRT(std::string fileName);
+  bool loadSoundFileRT(std::string fileName);
 
   /**
    * @brief Load sound files from designated sample folder.

@@ -284,11 +284,12 @@ void ecSynth::onTriggerOn() {}
 
 void ecSynth::onTriggerOff() {}
 
-void ecSynth::loadSoundFileRT(std::string fileName) {
+bool ecSynth::loadSoundFileRT(std::string fileName) {
   if (std::find(soundClipFileName.begin(), soundClipFileName.end(), fileName) !=
       soundClipFileName.end())
-    return;
-  bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true);
+    return false;
+  bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true,
+                         consts::MAX_NUM_FLOATS_PER_AUDIO_FILE);
   if (temp) {
     soundClipFileName.push_back(fileName);
     mClipNum++;
@@ -298,17 +299,22 @@ void ecSynth::loadSoundFileRT(std::string fileName) {
     ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
     ECParameters[consts::SOUND_FILE]->mHighRange->set(mClipNum); // stylistic choice, might take out
   }
+
+  return temp;
 }
 
-void ecSynth::loadSoundFileOffline(std::string fileName) {
+bool ecSynth::loadSoundFileOffline(std::string fileName) {
   if (std::find(soundClipFileName.begin(), soundClipFileName.end(), fileName) !=
       soundClipFileName.end())
-    return;
-  bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true);
+    return false;
+  bool temp = util::load(fileName, soundClip, mGlobalSamplingRate, true,
+                         consts::MAX_NUM_FLOATS_PER_AUDIO_FILE);
   if (temp) {
     soundClipFileName.push_back(fileName);
     mClipNum++;
   }
+
+  return temp;
 }
 
 bool ecSynth::loadInitSoundFiles(std::string directory) {

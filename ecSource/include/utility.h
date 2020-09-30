@@ -400,9 +400,10 @@ static float Plot_RingBufferGetter(void *data, int idx) {
  *
  * @param[in] The filename. An absolute filename is preferred.
  * @param[out] A vector holding the audio buffers.
+ *
  */
 bool load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf,
-          float sampleRate = consts::SAMPLE_RATE, bool resample = 1);
+          float sampleRate = consts::SAMPLE_RATE, bool resample = 1, int max_samples = 256000000);
 
 /**
  * @brief Get absolute path of executable.

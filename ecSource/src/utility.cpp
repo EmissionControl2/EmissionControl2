@@ -41,7 +41,7 @@ void FastTrig::buildTrigTable() {
 }
 
 // For optimization purposes, x is assuemd to be multiplied by a factor of PI.
-// Based off of 
+// Based off of
 // http://www.flipcode.com/archives/Fast_Trigonometry_Functions_Using_Lookup_Tables.shtml
 float FastTrig::get_cos_implied_pi_factor(float x) {
   int index = (int)(x * HALF_CIRCLE);
@@ -156,19 +156,24 @@ void tukey::set(float seconds) {
 
 /**** Load Soundfile into Memory ****/
 bool util::load(std::string fileName, std::vector<std::shared_ptr<buffer<float>>> &buf,
-                float samplingRate, bool resample) {
+                float samplingRate, bool resample, int max_samples) {
   al::SearchPaths searchPaths;
   std::string filePath = searchPaths.find(fileName).filepath();
   gam::SoundFile soundFile;
   soundFile.path(fileName);
   if (!soundFile.openRead()) {
-    std::cout << "We could not read " << fileName << "!" << std::endl;
+    std::cout << "NOT LOADING: We could not read " << fileName << "!" << std::endl;
     // exit(1);
     return 0;
   }
   if (soundFile.channels() > 2) {
-    std::cout << fileName << " is not a mono/stereo file" << std::endl;
+    std::cout << "NOT LOADING: " << fileName << " is not a mono/stereo file" << std::endl;
     // exit(1);
+    return 0;
+  }
+
+  if (soundFile.samples() > max_samples) {
+    std::cout << "NOT LOADING: Sound file is larger than allowed number of samples." << std::endl;
     return 0;
   }
 

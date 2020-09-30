@@ -31,6 +31,7 @@ enum paramNames {
   AMPLITUDE
 };
 const int CR_EVERY_N_SAMPLES = 4;
+const unsigned MAX_NUM_FLOATS_PER_AUDIO_FILE = 256000000; // 1 gb worth of floats
 
 const int NUM_PARAMS = 15;
 const int NUM_LFOS = 6;
