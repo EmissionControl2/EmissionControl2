@@ -37,7 +37,6 @@ using namespace util;
 void FastTrig::buildTrigTable() {
   for (int i = 0; i < CIRCLE; i++) {
     COS_TABLE[i] = cos(M_PI * (float)i / HALF_CIRCLE);
-    // std::cout << cos(M_PI * (float)i / CIRCLE) << std::endl;
   }
 }
 
