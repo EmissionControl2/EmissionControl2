@@ -33,7 +33,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
-  opener = "open";
+  opener = "open ";
 #endif
 
 #ifdef __linux__
@@ -52,7 +52,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
-  opener = "xdg-open";
+  opener = "xdg-open ";
 #endif
 
 #ifdef _WIN32
@@ -66,7 +66,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
-  opener = "start";
+  opener = "start ";
 #endif
 
   initJsonConfig();
@@ -345,21 +345,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("Manual", "")) {
         // open url to manual on github
-#ifdef __APPLE__
-        system((opener + " https://github.com/jackkilgore/EmissionControl2/blob/master/docs/"
-                         "EmissionControl2-Manual.pdf")
-                 .c_str());
-#endif
-#ifdef __linux__
-        system((opener + " https://github.com/jackkilgore/EmissionControl2/blob/master/docs/"
-                         "EmissionControl2-Manual.pdf")
-                 .c_str());
-#endif
-#ifdef _WIN32
-        system((opener + " https://github.com/jackkilgore/EmissionControl2/blob/master/docs/"
-                         "EmissionControl2-Manual.pdf")
-                 .c_str());
-#endif
+        system((opener + manualURL).c_str());
       }
       if (ImGui::MenuItem("About", "")) {
         aboutWindow = true;
@@ -609,7 +595,10 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::SetCursorPosX((250 * fontScale) - (ImGui::CalcTextSize(aboutLines[i]).x / 2));
       ImGui::TextUnformatted(aboutLines[i]);
     }
-
+    ImGui::SetCursorPosX((250 * fontScale) - (100 * fontScale));
+    if (ImGui::Button("License", ImVec2(200 * fontScale, 20 * adjustScaleY))) {
+      system((opener + licenseURL).c_str());
+    }
     ImGui::EndPopup();
   }
 

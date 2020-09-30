@@ -182,7 +182,10 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void updateLFODutyParamMIDI(float val, int index) {
     granulator.LFOParameters[index]->duty->set(val);
   }
-  std::string opener = "open";
+  std::string opener = "open ";
+  std::string manualURL =
+    "https://github.com/jackkilgore/EmissionControl2/blob/master/docs/EmissionControl2-Manual.pdf";
+  std::string licenseURL = "https://www.gnu.org/licenses/gpl-3.0.html";
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
