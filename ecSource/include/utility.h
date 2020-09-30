@@ -336,26 +336,16 @@ public:
 
   const float *data() { return mBuffer.data(); }
 
-  std::vector<float> getArray(unsigned lookBack) {
-    std::vector<float> array(lookBack, 0);
-    int start = mTail - lookBack;
-    if (start < 0)
-      start = mMaxSize + start;
-    for (unsigned i = 0; i < lookBack; i++)
-      array[i] = mBuffer[(start + i) % mMaxSize];
-    return array;
-  }
-
-  float getAvg(unsigned lookBackLength) {
+  float getRMS(unsigned lookBackLength) {
     int start = mTail - lookBackLength;
     if (start < 0)
       start = mMaxSize + start;
 
     float val = 0.0;
     for (unsigned i = 0; i < lookBackLength; i++) {
-      val += mBuffer[(start + i) % mMaxSize];
+      val += pow(mBuffer[(start + i) % mMaxSize],2);
     }
-    return val / lookBackLength;
+    return sqrt(val / lookBackLength);
   }
 
   void print() const {

@@ -280,8 +280,6 @@ class ecSynth : public al::SynthVoice {
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;
-  int mCounter = 0;
-  float mAvgActiveVoices = 0;
   int *mPActiveVoices = nullptr;
   gam::Domain ControlRate;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
@@ -291,6 +289,7 @@ class ecSynth : public al::SynthVoice {
 
   /***localAudioThread variables***/
   float width;
+  float sample_0, sample_1; 
 
   /***mScanner***/
   util::line<double> mScanner;

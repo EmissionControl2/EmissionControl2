@@ -645,10 +645,10 @@ void Grain::onProcess(al::AudioIOData &io) {
   while (io()) {
     envVal = gEnv();
     sourceIndex = index();
-    iSourceIndex = floor(sourceIndex);
+    iSourceIndex = (int)(sourceIndex);
     if (iSourceIndex >= source->frames - source->channels || iSourceIndex < 0) {
       sourceIndex = fmod(sourceIndex, (float)(source->frames - source->channels));
-      iSourceIndex = floor(sourceIndex);
+      iSourceIndex = (int)(sourceIndex);
       if (iSourceIndex < 0) {
         sourceIndex += (source->frames - source->channels);
         iSourceIndex += (source->frames - source->channels);
@@ -656,8 +656,11 @@ void Grain::onProcess(al::AudioIOData &io) {
     }
 
     if (source->channels == 1) {
-      currentSample = source->getInterpolate(sourceIndex);
-      if(!bypassFilter)
+      before = source->data[iSourceIndex];
+      after = source->data[iSourceIndex + 1];
+      dec = sourceIndex - iSourceIndex;
+      currentSample = before * (1 - dec) + after * dec;
+      if (!bypassFilter)
         currentSample = filterSample(currentSample, cascadeFilter, 0);
       io.out(0, io.frame()) += currentSample * envVal * mLeft;
       io.out(1, io.frame()) += currentSample * envVal * mRight;
@@ -667,7 +670,7 @@ void Grain::onProcess(al::AudioIOData &io) {
       after = source->data[iSourceIndex * 2 + 2];
       dec = sourceIndex - iSourceIndex;
       currentSample = before * (1 - dec) + after * dec;
-      if(!bypassFilter)
+      if (!bypassFilter)
         currentSample = filterSample(currentSample, cascadeFilter, 0);
       io.out(0, io.frame()) += currentSample * envVal * mLeft;
 
@@ -675,7 +678,7 @@ void Grain::onProcess(al::AudioIOData &io) {
       after = source->get((iSourceIndex + 1) * 2 + 2);
       dec = (sourceIndex + 1) - (iSourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
-      if(!bypassFilter)
+      if (!bypassFilter)
         currentSample = filterSample(currentSample, cascadeFilter, 0);
       io.out(1, io.frame()) += currentSample * envVal * mRight;
     }
@@ -729,30 +732,4 @@ void voiceScheduler::setPolyStream(consts::streamType type, int numStreams) {
   } else {
     std::cerr << "Not implemented yet, please try again later.\n";
   }
-}
-
-/******* flowControl *******/
-
-bool flowControl::throttle(float time, float ratio, int activeVoices) {
-  // if (mCounter < time * mSamplingRate) {
-  //   mCounter++;
-  //   mAvgActiveVoices += activeVoices;
-  //   return false;
-  // } else {
-  //   mCounter++;
-  //   mAvgActiveVoices /= mCounter;
-  //   mCounter = 0;
-  // }
-  // return true;
-  // float adaptThresh;
-
-  // if (getPeakCPU() > adaptThresh) {
-  //   return true;
-  // }
-  // if (getAvgCPU() > adaptThresh) {
-  //   return true;
-  // } else {
-  //   return false;
-  // }
-  return false;
 }
