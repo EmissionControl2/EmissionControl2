@@ -116,10 +116,10 @@ class ecSynth : public al::SynthVoice {
     ECModParameters[SOUND_FILE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modSoundFileDepth", "8. Sound File"});
 
-    ECParameters[SCAN_HEAD] = std::unique_ptr<ecParameter>(
-      new ecParameter{"ScanHead", "9. Scan Head", 0.0, 0, 1, 0, 1, PARAM});
-    ECModParameters[SCAN_HEAD] =
-      std::unique_ptr<ecModParameter>(new ecModParameter{"modScanHeadDepth", "9. Scan Head"});
+    ECParameters[SCAN_BEGIN] = std::unique_ptr<ecParameter>(
+      new ecParameter{"ScanBegin", "9. Scan Begin", 0.0, 0, 1, 0, 1, PARAM});
+    ECModParameters[SCAN_BEGIN] =
+      std::unique_ptr<ecModParameter>(new ecModParameter{"modScanBeginDepth", "9. Scan Begin"});
 
     ECParameters[SCAN_RANGE] = std::unique_ptr<ecParameter>(
       new ecParameter{"ScanRange", "10. Scan Range", 1, -1, 1, -1, 1, PARAM});
@@ -296,7 +296,7 @@ class ecSynth : public al::SynthVoice {
   util::line<double> mScanner;
   float mCurrentIndex;
   int mPrevModClip;
-  float prevTapeHeadVal, nowTapeHeadVal;
+  float prevScanBeginVal, nowScanBeginVal;
   float prev_scan_speed, scan_speed, prev_scan_width, scan_width;
   bool pleaseResetScanner = false;
 };
