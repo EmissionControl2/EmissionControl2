@@ -5,10 +5,10 @@
 
 namespace consts {
 
-const char KEYBOARD_MIDI_LEARN = 'm';    // Hover over param - m
-const char KEYBOARD_MIDI_UNLEARN = 'm';  // Hover over param - Shift - m
+const char KEYBOARD_MIDI_LEARN = 'm';   // Hover over param - m
+const char KEYBOARD_MIDI_UNLEARN = 'm'; // Hover over param - Shift - m
 
-const char KEYBOARD_PARAM_LOG_TOGGLE = 'l';  // Hover over param - l
+const char KEYBOARD_PARAM_LOG_TOGGLE = 'l'; // Hover over param - l
 
 enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
 enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
@@ -37,15 +37,6 @@ const int NUM_LFOS = 6;
 const int MAX_GRAIN_DISPLAY = 100;
 const int MAX_MIDI_IN = 5;
 
-const int SAMPLE_RATE = 48000;
-const int BLOCK_SIZE = 1024;
-const int AUDIO_OUTS = 2;
-const int DEVICE_NUM = -1;
-const bool LIGHT_MODE = false;
-const float FONT_SCALE = 1.0;
-const float WINDOW_WIDTH = 1920;
-const float WINDOW_HEIGHT = 1080;
-const bool FULLSCREEN = false;
 enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };
 enum polarity { BI, UNI_POS, UNI_NEG, UNI };
@@ -63,6 +54,18 @@ const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
 const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
 const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
 const std::string FULLSCREEN_KEY = "FULLSCREEN";
+const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH_KEY";
+
+const int SAMPLE_RATE = 48000;
+const int BLOCK_SIZE = 1024;
+const int AUDIO_OUTS = 2;
+const int DEVICE_NUM = -1;
+const bool LIGHT_MODE = false;
+const float FONT_SCALE = 1.0;
+const float WINDOW_WIDTH = 1920;
+const float WINDOW_HEIGHT = 1080;
+const bool FULLSCREEN = false;
+const bool IS_FIRST_LAUNCH = true;
 
 /**
  *  DEFAULT USER PATHS
@@ -92,6 +95,5 @@ const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_pres
 const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
-}  // namespace consts
+} // namespace consts
 #endif
-

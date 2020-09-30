@@ -33,8 +33,6 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
-  al::File::copy(execDir + "Resources/samples/440sine48k.wav",
-                 userPath + consts::DEFAULT_SAMPLE_PATH);
 #endif
 
 #ifdef __linux__
@@ -61,15 +59,12 @@ void ecInterface::onInit() {
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
 
-  //  execDir = util::getContentPath_OSX(execDir);
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
-  al::File::copy(execDir + "Resources/samples/440sine48k.wav",
-                 userPath + consts::DEFAULT_SAMPLE_PATH);
 #endif
 
   initJsonConfig();
@@ -80,20 +75,18 @@ void ecInterface::onInit() {
   setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
   setFontScale(config.at(consts::FONT_SCALE_KEY));
   setWindowDimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
+  setFirstLaunch(config.at(consts::IS_FIRST_LAUNCH_KEY));
   setInitFullscreen(false);
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
 // Set output directory of recorded files.
-#ifdef __APPLE__
+#if defined __APPLE__ || defined _WIN32
+  if (isFirstLaunch)
+    al::File::copy(execDir + "Resources/samples/440sine48k.wav",
+                   userPath + consts::DEFAULT_SAMPLE_PATH);
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
   mPresets = std::make_unique<al::PresetHandler>(al::File::conformPathToOS(userPath + presetsPath));
-#endif
-
-#ifdef _WIN32
-  granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
-  mPresets = std::make_unique<al::PresetHandler>(al::File::conformPathToOS(userPath + presetsPath));
-
 #endif
 
 #ifdef __linux__
@@ -165,10 +158,10 @@ void ecInterface::onCreate() {
 }
 
 void ecInterface::onExit() {
-  // Write Window Dimensions to JSON on exit.
   jsonWriteToConfig(windowWidth, consts::WINDOW_WIDTH_KEY);
   jsonWriteToConfig(windowHeight, consts::WINDOW_HEIGHT_KEY);
   jsonWriteToConfig(isFullScreen, consts::FULLSCREEN_KEY);
+  jsonWriteToConfig(false, consts::IS_FIRST_LAUNCH_KEY);
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -827,9 +820,6 @@ void ecInterface::onDraw(Graphics &g) {
     float scanWidth = granulator.ECParameters[consts::SCAN_RANGE]->getModParam(
         granulator.ECModParameters[consts::SCAN_RANGE]->getWidthParam());
     float scanPos = granulator.getCurrentIndex() / soundFileFrames;
-    if(scanPos > 2){
-      std::cout << scanPos << std::endl;
-    }
     if (scanPos < 0)
       scanPos += 1;
     if (scanPos > 1)
@@ -950,7 +940,7 @@ void ecInterface::onDraw(Graphics &g) {
         lastSamplingRate = globalSamplingRate;
       }
     }
-    
+
     // Draw left channel oscilloscope
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SetCursorPosY(graphPosY);
@@ -959,22 +949,22 @@ void ecInterface::onDraw(Graphics &g) {
     if (offset < 0)
       offset += granulator.oscBufferL.getMaxSize();
     util::Plot_RingBufferGetterData data_l(granulator.oscBufferL.data(), sizeof(float), offset,
-                                         granulator.oscBufferL.getMaxSize());
-    ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l, oscSize, 0.0, nullptr,
-                     -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
+                                           granulator.oscBufferL.getMaxSize());
+    ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l, oscSize, 0.0,
+                     nullptr, -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float)); //before opt
+                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float)); // before opt
     // Draw right channel oscilloscope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
     ImGui::SetCursorPosY(graphPosY + 1);
     util::Plot_RingBufferGetterData data_r(granulator.oscBufferR.data(), sizeof(float), offset,
-                                         granulator.oscBufferR.getMaxSize());
-    ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r, oscSize, 0.0, nullptr,
-                     -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
+                                           granulator.oscBufferR.getMaxSize());
+    ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r, oscSize, 0.0,
+                     nullptr, -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::SetCursorPosY(graphPosY + 1);
@@ -1523,7 +1513,7 @@ ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler, int presetColumns
         file.open(path, std::ios::out);
         file.close();
         state.newMap = false;
-        stateMap[presetHandler].mapList = presetHandler->availablePresetMaps(); //optimize
+        stateMap[presetHandler].mapList = presetHandler->availablePresetMaps(); // optimize
       }
       ImGui::SameLine();
       if (ImGui::Button("Cancel")) {
@@ -1594,6 +1584,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::FULLSCREEN_KEY) == config.end())
       config[consts::FULLSCREEN_KEY] = consts::FULLSCREEN;
 
+    if (config.find(consts::IS_FIRST_LAUNCH_KEY) == config.end())
+      config[consts::IS_FIRST_LAUNCH_KEY] = consts::IS_FIRST_LAUNCH;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -1611,6 +1604,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::WINDOW_HEIGHT_KEY] = consts::WINDOW_HEIGHT;
 
     config[consts::FULLSCREEN_KEY] = consts::FULLSCREEN;
+
+    config[consts::IS_FIRST_LAUNCH_KEY] = consts::IS_FIRST_LAUNCH;
   }
 
   std::ofstream file((userPath + configFile).c_str());

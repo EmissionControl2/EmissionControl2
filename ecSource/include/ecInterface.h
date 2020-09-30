@@ -97,7 +97,7 @@ public:
 
 private:
   float windowWidth, windowHeight;
-  bool isFullScreen;
+  bool isFullScreen, isFirstLaunch;
 
   bool noSoundFiles, light, isPaused = true, writeSampleRate = false;
   float background = 0.21;
@@ -288,6 +288,7 @@ private:
   void setColorSchemeMode(bool is_light);
   void setFontScale(float font_scale);
   void setWindowDimensions(float width, float height);
+  void setFirstLaunch(bool is_first_launch) { isFirstLaunch = is_first_launch; }
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
 
   // MIDI Preset Json files
