@@ -98,6 +98,7 @@ public:
 private:
   float windowWidth, windowHeight;
   bool isFullScreen, isFirstLaunch;
+  std::string currentAudioDevice;
 
   bool noSoundFiles, light, isPaused = true, writeSampleRate = false;
   float background = 0.21;
@@ -257,7 +258,7 @@ private:
   ImColor *Shade3;
   ImColor *Text;
 
-  void drawAudioIO(al::AudioIO *io);
+  void drawAudioIO(al::AudioIO *io, bool trig);
 
   void setGUIParams();
 
@@ -290,6 +291,7 @@ private:
   void setWindowDimensions(float width, float height);
   void setFirstLaunch(bool is_first_launch) { isFirstLaunch = is_first_launch; }
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
+  void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);

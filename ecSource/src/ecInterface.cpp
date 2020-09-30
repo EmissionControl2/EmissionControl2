@@ -76,6 +76,7 @@ void ecInterface::onInit() {
   setFontScale(config.at(consts::FONT_SCALE_KEY));
   setWindowDimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
   setFirstLaunch(config.at(consts::IS_FIRST_LAUNCH_KEY));
+  setAudioDevice(config.at(consts::DEFAULT_AUDIO_DEVICE_KEY));
   setInitFullscreen(false);
 
 // Load in all files in at specified directory.
@@ -102,9 +103,15 @@ void ecInterface::onInit() {
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
   audioIO().append(mHardClip);
-  audioIO().print();
   audioIO().channelsIn(0);
   audioIO().setStreamName("EmissionControl2");
+  auto a_d = AudioDevice(currentAudioDevice, AudioDevice::OUTPUT);
+  if (!a_d.valid()) {
+    audioIO().deviceOut(-1);
+    currentAudioDevice = AudioDevice::defaultOutput().name();
+  } else
+    audioIO().deviceOut(a_d);
+  audioIO().print();
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
 
@@ -553,16 +560,14 @@ void ecInterface::onDraw(Graphics &g) {
   if (displayIO) {
     ImGui::OpenPopup("Audio Settings");
   }
-
   bool audioOpen = true;
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 6)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Audio Settings", &audioOpen)) {
-    drawAudioIO(&audioIO());
+    drawAudioIO(&audioIO(), displayIO);
     ImGui::EndPopup();
   }
 
-  //
   if (aboutWindow) {
     ImGui::OpenPopup("About");
   }
@@ -1171,24 +1176,32 @@ void ecInterface::unlinkParamAndMIDI(MIDIKey &paramKey) {
     ActiveMIDI.erase(ActiveMIDI.begin() + index);
 }
 
-void ecInterface::drawAudioIO(AudioIO *io) {
+void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
   struct AudioIOState {
     int currentSr = 1;
     int currentBufSize = 3;
     int currentDevice = 0;
     std::vector<std::string> devices;
   };
-  auto updateDevices = [&](AudioIOState &state) {
+  auto updateOutDevices = [&](AudioIOState &state) {
     state.devices.clear();
     int numDevices = AudioDevice::numDevices();
+    int dev_out_index = 0;
     for (int i = 0; i < numDevices; i++) {
+      if (!AudioDevice(i).hasOutput())
+        continue;
+
       state.devices.push_back(AudioDevice(i).name());
+      if (currentAudioDevice == AudioDevice(i).name()) {
+        state.currentDevice = dev_out_index;
+      }
+      dev_out_index++;
     }
   };
   static std::map<AudioIO *, AudioIOState> stateMap;
   if (stateMap.find(io) == stateMap.end()) {
     stateMap[io] = AudioIOState();
-    updateDevices(stateMap[io]);
+    updateOutDevices(stateMap[io]);
   }
   AudioIOState &state = stateMap[io];
   ImGui::PushID(std::to_string((unsigned long)io).c_str());
@@ -1208,12 +1221,11 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     }
   } else {
     if (ImGui::Button("Update Devices")) {
-      updateDevices(state);
+      updateOutDevices(state);
     }
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
     if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
                      static_cast<void *>(&state.devices), state.devices.size())) {
-      // TODO adjust valid number of channels.
     }
     std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
     ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
@@ -1223,10 +1235,13 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       globalSamplingRate = std::stof(samplingRates[state.currentSr]);
       io->framesPerSecond(globalSamplingRate);
       io->framesPerBuffer(consts::BLOCK_SIZE);
-      io->device(AudioDevice(state.currentDevice));
+      io->device(AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT));
+      currentAudioDevice = state.devices.at(state.currentDevice);
       granulator.setIO(io);
-      if (writeSampleRate)
+      if (writeSampleRate) {
         jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+        jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
+      }
 
       granulator.resampleSoundFiles();
 
@@ -1587,6 +1602,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::IS_FIRST_LAUNCH_KEY) == config.end())
       config[consts::IS_FIRST_LAUNCH_KEY] = consts::IS_FIRST_LAUNCH;
 
+    if (config.find(consts::DEFAULT_AUDIO_DEVICE_KEY) == config.end())
+      config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -1606,6 +1624,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::FULLSCREEN_KEY] = consts::FULLSCREEN;
 
     config[consts::IS_FIRST_LAUNCH_KEY] = consts::IS_FIRST_LAUNCH;
+
+    config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
   }
 
   std::ofstream file((userPath + configFile).c_str());

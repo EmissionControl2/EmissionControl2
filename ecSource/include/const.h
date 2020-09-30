@@ -54,7 +54,8 @@ const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
 const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
 const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
 const std::string FULLSCREEN_KEY = "FULLSCREEN";
-const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH_KEY";
+const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH";
+const std::string DEFAULT_AUDIO_DEVICE_KEY = "DEFAULT_AUDIO_DEVICE";
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
@@ -66,6 +67,7 @@ const float WINDOW_WIDTH = 1920;
 const float WINDOW_HEIGHT = 1080;
 const bool FULLSCREEN = false;
 const bool IS_FIRST_LAUNCH = true;
+const std::string DEFAULT_AUDIO_DEVICE = "";
 
 /**
  *  DEFAULT USER PATHS
