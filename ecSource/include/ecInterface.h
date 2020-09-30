@@ -209,8 +209,6 @@ private:
   int oscSize = int(oscFrame * globalSamplingRate);
   double lastSamplingRate = globalSamplingRate;
 
-  std::vector<float> oscDataL = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
-  std::vector<float> oscDataR = std::vector<float>(int(oscFrame *globalSamplingRate), 0);
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
   int VUdataSize = globalSamplingRate / 30;

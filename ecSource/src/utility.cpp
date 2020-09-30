@@ -41,6 +41,8 @@ void FastTrig::buildTrigTable() {
 }
 
 // For optimization purposes, x is assuemd to be multiplied by a factor of PI.
+// Based off of 
+// http://www.flipcode.com/archives/Fast_Trigonometry_Functions_Using_Lookup_Tables.shtml
 float FastTrig::get_cos_implied_pi_factor(float x) {
   int index = (int)(x * HALF_CIRCLE);
   if (index < 0) {

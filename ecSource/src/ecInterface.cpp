@@ -835,9 +835,6 @@ void ecInterface::onDraw(Graphics &g) {
     if (scanPos > 1)
       scanPos -= 1;
 
-    // if (granulator.ECParameters[consts::SCAN_SPEED]->getModParam(
-    //         granulator.ECModParameters[consts::SCAN_SPEED]->getWidthParam()) < 0)
-    //   scanWidth *= -1;
     ImU32 semitransBlue =
         IM_COL32(ECblue->Value.x * 255, ECblue->Value.y * 255, ECblue->Value.z * 255, 100);
 
@@ -949,57 +946,15 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
     if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
       if (oscFrame <= 3.0 || globalSamplingRate != lastSamplingRate) {
-        // oscDataL.resize(int(oscFrame * globalSamplingRate));
-        // oscDataR.resize(int(oscFrame * globalSamplingRate));
         oscSize = int(oscFrame * globalSamplingRate);
         lastSamplingRate = globalSamplingRate;
       }
     }
-
-    /*
-    // BEFORE OPT
-    oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
-    oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
+    
     // Draw left channel oscilloscope
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, light ? (ImVec4)*ECblue : (ImVec4)*ECblue);
-    ImGui::PlotLines("##ScopeL", &oscDataL[0], oscDataL.size(), 0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
-    // Draw a black line across the center of the scope
-    ImGui::SetCursorPosY(graphPosY);
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
-    // ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
-    //                  ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float)); //before opt
-    // Draw right channel oscilloscope
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
-    ImGui::SetCursorPosY(graphPosY + 1);
-    ImGui::PlotLines("##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
-    // Draw a black line across the center of the scope
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
-    ImGui::SetCursorPosY(graphPosY + 1);
-    ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
-    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0);
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Oscilloscope");
-    ImGui::PopStyleVar();
-    ImGui::PopItemWidth();
-    ImGui::PopStyleColor(5);
-    ImGui::PopStyleVar();
-
-    ImGui::PopFont();
-    ParameterGUI::endPanel(); */
-
-    // BEFORE OPT
-    // oscDataL = granulator.oscBufferL.getArray(oscDataL.size());
-    // oscDataR = granulator.oscBufferR.getArray(oscDataR.size());
-    // Draw left channel oscilloscope
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SetCursorPosY(graphPosY);
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, light ? (ImVec4)*ECblue : (ImVec4)*ECblue);
-    // std::cout << oscDataL.size() << std::endl;
     int offset = granulator.oscBufferL.getTail() - oscSize;
     if (offset < 0)
       offset += granulator.oscBufferL.getMaxSize();
@@ -1007,9 +962,6 @@ void ecInterface::onDraw(Graphics &g) {
                                          granulator.oscBufferL.getMaxSize());
     ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l, oscSize, 0.0, nullptr,
                      -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
-    // ImGui::PlotLines("##ScopeL", granulator.oscBufferL.data(), oscDataL.size(),
-    //                  offset, nullptr, -1, 1,
-    //                  ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
@@ -1019,8 +971,6 @@ void ecInterface::onDraw(Graphics &g) {
     // Draw right channel oscilloscope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
     ImGui::SetCursorPosY(graphPosY + 1);
-    // ImGui::PlotLines("##ScopeR", &oscDataR[0], oscDataR.size(), 0, nullptr, -1, 1,
-    //                  ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));
     util::Plot_RingBufferGetterData data_r(granulator.oscBufferR.data(), sizeof(float), offset,
                                          granulator.oscBufferR.getMaxSize());
     ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r, oscSize, 0.0, nullptr,
@@ -1052,25 +1002,6 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushFont(bodyFont);
     // Size of VU meter data arrays in samples
     VUdataSize = globalSamplingRate / 30;
-
-    /* BEFORE OPT
-    // resize VU meter data arrays if SR changed
-    if (VUdataSize != lastVUdataSize) {
-      VUdataLeft.resize(VUdataSize);
-      VUdataRight.resize(VUdataSize);
-      lastVUdataSize = VUdataSize;
-    }
-    // Get left channel data from ringbuffer
-    VUdataLeft = granulator.vuBufferL.getArray(VUdataSize);
-    // Get right channel data from ringbuffer
-    VUdataRight = granulator.vuBufferR.getArray(VUdataSize);
-
-    // Calculate RMS value
-    float VUleft = std::accumulate(VUdataLeft.begin(), VUdataLeft.end(), 0.0f) / VUdataSize;
-    VUleft = sqrt(VUleft);
-    float VUright = std::accumulate(VUdataRight.begin(), VUdataRight.end(), 0.0f) / VUdataSize;
-    VUright = sqrt(VUright);
-    */
 
     // After OPT
     float VUleft = sqrt(granulator.vuBufferL.getAvg(VUdataSize));
