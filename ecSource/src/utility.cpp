@@ -119,8 +119,8 @@ void expo::set(float seconds) {
 /**** tukey Class Implementation ****/
 
 float tukey::operator()() {
-  if (currentS < (alpha * totalS) / 2) {
-    value = 0.5 * (1 + fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha * totalS) - 1)));
+  if (currentS < (alpha_totalS) / 2) {
+    value = 0.5 * (1 + fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha_totalS) - 1)));
     currentS++;
   } else if (currentS <= totalS * (1 - alpha / 2)) {
     value = 1;
@@ -129,7 +129,7 @@ float tukey::operator()() {
     value =
         0.5 *
         (1 +
-         fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha * totalS) - (2 / alpha) + 1)));
+         fast_trig.get_cos_implied_pi_factor((2 * currentS / (alpha_totalS) - (2 / alpha) + 1)));
     currentS++;
   } else
     currentS = 0;
@@ -141,6 +141,7 @@ void tukey::set() {
     totalS = 1;
   currentS = 0;
   value = 0;
+  alpha_totalS = totalS * alpha;
 }
 
 void tukey::set(float seconds, float alpha) {

@@ -204,6 +204,7 @@ public:
 private:
   float value = 0, alpha = 0.6, mSamplingRate = consts::SAMPLE_RATE;
   int currentS = 0, totalS = 1;
+  float alpha_totalS;
   FastTrig fast_trig;
 };
 
