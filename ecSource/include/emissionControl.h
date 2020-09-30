@@ -697,11 +697,11 @@ private:
   void configureAmp(float dbIn);
 
   // Store value in mLeft and mRight.
-  void configurePan(float inPan);
+  void configurePan(float inPan, float amp);
 
   void configureFilter(float freq, float resonance);
 
-  float filterSample(float sample, bool isBypass, float cascadeMix, bool isRight);
+  float filterSample(float sample, float cascadeMix, bool isRight);
 
   void initEffects(float sr);
 

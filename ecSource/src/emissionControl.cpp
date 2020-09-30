@@ -286,12 +286,13 @@ float ecParameter::getModParam(float modWidth) {
               << mParameter->displayName() << std::endl;
     std::exit(1);
   }
-  if (temp > mHighRange->get())
+  if (temp > mHighRange->get()) {
     return mHighRange->get();
-  else if (temp < mLowRange->get())
+  } else if (temp < mLowRange->get()) {
     return mLowRange->get();
-  else
+  } else {
     return temp;
+  }
 }
 
 void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
@@ -559,9 +560,9 @@ void Grain::configureGrain(grainParameters &list, float samplingRate) {
 
   // Store modulated pan value of grain IF it is being modulated.
   if (list.modPanDepth > 0)
-    configurePan(list.pan->getModParam(list.modPanDepth));
+    configurePan(list.pan->getModParam(list.modPanDepth), mAmp);
   else
-    configurePan(list.pan->getParam());
+    configurePan(list.pan->getParam(), mAmp);
 
   configureFilter(list.filter->getModParam(list.modFilterDepth),
                   list.resonance->getModParam(list.modResonanceDepth));
@@ -576,7 +577,7 @@ void Grain::configureIndex(const grainParameters &list) {
   endSample = startSample + (mDurationS * mSamplingRate *
                              list.transposition->getModParam(list.modTranspositionDepth));
   index.set(startSample, endSample, mDurationS);
-} 
+}
 
 void Grain::configureAmp(float dbIn) {
   // Convert volume from db to amplitude
@@ -591,12 +592,12 @@ LeftPan = 2√2(cos𝜃-sin𝜃)
 RightPan = 2√2(cos𝜃+sin𝜃)
 Where 𝜃 is in the range -pi/4 to pi/4
 */
-void Grain::configurePan(float inPan) {
+void Grain::configurePan(float inPan, float amp) {
   float pan = inPan * (M_PI) / 4;
   float process_1 = std::cos(pan);
   float process_2 = std::sin(pan);
-  mLeft = PAN_CONST * (process_1 - process_2);
-  mRight = PAN_CONST * (process_1 + process_2);
+  mLeft = PAN_CONST * (process_1 - process_2) * amp;
+  mRight = PAN_CONST * (process_1 + process_2) * amp;
 }
 
 void Grain::configureFilter(float freq, float resonance) {
@@ -627,10 +628,7 @@ void Grain::configureFilter(float freq, float resonance) {
   }
 }
 
-float Grain::filterSample(float sample, bool isBypass, float cascadeMix, bool isRight) {
-  if (isBypass)
-    return sample;
-
+float Grain::filterSample(float sample, float cascadeMix, bool isRight) {
   float solo, cascade;
   if (!isRight) {
     solo = bpf_1_l.nextBP(sample);
@@ -659,24 +657,27 @@ void Grain::onProcess(al::AudioIOData &io) {
 
     if (source->channels == 1) {
       currentSample = source->getInterpolate(sourceIndex);
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
-      io.out(0) += currentSample * envVal * mLeft * mAmp;
-      io.out(1) += currentSample * envVal * mRight * mAmp;
+      if(!bypassFilter)
+        currentSample = filterSample(currentSample, cascadeFilter, 0);
+      io.out(0, io.frame()) += currentSample * envVal * mLeft;
+      io.out(1, io.frame()) += currentSample * envVal * mRight;
 
     } else if (source->channels == 2) {
       before = source->data[iSourceIndex * 2];
       after = source->data[iSourceIndex * 2 + 2];
       dec = sourceIndex - iSourceIndex;
       currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 0);
-      io.out(0) += currentSample * envVal * mLeft * mAmp;
+      if(!bypassFilter)
+        currentSample = filterSample(currentSample, cascadeFilter, 0);
+      io.out(0, io.frame()) += currentSample * envVal * mLeft;
 
       before = source->get((iSourceIndex + 1) * 2);
       after = source->get((iSourceIndex + 1) * 2 + 2);
       dec = (sourceIndex + 1) - (iSourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
-      currentSample = filterSample(currentSample, bypassFilter, cascadeFilter, 1);
-      io.out(1) += currentSample * envVal * mRight * mAmp;
+      if(!bypassFilter)
+        currentSample = filterSample(currentSample, cascadeFilter, 0);
+      io.out(1, io.frame()) += currentSample * envVal * mRight;
     }
     mSourceIndex = sourceIndex;
 

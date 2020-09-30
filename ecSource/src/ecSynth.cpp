@@ -270,9 +270,9 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
     // Set clip variables to > 0 if clip is detected on any sample
     // 5 is the number of visual frames the meter will turn red for
-    if (abs(io.out(0)) > 1.0f)
+    if (abs(io.out(0,io.frame())) > 1.0f)
       clipL = 5;
-    if (abs(io.out(1)) > 1.0f)
+    if (abs(io.out(1,io.frame())) > 1.0f)
       clipR = 5;
     // Add samples to VU ringbuffer (squared in advance for RMS calculations)
     vuBufferL.push_back(pow(io.out(0), 2));
