@@ -584,7 +584,8 @@ void ecInterface::onDraw(Graphics &g) {
   bool aboutOpen = true;
   ImGui::SetNextWindowSize(ImVec2(500 * fontScale, 350 * adjustScaleY));
   if (ImGui::BeginPopupModal("About", &aboutOpen, ImGuiWindowFlags_NoResize)) {
-    const char *aboutLines[13] = {
+    const char *aboutLines[14] = {
+        ("Version " + consts::VERSION_NUMBER).c_str(),
         "Curtis Roads, Jack Kilgore, Rodney DuPlessis",
         "CREATE (Center for Research in Electronic Art Technology)",
         "University of California, Santa Barbara",

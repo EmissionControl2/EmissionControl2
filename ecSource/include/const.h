@@ -5,6 +5,8 @@
 
 namespace consts {
 
+const std::string VERSION_NUMBER = "0.9";
+
 const char KEYBOARD_MIDI_LEARN = 'm';   // Hover over param - m
 const char KEYBOARD_MIDI_UNLEARN = 'm'; // Hover over param - Shift - m
 
