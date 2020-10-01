@@ -89,13 +89,20 @@ void ecInterface::onInit() {
     al::File::copy(execDir + "Resources/samples/440sine48k.wav",
                    userPath + consts::DEFAULT_SAMPLE_PATH);
   granulator.loadInitSoundFiles(userPath + consts::DEFAULT_SAMPLE_PATH);
-  mPresets = std::make_unique<al::PresetHandler>(al::File::conformPathToOS(userPath + presetsPath));
 #endif
 
 #ifdef __linux__
   granulator.loadInitSoundFiles(consts::DEFAULT_SAMPLE_PATH);
-  mPresets = std::make_unique<al::PresetHandler>(al::File::conformPathToOS(userPath + presetsPath));
 #endif
+
+  mPresets = std::make_unique<al::PresetHandler>(al::File::conformPathToOS(userPath + presetsPath));
+  auto path = mPresets->buildMapPath("default"); // build default map if it doesn't exist
+  std::ifstream exist(path);
+  if (!exist.good()) {
+    std::ofstream file;
+    file.open(path, std::ios::out);
+    file.close();
+  }
 
   for (int i = 0; i < granulator.soundClip.size(); i++)
     createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
@@ -1080,7 +1087,7 @@ void ecInterface::onDraw(Graphics &g) {
         }
         NFD_PathSet_Free(&pathSet);
       }
-      if(!noSoundFiles)
+      if (!noSoundFiles)
         ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();
