@@ -186,6 +186,22 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::string manualURL =
     "https://github.com/jackkilgore/EmissionControl2/blob/master/docs/EmissionControl2-Manual.pdf";
   std::string licenseURL = "https://www.gnu.org/licenses/gpl-3.0.html";
+  std::vector<std::string> aboutLines = {
+    ("Version " + consts::VERSION_NUMBER).c_str(),
+    "Project Manager: Curtis Roads",
+    "Developers: Jack Kilgore, Rodney DuPlessis",
+    "CREATE (Center for Research in Electronic Art Technology)",
+    "University of California, Santa Barbara",
+    " ",
+    "Thanks to the Allosphere Research Group for their work on Allolib,",
+    "the framework on which this software is built.",
+    "Special thanks to Dr. Andres Cabrera for invaluable help and guidance",
+    "and for handling the Windows port of the software",
+    "Supported by a Faculty Research Grant from the UCSB Academic Senate",
+    " ",
+    "Copyright 2020 Curtis Roads, Jack Kilgore, Rodney Duplessis",
+    "This program comes with absolutely no warranty.",
+    "See the GNU General Public License, version 3 or later for details."};
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
