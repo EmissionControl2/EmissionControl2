@@ -352,6 +352,10 @@ void ecInterface::onDraw(Graphics &g) {
         // open url to manual on github
         system((opener + manualURL).c_str());
       }
+      if (ImGui::MenuItem("Submit Bug Report", "")) {
+        // open url to manual on github
+        system((opener + bugReportURL).c_str());
+      }
       if (ImGui::MenuItem("About", "")) {
         aboutWindow = true;
       }

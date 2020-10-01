@@ -5,12 +5,12 @@
 
 namespace consts {
 
-const std::string VERSION_NUMBER = "0.9";
+const std::string VERSION_NUMBER = "1.0";
 
-const char KEYBOARD_MIDI_LEARN = 'm';   // Hover over param - m
-const char KEYBOARD_MIDI_UNLEARN = 'm'; // Hover over param - Shift - m
+const char KEYBOARD_MIDI_LEARN = 'm';    // Hover over param - m
+const char KEYBOARD_MIDI_UNLEARN = 'm';  // Hover over param - Shift - m
 
-const char KEYBOARD_PARAM_LOG_TOGGLE = 'l'; // Hover over param - l
+const char KEYBOARD_PARAM_LOG_TOGGLE = 'l';  // Hover over param - l
 
 enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
 enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
@@ -33,7 +33,7 @@ enum paramNames {
   AMPLITUDE
 };
 const int CR_EVERY_N_SAMPLES = 4;
-const unsigned MAX_NUM_FLOATS_PER_AUDIO_FILE = 256000000; // 1 gb worth of floats
+const unsigned MAX_NUM_FLOATS_PER_AUDIO_FILE = 256000000;  // 1 gb worth of floats
 
 const int NUM_PARAMS = 15;
 const int NUM_LFOS = 6;
@@ -100,5 +100,5 @@ const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_pres
 const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
-} // namespace consts
+}  // namespace consts
 #endif
