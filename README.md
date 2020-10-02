@@ -2,7 +2,7 @@
 
 EmissionControl2 (EC2) is a new standalone interactive real-time application for granular synthesis and sound file granulation. It is available for OSX, Linux, and Windows. 
 
-![](EC2_lightmode.png "This is what EC2 looks like")
+![](docs/EC2_lightmode.png "This is what EC2 looks like")
 
 Features include:
 
