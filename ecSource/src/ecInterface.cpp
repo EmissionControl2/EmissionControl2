@@ -609,7 +609,7 @@ void ecInterface::onDraw(Graphics &g) {
       granulator.getCurrentAudioFileName());
   }
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("GRANULATION CONTROLS", 0, menuBarHeight, windowWidth / 2,
+  ParameterGUI::beginPanel("    GRANULATION CONTROLS", 0, menuBarHeight, windowWidth / 2,
                            firstRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -670,7 +670,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw modulation window -------------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("MODULATION CONTROLS", windowWidth / 2, menuBarHeight, windowWidth / 2,
+  ParameterGUI::beginPanel("    MODULATION CONTROLS", windowWidth / 2, menuBarHeight, windowWidth / 2,
                            firstRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -733,7 +733,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw preset window -----------------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("PRESETS", 0, NextWindowYPosition, windowWidth / 4, secondRowHeight,
+  ParameterGUI::beginPanel("    PRESETS", 0, NextWindowYPosition, windowWidth / 4, secondRowHeight,
                            flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -743,7 +743,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw recorder window ---------------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("RECORDER", windowWidth / 4, NextWindowYPosition, windowWidth / 4,
+  ParameterGUI::beginPanel("    RECORDER", windowWidth / 4, NextWindowYPosition, windowWidth / 4,
                            secondRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -762,7 +762,7 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw LFO parameters window ---------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("LFO CONTROLS", windowWidth / 2, NextWindowYPosition, windowWidth / 2,
+  ParameterGUI::beginPanel("    LFO CONTROLS", windowWidth / 2, NextWindowYPosition, windowWidth / 2,
                            secondRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
@@ -815,7 +815,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
     // Draw Scan Display ------------------------------------------------
     ImGui::PushFont(titleFont);
-    ParameterGUI::beginPanel("SCAN DISPLAY", 0, NextWindowYPosition, windowWidth, graphHeight / 3,
+    ParameterGUI::beginPanel("    SCAN DISPLAY", 0, NextWindowYPosition, windowWidth, graphHeight / 3,
                              graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
@@ -906,7 +906,7 @@ void ecInterface::onDraw(Graphics &g) {
 
     // Draw grain histogram window --------------------------------------
     ImGui::PushFont(titleFont);
-    ParameterGUI::beginPanel("ACTIVE GRAINS", 0, NextWindowYPosition, windowWidth / 4,
+    ParameterGUI::beginPanel("    ACTIVE GRAINS", 0, NextWindowYPosition, windowWidth / 4,
                              graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
@@ -936,7 +936,7 @@ void ecInterface::onDraw(Graphics &g) {
 
     // Draw Oscilloscope window -----------------------------------------
     ImGui::PushFont(titleFont);
-    ParameterGUI::beginPanel("OSCILLOSCOPE", windowWidth / 4, NextWindowYPosition,
+    ParameterGUI::beginPanel("    OSCILLOSCOPE", windowWidth / 4, NextWindowYPosition,
                              windowWidth * 11 / 16, graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
@@ -993,8 +993,8 @@ void ecInterface::onDraw(Graphics &g) {
     // ---------------------------------------------
     ImGui::PushFont(titleFont);
     if (width() < 1250) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 12));
-    ParameterGUI::beginPanel("VU", windowWidth * 15 / 16, NextWindowYPosition, windowWidth * 1 / 16,
-                             graphHeight * 2 / 3, graphFlags);
+    ParameterGUI::beginPanel("    VU", windowWidth * 15 / 16, NextWindowYPosition,
+                             windowWidth * 1 / 16, graphHeight * 2 / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     // Size of VU meter data arrays in samples

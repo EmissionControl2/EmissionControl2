@@ -184,7 +184,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   }
   std::string opener = "open ";
   std::string manualURL =
-    "https://github.com/jackkilgore/EmissionControl2/blob/master/docs/EmissionControl2-Manual.pdf";
+    "https://raw.githubusercontent.com/jackkilgore/EmissionControl2/master/docs/"
+    "EmissionControl2-Manual.pdf";
   std::string bugReportURL = "https://github.com/jackkilgore/EmissionControl2/issues";
   std::string licenseURL = "https://www.gnu.org/licenses/gpl-3.0.html";
   std::vector<std::string> aboutLines = {
