@@ -48,7 +48,7 @@ if [ ! -d "./external/nativefiledialog/build/lib" ]; then
     make config=release_x64
   elif [ $(uname -s) == "Darwin" ]; then # note: can't get make file to work, relies on xcode bleh
     cd xcode4
-    xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release
+    xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release 
   fi
 fi
 )
