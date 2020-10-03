@@ -1297,9 +1297,9 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
       } else {
         ringBufferSize = bufferSize * numChannels * 4;
       }
-      std::string filename;
+      std::string filename = buf1;
       if (!state.overwriteButton) {
-        filename = buf1;
+        filename;
         int counter = 1;
         while (File::exists(directory + filename) && counter < 9999) {
           filename = buf1;
