@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10" CACHE STRING "Minimum OS X deployment version")
 
 
 # name of application. replace 'app' with desired app name
