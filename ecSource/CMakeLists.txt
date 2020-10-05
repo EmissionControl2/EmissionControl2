@@ -111,8 +111,7 @@ target_include_directories(${APP_NAME} PRIVATE
 # )
 
 find_library(NFD_LIBRARY nfd HINTS 
-  /usr/local/lib
-  ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
+  ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/Release/x64
 )
 
 add_library(ecLib
