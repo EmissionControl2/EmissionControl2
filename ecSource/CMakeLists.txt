@@ -105,7 +105,12 @@ target_include_directories(${APP_NAME} PRIVATE
 
 
 # Link native file dialog.
-target_link_directories(${APP_NAME} PUBLIC 
+# target_link_directories(${APP_NAME} PUBLIC 
+#   /usr/local/lib
+#   ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
+# )
+
+find_library(NFD_LIBRARY nfd HINTS 
   /usr/local/lib
   ${CMAKE_SOURCE_DIR}/external/nativefiledialog/build/lib/release/x64
 )
@@ -136,7 +141,7 @@ target_link_libraries(ecLib PUBLIC
   al 
   "${AL_EXT_LIBRARIES}"
   samplerate
-  nfd
+  ${NFD_LIBRARY}
 ) 
 
 if(APPLE)
