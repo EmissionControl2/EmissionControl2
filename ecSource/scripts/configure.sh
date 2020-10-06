@@ -20,7 +20,7 @@ rm -f external/al_ext/spatialaudio/CMakeLists.txt
 rm -f external/al_ext/statedistribution/CMakeLists.txt
 
 (
-  if [ $(uname -s) == "Linux" ]; then
+  if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
     mkdir -p ./bin
     cd ./bin
     mkdir -p ./Resources
@@ -32,10 +32,14 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
 # Build LIBSAMPLERATE if it doesnt exist../external/libsamplerate/build
 (
   if [ ! -d "./external/libsamplerate/build" ]; then
-    cmake -E make_directory external/libsamplerate/build
-    cd external/libsamplerate/build
-    cmake ..
-    make
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
+      echo "BUILD LIBSAMPLERATE WINDOWS TODO"
+    else ## build libsamplerate for other unix based platforms.
+      cmake -E make_directory external/libsamplerate/build
+      cd external/libsamplerate/build
+      cmake ..
+      make
+    fi
   fi
 )
 
@@ -43,14 +47,16 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
 (
   if [ ! -d "./external/nativefiledialog/build/lib" ]; then
     cd external/nativefiledialog/build/
-    if [ $(uname -s) == "Linux" ]; then
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
       cd gmake_linux
       make config=release_x64
-    elif [ $(uname -s) == "Darwin" ]; then # note: can't get make file to work, relies on xcode bleh
+    elif [[ "$OSTYPE" == "darwin"* ]]; then # note: can't get make file to work, relies on xcode bleh
       # cd gmake_macosx
       # make config=release_x64
       cd xcode4
       xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
+    elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then 
+      echo "BUILD NFD WINDOWS TODO"
     fi
   fi
 )
@@ -60,11 +66,12 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   cd build
   mkdir -p release
   cd release
-  if [ $(uname -s) == "Linux" ]; then
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../..
-  fi
-
-  if [ $(uname -s) == "Darwin" ]; then
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
+  elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
+    echo "CONFIGURE WINDOWS RELEASE TODO"
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   fi
 )
@@ -74,11 +81,12 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   cd build
   mkdir -p debug
   cd debug
-  if [ $(uname -s) == "Linux" ]; then
-    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../..
-  fi
-
-  if [ $(uname -s) == "Darwin" ]; then
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../.
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
+  elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
+    echo "CONFIGURE WINDOWS DEBUG TODO"
     cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   fi
 )
