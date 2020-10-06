@@ -21,6 +21,20 @@ Features include:
 
 See ![releases](https://github.com/jackkilgore/EmissionControl2/releases) page to download the latest version for your operating system.
 
+## Mailing Lists
+
+### New releases, major bug fixes, and other big news (low-volume list)
+https://lists.sr.ht/~rondo/emissioncontrol2-announce
+
+To subscribe, send a blank email to: ~rondo/emissioncontrol2-announce+subscribe@lists.sr.ht
+
+### Discussion, questions, ideas, tips, sounds and video, and other general postings (higher-volume list; anyone can post here)
+https://lists.sr.ht/~rondo/emissioncontrol2-discuss
+
+To subscribe, send a blank email to: ~rondo/emissioncontrol2-discuss+subscribe@lists.sr.ht
+
+To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.sr.ht
+
 ## Building
 ### Debian
 
@@ -75,3 +89,6 @@ You must have cmake installed (version 3.10 or later), and Xcode (hopefully we c
 - run build script:
 
 `./scripts/build.sh`
+
+### Windows
+Coming soon...
