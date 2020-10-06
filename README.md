@@ -55,3 +55,23 @@ See ![releases](https://github.com/jackkilgore/EmissionControl2/releases) page t
 - install the .deb either with your preferred gui app installer or by running: 
 
 `dpkg -i <path-to-the-deb>`
+
+
+### OS X
+You must have cmake installed (version 3.10 or later), and Xcode (hopefully we can get rid of this dependency soon).
+
+- First, clone the repo:
+
+`git clone https://github.com/jackkilgore/EmissionControl2.git`
+
+- cd into EmissionControl2/ecSource
+
+`cd EmissionControl2/ecSource`
+
+- run configure script:
+
+`./scripts/configure.sh`
+
+- run build script:
+
+`./scripts/build.sh`
