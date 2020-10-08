@@ -87,8 +87,8 @@ const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 
 #ifdef __linux__
-const std::string DEFAULT_SAMPLE_PATH = "/usr/local/share/EmissionControl2/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH = "/Music/EmissionControl2";
+const std::string DEFAULT_SAMPLE_PATH = "/usr/share/emissioncontrol2/samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
 #ifdef _WIN32

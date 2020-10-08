@@ -51,7 +51,6 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + configPath + "/config");
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
-  al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   opener = "xdg-open ";
 #endif
 
@@ -152,11 +151,11 @@ void ecInterface::onCreate() {
 
 #ifdef __linux__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 16.0f);
+    "/usr/share/emissioncontrol2/Fonts/Roboto-Medium.ttf", 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    ("/usr/local/share/fonts/EmissionControl2/Roboto-Medium.ttf"), 20.0f);
+    "/usr/share/emissioncontrol2/Fonts/Roboto-Medium.ttf", 20.0f);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    ("/usr/local/share/fonts/EmissionControl2/ferrari.ttf"), 16.0f);
+    "/usr/share/emissioncontrol2/Fonts/ferrari.ttf", 16.0f);
 #endif
 
 #ifdef _WIN32
@@ -670,8 +669,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw modulation window -------------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("    MODULATION CONTROLS", windowWidth / 2, menuBarHeight, windowWidth / 2,
-                           firstRowHeight, flags);
+  ParameterGUI::beginPanel("    MODULATION CONTROLS", windowWidth / 2, menuBarHeight,
+                           windowWidth / 2, firstRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
@@ -762,8 +761,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Draw LFO parameters window ---------------------------------------
   ImGui::PushFont(titleFont);
-  ParameterGUI::beginPanel("    LFO CONTROLS", windowWidth / 2, NextWindowYPosition, windowWidth / 2,
-                           secondRowHeight, flags);
+  ParameterGUI::beginPanel("    LFO CONTROLS", windowWidth / 2, NextWindowYPosition,
+                           windowWidth / 2, secondRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
@@ -815,8 +814,8 @@ void ecInterface::onDraw(Graphics &g) {
     }
     // Draw Scan Display ------------------------------------------------
     ImGui::PushFont(titleFont);
-    ParameterGUI::beginPanel("    SCAN DISPLAY", 0, NextWindowYPosition, windowWidth, graphHeight / 3,
-                             graphFlags);
+    ParameterGUI::beginPanel("    SCAN DISPLAY", 0, NextWindowYPosition, windowWidth,
+                             graphHeight / 3, graphFlags);
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     if (granulator.getNumberOfAudioFiles() != 0) {

@@ -20,7 +20,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd "$Dir"
 
 VERSION="$1""-1"
-RELEASENAME="EmissionControl2_""$VERSION""_amd64"
+RELEASENAME="emissioncontrol2-""$VERSION""-amd64"
 BUILDLOCATION=$(cd ../deployment && pwd)
 
 echo "Packaging $RELEASENAME..."
@@ -30,60 +30,95 @@ echo "Packaging $RELEASENAME..."
 BUILDDIR="../deployment/Linux/$RELEASENAME"
 
 mkdir -p "$BUILDDIR/DEBIAN"
-mkdir -p "$BUILDDIR/usr/local/bin"
-mkdir -p "$BUILDDIR/usr/local/share/applications"
-mkdir -p "$BUILDDIR/usr/local/share/EmissionControl2/"
-mkdir -p "$BUILDDIR/usr/share/pixmaps"
-mkdir -p "$BUILDDIR/etc/EmissionControl2"
-mkdir -p "$BUILDDIR/usr/local/share/fonts/EmissionControl2"
+mkdir -p "$BUILDDIR/usr/bin"
+mkdir -p "$BUILDDIR/usr/share/doc/emissioncontrol2/"
+mkdir -p "$BUILDDIR/usr/share/applications/"
+mkdir -p "$BUILDDIR/usr/share/emissioncontrol2/"
+mkdir -p "$BUILDDIR/usr/share/pixmaps/"
 
 # copy necessary files over
 
 cd "$Dir"
 
-cp -r "bin/Resources/samples" "$BUILDDIR/usr/local/share/EmissionControl2/"
+cp -r "bin/Resources/." "$BUILDDIR/usr/share/emissioncontrol2/"
 
-cp "bin/EmissionControl2" "$BUILDDIR/usr/local/bin"
+objcopy --strip-debug --strip-unneeded bin/EmissionControl2 "$BUILDDIR/usr/bin/emissioncontrol2"
 
-cp "../externalResources/Icon/EmissionControl2.png" "$BUILDDIR/usr/share/pixmaps"
+cp "../externalResources/Icon/EmissionControl2.png" "$BUILDDIR/usr/share/pixmaps/emissioncontrol2.png"
 
-cp "bin/Resources/Fonts/Roboto-Medium.ttf" "$BUILDDIR/usr/local/share/fonts/EmissionControl2"
+cp ../docs/EmissionControl2-Manual.pdf "$BUILDDIR/usr/share/doc/emissioncontrol2/"
 
-cp "bin/Resources/Fonts/ferrari.ttf" "$BUILDDIR/usr/local/share/fonts/EmissionControl2"
-
-# Make desktop file
-
-rm "$BUILDDIR/usr/local/share/applications/Emission Control 2.desktop"
+# Make .desktop file
 echo "[Desktop Entry]
-Name=Emission Control 2
-Comment=Launch Emission Control 2
-Exec=EmissionControl2
-Icon=EmissionControl2.png
+Name=EmissionControl2
+Comment=Launch EmissionControl2
+Exec=emissioncontrol2
+Icon=/usr/share/pixmaps/emissioncontrol2.png
 Terminal=false
 Type=Application
-Categories=Music;Synthesis;Sound;Granular;
-Name[en_US]=Emission Control 2" >>"$BUILDDIR/usr/local/share/applications/Emission Control 2.desktop"
+Categories=Audio;Music;
+Name[en_US]=EmissionControl2" >>"$BUILDDIR/usr/share/applications/EmissionControl2.desktop"
 
 # make Debian control file
-rm "$BUILDDIR/DEBIAN/control"
-echo "Package: EmissionControl2
-Version: $VERSION
-Maintainer: Jack Kilgore <jkilgore@ucsb.edu>, Rodney DuPlessis <rodney@rodneyduplessis.com>
+echo "Package: emissioncontrol2
 Architecture: amd64
-Depends: libsndfile1
-Homepage: https://github.com/jackkilgore/EmissionControl2
-Description: An advanced granular synthesizer designed by Curtis Roads, Jack Kilgore, and Rodney DuPlessis (2020). Based on Emission Control by Curtis Roads and David Thall (2004-2008)." >>"$BUILDDIR/DEBIAN/control"
+Section: sound
+Priority: optional
+Version:$VERSION
+Maintainer:Rodney DuPlessis <rodney@rodneyduplessis.com>
+Depends:libsndfile1, libc6
+Homepage:https://github.com/EmissionControl2/EmissionControl2
+Description:This package provides EmissionControl2, an advanced granular synthesizer.
+ EmissionControl2 was designed by Curtis Roads, Jack Kilgore, and Rodney DuPlessis (2020).
+ Based on Emission Control by Curtis Roads and David Thall (2004-2008)." >>"$BUILDDIR/DEBIAN/control"
 
+# make copyright file
+echo "Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: EmissionControl2
+Source: https://github.com/EmissionControl2/EmissionControl2
+
+Files: *
+Copyright: 2020 Curtis Roads <clangtint@gmail.com>
+   2020 Rodney DuPlessis <rodney@rodneyduplessis.com>
+   2020 Jack Kilgore <jkilgore@ucsb.edu>
+License: GPL-3+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 3 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 3 can be found in the file
+ '/usr/share/common-licenses/GPL-3'" >>"$BUILDDIR/usr/share/doc/emissioncontrol2/copyright"
+DATE="$(date +'%a, %d %b %Y %H:%M:%S %Z')"
+echo "emissioncontrol2 ($VERSION) stable; urgency=high
+  * Initial Release
+ -- Rodney DuPlessis <rodney@rodneyduplessis.com>  $DATE" >>"$BUILDDIR/usr/share/doc/emissioncontrol2/changelog.Debian"
+gzip -9 -n "$BUILDDIR/usr/share/doc/emissioncontrol2/changelog.Debian"
 echo "Packaging .deb at $BUILDLOCATION..."
 
 # package .deb
 cd ../deployment/Linux
-dpkg -b "$RELEASENAME" "$RELEASENAME.deb"
+fakeroot dpkg -b "$RELEASENAME" "$RELEASENAME.deb"
 
+# add manual and zip it up
 cp ../../docs/EmissionControl2-Manual.pdf .
 
 zip $RELEASENAME.zip "$RELEASENAME.deb" EmissionControl2-Manual.pdf
 
-rm -rf "$RELEASENAME" "$RELEASENAME.deb" EmissionControl2-Manual.pdf
+# cleanup
+# rm -rf "$RELEASENAME" "$RELEASENAME.deb" EmissionControl2-Manual.pdf
 
 echo "Packaging Complete!"
