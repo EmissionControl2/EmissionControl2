@@ -6,16 +6,24 @@ elif [ $result == "EmissionControl2" ]; then
   cd ecSource/
 fi
 
+THREADS=$1
+if [[ "$THREADS" == "" ]]; then
+  echo "
+   NOTE: you can append '-j#', replacing # with your CPU's number of cores +1, to compile faster.
+   
+   Example: './scripts/run.sh -j5' (for a 4-core processor)
+   "
+fi
 
 (
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake --build ./build/release -j 5
+    cmake --build ./build/release $THREADS
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     chmod 644 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
-    cmake --build ./build/release -j 5
+    cmake --build ./build/release $THREADS
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
     echo "BUILD WINDOWS TODO"
-    cmake --build ./build/release -j 5
+    cmake --build ./build/release $THREADS
   fi
 )
 result=$?
@@ -24,7 +32,7 @@ if [ ${result} == 0 ]; then
   cd bin
 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    ./EmissionControl2 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=0
+    ./EmissionControl2 -DRTAUDIO_API_JACK=1 -DRTAUDIO_API_ALSA=1 -DRTAUDIO_API_PULSE=1 -DRTMIDI_API_JACK=1
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     TERM=${1:-DEFAULT}
     chmod 444 EmissionControl2.app/Contents/Resources/libsndfile/*
