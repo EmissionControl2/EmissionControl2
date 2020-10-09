@@ -60,15 +60,9 @@ To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.s
 
 `./scripts/build.sh`
 
-- run packaging script:
+- run install script:
 
-`./scripts/packageDEB.sh <version>` (you have to provide a version number)
-
-- This should put a .deb file in EmissionControl2/deployment. The deb package is necessary at this stage because it will put all the resources in the correct place on your system.
-  
-- install the .deb either with your preferred gui app installer or by running: 
-
-`dpkg -i <path-to-the-deb>`
+`./scripts/linux_install.sh` (this will put the binary in /usr/bin and set up resources in the paths where EC2 expects them to be)
 
 
 ### OS X
