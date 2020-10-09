@@ -817,8 +817,8 @@ void ecInterface::onDraw(Graphics &g) {
     ParameterGUI::beginPanel("    SCAN DISPLAY", 0, NextWindowYPosition, windowWidth,
                              graphHeight / 3, graphFlags);
     ImGui::PopFont();
-    ImGui::PushFont(bodyFont);
     if (granulator.getNumberOfAudioFiles() != 0) {
+      ImGui::PushFont(bodyFont);
       float plotWidth = ImGui::GetContentRegionAvail().x;
       float plotHeight = ImGui::GetContentRegionAvail().y;
       ImVec2 p = ImGui::GetCursorScreenPos();
@@ -896,7 +896,6 @@ void ecInterface::onDraw(Graphics &g) {
                           ImVec2(p.x + (temp_line_val * plotWidth), p.y + plotHeight), *ECred,
                           2.0f);
       }
-
       ImGui::PopFont();
     }
     NextWindowYPosition += graphHeight / 3;
