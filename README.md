@@ -38,31 +38,40 @@ To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.s
 ## Building
 ### Debian
 
-- This project uses cmake to build so if you don't have cmake then install it (Minimum version: 3.10) and make sure your c and c++ compilers are defined in your environment.
+- This project uses cmake to build so if you don't have cmake then install it (Minimum version: 3.13) and make sure your c and c++ compilers are defined in your environment.
 
 - Run the following in a terminal to install the necessary libraries for building:
 
 `sudo apt install libgtk-3-dev libasound2-dev libsndfile1-dev libfftw3-dev libjack-dev`
  
-- git clone the repository 
-
+- git clone the repository and run some the scripts that automate the configure/build/install process.
 `git clone https://github.com/jackkilgore/EmissionControl2.git`
-
-- cd into EmissionControl2/ecSource
 
 `cd EmissionControl2/ecSource`
 
-- run configure script:
-
 `./scripts/configure.sh`
-
-- run build script:
 
 `./scripts/build.sh`
 
-- run install script:
+`sudo ./scripts/install_linux.sh` (this will put the binary in /usr/bin and set up resources in the paths where EC2 expects them to be)
 
-`./scripts/linux_install.sh` (this will put the binary in /usr/bin and set up resources in the paths where EC2 expects them to be)
+To undo the files installed with install_linux.sh script, I've included the `scripts/uninstall_linux.sh` script as well.
+
+### Arch Linux
+
+- Must have cmake (3.13 or later), git, and base-devel packages installed.
+
+`git clone https://github.com/jackkilgore/EmissionControl2.git`
+
+`cd EmissionControl2/ecSource`
+
+`./scripts/configure.sh`
+
+`./scripts/build.sh`
+
+`sudo ./scripts/install_linux.sh` (this will put the binary in /usr/bin and set up resources in the paths where EC2 expects them to be)
+
+To undo the files installed with install_linux.sh script, I've included the `scripts/uninstall_linux.sh` script as well.
 
 
 ### OS X
