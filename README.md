@@ -45,7 +45,8 @@ To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.s
 `sudo apt install libgtk-3-dev libasound2-dev libsndfile1-dev libfftw3-dev libjack-dev`
  
 - git clone the repository and run some the scripts that automate the configure/build/install process.
-`git clone https://github.com/jackkilgore/EmissionControl2.git`
+
+`git clone https://github.com/EmissionControl2/EmissionControl2.git`
 
 `cd EmissionControl2/ecSource`
 
@@ -61,7 +62,7 @@ To undo the files installed with install_linux.sh script, I've included the `scr
 
 - Must have cmake (3.13 or later), git, and base-devel packages installed.
 
-`git clone https://github.com/jackkilgore/EmissionControl2.git`
+`git clone https://github.com/EmissionControl2/EmissionControl2.git`
 
 `cd EmissionControl2/ecSource`
 
@@ -79,7 +80,7 @@ You must have cmake installed (version 3.10 or later), and Xcode (hopefully we c
 
 - First, clone the repo:
 
-`git clone https://github.com/jackkilgore/EmissionControl2.git`
+`git clone https://github.com/EmissionControl2/EmissionControl2.git`
 
 - cd into EmissionControl2/ecSource
 
