@@ -142,29 +142,29 @@ void ecInterface::onCreate() {
 
 #ifdef __APPLE__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/ferrari.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f);
 #endif
 
 #ifdef __linux__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/Fonts/Roboto-Medium.ttf", 16.0f);
+    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/Fonts/Roboto-Medium.ttf", 20.0f);
+    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 20.0f);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/Fonts/ferrari.ttf", 16.0f);
+    "/usr/share/emissioncontrol2/fonts/ferrari.ttf", 16.0f);
 #endif
 
 #ifdef _WIN32
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/Fonts/ferrari.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f);
 #endif
 
   currentPresetMap = mPresets->readPresetMap("default");

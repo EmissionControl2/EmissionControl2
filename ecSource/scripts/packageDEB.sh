@@ -44,7 +44,7 @@ cp -r "bin/Resources/." "$BUILDDIR/usr/share/emissioncontrol2/"
 
 objcopy --strip-debug --strip-unneeded bin/EmissionControl2 "$BUILDDIR/usr/bin/emissioncontrol2"
 
-cp "../externalResources/Icon/EmissionControl2.png" "$BUILDDIR/usr/share/pixmaps/emissioncontrol2.png"
+cp "../externalResources/icon/EmissionControl2.png" "$BUILDDIR/usr/share/pixmaps/emissioncontrol2.png"
 
 cp ../docs/EmissionControl2-Manual.pdf "$BUILDDIR/usr/share/doc/emissioncontrol2/"
 

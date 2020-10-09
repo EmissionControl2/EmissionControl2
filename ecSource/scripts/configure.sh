@@ -24,7 +24,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
     mkdir -p ./bin
     cd ./bin
     mkdir -p ./Resources
-    cp -r ../../externalResources/Fonts ./Resources
+    cp -r ../../externalResources/fonts ./Resources
     cp -r ../../externalResources/samples ./Resources
   fi
 )
@@ -55,7 +55,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
       # make config=release_x64
       cd xcode4
       xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
-    elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then 
+    elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
       echo "BUILD NFD WINDOWS TODO"
     fi
   fi
@@ -82,7 +82,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   mkdir -p debug
   cd debug
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../.
+    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 ../..
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
