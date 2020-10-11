@@ -405,7 +405,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("MIDI Devices", &isMIDIDevicesOpen)) {
-    ImGui::Text(("Select Up to " + std::to_string(consts::MAX_MIDI_IN) + " MIDI Inputs:").c_str());
+    ImGui::Text("Select Up to %s MIDI Inputs:", std::to_string(consts::MAX_MIDI_IN).c_str());
     if (midiIn[0].getPortCount() != SelectedMIDIDevices.size()) {
       SelectedMIDIDevices.resize(midiIn[0].getPortCount());
     }

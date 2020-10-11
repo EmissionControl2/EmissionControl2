@@ -488,7 +488,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   else if (mSliderType == consts::MOD || mSliderType == consts::INT_MOD)
     ImGui::Text("");
   else if (mSliderType == consts::PARAM || mSliderType == consts::INT_PARAM)
-    ImGui::Text(getDisplayName().c_str());
+    ImGui::Text("%s", getDisplayName().c_str());
 
   // A bit hacky, but...you know, ok.
   // If last parameter, allow readyToTrig to be false.
