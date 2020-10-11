@@ -746,7 +746,7 @@ void ecInterface::onDraw(Graphics &g) {
                            secondRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut(), soundOutput);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut() <= 1 ? 1 : 2, soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
 
