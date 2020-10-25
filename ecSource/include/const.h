@@ -62,7 +62,7 @@ const std::string DEFAULT_AUDIO_DEVICE_KEY = "DEFAULT_AUDIO_DEVICE";
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
-const int AUDIO_OUTS = 2;
+const int MAX_AUDIO_OUTS = 2;
 const int DEVICE_NUM = -1;
 const bool LIGHT_MODE = false;
 const float FONT_SCALE = 1.0;

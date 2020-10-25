@@ -278,6 +278,7 @@ class ecSynth : public al::SynthVoice {
   voiceScheduler grainScheduler; /* Schedule grains */
   std::vector<std::string> soundClipFileName;
 
+  std::array<unsigned int, consts::MAX_AUDIO_OUTS> AudioChanIndex;
   int controlRateCounter = 0;
   int mActiveVoices = 0;
   int *mPActiveVoices = nullptr;

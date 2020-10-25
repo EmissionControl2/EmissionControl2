@@ -107,11 +107,8 @@ void ecInterface::onInit() {
     createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
   initMIDI();
 
-  gam::sampleRate(audioIO().framesPerSecond());
-  granulator.initialize(&audioIO());
-  audioIO().append(mRecorder);
-  audioIO().append(mHardClip);
   audioIO().channelsIn(0);
+  audioIO().channelsOut(consts::MAX_AUDIO_OUTS);
   audioIO().setStreamName("EmissionControl2");
   auto a_d = AudioDevice(currentAudioDevice, AudioDevice::OUTPUT);
   if (!a_d.valid()) {
@@ -119,6 +116,11 @@ void ecInterface::onInit() {
     currentAudioDevice = AudioDevice::defaultOutput().name();
   } else
     audioIO().deviceOut(a_d);
+  gam::sampleRate(audioIO().framesPerSecond());
+  granulator.initialize(&audioIO());
+  audioIO().append(mRecorder);
+  audioIO().append(mHardClip);
+
   audioIO().print();
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
@@ -575,7 +577,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 6)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Audio Settings", &audioOpen)) {
-    drawAudioIO(&audioIO(), displayIO);
+    drawAudioIO(&audioIO());
     ImGui::EndPopup();
   }
 
@@ -746,7 +748,8 @@ void ecInterface::onDraw(Graphics &g) {
                            secondRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut() <= 1 ? 1 : 2, soundOutput);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut() <= 1 ? 1 : 2,
+                     soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
 
@@ -1177,11 +1180,13 @@ void ecInterface::unlinkParamAndMIDI(MIDIKey &paramKey) {
   if (found) ActiveMIDI.erase(ActiveMIDI.begin() + index);
 }
 
-void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
+void ecInterface::drawAudioIO(AudioIO *io) {
   struct AudioIOState {
     int currentSr = 1;
     int currentBufSize = 3;
     int currentDevice = 0;
+    int currentOut[consts::MAX_AUDIO_OUTS] = {0, 1};
+    int currentMaxOut;
     std::vector<std::string> devices;
   };
   auto updateOutDevices = [&](AudioIOState &state) {
@@ -1194,6 +1199,7 @@ void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
       state.devices.push_back(AudioDevice(i).name());
       if (currentAudioDevice == AudioDevice(i).name()) {
         state.currentDevice = dev_out_index;
+        state.currentMaxOut = AudioDevice(i).channelsOutMax() - 1;
       }
       dev_out_index++;
     }
@@ -1226,7 +1232,25 @@ void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
     if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
                      static_cast<void *>(&state.devices), state.devices.size())) {
+      state.currentMaxOut =
+        AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT).channelsOutMax() -
+        1;
     }
+    std::string chan_label =
+      "Select Outs Up To Channel " + std::to_string(state.currentMaxOut) + " | ";
+    ImGui::Text(chan_label.c_str(), "%s");
+    ImGui::SameLine();
+    ImGui::Checkbox("Mono/Stereo", &isStereo);
+    if (isStereo) {
+      ImGui::PushItemWidth(100 * fontScale);
+      ImGui::DragInt2("", state.currentOut, 1.0f, 0, state.currentMaxOut, "%d", 1 << 4);
+
+    } else {
+      ImGui::PushItemWidth(50 * fontScale);
+      ImGui::DragInt("", state.currentOut, 1.0f, 0, state.currentMaxOut, "%d", 1 << 4);
+    }
+    ImGui::PopItemWidth();
+
     std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
     ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
                  static_cast<void *>(&samplingRates), samplingRates.size());
@@ -1337,12 +1361,14 @@ void ecInterface::setGUIParams() {
   ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, light ? (ImVec4)ImColor(0, 0, 0, 150)
-                                                      : (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(
+    ImGuiCol_PlotHistogram,
+    light ? (ImVec4)ImColor(0, 0, 0, 150) : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
-  ImGui::PushStyleColor(ImGuiCol_CheckMark, light ? (ImVec4)ImColor(0, 0, 0, 150)
-                                                  : (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(
+    ImGuiCol_CheckMark,
+    light ? (ImVec4)ImColor(0, 0, 0, 150) : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
@@ -1690,7 +1716,8 @@ void ecInterface::setSoundOutputPath(std::string sound_output_path) {
 void ecInterface::setAudioSettings(float sample_rate) {
   globalSamplingRate = sample_rate;
 
-  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
+  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS,
+                 consts::DEVICE_NUM);
   granulator.setGlobalSamplingRate(sample_rate);
 }
 

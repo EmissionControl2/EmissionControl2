@@ -100,7 +100,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   bool isFullScreen, isFirstLaunch;
   std::string currentAudioDevice;
 
-  bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
+  bool noSoundFiles, light, isPaused = false, writeSampleRate = false, isStereo = false;
   float background = 0.21;
   ecSynth granulator;
   std::unique_ptr<al::PresetHandler> mPresets;
@@ -279,7 +279,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   ImColor *Shade3;
   ImColor *Text;
 
-  void drawAudioIO(al::AudioIO *io, bool trig);
+  void drawAudioIO(al::AudioIO *io);
 
   void setGUIParams();
 

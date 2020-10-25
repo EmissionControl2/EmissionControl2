@@ -41,7 +41,7 @@ void ecSynth::setIO(al::AudioIOData *io) {
 
 void ecSynth::initialize(al::AudioIOData *io) {
   initParameters();
-
+  std::cout << io->channelsOut() << std::endl;
   mPrevSR = mGlobalSamplingRate;
   grainScheduler.setSamplingRate(io->fps());
   mGlobalSamplingRate = io->fps();
