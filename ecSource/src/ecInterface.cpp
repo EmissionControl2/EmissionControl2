@@ -79,6 +79,7 @@ void ecInterface::onInit() {
   setFirstLaunch(config.at(consts::IS_FIRST_LAUNCH_KEY));
   setAudioDevice(config.at(consts::DEFAULT_AUDIO_DEVICE_KEY));
   setInitFullscreen(false);
+  granulator.setOutChannels(1, 16);
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
@@ -108,7 +109,7 @@ void ecInterface::onInit() {
   initMIDI();
 
   audioIO().channelsIn(0);
-  audioIO().channelsOut(consts::MAX_AUDIO_OUTS);
+  // audioIO().channelsOut(consts::MAX_AUDIO_OUTS);
   audioIO().setStreamName("EmissionControl2");
   auto a_d = AudioDevice(currentAudioDevice, AudioDevice::OUTPUT);
   if (!a_d.valid()) {
