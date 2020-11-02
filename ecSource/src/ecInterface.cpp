@@ -1185,7 +1185,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     int currentSr = 1;
     int currentBufSize = 3;
     int currentDevice = 0;
-    int currentOut[consts::MAX_AUDIO_OUTS] = {0, 1};
+    int currentOut = 1;
     int currentMaxOut;
     std::vector<std::string> devices;
   };
@@ -1199,7 +1199,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       state.devices.push_back(AudioDevice(i).name());
       if (currentAudioDevice == AudioDevice(i).name()) {
         state.currentDevice = dev_out_index;
-        state.currentMaxOut = AudioDevice(i).channelsOutMax() - 1;
+        state.currentMaxOut = AudioDevice(i).channelsOutMax();
       }
       dev_out_index++;
     }
@@ -1233,22 +1233,31 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
                      static_cast<void *>(&state.devices), state.devices.size())) {
       state.currentMaxOut =
-        AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT).channelsOutMax() -
-        1;
+        AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT).channelsOutMax();
     }
-    std::string chan_label =
-      "Select Outs Up To Channel " + std::to_string(state.currentMaxOut) + " | ";
+    std::string chan_label = "Select Outs: (Up to " + std::to_string(state.currentMaxOut) + " )";
     ImGui::Text(chan_label.c_str(), "%s");
-    ImGui::SameLine();
-    ImGui::Checkbox("Mono/Stereo", &isStereo);
-    if (isStereo) {
-      ImGui::PushItemWidth(100 * fontScale);
-      ImGui::DragInt2("", state.currentOut, 1.0f, 0, state.currentMaxOut, "%d", 1 << 4);
+    // ImGui::SameLine();
+    // ImGui::Checkbox("Mono/Stereo", &isStereo);
+    ImGui::Indent(25 * fontScale);
+    ImGui::PushItemWidth(50 * fontScale);
+    ImGui::DragInt("Chan 1", &state.currentOut, 1.0f, 0, state.currentMaxOut - 1, "%d", 1 << 4);
 
-    } else {
-      ImGui::PushItemWidth(50 * fontScale);
-      ImGui::DragInt("", state.currentOut, 1.0f, 0, state.currentMaxOut, "%d", 1 << 4);
+    if (state.currentOut > state.currentMaxOut - 1) state.currentOut = state.currentMaxOut - 1;
+    if (state.currentOut < 1) state.currentOut = 1;
+
+    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    for (int i = 1; i < MAX_AUDIO_OUTS; i++) {
+      ImGui::SameLine();
+      int temp = state.currentOut + i;
+      std::string channel = "Chan " + std::to_string(i + 1);
+      ImGui::DragInt(channel.c_str(), &temp, 1.0f, 0, state.currentMaxOut, "%d", 1 << 4);
     }
+    ImGui::PopStyleVar();
+    ImGui::PopItemFlag();
+
+    ImGui::Unindent(25 * fontScale);
     ImGui::PopItemWidth();
 
     std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
@@ -1268,6 +1277,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       }
 
       granulator.resampleSoundFiles();
+      granulator.setOutChannels(state.currentOut, state.currentMaxOut);
 
       io->open();
       io->start();

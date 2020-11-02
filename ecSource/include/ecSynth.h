@@ -252,7 +252,6 @@ class ecSynth : public al::SynthVoice {
    */
   void copyActiveGrainIndicies(float *array, int *outSize, int maxSize);
 
-
   /**
    * @brief Simple hardclipping to prevent distorting the DAC.
    *        Applied to the left and right channels.
@@ -269,6 +268,20 @@ class ecSynth : public al::SynthVoice {
   }
 
   float getCurrentIndex() const { return mCurrentIndex; }
+
+  void setOutChannels(int lead_channel, int max_possible_channels) {
+    assert(lead_channel + (consts::MAX_AUDIO_OUTS - 1) < max_possible_channels);
+    AudioChanIndex[0] = lead_channel;
+    if (max_possible_channels == 1) {
+      for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
+        AudioChanIndex[0] = lead_channel;
+      }
+    } else {
+      for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
+        AudioChanIndex[i] = lead_channel + i;
+      }
+    }
+  }
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;
@@ -290,7 +303,7 @@ class ecSynth : public al::SynthVoice {
 
   /***localAudioThread variables***/
   float width;
-  float sample_0, sample_1; 
+  float sample_0, sample_1;
 
   /***mScanner***/
   util::line<double> mScanner;

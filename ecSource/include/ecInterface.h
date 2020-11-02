@@ -100,7 +100,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   bool isFullScreen, isFirstLaunch;
   std::string currentAudioDevice;
 
-  bool noSoundFiles, light, isPaused = false, writeSampleRate = false, isStereo = false;
+  bool noSoundFiles, light, isPaused = false, writeSampleRate = false, isStereo = true;
   float background = 0.21;
   ecSynth granulator;
   std::unique_ptr<al::PresetHandler> mPresets;
