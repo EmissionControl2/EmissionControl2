@@ -525,7 +525,6 @@ void Grain::initEffects(float sr) {
 }
 
 void Grain::configureGrain(grainParameters &list, float samplingRate) {
-  mOutLead = list.channel_out_lead;
   mPActiveVoices = list.activeVoices;
   this->source = list.source;
 
@@ -659,8 +658,8 @@ void Grain::onProcess(al::AudioIOData &io) {
       dec = sourceIndex - iSourceIndex;
       currentSample = before * (1 - dec) + after * dec;
       if (!bypassFilter) currentSample = filterSample(currentSample, cascadeFilter, 0);
-      io.out(mOutLead[0], io.frame()) += currentSample * envVal * mLeft;
-      io.out(mOutLead[1], io.frame()) += currentSample * envVal * mRight;
+      io.out(0, io.frame()) += currentSample * envVal * mLeft;
+      io.out(1, io.frame()) += currentSample * envVal * mRight;
 
     } else if (source->channels == 2) {
       before = source->data[iSourceIndex * 2];
@@ -668,14 +667,14 @@ void Grain::onProcess(al::AudioIOData &io) {
       dec = sourceIndex - iSourceIndex;
       currentSample = before * (1 - dec) + after * dec;
       if (!bypassFilter) currentSample = filterSample(currentSample, cascadeFilter, 0);
-      io.out(mOutLead[0], io.frame()) += currentSample * envVal * mLeft;
+      io.out(0, io.frame()) += currentSample * envVal * mLeft;
 
       before = source->get((iSourceIndex + 1) * 2);
       after = source->get((iSourceIndex + 1) * 2 + 2);
       dec = (sourceIndex + 1) - (iSourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
       if (!bypassFilter) currentSample = filterSample(currentSample, cascadeFilter, 0);
-      io.out(mOutLead[1], io.frame()) += currentSample * envVal * mRight;
+      io.out(1, io.frame()) += currentSample * envVal * mRight;
     }
     mSourceIndex = sourceIndex;
 

@@ -630,7 +630,6 @@ struct grainParameters {
   std::shared_ptr<util::buffer<float>> source;
   int *activeVoices;
   float mCurrentIndex;
-  std::array<unsigned int, consts::MAX_AUDIO_OUTS> &channel_out_lead;
 };
 
 /**
@@ -689,7 +688,6 @@ class Grain : public al::SynthVoice {
   float PAN_CONST = std::sqrt(2) / 2;
   int iSourceIndex;
   float mSamplingRate = consts::SAMPLE_RATE;
-  std::array<unsigned int, consts::MAX_AUDIO_OUTS> mOutLead;
 
   void configureIndex(const grainParameters &list);
 

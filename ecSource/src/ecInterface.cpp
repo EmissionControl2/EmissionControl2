@@ -1271,6 +1271,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT));
       currentAudioDevice = state.devices.at(state.currentDevice);
+      granulator.setOutChannels(state.currentOut, state.currentMaxOut);
       granulator.setIO(io);
       if (writeSampleRate) {
         jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
@@ -1278,7 +1279,6 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       }
 
       granulator.resampleSoundFiles();
-      granulator.setOutChannels(state.currentOut, state.currentMaxOut);
 
       io->open();
       io->start();
@@ -1633,6 +1633,9 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::DEFAULT_AUDIO_DEVICE_KEY) == config.end())
       config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
+      
+    if (config.find(consts::MIDI_PRESET_NAMES_KEY) == config.end())
+      config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();

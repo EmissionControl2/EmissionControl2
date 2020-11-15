@@ -19,7 +19,8 @@ void ecSynth::setIO(al::AudioIOData *io) {
   pleaseResetScanner = true;
   ControlRate.spu(mGlobalSamplingRate / consts::CR_EVERY_N_SAMPLES);
 
-  grainSynth.setVoiceMaxOutputChannels(io->channelsOut());
+  grainSynth.setChannelMap(
+    std::vector<size_t>(std::begin(AudioChanIndex), std::end(AudioChanIndex)));
 
   float min_grain_dur_ms = 2000 / mGlobalSamplingRate;
   ECParameters[GRAIN_DUR]->setAbsoluteMinMax(min_grain_dur_ms,
@@ -48,7 +49,8 @@ void ecSynth::initialize(al::AudioIOData *io) {
   mGlobalSamplingRate = io->fps();
   mScanner.setSamplingRate(mGlobalSamplingRate);
   ControlRate.spu(mGlobalSamplingRate / consts::CR_EVERY_N_SAMPLES);
-  grainSynth.setVoiceMaxOutputChannels(io->channelsOut());
+  grainSynth.setChannelMap(
+    std::vector<size_t>(std::begin(AudioChanIndex), std::end(AudioChanIndex)));
 
   float min_grain_dur_ms = 2000 / mGlobalSamplingRate;
   ECParameters[GRAIN_DUR]->setAbsoluteMinMax(min_grain_dur_ms,
@@ -203,24 +205,25 @@ void ecSynth::onProcess(al::AudioIOData &io) {
     if (grainScheduler.trigger()) {
       auto *voice = static_cast<Grain *>(grainSynth.getFreeVoice());
       if (voice) {
-        grainParameters list = {ECParameters[consts::PLAYBACK],
-                                ECModParameters[consts::PLAYBACK]->getWidthParam(),
-                                ECParameters[consts::FILTER_CENTER],
-                                ECModParameters[consts::FILTER_CENTER]->getWidthParam(),
-                                ECParameters[consts::RESONANCE],
-                                ECModParameters[consts::RESONANCE]->getWidthParam(),
-                                ECParameters[consts::GRAIN_DUR],
-                                ECModParameters[consts::GRAIN_DUR]->getWidthParam(),
-                                ECParameters[consts::ENVELOPE],
-                                ECModParameters[consts::ENVELOPE]->getWidthParam(),
-                                ECParameters[consts::PAN],
-                                ECModParameters[consts::PAN]->getWidthParam(),
-                                ECParameters[consts::AMPLITUDE],
-                                ECModParameters[consts::AMPLITUDE]->getWidthParam(),
-                                soundClip[mModClip],
-                                mPActiveVoices,
-                                mCurrentIndex,
-                                AudioChanIndex};
+        grainParameters list = {
+          ECParameters[consts::PLAYBACK],
+          ECModParameters[consts::PLAYBACK]->getWidthParam(),
+          ECParameters[consts::FILTER_CENTER],
+          ECModParameters[consts::FILTER_CENTER]->getWidthParam(),
+          ECParameters[consts::RESONANCE],
+          ECModParameters[consts::RESONANCE]->getWidthParam(),
+          ECParameters[consts::GRAIN_DUR],
+          ECModParameters[consts::GRAIN_DUR]->getWidthParam(),
+          ECParameters[consts::ENVELOPE],
+          ECModParameters[consts::ENVELOPE]->getWidthParam(),
+          ECParameters[consts::PAN],
+          ECModParameters[consts::PAN]->getWidthParam(),
+          ECParameters[consts::AMPLITUDE],
+          ECModParameters[consts::AMPLITUDE]->getWidthParam(),
+          soundClip[mModClip],
+          mPActiveVoices,
+          mCurrentIndex,
+        };
 
         voice->configureGrain(list, mGlobalSamplingRate);
 
