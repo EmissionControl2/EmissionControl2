@@ -314,6 +314,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setFirstLaunch(bool is_first_launch) { isFirstLaunch = is_first_launch; }
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
   void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
+  void setOutChannelsFailSafe(int lead_channel, int max_possible_channels);
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);

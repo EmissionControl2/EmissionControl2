@@ -59,7 +59,7 @@ const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
 const std::string FULLSCREEN_KEY = "FULLSCREEN";
 const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH";
 const std::string DEFAULT_AUDIO_DEVICE_KEY = "DEFAULT_AUDIO_DEVICE";
-const std::string DEFAULT_CHANNEL_MAP_KEY = "DEFAULT_CHANNEL_MAP";
+const std::string LEAD_CHANNEL_KEY = "LEAD_CHANNEL";
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
@@ -72,7 +72,7 @@ const float WINDOW_HEIGHT = 1080;
 const bool FULLSCREEN = false;
 const bool IS_FIRST_LAUNCH = true;
 const std::string DEFAULT_AUDIO_DEVICE = "";
-const std::array<unsigned int, MAX_AUDIO_OUTS> DEFAULT_CHANNEL_MAP;
+const size_t DEFAULT_LEAD_CHANNEL = 0;
 
 /**
  *  DEFAULT USER PATHS

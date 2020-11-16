@@ -79,7 +79,6 @@ void ecInterface::onInit() {
   setFirstLaunch(config.at(consts::IS_FIRST_LAUNCH_KEY));
   setAudioDevice(config.at(consts::DEFAULT_AUDIO_DEVICE_KEY));
   setInitFullscreen(false);
-  granulator.setOutChannels(1, 16);
 
 // Load in all files in at specified directory.
 // Set output directory for presets.
@@ -115,8 +114,11 @@ void ecInterface::onInit() {
   if (!a_d.valid()) {
     audioIO().deviceOut(-1);
     currentAudioDevice = AudioDevice::defaultOutput().name();
-  } else
+    granulator.setOutChannels(0, audioIO().channelsOutDevice());
+  } else {
     audioIO().deviceOut(a_d);
+    granulator.setOutChannels(config.at(consts::LEAD_CHANNEL_KEY), audioIO().channelsOutDevice());
+  }
   gam::sampleRate(audioIO().framesPerSecond());
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
@@ -1200,6 +1202,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       state.devices.push_back(AudioDevice(i).name());
       if (currentAudioDevice == AudioDevice(i).name()) {
         state.currentDevice = dev_out_index;
+        state.currentOut = granulator.getLeadChannel() + 1;
         state.currentMaxOut = AudioDevice(i).channelsOutMax();
       }
       dev_out_index++;
@@ -1271,11 +1274,12 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT));
       currentAudioDevice = state.devices.at(state.currentDevice);
-      granulator.setOutChannels(state.currentOut, state.currentMaxOut);
+      granulator.setOutChannels(state.currentOut - 1, state.currentMaxOut);
       granulator.setIO(io);
       if (writeSampleRate) {
         jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
         jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
+        jsonWriteToConfig(state.currentOut - 1, consts::LEAD_CHANNEL_KEY);
       }
 
       granulator.resampleSoundFiles();
@@ -1633,9 +1637,9 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::DEFAULT_AUDIO_DEVICE_KEY) == config.end())
       config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
-      
-    if (config.find(consts::MIDI_PRESET_NAMES_KEY) == config.end())
-      config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
+
+    if (config.find(consts::LEAD_CHANNEL_KEY) == config.end())
+      config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
 
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
@@ -1658,6 +1662,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::IS_FIRST_LAUNCH_KEY] = consts::IS_FIRST_LAUNCH;
 
     config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
+
+    config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
   }
 
   std::ofstream file((userPath + configFile).c_str());
@@ -1767,6 +1773,8 @@ void ecInterface::setWindowDimensions(float width, float height) {
   windowHeight = height;
   dimensions(width, height);
 }
+
+void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
 
 // MIDI Preset Jsons
 void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {

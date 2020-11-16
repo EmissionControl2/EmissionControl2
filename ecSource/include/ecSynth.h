@@ -269,16 +269,18 @@ class ecSynth : public al::SynthVoice {
 
   float getCurrentIndex() const { return mCurrentIndex; }
 
+  int getLeadChannel() const { return AudioChanIndex[0]; }
+  
   void setOutChannels(int lead_channel, int max_possible_channels) {
-    assert(lead_channel - 1 + (consts::MAX_AUDIO_OUTS - 1) < max_possible_channels);
-    AudioChanIndex[0] = lead_channel - 1;
+    assert(lead_channel + (consts::MAX_AUDIO_OUTS) < max_possible_channels);
+    AudioChanIndex[0] = lead_channel;
     if (max_possible_channels == 1) {
       for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
-        AudioChanIndex[i] = lead_channel - 1;
+        AudioChanIndex[i] = lead_channel;
       }
     } else {
       for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
-        AudioChanIndex[i] = lead_channel - 1 + i;
+        AudioChanIndex[i] = lead_channel + i;
       }
     }
   }
@@ -291,12 +293,12 @@ class ecSynth : public al::SynthVoice {
   voiceScheduler grainScheduler; /* Schedule grains */
   std::vector<std::string> soundClipFileName;
 
-  std::array<unsigned int, consts::MAX_AUDIO_OUTS> AudioChanIndex;
   int controlRateCounter = 0;
   int mActiveVoices = 0;
   int *mPActiveVoices = nullptr;
   gam::Domain ControlRate;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
+  std::array<unsigned int, consts::MAX_AUDIO_OUTS> AudioChanIndex;
 
   /**Accesing Audio Thread -- Scary :o **/
   std::mutex mVoicePassLock;
