@@ -22,6 +22,13 @@ Features include:
 - Code is open source and available at GitHub
 - Maximal "Grain Integrity" (tm)
 
+## Videos
+### Controlling EmissionControl2 (lecture tutorial)
+[![](docs/ControllingEmissionControl2_Screenshot.png)](https://vimeo.com/483296353)
+
+### What people are doing with it
+<a href="https://www.facebook.com/708680357/videos/10158420236745358/"><img src="docs/devineVideo_Screenshot.png" width="400" /></a>
+<a href="https://www.youtube.com/watch?v=dCS2G6ASHUc"><img src="docs/BartonVideo_Screenshot.png" width="400" /></a>
 
 ## Mailing Lists
 
