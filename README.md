@@ -2,7 +2,7 @@
 
 EmissionControl2 (EC2) is a new standalone interactive real-time application for granular synthesis and sound file granulation. It is available for OSX, Linux, and Windows. 
 
-#### Download the latest release for your operating system here: https://github.com/EmissionControl2/EmissionControl2/releases/latest
+### Download the latest release for your operating system here: https://github.com/EmissionControl2/EmissionControl2/releases/latest
 
 <br><br>
 ![](docs/EC2_lightmode.png "This is what EC2 looks like")
@@ -22,6 +22,13 @@ Features include:
 - Code is open source and available at GitHub
 - Maximal "Grain Integrity" (tm)
 
+## Videos
+### Controlling EmissionControl2 (lecture tutorial)
+[![](docs/ControllingEmissionControl2_Screenshot.png)](https://vimeo.com/483296353)
+
+### What people are doing with it
+<a href="https://www.facebook.com/708680357/videos/10158420236745358/"><img src="docs/devineVideo_Screenshot.png" width="400" /></a>
+<a href="https://www.youtube.com/watch?v=dCS2G6ASHUc"><img src="docs/BartonVideo_Screenshot.png" width="400" /></a>
 
 ## Mailing Lists
 
@@ -39,6 +46,8 @@ To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.s
 
 ## Building
 ### Debian
+
+- First, check the releases page to see if the pre-compiled installers work for you: https://github.com/EmissionControl2/EmissionControl2/releases/latest
 
 - This project uses cmake to build so if you don't have cmake then install it (Minimum version: 3.13) and make sure your c and c++ compilers are defined in your environment.
 
@@ -78,6 +87,9 @@ To undo the files installed with install_linux.sh script, I've included the `scr
 
 
 ### OS X
+
+- First, check the releases page to see if the pre-compiled installers work for you: https://github.com/EmissionControl2/EmissionControl2/releases/latest
+
 You must have cmake installed (version 3.10 or later), and Xcode (hopefully we can get rid of this dependency soon).
 
 - First, clone the repo:
@@ -97,4 +109,6 @@ You must have cmake installed (version 3.10 or later), and Xcode (hopefully we c
 `./scripts/build.sh`
 
 ### Windows
-Coming soon...
+- Check the releases page to see if the pre-compiled installer works for you: https://github.com/EmissionControl2/EmissionControl2/releases/latest
+
+- If you want to compile it from scratch, stay tuned. We will put the instructions up soon.
