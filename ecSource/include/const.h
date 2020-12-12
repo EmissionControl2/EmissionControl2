@@ -54,6 +54,7 @@ const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
 const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
+const std::string SAMPLE_PRESET_NAMES_KEY = "SAMPLE_PRESET_NAMES";
 const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
 const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
 const std::string FULLSCREEN_KEY = "FULLSCREEN";
@@ -79,13 +80,17 @@ const size_t DEFAULT_LEAD_CHANNEL = 0;
  */
 
 #ifdef __APPLE__
-const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2";
-const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "/presets/";
-const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_presets/";
-const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
+const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2/";
+const std::string ENV_PATH = PERSISTENT_DATA_PATH + "envs/";
+const std::string DEFAULT_ENV_PATH = ENV_PATH + "default/";
+const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "midi_presets/";
+const std::string DEFAULT_SAMPLE_PRESETS_PATH = PERSISTENT_DATA_PATH + "sample_presets/";
+const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
+
 #endif
 
 #ifdef __linux__

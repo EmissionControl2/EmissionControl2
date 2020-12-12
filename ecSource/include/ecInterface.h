@@ -103,6 +103,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   bool noSoundFiles, light, isPaused = false, writeSampleRate = false, isStereo = true;
   float background = 0.21;
   ecSynth granulator;
+  std::vector<std::string> SamplePaths;
   std::unique_ptr<al::PresetHandler> mPresets;
   std::map<int, std::string> currentPresetMap;
   al::OutputRecorder mRecorder;
@@ -113,11 +114,14 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::array<RtMidiIn, consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
-  char mCurrentPresetName[64] = "midi_preset";
+  char mCurrentMIDIPresetName[128] = "midi_preset";
+  char mCurrentSamplePresetName[128] = "sample_preset";
   bool allowMIDIPresetOverwrite = false;
+  bool allowSamplePresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
+  std::unordered_set<std::string> SamplePresetNames;
   std::vector<bool> SelectedMIDIDevices;
   int unlearnFlash = 0;
 
@@ -204,7 +208,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     "Copyright 2020 Curtis Roads, Jack Kilgore, Rodney Duplessis",
     "This program comes with absolutely no warranty.",
     "See the GNU General Public License, version 3 or later for details."};
-  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
+  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath,
+    samplePresetsPath;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
   nfdresult_t result;
@@ -296,7 +301,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   template <typename T>
   bool jsonWriteToConfig(T value, std::string key);
 
-  bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
+  bool jsonWriteMapToConfig(std::unordered_set<std::string> &presetNames, std::string key);
 
   /**
    * @brief Read json config file and write output path to soundOutput member
@@ -306,6 +311,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   json jsonReadConfig();
   void setMIDIPresetNames(json preset_names);
+  void setSamplePresetNames(json preset_names);
   void setSoundOutputPath(std::string sound_output_path);
   void setAudioSettings(float sample_rate);
   void setColorSchemeMode(bool is_light);
@@ -315,11 +321,16 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
   void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
   void setOutChannelsFailSafe(int lead_channel, int max_possible_channels);
+  void setCurrentEnv(std::string path_to_env);
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
+
+  void writeJSONSamplePreset(std::string name, bool allowOverwrite);
+  std::vector<std::string> loadJSONSamplePreset(std::string sample_preset_name);
+  void deleteJSONSamplePreset(std::string sample_preset_name);
 
   // make a new audioThumbnail when a new sound file is loaded.
   void createAudioThumbnail(float *soundFile, int lengthInSamples);

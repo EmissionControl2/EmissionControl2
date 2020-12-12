@@ -25,6 +25,7 @@ void ecInterface::onInit() {
   configFile = consts::DEFAULT_CONFIG_FILE;
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
+  samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
 
   execDir = util::getContentPath_OSX(execDir);
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
@@ -33,6 +34,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PRESETS_PATH);
   opener = "open ";
 #endif
 
@@ -71,6 +73,7 @@ void ecInterface::onInit() {
   initJsonConfig();
   json config = jsonReadConfig();
   setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
+  setSamplePresetNames(config.at(consts::SAMPLE_PRESET_NAMES_KEY));
   setSoundOutputPath(config.at(consts::SOUND_OUTPUT_PATH_KEY));
   setAudioSettings(config.at(consts::SAMPLE_RATE_KEY));
   setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
@@ -215,6 +218,10 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDIDeleteWindow = false;
   bool isMIDIDevicesWindow = false;
 
+  bool isSamplePresetWriteWindow = false;
+  bool isSamplePresetLoadWindow = false;
+  bool isSamplePresetDeleteWindow = false;
+
   al::imguiBeginFrame();
 
   ImGui::GetIO().FontGlobalScale = fontScale;
@@ -289,6 +296,106 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Samples")) {
+      if (ImGui::MenuItem("Save Sample Preset", "")) {
+         isSamplePresetWriteWindow = true;
+      }
+      if (ImGui::MenuItem("Load Sample Preset", "")) {
+        isSamplePresetLoadWindow = true;
+      }
+      if (ImGui::MenuItem("Delete Sample Preset", "")) {
+        isSamplePresetDeleteWindow = true;
+      }
+      ImGui::EndMenu();
+    }
+
+    // BEGIN WRITE SAMPLE PRESET
+    if (isSamplePresetWriteWindow) {
+      ImGui::OpenPopup("Save Sample Preset");
+    }
+    bool isSamplePresetWriteOpen = true;
+    bool isWriteJSON = false;
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Save Sample Preset", &isSamplePresetWriteOpen)) {
+      ImGui::InputText("Enter Preset Name", mCurrentSamplePresetName, 50,
+                       ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
+
+      if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+      ImGui::SameLine();
+
+      if (ImGui::Button("Save")) {
+        ImGui::CloseCurrentPopup();
+        isSamplePresetWriteOpen = false;
+        isWriteJSON = true;
+      }
+
+      ImGui::SameLine();
+
+      ImGui::Checkbox("Overwrite", &allowSamplePresetOverwrite);
+
+      ImGui::EndPopup();
+    }
+    if (!isSamplePresetWriteOpen && isWriteJSON) {
+      writeJSONSamplePreset(mCurrentSamplePresetName, allowSamplePresetOverwrite);
+      isWriteJSON = false;
+    }
+    // END WRITE SAMPLE PRESET
+
+    // BEGIN LOAD SAMPLE PRESET
+    if (isSamplePresetLoadWindow) {
+      ImGui::OpenPopup("Load Sample Preset");
+    }
+    // Sample Load Preset Window
+    bool isSampleLoadOpen = true;
+    bool isLoadJSON = false;
+    std::string sample_preset_name = "";
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Load Sample Preset", &isSampleLoadOpen)) {
+      for (auto iter = SamplePresetNames.begin(); iter != SamplePresetNames.end(); iter++) {
+        if (ImGui::Selectable(iter->c_str())) {
+          isSampleLoadOpen = false;
+          isLoadJSON = true;
+          sample_preset_name = *iter;
+        }
+      }
+      ImGui::EndPopup();
+    }
+    if (!isSampleLoadOpen && isLoadJSON) {
+      granulator.clearSoundFiles();
+      loadJSONSamplePreset(sample_preset_name);
+      isLoadJSON = false;
+    }
+    // END LOAD SAMPLE PRESET
+
+    // BEGIN DELETE SAMPLE PRESET
+    if (isSamplePresetDeleteWindow) {
+      ImGui::OpenPopup("Delete Sample Preset");
+    }
+    bool isSamplePresetDeleteOpen = true;
+    bool isDeleteJSON = false;
+    sample_preset_name = "";
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Delete Sample Preset", &isSamplePresetDeleteOpen)) {
+      for (auto iter = SamplePresetNames.begin(); iter != SamplePresetNames.end(); iter++) {
+        if (ImGui::Selectable(iter->c_str())) {
+          isSamplePresetDeleteOpen = false;
+          isDeleteJSON = true;
+          sample_preset_name = *iter;
+        }
+      }
+      ImGui::EndPopup();
+    }
+    if (!isSamplePresetDeleteOpen && isDeleteJSON) {
+      deleteJSONSamplePreset(sample_preset_name);
+      isDeleteJSON = false;
+    }
+    // END DELETE SAMPLE PRESET
+    // END SAMPLE PRESETS
 
     if (ImGui::BeginMenu("MIDI")) {
       if (ImGui::MenuItem("MIDI Devices", "")) {
@@ -530,7 +637,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
-    ImGui::InputText("Enter Preset Name", mCurrentPresetName, 50,
+    ImGui::InputText("Enter Preset Name", mCurrentMIDIPresetName, 50,
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
 
     if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
@@ -550,7 +657,7 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndPopup();
   }
   if (!isMIDIWriteOpen && isWriteJSON) {
-    writeJSONMIDIPreset(mCurrentPresetName, allowMIDIPresetOverwrite);
+    writeJSONMIDIPreset(mCurrentMIDIPresetName, allowMIDIPresetOverwrite);
     isWriteJSON = false;
   }
 
@@ -1376,14 +1483,12 @@ void ecInterface::setGUIParams() {
   ImGui::PushStyleColor(ImGuiCol_TitleBg, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgActive, (ImVec4)*Shade2);
   ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, (ImVec4)*Shade2);
-  ImGui::PushStyleColor(
-    ImGuiCol_PlotHistogram,
-    light ? (ImVec4)ImColor(0, 0, 0, 150) : (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(ImGuiCol_PlotHistogram, light ? (ImVec4)ImColor(0, 0, 0, 150)
+                                                      : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, (ImVec4)*ECgreen);
   ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)*Text);
-  ImGui::PushStyleColor(
-    ImGuiCol_CheckMark,
-    light ? (ImVec4)ImColor(0, 0, 0, 150) : (ImVec4)ImColor(255, 255, 255, 150));
+  ImGui::PushStyleColor(ImGuiCol_CheckMark, light ? (ImVec4)ImColor(0, 0, 0, 150)
+                                                  : (ImVec4)ImColor(255, 255, 255, 150));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 12));
@@ -1610,6 +1715,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::MIDI_PRESET_NAMES_KEY) == config.end())
       config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
+    if (config.find(consts::SAMPLE_PRESET_NAMES_KEY) == config.end())
+      config[consts::SAMPLE_PRESET_NAMES_KEY] = json::array();
+
     if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
       config[consts::SOUND_OUTPUT_PATH_KEY] =
         al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
@@ -1643,6 +1751,8 @@ bool ecInterface::initJsonConfig() {
 
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
+
+    config[consts::SAMPLE_PRESET_NAMES_KEY] = json::array();
 
     config[consts::SOUND_OUTPUT_PATH_KEY] =
       al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
@@ -1692,7 +1802,8 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
   }
 }
 
-bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames) {
+bool ecInterface::jsonWriteMapToConfig(std::unordered_set<std::string> &presetNames,
+                                       std::string key) {
   json config;
 
   std::ifstream ifs(userPath + configFile);
@@ -1702,7 +1813,7 @@ bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &pres
   for (auto iter = presetNames.begin(); iter != presetNames.end(); iter++) {
     preset_names.push_back(*iter);
   }
-  config[consts::MIDI_PRESET_NAMES_KEY] = preset_names;
+  config[key] = preset_names;
 
   std::ofstream file((userPath + configFile).c_str());
   if (file.is_open()) {
@@ -1726,6 +1837,12 @@ json ecInterface::jsonReadConfig() {
 void ecInterface::setMIDIPresetNames(json preset_names) {
   for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
     MIDIPresetNames.insert(iter->get<std::string>());
+  }
+}
+
+void ecInterface::setSamplePresetNames(json preset_names) {
+  for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
+    SamplePresetNames.insert(iter->get<std::string>());
   }
 }
 
@@ -1774,7 +1891,15 @@ void ecInterface::setWindowDimensions(float width, float height) {
   dimensions(width, height);
 }
 
-void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
+// void ecInterface::setCurrentEnv(std::string path_to_env) {
+//   std::cout << path_to_env << std::endl;
+//   bool is_correct_location = al::File::exists(path_to_env);
+//   std::cout << "here\n" << is_correct_location << std::endl;
+//   if (is_correct_location)
+//     mCurrentEnv = path_to_env;
+//   else
+//     mCurrentEnv = consts::DEFAULT_ENV_PATH;
+// }
 
 // MIDI Preset Jsons
 void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
@@ -1789,7 +1914,7 @@ void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
   }
 
   MIDIPresetNames.insert(filename);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  jsonWriteMapToConfig(MIDIPresetNames, consts::MIDI_PRESET_NAMES_KEY);
   json midi_config = json::array();
 
   json temp;
@@ -1821,6 +1946,60 @@ void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
 
 void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
   MIDIPresetNames.erase(midi_preset_name);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  jsonWriteMapToConfig(MIDIPresetNames, consts::MIDI_PRESET_NAMES_KEY);
   std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
 }
+
+void ecInterface::writeJSONSamplePreset(std::string name, bool allowOverwrite) {
+  if (name == "") return;
+
+  std::string filename = name;
+  if (!allowOverwrite) {
+    int counter = 1;
+    while (File::exists(userPath + samplePresetsPath + filename + ".json") && counter < 9999) {
+      filename = name + "_" + std::to_string(counter++);
+    }
+  }
+
+  SamplePresetNames.insert(filename);
+  jsonWriteMapToConfig(SamplePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
+  json sample_config = json::array();
+
+  for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
+    sample_config.push_back(granulator.soundClipFileName[index]);
+  }
+
+  std::ofstream file((userPath + samplePresetsPath + filename + ".json").c_str());
+  if (file.is_open()) file << sample_config;
+}
+
+// JSON Sample Load
+std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_preset_name) {
+  std::ifstream ifs(userPath + samplePresetsPath + sample_preset_name + ".json");
+
+  json sample_config;
+
+  if (ifs.is_open())
+    sample_config = json::parse(ifs);
+  else
+    return {};
+
+  std::string temp_path;
+  std::vector<std::string> failed_loads;
+  for (int index = 0; index < sample_config.size(); index++) {
+    temp_path = al::File::conformPathToOS(sample_config[index]);
+    if (al::File::exists(temp_path)) {
+      granulator.loadSoundFileRT(sample_config[index]);
+    } else
+      failed_loads.push_back(temp_path);
+  }
+  return failed_loads;
+}
+
+void ecInterface::deleteJSONSamplePreset(std::string sample_preset_name) {
+  SamplePresetNames.erase(sample_preset_name);
+  jsonWriteMapToConfig(SamplePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
+  std::remove((userPath + samplePresetsPath + sample_preset_name + ".json").c_str());
+}
+
+void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
