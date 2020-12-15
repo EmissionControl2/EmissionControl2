@@ -107,8 +107,6 @@ void ecInterface::onInit() {
     createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
   initMIDI();
 
-  audioIO().channelsIn(0);
-  // audioIO().channelsOut(consts::MAX_AUDIO_OUTS);
   audioIO().setStreamName("EmissionControl2");
   auto a_d = AudioDevice(currentAudioDevice, AudioDevice::OUTPUT);
   if (!a_d.valid()) {
@@ -118,7 +116,10 @@ void ecInterface::onInit() {
   } else {
     audioIO().deviceOut(a_d);
     granulator.setOutChannels(config.at(consts::LEAD_CHANNEL_KEY), audioIO().channelsOutDevice());
+    // TODO, make sure only 2 channels are open corresponding to out channels
+    // audioIO().channelsOut({(int)config.at(consts::LEAD_CHANNEL_KEY),(int)config.at(consts::LEAD_CHANNEL_KEY) + 1});
   }
+  audioIO().channelsIn(0);
   gam::sampleRate(audioIO().framesPerSecond());
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
@@ -1773,8 +1774,6 @@ void ecInterface::setWindowDimensions(float width, float height) {
   windowHeight = height;
   dimensions(width, height);
 }
-
-void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
 
 // MIDI Preset Jsons
 void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
