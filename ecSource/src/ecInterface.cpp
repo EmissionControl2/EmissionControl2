@@ -110,8 +110,6 @@ void ecInterface::onInit() {
     createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
   initMIDI();
 
-  audioIO().channelsIn(0);
-  // audioIO().channelsOut(consts::MAX_AUDIO_OUTS);
   audioIO().setStreamName("EmissionControl2");
   auto a_d = AudioDevice(currentAudioDevice, AudioDevice::OUTPUT);
   if (!a_d.valid()) {
@@ -121,7 +119,11 @@ void ecInterface::onInit() {
   } else {
     audioIO().deviceOut(a_d);
     granulator.setOutChannels(config.at(consts::LEAD_CHANNEL_KEY), audioIO().channelsOutDevice());
+    // TODO, make sure only 2 channels are open corresponding to out channels
+    // audioIO().channelsOut({(int)config.at(consts::LEAD_CHANNEL_KEY),(int)config.at(consts::LEAD_CHANNEL_KEY)
+    // + 1});
   }
+  audioIO().channelsIn(0);
   gam::sampleRate(audioIO().framesPerSecond());
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
@@ -299,7 +301,7 @@ void ecInterface::onDraw(Graphics &g) {
 
     if (ImGui::BeginMenu("Samples")) {
       if (ImGui::MenuItem("Save Sample Preset", "")) {
-         isSamplePresetWriteWindow = true;
+        isSamplePresetWriteWindow = true;
       }
       if (ImGui::MenuItem("Load Sample Preset", "")) {
         isSamplePresetLoadWindow = true;
@@ -1993,6 +1995,8 @@ std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_pr
     } else
       failed_loads.push_back(temp_path);
   }
+  for (int i = 0; i < granulator.soundClip.size(); i++)
+    createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
   return failed_loads;
 }
 

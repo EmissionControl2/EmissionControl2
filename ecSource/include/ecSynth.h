@@ -273,13 +273,13 @@ class ecSynth : public al::SynthVoice {
   int getLeadChannel() const { return AudioChanIndex[0]; }
   
   void setOutChannels(int lead_channel, int max_possible_channels) {
-    assert(lead_channel + (consts::MAX_AUDIO_OUTS) < max_possible_channels);
     AudioChanIndex[0] = lead_channel;
     if (max_possible_channels == 1) {
       for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
         AudioChanIndex[i] = lead_channel;
       }
     } else {
+      assert(lead_channel + (consts::MAX_AUDIO_OUTS) < max_possible_channels);
       for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
         AudioChanIndex[i] = lead_channel + i;
       }
