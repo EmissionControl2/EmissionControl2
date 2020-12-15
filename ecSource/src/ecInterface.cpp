@@ -366,10 +366,24 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::EndPopup();
     }
+    
     if (!isSampleLoadOpen && isLoadJSON) {
-      granulator.clearSoundFiles();
-      loadJSONSamplePreset(sample_preset_name);
+      failed_paths = loadJSONSamplePreset(sample_preset_name);
       isLoadJSON = false;
+    }
+
+    if (failed_paths.size() != 0) {
+      ImGui::OpenPopup("Failed Paths");
+    }
+    if (ImGui::BeginPopupModal("Failed Paths",&plsGiveMeAnXImGui)) {
+      ImGui::Text("Sound Files Not Found:");
+      for (int index = 0; index < failed_paths.size(); index++) {
+        ImGui::Text("%s", failed_paths[index].c_str());
+      }
+      ImGui::EndPopup();
+    }
+    if(!plsGiveMeAnXImGui) {
+      failed_paths.clear();
     }
     // END LOAD SAMPLE PRESET
 
@@ -1986,17 +2000,30 @@ std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_pr
   else
     return {};
 
+  for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
+    if (std::find(sample_config.begin(), sample_config.end(),
+                  granulator.soundClipFileName[index]) == sample_config.end()) {
+      audioThumbnails.erase(audioThumbnails.begin() + index);
+      granulator.removeSoundFile(index);
+    }
+  }
   std::string temp_path;
   std::vector<std::string> failed_loads;
   for (int index = 0; index < sample_config.size(); index++) {
     temp_path = al::File::conformPathToOS(sample_config[index]);
+    if (std::find(granulator.soundClipFileName.begin(), granulator.soundClipFileName.end(),
+                  temp_path) != granulator.soundClipFileName.end()) {
+      continue;
+    }
     if (al::File::exists(temp_path)) {
       granulator.loadSoundFileRT(sample_config[index]);
-    } else
+      createAudioThumbnail(granulator.soundClip[granulator.soundClip.size() - 1]->data,
+                           granulator.soundClip[granulator.soundClip.size() - 1]->size);
+    } else {
       failed_loads.push_back(temp_path);
+    }
   }
-  for (int i = 0; i < granulator.soundClip.size(); i++)
-    createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
+
   return failed_loads;
 }
 
