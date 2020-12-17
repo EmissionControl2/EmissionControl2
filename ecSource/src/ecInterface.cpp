@@ -366,7 +366,7 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::EndPopup();
     }
-    
+
     if (!isSampleLoadOpen && isLoadJSON) {
       failed_paths = loadJSONSamplePreset(sample_preset_name);
       isLoadJSON = false;
@@ -375,14 +375,14 @@ void ecInterface::onDraw(Graphics &g) {
     if (failed_paths.size() != 0) {
       ImGui::OpenPopup("Failed Paths");
     }
-    if (ImGui::BeginPopupModal("Failed Paths",&plsGiveMeAnXImGui)) {
+    if (ImGui::BeginPopupModal("Failed Paths", &plsGiveMeAnXImGui)) {
       ImGui::Text("Sound Files Not Found:");
       for (int index = 0; index < failed_paths.size(); index++) {
         ImGui::Text("%s", failed_paths[index].c_str());
       }
       ImGui::EndPopup();
     }
-    if(!plsGiveMeAnXImGui) {
+    if (!plsGiveMeAnXImGui) {
       failed_paths.clear();
     }
     // END LOAD SAMPLE PRESET
@@ -1549,8 +1549,18 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
 
   int selection = presetHandler->getCurrentPresetIndex();
   std::string currentPresetName = presetHandler->getCurrentPresetName();
-  if (currentPresetName.length() == 0) currentPresetName = "none";
-  ImGui::Text("Current Preset: %s", currentPresetName.c_str());
+  // JACK KILGORE CHANGE, remove map from display
+  int delim_index = 0;
+  if (currentPresetName.length() == 0)
+    currentPresetName = "none";
+  else
+    delim_index = (state.currentBank + "-").size();
+  
+  if (currentPresetName.size() > delim_index &&
+      currentPresetName.substr(0, delim_index) == state.currentBank + "-")
+    ImGui::Text("Current Preset: %s", currentPresetName.substr(delim_index).c_str());
+  else
+    ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Text, light ? (ImVec4)*ECblue : (ImVec4)*ECgreen);
@@ -1576,7 +1586,11 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
           if (saveName.size() == 0) {
             saveName = name;
           }
-          presetHandler->storePreset(counter, saveName.c_str());
+          // JACK KILGORE CHANGE --
+          // OLD : resetHandler->storePreset(counter, saveName.c_str());
+          // NEW : Adds preset map name to stored preset to allow presets w/ the same name over
+          //       different maps.
+          presetHandler->storePreset(counter, (state.currentBank + "-" + saveName).c_str());
           selection = counter;
           state.storeButtonState = false;
           ImGui::PopStyleColor();
@@ -1684,6 +1698,10 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         file.close();
         state.newMap = false;
         stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();  // optimize
+        // JACK KILGORE CHANGE : when new map is made, automatically switch to it.
+        state.currentBank = state.newMapText;
+        presetHandler->setCurrentPresetMap(state.newMapText);
+        currentPresetMap = presetHandler->readPresetMap(state.newMapText);
       }
       ImGui::SameLine();
       if (ImGui::Button("Cancel")) {
