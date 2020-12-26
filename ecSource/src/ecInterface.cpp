@@ -734,6 +734,8 @@ void ecInterface::onDraw(Graphics &g) {
     // Set Dynamic Slider Text
     granulator.ECParameters[consts::SOUND_FILE]->setSliderText(
       granulator.getCurrentAudioFileName());
+  } else {
+     granulator.ECParameters[consts::SOUND_FILE]->setSliderText("No Sound Files");
   }
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    GRANULATION CONTROLS", 0, menuBarHeight, windowWidth / 2,
@@ -1925,16 +1927,6 @@ void ecInterface::setWindowDimensions(float width, float height) {
   dimensions(width, height);
 }
 
-// void ecInterface::setCurrentEnv(std::string path_to_env) {
-//   std::cout << path_to_env << std::endl;
-//   bool is_correct_location = al::File::exists(path_to_env);
-//   std::cout << "here\n" << is_correct_location << std::endl;
-//   if (is_correct_location)
-//     mCurrentEnv = path_to_env;
-//   else
-//     mCurrentEnv = consts::DEFAULT_ENV_PATH;
-// }
-
 // MIDI Preset Jsons
 void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
   if (name == "") return;
@@ -2018,7 +2010,6 @@ std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_pr
   else
     return {};
 
-  std::cout << "here\n";
   for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
     if (std::find(sample_config.begin(), sample_config.end(),
                   granulator.soundClipFileName[index]) == sample_config.end()) {
@@ -2042,7 +2033,6 @@ std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_pr
       failed_loads.push_back(temp_path);
     }
   }
-
   return failed_loads;
 }
 
