@@ -485,6 +485,8 @@ class ecParameter {
 
   bool isLog() const { return mIsLog; }
 
+  bool isIntVal() const { return mSliderType > 2 ;}
+
   /**
    * @brief Set the text to be displayed on the slider
    * Example "%i Hz"

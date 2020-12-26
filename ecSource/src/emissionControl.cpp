@@ -303,11 +303,9 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   float valueSliderf, valueLowf, valueHighf;
   int valueSlideri, valueLowi, valueHighi;
-  bool changed = false, isInt = false;
+  bool changed = false, isInt = isIntVal();
   ImGuiIO &io = ImGui::GetIO();
   ImGuiItemFlags slider_flags = NULL;
-
-  if (mSliderType > 2) isInt = true;
 
   // Draw left most range box.
   slider_flags = ImGuiSliderFlags_ClampOnInput;
