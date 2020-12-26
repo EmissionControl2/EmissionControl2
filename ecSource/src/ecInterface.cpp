@@ -48,11 +48,13 @@ void ecInterface::onInit() {
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
   midiPresetsPath = configPath + "/midi_presets";
+  samplePresetsPath = configPath + "/sample_presets";
 
   // create config directories if needed
   al::Dir::make(userPath + configPath + "/config");
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
+  al::Dir::make(userPath + samplePresetsPath);
   opener = "xdg-open ";
 #endif
 
@@ -60,13 +62,15 @@ void ecInterface::onInit() {
   configFile = consts::DEFAULT_CONFIG_FILE;
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
-
+  samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
+  
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PRESETS_PATH);
   opener = "start ";
 #endif
 
