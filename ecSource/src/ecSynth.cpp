@@ -340,9 +340,9 @@ bool ecSynth::loadInitSoundFiles(std::string directory) {
 bool ecSynth::removeSoundFile(int index) {
   if (mClipNum == 0) return false;
   soundClip.erase(soundClip.begin() + index);
-  soundClipFileName.erase(soundClipFileName.begin() + index);
-  mModClip == (mClipNum) ? mModClip-=1 : 
+  soundClipFileName.erase(soundClipFileName.begin() + index); 
   mClipNum--;
+  mModClip = (mModClip >= mClipNum) ? mClipNum - 1 : mModClip ;
   
   ECParameters[consts::SOUND_FILE]->mParameter->max(mClipNum);
   ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);

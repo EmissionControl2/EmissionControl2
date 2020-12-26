@@ -2018,6 +2018,7 @@ std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_pr
   else
     return {};
 
+  std::cout << "here\n";
   for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
     if (std::find(sample_config.begin(), sample_config.end(),
                   granulator.soundClipFileName[index]) == sample_config.end()) {
