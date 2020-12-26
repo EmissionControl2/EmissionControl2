@@ -96,6 +96,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
                           std::string directory = "", uint32_t bufferSize = 0);
 
  private:
+  std::mutex mLock;
   float windowWidth, windowHeight;
   bool isFullScreen, isFirstLaunch;
   bool plsGiveMeAnXImGui;
@@ -117,13 +118,13 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
   char mCurrentMIDIPresetName[128] = "midi_preset";
-  char mCurrentSamplePresetName[128] = "sample_preset";
+  char mCurrentSoundFilePresetName[128] = "sound_file_preset";
   bool allowMIDIPresetOverwrite = false;
-  bool allowSamplePresetOverwrite = false;
+  bool allowSoundFilePresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
-  std::unordered_set<std::string> SamplePresetNames;
+  std::unordered_set<std::string> SoundFilePresetNames;
   std::vector<bool> SelectedMIDIDevices;
   int unlearnFlash = 0;
 
@@ -313,7 +314,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   json jsonReadConfig();
   void setMIDIPresetNames(json preset_names);
-  void setSamplePresetNames(json preset_names);
+  void setSoundFilePresetNames(json preset_names);
   void setSoundOutputPath(std::string sound_output_path);
   void setAudioSettings(float sample_rate);
   void setColorSchemeMode(bool is_light);
@@ -330,9 +331,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
 
-  void writeJSONSamplePreset(std::string name, bool allowOverwrite);
-  std::vector<std::string> loadJSONSamplePreset(std::string sample_preset_name);
-  void deleteJSONSamplePreset(std::string sample_preset_name);
+  void writeJSONSoundFilePreset(std::string name, bool allowOverwrite);
+  std::vector<std::string> loadJSONSoundFilePreset(std::string sound_file_preset_name);
+  void deleteJSONSoundFilePreset(std::string sound_file_preset_name);
 
   // make a new audioThumbnail when a new sound file is loaded.
   void createAudioThumbnail(float *soundFile, int lengthInSamples);

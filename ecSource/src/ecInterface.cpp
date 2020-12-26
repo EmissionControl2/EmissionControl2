@@ -73,7 +73,7 @@ void ecInterface::onInit() {
   initJsonConfig();
   json config = jsonReadConfig();
   setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
-  setSamplePresetNames(config.at(consts::SAMPLE_PRESET_NAMES_KEY));
+  setSoundFilePresetNames(config.at(consts::SAMPLE_PRESET_NAMES_KEY));
   setSoundOutputPath(config.at(consts::SOUND_OUTPUT_PATH_KEY));
   setAudioSettings(config.at(consts::SAMPLE_RATE_KEY));
   setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
@@ -220,9 +220,9 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDIDeleteWindow = false;
   bool isMIDIDevicesWindow = false;
 
-  bool isSamplePresetWriteWindow = false;
-  bool isSamplePresetLoadWindow = false;
-  bool isSamplePresetDeleteWindow = false;
+  bool isSoundFilePresetWriteWindow = false;
+  bool isSoundFilePresetLoadWindow = false;
+  bool isSoundFilePresetDeleteWindow = false;
 
   al::imguiBeginFrame();
 
@@ -273,6 +273,10 @@ void ecInterface::onDraw(Graphics &g) {
           setSoundOutputPath(outPath);
         }
       }
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Sound Files")) {
       if (ImGui::MenuItem("Load Sound File", "")) {
         ImGui::Text("%s", currentFile.c_str());
 
@@ -296,32 +300,28 @@ void ecInterface::onDraw(Graphics &g) {
         audioThumbnails.erase(audioThumbnails.begin() + granulator.mModClip);
         granulator.removeCurrentSoundFile();
       }
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Samples")) {
-      if (ImGui::MenuItem("Save Sample Preset", "")) {
-        isSamplePresetWriteWindow = true;
+      if (ImGui::MenuItem("Save Sound File Preset", "")) {
+        isSoundFilePresetWriteWindow = true;
       }
-      if (ImGui::MenuItem("Load Sample Preset", "")) {
-        isSamplePresetLoadWindow = true;
+      if (ImGui::MenuItem("Load Sound File Preset", "")) {
+        isSoundFilePresetLoadWindow = true;
       }
-      if (ImGui::MenuItem("Delete Sample Preset", "")) {
-        isSamplePresetDeleteWindow = true;
+      if (ImGui::MenuItem("Delete Sound File Preset", "")) {
+        isSoundFilePresetDeleteWindow = true;
       }
       ImGui::EndMenu();
     }
 
-    // BEGIN WRITE SAMPLE PRESET
-    if (isSamplePresetWriteWindow) {
-      ImGui::OpenPopup("Save Sample Preset");
+    // BEGIN WRITE SOUND FILE PRESET
+    if (isSoundFilePresetWriteWindow) {
+      ImGui::OpenPopup("Save Sound File Preset");
     }
-    bool isSamplePresetWriteOpen = true;
+    bool isSoundFilePresetWriteOpen = true;
     bool isWriteJSON = false;
     ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                         ImVec2(windowWidth, windowHeight));
-    if (ImGui::BeginPopupModal("Save Sample Preset", &isSamplePresetWriteOpen)) {
-      ImGui::InputText("Enter Preset Name", mCurrentSamplePresetName, 50,
+    if (ImGui::BeginPopupModal("Save Sound File Preset", &isSoundFilePresetWriteOpen)) {
+      ImGui::InputText("Enter Preset Name", mCurrentSoundFilePresetName, 50,
                        ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
 
       if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
@@ -330,45 +330,45 @@ void ecInterface::onDraw(Graphics &g) {
 
       if (ImGui::Button("Save")) {
         ImGui::CloseCurrentPopup();
-        isSamplePresetWriteOpen = false;
+        isSoundFilePresetWriteOpen = false;
         isWriteJSON = true;
       }
 
       ImGui::SameLine();
 
-      ImGui::Checkbox("Overwrite", &allowSamplePresetOverwrite);
+      ImGui::Checkbox("Overwrite", &allowSoundFilePresetOverwrite);
 
       ImGui::EndPopup();
     }
-    if (!isSamplePresetWriteOpen && isWriteJSON) {
-      writeJSONSamplePreset(mCurrentSamplePresetName, allowSamplePresetOverwrite);
+    if (!isSoundFilePresetWriteOpen && isWriteJSON) {
+      writeJSONSoundFilePreset(mCurrentSoundFilePresetName, allowSoundFilePresetOverwrite);
       isWriteJSON = false;
     }
-    // END WRITE SAMPLE PRESET
+    // END WRITE SOUND FILE PRESET
 
-    // BEGIN LOAD SAMPLE PRESET
-    if (isSamplePresetLoadWindow) {
-      ImGui::OpenPopup("Load Sample Preset");
+    // BEGIN LOAD SOUND FILE PRESET
+    if (isSoundFilePresetLoadWindow) {
+      ImGui::OpenPopup("Load Sound File Preset");
     }
-    // Sample Load Preset Window
-    bool isSampleLoadOpen = true;
+    // Sound File Load Preset Window
+    bool isSoundFileLoadOpen = true;
     bool isLoadJSON = false;
-    std::string sample_preset_name = "";
+    std::string sound_file_preset_name = "";
     ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                         ImVec2(windowWidth, windowHeight));
-    if (ImGui::BeginPopupModal("Load Sample Preset", &isSampleLoadOpen)) {
-      for (auto iter = SamplePresetNames.begin(); iter != SamplePresetNames.end(); iter++) {
+    if (ImGui::BeginPopupModal("Load Sound File Preset", &isSoundFileLoadOpen)) {
+      for (auto iter = SoundFilePresetNames.begin(); iter != SoundFilePresetNames.end(); iter++) {
         if (ImGui::Selectable(iter->c_str())) {
-          isSampleLoadOpen = false;
+          isSoundFileLoadOpen = false;
           isLoadJSON = true;
-          sample_preset_name = *iter;
+          sound_file_preset_name = *iter;
         }
       }
       ImGui::EndPopup();
     }
 
-    if (!isSampleLoadOpen && isLoadJSON) {
-      failed_paths = loadJSONSamplePreset(sample_preset_name);
+    if (!isSoundFileLoadOpen && isLoadJSON) {
+      failed_paths = loadJSONSoundFilePreset(sound_file_preset_name);
       isLoadJSON = false;
     }
 
@@ -385,33 +385,33 @@ void ecInterface::onDraw(Graphics &g) {
     if (!plsGiveMeAnXImGui) {
       failed_paths.clear();
     }
-    // END LOAD SAMPLE PRESET
+    // END LOAD SOUND FILE PRESET
 
-    // BEGIN DELETE SAMPLE PRESET
-    if (isSamplePresetDeleteWindow) {
-      ImGui::OpenPopup("Delete Sample Preset");
+    // BEGIN DELETE SOUND FILE PRESET
+    if (isSoundFilePresetDeleteWindow) {
+      ImGui::OpenPopup("Delete Sound File Preset");
     }
-    bool isSamplePresetDeleteOpen = true;
+    bool isSoundFilePresetDeleteOpen = true;
     bool isDeleteJSON = false;
-    sample_preset_name = "";
+    sound_file_preset_name = "";
     ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                         ImVec2(windowWidth, windowHeight));
-    if (ImGui::BeginPopupModal("Delete Sample Preset", &isSamplePresetDeleteOpen)) {
-      for (auto iter = SamplePresetNames.begin(); iter != SamplePresetNames.end(); iter++) {
+    if (ImGui::BeginPopupModal("Delete Sound File Preset", &isSoundFilePresetDeleteOpen)) {
+      for (auto iter = SoundFilePresetNames.begin(); iter != SoundFilePresetNames.end(); iter++) {
         if (ImGui::Selectable(iter->c_str())) {
-          isSamplePresetDeleteOpen = false;
+          isSoundFilePresetDeleteOpen = false;
           isDeleteJSON = true;
-          sample_preset_name = *iter;
+          sound_file_preset_name = *iter;
         }
       }
       ImGui::EndPopup();
     }
-    if (!isSamplePresetDeleteOpen && isDeleteJSON) {
-      deleteJSONSamplePreset(sample_preset_name);
+    if (!isSoundFilePresetDeleteOpen && isDeleteJSON) {
+      deleteJSONSoundFilePreset(sound_file_preset_name);
       isDeleteJSON = false;
     }
-    // END DELETE SAMPLE PRESET
-    // END SAMPLE PRESETS
+    // END DELETE SOUND FILE PRESET
+    // END SOUND FILE PRESETS
 
     if (ImGui::BeginMenu("MIDI")) {
       if (ImGui::MenuItem("MIDI Devices", "")) {
@@ -735,7 +735,7 @@ void ecInterface::onDraw(Graphics &g) {
     granulator.ECParameters[consts::SOUND_FILE]->setSliderText(
       granulator.getCurrentAudioFileName());
   } else {
-     granulator.ECParameters[consts::SOUND_FILE]->setSliderText("No Sound Files");
+    granulator.ECParameters[consts::SOUND_FILE]->setSliderText("No Sound Files");
   }
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    GRANULATION CONTROLS", 0, menuBarHeight, windowWidth / 2,
@@ -1557,7 +1557,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     currentPresetName = "none";
   else
     delim_index = (state.currentBank + "-").size();
-  
+
   if (currentPresetName.size() > delim_index &&
       currentPresetName.substr(0, delim_index) == state.currentBank + "-")
     ImGui::Text("Current Preset: %s", currentPresetName.substr(delim_index).c_str());
@@ -1876,9 +1876,9 @@ void ecInterface::setMIDIPresetNames(json preset_names) {
   }
 }
 
-void ecInterface::setSamplePresetNames(json preset_names) {
+void ecInterface::setSoundFilePresetNames(json preset_names) {
   for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
-    SamplePresetNames.insert(iter->get<std::string>());
+    SoundFilePresetNames.insert(iter->get<std::string>());
   }
 }
 
@@ -1976,7 +1976,7 @@ void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
   std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
 }
 
-void ecInterface::writeJSONSamplePreset(std::string name, bool allowOverwrite) {
+void ecInterface::writeJSONSoundFilePreset(std::string name, bool allowOverwrite) {
   if (name == "") return;
 
   std::string filename = name;
@@ -1987,59 +1987,64 @@ void ecInterface::writeJSONSamplePreset(std::string name, bool allowOverwrite) {
     }
   }
 
-  SamplePresetNames.insert(filename);
-  jsonWriteMapToConfig(SamplePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
-  json sample_config = json::array();
+  SoundFilePresetNames.insert(filename);
+  jsonWriteMapToConfig(SoundFilePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
+  json sound_file_config = json::array();
 
   for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
-    sample_config.push_back(granulator.soundClipFileName[index]);
+    sound_file_config.push_back(granulator.soundClipFileName[index]);
   }
 
   std::ofstream file((userPath + samplePresetsPath + filename + ".json").c_str());
-  if (file.is_open()) file << sample_config;
+  if (file.is_open()) file << sound_file_config;
 }
 
-// JSON Sample Load
-std::vector<std::string> ecInterface::loadJSONSamplePreset(std::string sample_preset_name) {
-  std::ifstream ifs(userPath + samplePresetsPath + sample_preset_name + ".json");
+// JSON Sound File Load
+std::vector<std::string> ecInterface::loadJSONSoundFilePreset(std::string sound_file_preset_name) {
+  std::ifstream ifs(userPath + samplePresetsPath + sound_file_preset_name + ".json");
 
-  json sample_config;
+  json sound_file_config;
 
   if (ifs.is_open())
-    sample_config = json::parse(ifs);
+    sound_file_config = json::parse(ifs);
   else
     return {};
 
-  for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
-    if (std::find(sample_config.begin(), sample_config.end(),
-                  granulator.soundClipFileName[index]) == sample_config.end()) {
-      audioThumbnails.erase(audioThumbnails.begin() + index);
-      granulator.removeSoundFile(index);
-    }
-  }
+  // Lock so the audio thread doesn't misread buffer while clearing files.
+  std::unique_lock<std::mutex> lk(mLock);
+  granulator.clearSoundFiles();
+  // for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
+  //   if (std::find(sound_file_config.begin(), sound_file_config.end(),
+  //                 granulator.soundClipFileName[index]) == sound_file_config.end()) {
+  //     audioThumbnails.erase(audioThumbnails.begin() + index);
+  //     granulator.removeSoundFile(index);
+  //   }
+  // }
+
   std::string temp_path;
   std::vector<std::string> failed_loads;
-  for (int index = 0; index < sample_config.size(); index++) {
-    temp_path = al::File::conformPathToOS(sample_config[index]);
-    if (std::find(granulator.soundClipFileName.begin(), granulator.soundClipFileName.end(),
-                  temp_path) != granulator.soundClipFileName.end()) {
-      continue;
-    }
+  for (int index = 0; index < sound_file_config.size(); index++) {
+    temp_path = al::File::conformPathToOS(sound_file_config[index]);
+    // if (std::find(granulator.soundClipFileName.begin(), granulator.soundClipFileName.end(),
+    //               temp_path) != granulator.soundClipFileName.end()) {
+    //   continue;
+    // }
     if (al::File::exists(temp_path)) {
-      granulator.loadSoundFileRT(sample_config[index]);
+      granulator.loadSoundFileRT(sound_file_config[index]);
       createAudioThumbnail(granulator.soundClip[granulator.soundClip.size() - 1]->data,
                            granulator.soundClip[granulator.soundClip.size() - 1]->size);
     } else {
       failed_loads.push_back(temp_path);
     }
   }
+  granulator.mModClip = 0;
   return failed_loads;
 }
 
-void ecInterface::deleteJSONSamplePreset(std::string sample_preset_name) {
-  SamplePresetNames.erase(sample_preset_name);
-  jsonWriteMapToConfig(SamplePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
-  std::remove((userPath + samplePresetsPath + sample_preset_name + ".json").c_str());
+void ecInterface::deleteJSONSoundFilePreset(std::string sound_file_preset_name) {
+  SoundFilePresetNames.erase(sound_file_preset_name);
+  jsonWriteMapToConfig(SoundFilePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
+  std::remove((userPath + samplePresetsPath + sound_file_preset_name + ".json").c_str());
 }
 
 void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
