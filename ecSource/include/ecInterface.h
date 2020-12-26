@@ -99,11 +99,11 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::mutex mLock;
   float windowWidth, windowHeight;
   bool isFullScreen, isFirstLaunch;
-  bool plsGiveMeAnXImGui;
   std::vector<std::string> failed_paths;
   std::string currentAudioDevice;
 
-  bool noSoundFiles, light, isPaused = false, writeSampleRate = false, isStereo = true;
+  bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false, writeSampleRate = false,
+              isStereo = true;
   float background = 0.21;
   ecSynth granulator;
   std::vector<std::string> SamplePaths;

@@ -245,14 +245,49 @@ void ecInterface::onDraw(Graphics &g) {
   if (windowHeight - menuBarHeight - firstRowHeight - secondRowHeight < 100)
     secondRowHeight = windowHeight - firstRowHeight - menuBarHeight;
 
-  if (granulator.getNumberOfAudioFiles() == 0) {
+  if (granulator.getNumberOfAudioFiles() == 0 && readyToTrigNoSoundFilePopup) {
     ImGui::OpenPopup("No Sound File");
     if (audioIO().isRunning()) audioIO().stop();
-    noSoundFiles = true;
+    // Edge case where we need to redraw pop up if triggered on first frame.
+      // Happens because the 'no sound file' popup is drawn under everything.
+      // Sequential coding makes GUI programming confusing :(
+    if (firstFrame)
+      readyToTrigNoSoundFilePopup = true;
+    else
+      readyToTrigNoSoundFilePopup = false;
   }
 
   if (granulator.getNumberOfAudioFiles() != 0) {
-    noSoundFiles = false;
+    readyToTrigNoSoundFilePopup = true;
+  }
+
+  // Throw popup to remind user to load in sound files if none are
+  // present.
+  if (ImGui::BeginPopupModal("No Sound File")) {
+    isPaused = true;
+    ImGui::Text("Load a sound file to continue using EmissionControl");
+    if (ImGui::Button("Load Sound File")) {
+      result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
+
+      if (result == NFD_OKAY) {
+        size_t i;
+        for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
+          nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
+          bool success = granulator.loadSoundFileRT(path);
+          if (success) {
+            createAudioThumbnail(granulator.soundClip.back()->data,
+                                 granulator.soundClip.back()->size);
+            readyToTrigNoSoundFilePopup = true;
+          }
+        }
+        NFD_PathSet_Free(&pathSet);
+      }
+      if (readyToTrigNoSoundFilePopup) ImGui::CloseCurrentPopup();
+    }
+    if (ImGui::Button("Load Sound File Preset")) {
+      isSoundFilePresetLoadWindow = true;
+    }
+    ImGui::EndPopup();
   }
 
   // Draw GUI
@@ -356,6 +391,7 @@ void ecInterface::onDraw(Graphics &g) {
     std::string sound_file_preset_name = "";
     ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                         ImVec2(windowWidth, windowHeight));
+
     if (ImGui::BeginPopupModal("Load Sound File Preset", &isSoundFileLoadOpen)) {
       for (auto iter = SoundFilePresetNames.begin(); iter != SoundFilePresetNames.end(); iter++) {
         if (ImGui::Selectable(iter->c_str())) {
@@ -375,6 +411,7 @@ void ecInterface::onDraw(Graphics &g) {
     if (failed_paths.size() != 0) {
       ImGui::OpenPopup("Failed Paths");
     }
+    bool plsGiveMeAnXImGui = true;
     if (ImGui::BeginPopupModal("Failed Paths", &plsGiveMeAnXImGui)) {
       ImGui::Text("Sound Files Not Found:");
       for (int index = 0; index < failed_paths.size(); index++) {
@@ -385,6 +422,9 @@ void ecInterface::onDraw(Graphics &g) {
     if (!plsGiveMeAnXImGui) {
       failed_paths.clear();
     }
+
+    if ((!isSoundFileLoadOpen || !plsGiveMeAnXImGui) && granulator.getNumberOfAudioFiles() == 0)
+      readyToTrigNoSoundFilePopup = true;
     // END LOAD SOUND FILE PRESET
 
     // BEGIN DELETE SOUND FILE PRESET
@@ -505,10 +545,7 @@ void ecInterface::onDraw(Graphics &g) {
           isPaused = false;
           audioIO().open();
           audioIO().start();
-          noSoundFiles = false;
-        } else {
-          ImGui::OpenPopup("No Sound File");
-          noSoundFiles = true;
+          readyToTrigNoSoundFilePopup = true;
         }
       }
     } else if (audioIO().isRunning()) {
@@ -1170,37 +1207,11 @@ void ecInterface::onDraw(Graphics &g) {
     ParameterGUI::endPanel();
   }
   if (width() < 1250) ImGui::PopStyleVar();
-
-  // Throw popup to remind user to load in sound files if none are
-  // present.
-  if (ImGui::BeginPopupModal("No Sound File")) {
-    isPaused = true;
-    ImGui::Text("Load a sound file to continue using EmissionControl");
-    if (ImGui::Button("Load Sound File")) {
-      result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
-
-      if (result == NFD_OKAY) {
-        size_t i;
-        for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
-          nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
-          bool success = granulator.loadSoundFileRT(path);
-          if (success) {
-            createAudioThumbnail(granulator.soundClip.back()->data,
-                                 granulator.soundClip.back()->size);
-            noSoundFiles = false;
-          }
-        }
-        NFD_PathSet_Free(&pathSet);
-      }
-      if (!noSoundFiles) ImGui::CloseCurrentPopup();
-    }
-    ImGui::EndPopup();
-  }
   ImGui::PopStyleColor(18);
   ImGui::PopStyleVar(3);
   al::imguiEndFrame();
-
   al::imguiDraw();
+  firstFrame = false;
 }
 
 bool ecInterface::onKeyDown(Keyboard const &k) {
@@ -2012,23 +2023,26 @@ std::vector<std::string> ecInterface::loadJSONSoundFilePreset(std::string sound_
 
   // Lock so the audio thread doesn't misread buffer while clearing files.
   std::unique_lock<std::mutex> lk(mLock);
-  granulator.clearSoundFiles();
-  // for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
-  //   if (std::find(sound_file_config.begin(), sound_file_config.end(),
-  //                 granulator.soundClipFileName[index]) == sound_file_config.end()) {
-  //     audioThumbnails.erase(audioThumbnails.begin() + index);
-  //     granulator.removeSoundFile(index);
-  //   }
-  // }
+  // granulator.clearSoundFiles();
+  int counter = 0;
+  int size = granulator.soundClipFileName.size();
+  for (int index = 0; index < size; index++) {
+    if (std::find(sound_file_config.begin(), sound_file_config.end(),
+                  granulator.soundClipFileName[index - counter]) == sound_file_config.end()) {
+      audioThumbnails.erase(audioThumbnails.begin() + (index - counter));
+      granulator.removeSoundFile(index - counter);
+      counter++;
+    }
+  }
 
   std::string temp_path;
   std::vector<std::string> failed_loads;
   for (int index = 0; index < sound_file_config.size(); index++) {
     temp_path = al::File::conformPathToOS(sound_file_config[index]);
-    // if (std::find(granulator.soundClipFileName.begin(), granulator.soundClipFileName.end(),
-    //               temp_path) != granulator.soundClipFileName.end()) {
-    //   continue;
-    // }
+    if (std::find(granulator.soundClipFileName.begin(), granulator.soundClipFileName.end(),
+                  temp_path) != granulator.soundClipFileName.end()) {
+      continue;
+    }
     if (al::File::exists(temp_path)) {
       granulator.loadSoundFileRT(sound_file_config[index]);
       createAudioThumbnail(granulator.soundClip[granulator.soundClip.size() - 1]->data,
