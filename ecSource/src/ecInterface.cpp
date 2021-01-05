@@ -63,7 +63,7 @@ void ecInterface::onInit() {
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
   samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
-  
+
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
@@ -131,7 +131,8 @@ void ecInterface::onInit() {
   gam::sampleRate(audioIO().framesPerSecond());
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
-  audioIO().append(mHardClip);
+  audioIO().clipOut(isHardClip);
+  // audioIO().append(mHardClip);
 
   audioIO().print();
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
@@ -253,8 +254,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::OpenPopup("No Sound File");
     if (audioIO().isRunning()) audioIO().stop();
     // Edge case where we need to redraw pop up if triggered on first frame.
-      // Happens because the 'no sound file' popup is drawn under everything.
-      // Sequential coding makes GUI programming confusing :(
+    // Happens because the 'no sound file' popup is drawn under everything.
+    // Sequential coding makes GUI programming confusing :(
     if (firstFrame)
       readyToTrigNoSoundFilePopup = true;
     else
@@ -299,6 +300,16 @@ void ecInterface::onDraw(Graphics &g) {
   // draw menu bar ----------------------------------------------------
   // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Preferences")) {
+      if (ImGui::Checkbox("Clip Audio", &isHardClip)) {
+        audioIO().clipOut(isHardClip);
+      }
+      if (ImGui::Checkbox("Soft Reset Scan Begin", &isSoftResetScanBegin)) {
+        granulator.setSoftScanBegin(isSoftResetScanBegin);
+      }
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("Audio")) {
       if (ImGui::MenuItem("Audio Output", "")) {
         displayIO = true;

@@ -103,7 +103,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::string currentAudioDevice;
 
   bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false, writeSampleRate = false,
-              isStereo = true;
+              isStereo = true, isHardClip = true, isSoftResetScanBegin = true;
   float background = 0.21;
   ecSynth granulator;
   std::vector<std::string> SamplePaths;

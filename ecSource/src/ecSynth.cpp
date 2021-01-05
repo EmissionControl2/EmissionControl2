@@ -124,7 +124,8 @@ void ecSynth::onProcess(al::AudioIOData &io) {
       float start, end;
 
       // Case where the scanning head is given a hard reset.
-      if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() || pleaseResetScanner) {
+      if (mPrevModClip != mModClip || mCurrentIndex == mScanner.getTarget() || pleaseResetScanner ||
+          ((prevScanBeginVal != nowScanBeginVal) && !isSoftScanBegin)) {
         pleaseResetScanner = false;
         if ((scan_speed >= 0 && scan_width >= 0) || (scan_speed < 0 && scan_width < 0)) {
           start = nowScanBeginVal * frames;
@@ -138,8 +139,8 @@ void ecSynth::onProcess(al::AudioIOData &io) {
 
       // On the fly adjustments.
 
-      if (scan_width != prev_scan_width || prevScanBeginVal != nowScanBeginVal ||
-          scan_speed != prev_scan_speed) {
+      if (scan_width != prev_scan_width || scan_speed != prev_scan_speed ||
+          ((prevScanBeginVal != nowScanBeginVal) && isSoftScanBegin)) {
         start = mScanner.getValue();
 
         if (scan_width >= 0) {

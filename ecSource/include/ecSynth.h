@@ -286,6 +286,8 @@ class ecSynth : public al::SynthVoice {
     }
   }
 
+  void setSoftScanBegin(bool soft) { isSoftScanBegin = soft;}
+
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;
 
@@ -313,7 +315,7 @@ class ecSynth : public al::SynthVoice {
   int mPrevModClip;
   float prevScanBeginVal, nowScanBeginVal;
   float prev_scan_speed, scan_speed, prev_scan_width, scan_width;
-  bool pleaseResetScanner = false;
+  bool pleaseResetScanner = false, isSoftScanBegin = true;
 };
 
 #endif
