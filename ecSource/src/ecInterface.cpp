@@ -1675,6 +1675,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (70 * fontScale));
 
+  // BEGIN MIDI LOGIC
   colPushCount = 0;
   if (mIsLinkingParamAndMIDI && mCurrentLearningMIDIKey.getType() == consts::M_MORPH) {
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
@@ -1726,6 +1727,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     unlinkParamAndMIDI(mCurrentLearningMIDIKey);
     unlearnFlash = 60;
   }
+  // END MIDI LOGIC
 
   ImGui::PopItemWidth();
   if (state.storeButtonState) {
