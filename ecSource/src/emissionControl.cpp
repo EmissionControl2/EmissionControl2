@@ -631,7 +631,8 @@ float Grain::filterSample(float sample, float cascadeMix, bool isRight) {
   } else {
     solo = bpf_1_r.nextBP(sample);
     cascade = bpf_3_r.nextBP(bpf_2_r(solo));
-  }  
+  }
+
   return (solo * (1 - cascadeMix)) + (cascade * cascadeMix);
 }
 

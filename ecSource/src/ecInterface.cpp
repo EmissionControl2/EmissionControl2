@@ -350,6 +350,7 @@ void ecInterface::onDraw(Graphics &g) {
         audioThumbnails.erase(audioThumbnails.begin() + granulator.mModClip);
         granulator.removeCurrentSoundFile();
       }
+      ImGui::Separator();
       if (ImGui::MenuItem("Save Sound File Preset", "")) {
         isSoundFilePresetWriteWindow = true;
       }
@@ -483,7 +484,7 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Clear MIDI Learn", "")) {
         clearActiveMIDI();
       }
-
+      ImGui::Separator();
       if (ImGui::MenuItem("Save MIDI Learn Preset", "")) {
         isMIDIWriteWindow = true;
       }
@@ -1269,7 +1270,7 @@ void ecInterface::initMIDI() {
     printf("Error: No MIDI devices found.\n");
   }
 }
-
+bool first = true;
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   switch (m.type()) {
     // Control messages need to be parsed again...
@@ -1289,6 +1290,7 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
         }
         mIsLinkingParamAndMIDI = false;
       }
+
       updateActiveMIDIParams(m);
       break;
     default:;
@@ -1312,6 +1314,9 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
             break;
           case M_DUTY:
             updateLFODutyParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
+            break;
+          case M_MORPH:
+            updatePresetMorphParamMIDI(m.controlValue());
             break;
           default:
             updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
@@ -1669,10 +1674,59 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   }
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (70 * fontScale));
+
+  colPushCount = 0;
+  if (mIsLinkingParamAndMIDI && mCurrentLearningMIDIKey.getType() == consts::M_MORPH) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECgreen);
+    colPushCount = 2;
+  } else if (mCurrentLearningMIDIKey.getType() == consts::M_MORPH && (unlearnFlash % 20) > 10) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECred);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECred);
+    colPushCount += 2;
+  }
+
   float morphTime = presetHandler->getMorphTime();
   if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
     presetHandler->setMorphTime(morphTime);
   }
+  ImGui::PopStyleColor(colPushCount);
+
+  // Press m while hovering over a parameter to start midi learn.
+  if (ImGui::IsItemHovered() &&
+      mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
+      !mLastKeyDown.key.shift() && mLastKeyDown.readyToTrig) {
+    mMIDILearn.mParamAdd = true;
+  }
+  if (ImGui::IsItemHovered() &&
+      mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
+      mLastKeyDown.key.shift() && mLastKeyDown.readyToTrig) {
+    mMIDILearn.mParamDel = true;
+  }
+
+  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
+    ImGui::OpenPopup("rightClickMorph");
+  }
+  if (ImGui::BeginPopup("rightClickMorph")) {
+    if (ImGui::Selectable("MIDI Learn")) {
+      mMIDILearn.mParamAdd = true;
+    }
+    if (ImGui::Selectable("MIDI Unlearn")) {
+      mMIDILearn.mParamDel = true;
+    }
+    ImGui::Separator();
+    ImGui::EndPopup();
+  }
+  if (mMIDILearn.mParamAdd) {
+    mCurrentLearningMIDIKey.setKeysIndex(0, consts::M_MORPH);
+    mIsLinkingParamAndMIDI = true;
+  }
+  if (mMIDILearn.mParamDel) {
+    mCurrentLearningMIDIKey.setKeysIndex(0, consts::M_MORPH);
+    unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+    unlearnFlash = 60;
+  }
+
   ImGui::PopItemWidth();
   if (state.storeButtonState) {
     char buf1[64];

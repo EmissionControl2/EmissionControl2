@@ -102,8 +102,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<std::string> failed_paths;
   std::string currentAudioDevice;
 
-  bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false, writeSampleRate = false,
-              isStereo = true, isHardClip = true, isSoftResetScanBegin = true;
+  bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
+              writeSampleRate = false, isStereo = true, isHardClip = true,
+              isSoftResetScanBegin = true;
   float background = 0.21;
   ecSynth granulator;
   std::vector<std::string> SamplePaths;
@@ -189,6 +190,12 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void updateLFODutyParamMIDI(float val, int index) {
     granulator.LFOParameters[index]->duty->set(val);
   }
+
+  void updatePresetMorphParamMIDI(float val) {
+    float result = util::outputValInRange(val, 0.0, 20.0, false, 3);
+    mPresets->setMorphTime(result);
+  }
+
   std::string opener = "open ";
   std::string manualURL =
     "https://raw.githubusercontent.com/jackkilgore/EmissionControl2/master/docs/"
