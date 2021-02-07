@@ -154,31 +154,35 @@ void ecInterface::onCreate() {
               << *granulator.LFOParameters[i]->polarity;
   }
 
+  ImFontConfig fontConfig;
+  fontConfig.OversampleH = 4;
+  fontConfig.OversampleV = 4;
+
 #ifdef __APPLE__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f, &fontConfig);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f, &fontConfig);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f, &fontConfig);
 #endif
 
 #ifdef __linux__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 16.0f);
+    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 16.0f, &fontConfig);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 20.0f);
+    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 20.0f, &fontConfig);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/ferrari.ttf", 16.0f);
+    "/usr/share/emissioncontrol2/fonts/ferrari.ttf", 16.0f, &fontConfig);
 #endif
 
 #ifdef _WIN32
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f, &fontConfig);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f, &fontConfig);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f, &fontConfig);
 #endif
 
   currentPresetMap = mPresets->readPresetMap("default");
