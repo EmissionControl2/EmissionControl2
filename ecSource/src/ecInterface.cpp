@@ -1651,14 +1651,14 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
       state.presetHandlerBank = 4;
     }
   }
-  ImGui::SameLine();
+  ImGui::SameLine(0.0f, 2.0f);
   if (ImGui::Button("->")) {
     state.presetHandlerBank += 1;
     if (state.presetHandlerBank > 4) {
       state.presetHandlerBank = 0;
     }
   }
-  ImGui::SameLine(0.0f, 20.0f);
+  ImGui::SameLine(0.0f, 5.0f);
 
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*ECgreen);
@@ -1686,6 +1686,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     colPushCount += 2;
   }
 
+  // Draw Morph Time Control
   float morphTime = presetHandler->getMorphTime();
   if (ImGui::SliderFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
     presetHandler->setMorphTime(morphTime);
