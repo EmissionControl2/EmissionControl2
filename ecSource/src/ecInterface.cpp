@@ -1687,7 +1687,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   }
 
   float morphTime = presetHandler->getMorphTime();
-  if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 100.0f)) {
+  if (ImGui::SliderFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
     presetHandler->setMorphTime(morphTime);
   }
   ImGui::PopStyleColor(colPushCount);
