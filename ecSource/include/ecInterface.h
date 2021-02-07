@@ -192,7 +192,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   }
 
   void updatePresetMorphParamMIDI(float val) {
-    float result = util::outputValInRange(val, 0.0, 20.0, false, 3);
+    // Hard code to be logarithmic in scale.
+    float result = util::outputValInRange(val, 0.0, 20.0, true, 3);
     mPresets->setMorphTime(result);
   }
 

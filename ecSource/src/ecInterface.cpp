@@ -132,7 +132,6 @@ void ecInterface::onInit() {
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
   audioIO().clipOut(isHardClip);
-  // audioIO().append(mHardClip);
 
   audioIO().print();
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
@@ -301,9 +300,6 @@ void ecInterface::onDraw(Graphics &g) {
   // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Preferences")) {
-      if (ImGui::Checkbox("Clip Audio", &isHardClip)) {
-        audioIO().clipOut(isHardClip);
-      }
       if (ImGui::Checkbox("Soft Reset Scan Begin", &isSoftResetScanBegin)) {
         granulator.setSoftScanBegin(isSoftResetScanBegin);
       }
@@ -322,6 +318,9 @@ void ecInterface::onDraw(Graphics &g) {
           jsonWriteToConfig(temp, consts::SOUND_OUTPUT_PATH_KEY);
           setSoundOutputPath(outPath);
         }
+      }
+      if (ImGui::Checkbox("Clip Audio", &isHardClip)) {
+        audioIO().clipOut(isHardClip);
       }
       ImGui::EndMenu();
     }
@@ -1688,7 +1687,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   }
 
   float morphTime = presetHandler->getMorphTime();
-  if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
+  if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 100.0f)) {
     presetHandler->setMorphTime(morphTime);
   }
   ImGui::PopStyleColor(colPushCount);
