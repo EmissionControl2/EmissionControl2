@@ -59,6 +59,7 @@ class ecSynth : public al::SynthVoice {
   // array of lfo parameters to draw later
   std::vector<std::shared_ptr<LFOstruct>> LFOParameters;
 
+  std::vector<std::string> soundClipFileName;
   std::vector<std::shared_ptr<util::buffer<float>>> soundClip; /* Store audio buffers in memory */
   int mClipNum = 0; /* Number of sound files being stored in memory */
   int mModClip = 0;
@@ -252,7 +253,6 @@ class ecSynth : public al::SynthVoice {
    */
   void copyActiveGrainIndicies(float *array, int *outSize, int maxSize);
 
-
   /**
    * @brief Simple hardclipping to prevent distorting the DAC.
    *        Applied to the left and right channels.
@@ -270,26 +270,44 @@ class ecSynth : public al::SynthVoice {
 
   float getCurrentIndex() const { return mCurrentIndex; }
 
+  int getLeadChannel() const { return AudioChanIndex[0]; }
+  
+  void setOutChannels(int lead_channel, int max_possible_channels) {
+    AudioChanIndex[0] = lead_channel;
+    if (max_possible_channels == 1) {
+      for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
+        AudioChanIndex[i] = lead_channel;
+      }
+    } else {
+      // assert(lead_channel + (consts::MAX_AUDIO_OUTS) < max_possible_channels);
+      for (int i = 1; i < consts::MAX_AUDIO_OUTS; i++) {
+        AudioChanIndex[i] = lead_channel + i;
+      }
+    }
+  }
+
+  void setSoftScanBegin(bool soft) { isSoftScanBegin = soft;}
+
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;
 
   al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
                                                callback */
   voiceScheduler grainScheduler; /* Schedule grains */
-  std::vector<std::string> soundClipFileName;
 
   int controlRateCounter = 0;
   int mActiveVoices = 0;
   int *mPActiveVoices = nullptr;
   gam::Domain ControlRate;
   std::vector<std::shared_ptr<ecModulator>> Modulators;
+  std::array<unsigned int, consts::MAX_AUDIO_OUTS> AudioChanIndex;
 
   /**Accesing Audio Thread -- Scary :o **/
   std::mutex mVoicePassLock;
 
   /***localAudioThread variables***/
   float width;
-  float sample_0, sample_1; 
+  float sample_0, sample_1;
 
   /***mScanner***/
   util::line<double> mScanner;
@@ -297,7 +315,7 @@ class ecSynth : public al::SynthVoice {
   int mPrevModClip;
   float prevScanBeginVal, nowScanBeginVal;
   float prev_scan_speed, scan_speed, prev_scan_width, scan_width;
-  bool pleaseResetScanner = false;
+  bool pleaseResetScanner = false, isSoftScanBegin = true;
 };
 
 #endif

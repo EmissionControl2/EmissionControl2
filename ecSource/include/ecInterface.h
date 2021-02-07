@@ -96,13 +96,18 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
                           std::string directory = "", uint32_t bufferSize = 0);
 
  private:
+  std::mutex mLock;
   float windowWidth, windowHeight;
   bool isFullScreen, isFirstLaunch;
+  std::vector<std::string> failed_paths;
   std::string currentAudioDevice;
 
-  bool noSoundFiles, light, isPaused = false, writeSampleRate = false;
+  bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
+              writeSampleRate = false, isStereo = true, isHardClip = true,
+              isSoftResetScanBegin = true;
   float background = 0.21;
   ecSynth granulator;
+  std::vector<std::string> SamplePaths;
   std::unique_ptr<al::PresetHandler> mPresets;
   std::map<int, std::string> currentPresetMap;
   al::OutputRecorder mRecorder;
@@ -113,11 +118,14 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::array<RtMidiIn, consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
-  char mCurrentPresetName[64] = "midi_preset";
+  char mCurrentMIDIPresetName[128] = "midi_preset";
+  char mCurrentSoundFilePresetName[128] = "sound_file_preset";
   bool allowMIDIPresetOverwrite = false;
+  bool allowSoundFilePresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
+  std::unordered_set<std::string> SoundFilePresetNames;
   std::vector<bool> SelectedMIDIDevices;
   int unlearnFlash = 0;
 
@@ -182,6 +190,13 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void updateLFODutyParamMIDI(float val, int index) {
     granulator.LFOParameters[index]->duty->set(val);
   }
+
+  void updatePresetMorphParamMIDI(float val) {
+    // Hard code to be logarithmic in scale.
+    float result = util::outputValInRange(val, 0.0, 20.0, true, 3);
+    mPresets->setMorphTime(result);
+  }
+
   std::string opener = "open ";
   std::string manualURL =
     "https://raw.githubusercontent.com/jackkilgore/EmissionControl2/master/docs/"
@@ -204,7 +219,24 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     "Copyright 2020 Curtis Roads, Jack Kilgore, Rodney Duplessis",
     "This program comes with absolutely no warranty.",
     "See the GNU General Public License, version 3 or later for details."};
-  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath;
+  std::vector<std::string> MIDIHelpLines = {
+    "MIDI Learn ",
+    "MIDI Learn allows you to control a parameter in EC2",
+    "with a MIDI fader or knob on your MIDI controller.",
+    " ",
+    "After you have set up your MIDI Device in EC2, you can MIDI Learn",
+    "by hovering over a parameter and pressing \"m\" on your keyboard.",
+    "Then, simply move the control on your device that you want to pair.",
+    "To unlearn, hover over a parameter and press \"shift+m\" on your keyboard.",
+    " ",
+    "The parameters that are MIDI Learnable are:",
+    " ",
+    "All of the sliders in GRANULATION CONTROLS",
+    "All of the sliders in MODULATION CONTROLS",
+    "All of the sliders in LFO CONTROLS",
+    "The Morph Time slider in PRESETS"};
+  std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath,
+    samplePresetsPath;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
   nfdresult_t result;
@@ -279,7 +311,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   ImColor *Shade3;
   ImColor *Text;
 
-  void drawAudioIO(al::AudioIO *io, bool trig);
+  void drawAudioIO(al::AudioIO *io);
 
   void setGUIParams();
 
@@ -296,7 +328,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   template <typename T>
   bool jsonWriteToConfig(T value, std::string key);
 
-  bool jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames);
+  bool jsonWriteMapToConfig(std::unordered_set<std::string> &presetNames, std::string key);
 
   /**
    * @brief Read json config file and write output path to soundOutput member
@@ -306,6 +338,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   json jsonReadConfig();
   void setMIDIPresetNames(json preset_names);
+  void setSoundFilePresetNames(json preset_names);
   void setSoundOutputPath(std::string sound_output_path);
   void setAudioSettings(float sample_rate);
   void setColorSchemeMode(bool is_light);
@@ -314,11 +347,17 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setFirstLaunch(bool is_first_launch) { isFirstLaunch = is_first_launch; }
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
   void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
+  void setOutChannelsFailSafe(int lead_channel, int max_possible_channels);
+  void setCurrentEnv(std::string path_to_env);
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
+
+  void writeJSONSoundFilePreset(std::string name, bool allowOverwrite);
+  std::vector<std::string> loadJSONSoundFilePreset(std::string sound_file_preset_name);
+  void deleteJSONSoundFilePreset(std::string sound_file_preset_name);
 
   // make a new audioThumbnail when a new sound file is loaded.
   void createAudioThumbnail(float *soundFile, int lengthInSamples);

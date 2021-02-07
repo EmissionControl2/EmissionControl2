@@ -34,7 +34,7 @@ if [ ${result} == 0 ]; then
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     ./EmissionControl2 -DRTAUDIO_API_JACK=1 -DRTAUDIO_API_ALSA=1 -DRTAUDIO_API_PULSE=1 -DRTMIDI_API_JACK=1
   elif [[ "$OSTYPE" == "darwin"* ]]; then
-    TERM=${1:-DEFAULT}
+    TERM=${2:-DEFAULT}
     chmod 444 EmissionControl2.app/Contents/Resources/libsndfile/*
     if [ ${TERM} == "-g" ]; then
       ./EmissionControl2.app/Contents/MacOS/EmissionControl2

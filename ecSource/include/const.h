@@ -13,7 +13,7 @@ const char KEYBOARD_MIDI_UNLEARN = 'm';  // Hover over param - Shift - m
 const char KEYBOARD_PARAM_LOG_TOGGLE = 'l';  // Hover over param - l
 
 enum sliderType { PARAM = 0, MOD, LFO, INT_PARAM, INT_MOD, INT_LFO };
-enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY };
+enum MIDIType { M_PARAM = 0, M_MOD, M_LFO, M_DUTY, M_MORPH };
 
 enum paramNames {
   GRAIN_RATE = 0,
@@ -54,15 +54,17 @@ const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
 const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
+const std::string SAMPLE_PRESET_NAMES_KEY = "SAMPLE_PRESET_NAMES";
 const std::string WINDOW_WIDTH_KEY = "WINDOW_WIDTH";
 const std::string WINDOW_HEIGHT_KEY = "WINDOW_HEIGHT";
 const std::string FULLSCREEN_KEY = "FULLSCREEN";
 const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH";
 const std::string DEFAULT_AUDIO_DEVICE_KEY = "DEFAULT_AUDIO_DEVICE";
+const std::string LEAD_CHANNEL_KEY = "LEAD_CHANNEL";
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
-const int AUDIO_OUTS = 2;
+const int MAX_AUDIO_OUTS = 2;
 const int DEVICE_NUM = -1;
 const bool LIGHT_MODE = false;
 const float FONT_SCALE = 1.0;
@@ -71,19 +73,24 @@ const float WINDOW_HEIGHT = 1080;
 const bool FULLSCREEN = false;
 const bool IS_FIRST_LAUNCH = true;
 const std::string DEFAULT_AUDIO_DEVICE = "";
+const size_t DEFAULT_LEAD_CHANNEL = 0;
 
 /**
  *  DEFAULT USER PATHS
  */
 
 #ifdef __APPLE__
-const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2";
-const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "/presets/";
-const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_presets/";
-const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
+const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2/";
+const std::string ENV_PATH = PERSISTENT_DATA_PATH + "envs/";
+const std::string DEFAULT_ENV_PATH = ENV_PATH + "default/";
+const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "midi_presets/";
+const std::string DEFAULT_SAMPLE_PRESETS_PATH = PERSISTENT_DATA_PATH + "sample_presets/";
+const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
+
 #endif
 
 #ifdef __linux__

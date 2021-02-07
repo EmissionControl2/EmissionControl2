@@ -25,6 +25,7 @@ void ecInterface::onInit() {
   configFile = consts::DEFAULT_CONFIG_FILE;
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
+  samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
 
   execDir = util::getContentPath_OSX(execDir);
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
@@ -33,6 +34,7 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PRESETS_PATH);
   opener = "open ";
 #endif
 
@@ -46,11 +48,13 @@ void ecInterface::onInit() {
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
   midiPresetsPath = configPath + "/midi_presets";
+  samplePresetsPath = configPath + "/sample_presets";
 
   // create config directories if needed
   al::Dir::make(userPath + configPath + "/config");
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
+  al::Dir::make(userPath + samplePresetsPath);
   opener = "xdg-open ";
 #endif
 
@@ -58,6 +62,7 @@ void ecInterface::onInit() {
   configFile = consts::DEFAULT_CONFIG_FILE;
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
+  samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
 
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
@@ -65,12 +70,14 @@ void ecInterface::onInit() {
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PRESETS_PATH);
   opener = "start ";
 #endif
 
   initJsonConfig();
   json config = jsonReadConfig();
   setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
+  setSoundFilePresetNames(config.at(consts::SAMPLE_PRESET_NAMES_KEY));
   setSoundOutputPath(config.at(consts::SOUND_OUTPUT_PATH_KEY));
   setAudioSettings(config.at(consts::SAMPLE_RATE_KEY));
   setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
@@ -107,18 +114,25 @@ void ecInterface::onInit() {
     createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
   initMIDI();
 
-  gam::sampleRate(audioIO().framesPerSecond());
-  granulator.initialize(&audioIO());
-  audioIO().append(mRecorder);
-  audioIO().append(mHardClip);
-  audioIO().channelsIn(0);
   audioIO().setStreamName("EmissionControl2");
   auto a_d = AudioDevice(currentAudioDevice, AudioDevice::OUTPUT);
   if (!a_d.valid()) {
     audioIO().deviceOut(-1);
     currentAudioDevice = AudioDevice::defaultOutput().name();
-  } else
+    granulator.setOutChannels(0, audioIO().channelsOutDevice());
+  } else {
     audioIO().deviceOut(a_d);
+    granulator.setOutChannels(config.at(consts::LEAD_CHANNEL_KEY), audioIO().channelsOutDevice());
+    // TODO, make sure only 2 channels are open corresponding to out channels
+    // audioIO().channelsOut({(int)config.at(consts::LEAD_CHANNEL_KEY),(int)config.at(consts::LEAD_CHANNEL_KEY)
+    // + 1});
+  }
+  audioIO().channelsIn(0);
+  gam::sampleRate(audioIO().framesPerSecond());
+  granulator.initialize(&audioIO());
+  audioIO().append(mRecorder);
+  audioIO().clipOut(isHardClip);
+
   audioIO().print();
   std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
@@ -140,31 +154,35 @@ void ecInterface::onCreate() {
               << *granulator.LFOParameters[i]->polarity;
   }
 
+  ImFontConfig fontConfig;
+  fontConfig.OversampleH = 4;
+  fontConfig.OversampleV = 4;
+
 #ifdef __APPLE__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f, &fontConfig);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f, &fontConfig);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f, &fontConfig);
 #endif
 
 #ifdef __linux__
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 16.0f);
+    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 16.0f, &fontConfig);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 20.0f);
+    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 20.0f, &fontConfig);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/ferrari.ttf", 16.0f);
+    "/usr/share/emissioncontrol2/fonts/ferrari.ttf", 16.0f, &fontConfig);
 #endif
 
 #ifdef _WIN32
   bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f, &fontConfig);
   titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f);
+    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f, &fontConfig);
   ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f);
+    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f, &fontConfig);
 #endif
 
   currentPresetMap = mPresets->readPresetMap("default");
@@ -209,6 +227,11 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDILoadWindow = false;
   bool isMIDIDeleteWindow = false;
   bool isMIDIDevicesWindow = false;
+  bool isMIDIHelpWindow = false;
+
+  bool isSoundFilePresetWriteWindow = false;
+  bool isSoundFilePresetLoadWindow = false;
+  bool isSoundFilePresetDeleteWindow = false;
 
   al::imguiBeginFrame();
 
@@ -231,14 +254,49 @@ void ecInterface::onDraw(Graphics &g) {
   if (windowHeight - menuBarHeight - firstRowHeight - secondRowHeight < 100)
     secondRowHeight = windowHeight - firstRowHeight - menuBarHeight;
 
-  if (granulator.getNumberOfAudioFiles() == 0) {
+  if (granulator.getNumberOfAudioFiles() == 0 && readyToTrigNoSoundFilePopup) {
     ImGui::OpenPopup("No Sound File");
     if (audioIO().isRunning()) audioIO().stop();
-    noSoundFiles = true;
+    // Edge case where we need to redraw pop up if triggered on first frame.
+    // Happens because the 'no sound file' popup is drawn under everything.
+    // Sequential coding makes GUI programming confusing :(
+    if (firstFrame)
+      readyToTrigNoSoundFilePopup = true;
+    else
+      readyToTrigNoSoundFilePopup = false;
   }
 
   if (granulator.getNumberOfAudioFiles() != 0) {
-    noSoundFiles = false;
+    readyToTrigNoSoundFilePopup = true;
+  }
+
+  // Throw popup to remind user to load in sound files if none are
+  // present.
+  if (ImGui::BeginPopupModal("No Sound File")) {
+    isPaused = true;
+    ImGui::Text("Load a sound file to continue using EmissionControl");
+    if (ImGui::Button("Load Sound File")) {
+      result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
+
+      if (result == NFD_OKAY) {
+        size_t i;
+        for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
+          nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
+          bool success = granulator.loadSoundFileRT(path);
+          if (success) {
+            createAudioThumbnail(granulator.soundClip.back()->data,
+                                 granulator.soundClip.back()->size);
+            readyToTrigNoSoundFilePopup = true;
+          }
+        }
+        NFD_PathSet_Free(&pathSet);
+      }
+      if (readyToTrigNoSoundFilePopup) ImGui::CloseCurrentPopup();
+    }
+    if (ImGui::Button("Load Sound File Preset")) {
+      isSoundFilePresetLoadWindow = true;
+    }
+    ImGui::EndPopup();
   }
 
   // Draw GUI
@@ -246,6 +304,13 @@ void ecInterface::onDraw(Graphics &g) {
   // draw menu bar ----------------------------------------------------
   // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Preferences")) {
+      if (ImGui::Checkbox("Soft Reset Scan Begin", &isSoftResetScanBegin)) {
+        granulator.setSoftScanBegin(isSoftResetScanBegin);
+      }
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("Audio")) {
       if (ImGui::MenuItem("Audio Output", "")) {
         displayIO = true;
@@ -259,6 +324,13 @@ void ecInterface::onDraw(Graphics &g) {
           setSoundOutputPath(outPath);
         }
       }
+      if (ImGui::Checkbox("Clip Audio", &isHardClip)) {
+        audioIO().clipOut(isHardClip);
+      }
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Sound Files")) {
       if (ImGui::MenuItem("Load Sound File", "")) {
         ImGui::Text("%s", currentFile.c_str());
 
@@ -282,8 +354,124 @@ void ecInterface::onDraw(Graphics &g) {
         audioThumbnails.erase(audioThumbnails.begin() + granulator.mModClip);
         granulator.removeCurrentSoundFile();
       }
+      ImGui::Separator();
+      if (ImGui::MenuItem("Save Sound File Preset", "")) {
+        isSoundFilePresetWriteWindow = true;
+      }
+      if (ImGui::MenuItem("Load Sound File Preset", "")) {
+        isSoundFilePresetLoadWindow = true;
+      }
+      if (ImGui::MenuItem("Delete Sound File Preset", "")) {
+        isSoundFilePresetDeleteWindow = true;
+      }
       ImGui::EndMenu();
     }
+
+    // BEGIN WRITE SOUND FILE PRESET
+    if (isSoundFilePresetWriteWindow) {
+      ImGui::OpenPopup("Save Sound File Preset");
+    }
+    bool isSoundFilePresetWriteOpen = true;
+    bool isWriteJSON = false;
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Save Sound File Preset", &isSoundFilePresetWriteOpen)) {
+      ImGui::InputText("Enter Preset Name", mCurrentSoundFilePresetName, 50,
+                       ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
+
+      if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+      ImGui::SameLine();
+
+      if (ImGui::Button("Save")) {
+        ImGui::CloseCurrentPopup();
+        isSoundFilePresetWriteOpen = false;
+        isWriteJSON = true;
+      }
+
+      ImGui::SameLine();
+
+      ImGui::Checkbox("Overwrite", &allowSoundFilePresetOverwrite);
+
+      ImGui::EndPopup();
+    }
+    if (!isSoundFilePresetWriteOpen && isWriteJSON) {
+      writeJSONSoundFilePreset(mCurrentSoundFilePresetName, allowSoundFilePresetOverwrite);
+      isWriteJSON = false;
+    }
+    // END WRITE SOUND FILE PRESET
+
+    // BEGIN LOAD SOUND FILE PRESET
+    if (isSoundFilePresetLoadWindow) {
+      ImGui::OpenPopup("Load Sound File Preset");
+    }
+    // Sound File Load Preset Window
+    bool isSoundFileLoadOpen = true;
+    bool isLoadJSON = false;
+    std::string sound_file_preset_name = "";
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+
+    if (ImGui::BeginPopupModal("Load Sound File Preset", &isSoundFileLoadOpen)) {
+      for (auto iter = SoundFilePresetNames.begin(); iter != SoundFilePresetNames.end(); iter++) {
+        if (ImGui::Selectable(iter->c_str())) {
+          isSoundFileLoadOpen = false;
+          isLoadJSON = true;
+          sound_file_preset_name = *iter;
+        }
+      }
+      ImGui::EndPopup();
+    }
+
+    if (!isSoundFileLoadOpen && isLoadJSON) {
+      failed_paths = loadJSONSoundFilePreset(sound_file_preset_name);
+      isLoadJSON = false;
+    }
+
+    if (failed_paths.size() != 0) {
+      ImGui::OpenPopup("Failed Paths");
+    }
+    bool plsGiveMeAnXImGui = true;
+    if (ImGui::BeginPopupModal("Failed Paths", &plsGiveMeAnXImGui)) {
+      ImGui::Text("Sound Files Not Found:");
+      for (int index = 0; index < failed_paths.size(); index++) {
+        ImGui::Text("%s", failed_paths[index].c_str());
+      }
+      ImGui::EndPopup();
+    }
+    if (!plsGiveMeAnXImGui) {
+      failed_paths.clear();
+    }
+
+    if ((!isSoundFileLoadOpen || !plsGiveMeAnXImGui) && granulator.getNumberOfAudioFiles() == 0)
+      readyToTrigNoSoundFilePopup = true;
+    // END LOAD SOUND FILE PRESET
+
+    // BEGIN DELETE SOUND FILE PRESET
+    if (isSoundFilePresetDeleteWindow) {
+      ImGui::OpenPopup("Delete Sound File Preset");
+    }
+    bool isSoundFilePresetDeleteOpen = true;
+    bool isDeleteJSON = false;
+    sound_file_preset_name = "";
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Delete Sound File Preset", &isSoundFilePresetDeleteOpen)) {
+      for (auto iter = SoundFilePresetNames.begin(); iter != SoundFilePresetNames.end(); iter++) {
+        if (ImGui::Selectable(iter->c_str())) {
+          isSoundFilePresetDeleteOpen = false;
+          isDeleteJSON = true;
+          sound_file_preset_name = *iter;
+        }
+      }
+      ImGui::EndPopup();
+    }
+    if (!isSoundFilePresetDeleteOpen && isDeleteJSON) {
+      deleteJSONSoundFilePreset(sound_file_preset_name);
+      isDeleteJSON = false;
+    }
+    // END DELETE SOUND FILE PRESET
+    // END SOUND FILE PRESETS
 
     if (ImGui::BeginMenu("MIDI")) {
       if (ImGui::MenuItem("MIDI Devices", "")) {
@@ -300,7 +488,7 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Clear MIDI Learn", "")) {
         clearActiveMIDI();
       }
-
+      ImGui::Separator();
       if (ImGui::MenuItem("Save MIDI Learn Preset", "")) {
         isMIDIWriteWindow = true;
       }
@@ -311,6 +499,9 @@ void ecInterface::onDraw(Graphics &g) {
 
       if (ImGui::MenuItem("Delete MIDI Learn Preset", "")) {
         isMIDIDeleteWindow = true;
+      }
+      if (ImGui::MenuItem("MIDI Learn Help", "")) {
+        isMIDIHelpWindow = true;
       }
       ImGui::EndMenu();
     }
@@ -377,10 +568,7 @@ void ecInterface::onDraw(Graphics &g) {
           isPaused = false;
           audioIO().open();
           audioIO().start();
-          noSoundFiles = false;
-        } else {
-          ImGui::OpenPopup("No Sound File");
-          noSoundFiles = true;
+          readyToTrigNoSoundFilePopup = true;
         }
       }
     } else if (audioIO().isRunning()) {
@@ -525,7 +713,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
-    ImGui::InputText("Enter Preset Name", mCurrentPresetName, 50,
+    ImGui::InputText("Enter Preset Name", mCurrentMIDIPresetName, 50,
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
 
     if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
@@ -545,8 +733,23 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndPopup();
   }
   if (!isMIDIWriteOpen && isWriteJSON) {
-    writeJSONMIDIPreset(mCurrentPresetName, allowMIDIPresetOverwrite);
+    writeJSONMIDIPreset(mCurrentMIDIPresetName, allowMIDIPresetOverwrite);
     isWriteJSON = false;
+  }
+
+  // MIDI Learn Help Window
+  if (isMIDIHelpWindow) {
+    ImGui::OpenPopup("MIDI Learn Help");
+  }
+  bool isMIDIHelpOpen = true;
+  ImGui::SetNextWindowSize(ImVec2(500 * fontScale, 400 * adjustScaleY));
+  if (ImGui::BeginPopupModal("MIDI Learn Help", &isMIDIHelpOpen, ImGuiWindowFlags_NoResize)) {
+    for (int i = 0; i < MIDIHelpLines.size(); i++) {
+      ImGui::SetCursorPosX((250 * fontScale) -
+                           (ImGui::CalcTextSize(MIDIHelpLines[i].c_str()).x / 2));
+      ImGui::TextUnformatted(MIDIHelpLines[i].c_str());
+    }
+    ImGui::EndPopup();
   }
 
   // PopUp Font scale window
@@ -575,7 +778,7 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 6)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Audio Settings", &audioOpen)) {
-    drawAudioIO(&audioIO(), displayIO);
+    drawAudioIO(&audioIO());
     ImGui::EndPopup();
   }
 
@@ -606,6 +809,8 @@ void ecInterface::onDraw(Graphics &g) {
     // Set Dynamic Slider Text
     granulator.ECParameters[consts::SOUND_FILE]->setSliderText(
       granulator.getCurrentAudioFileName());
+  } else {
+    granulator.ECParameters[consts::SOUND_FILE]->setSliderText("No Sound Files");
   }
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    GRANULATION CONTROLS", 0, menuBarHeight, windowWidth / 2,
@@ -746,7 +951,8 @@ void ecInterface::onDraw(Graphics &g) {
                            secondRowHeight, flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut() <= 1 ? 1 : 2, soundOutput);
+  drawRecorderWidget(&mRecorder, audioIO().framesPerSecond(), audioIO().channelsOut() <= 1 ? 1 : 2,
+                     soundOutput);
   if (ImGui::Button("Change Output Path")) {
     result = NFD_PickFolder(NULL, &outPath);
 
@@ -1039,37 +1245,11 @@ void ecInterface::onDraw(Graphics &g) {
     ParameterGUI::endPanel();
   }
   if (width() < 1250) ImGui::PopStyleVar();
-
-  // Throw popup to remind user to load in sound files if none are
-  // present.
-  if (ImGui::BeginPopupModal("No Sound File")) {
-    isPaused = true;
-    ImGui::Text("Load a sound file to continue using EmissionControl");
-    if (ImGui::Button("Load Sound File")) {
-      result = NFD_OpenDialogMultiple("wav;aiff;aif", NULL, &pathSet);
-
-      if (result == NFD_OKAY) {
-        size_t i;
-        for (i = 0; i < NFD_PathSet_GetCount(&pathSet); ++i) {
-          nfdchar_t *path = NFD_PathSet_GetPath(&pathSet, i);
-          bool success = granulator.loadSoundFileRT(path);
-          if (success) {
-            createAudioThumbnail(granulator.soundClip.back()->data,
-                                 granulator.soundClip.back()->size);
-            noSoundFiles = false;
-          }
-        }
-        NFD_PathSet_Free(&pathSet);
-      }
-      if (!noSoundFiles) ImGui::CloseCurrentPopup();
-    }
-    ImGui::EndPopup();
-  }
   ImGui::PopStyleColor(18);
   ImGui::PopStyleVar(3);
   al::imguiEndFrame();
-
   al::imguiDraw();
+  firstFrame = false;
 }
 
 bool ecInterface::onKeyDown(Keyboard const &k) {
@@ -1112,7 +1292,7 @@ void ecInterface::initMIDI() {
     printf("Error: No MIDI devices found.\n");
   }
 }
-
+bool first = true;
 void ecInterface::onMIDIMessage(const MIDIMessage &m) {
   switch (m.type()) {
     // Control messages need to be parsed again...
@@ -1132,6 +1312,7 @@ void ecInterface::onMIDIMessage(const MIDIMessage &m) {
         }
         mIsLinkingParamAndMIDI = false;
       }
+
       updateActiveMIDIParams(m);
       break;
     default:;
@@ -1156,6 +1337,9 @@ void ecInterface::updateActiveMIDIParams(const MIDIMessage &m) {
           case M_DUTY:
             updateLFODutyParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
             break;
+          case M_MORPH:
+            updatePresetMorphParamMIDI(m.controlValue());
+            break;
           default:
             updateECParamMIDI(m.controlValue(), ActiveMIDI[index].getKeysIndex());
         }
@@ -1177,11 +1361,13 @@ void ecInterface::unlinkParamAndMIDI(MIDIKey &paramKey) {
   if (found) ActiveMIDI.erase(ActiveMIDI.begin() + index);
 }
 
-void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
+void ecInterface::drawAudioIO(AudioIO *io) {
   struct AudioIOState {
     int currentSr = 1;
     int currentBufSize = 3;
     int currentDevice = 0;
+    int currentOut = 1;
+    int currentMaxOut;
     std::vector<std::string> devices;
   };
   auto updateOutDevices = [&](AudioIOState &state) {
@@ -1194,6 +1380,8 @@ void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
       state.devices.push_back(AudioDevice(i).name());
       if (currentAudioDevice == AudioDevice(i).name()) {
         state.currentDevice = dev_out_index;
+        state.currentOut = granulator.getLeadChannel() + 1;
+        state.currentMaxOut = AudioDevice(i).channelsOutMax();
       }
       dev_out_index++;
     }
@@ -1226,7 +1414,34 @@ void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
     if (ImGui::Combo("Device", &state.currentDevice, ParameterGUI::vector_getter,
                      static_cast<void *>(&state.devices), state.devices.size())) {
+      state.currentMaxOut =
+        AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT).channelsOutMax();
     }
+    std::string chan_label = "Select Outs: (Up to " + std::to_string(state.currentMaxOut) + " )";
+    ImGui::Text(chan_label.c_str(), "%s");
+    // ImGui::SameLine();
+    // ImGui::Checkbox("Mono/Stereo", &isStereo);
+    ImGui::Indent(25 * fontScale);
+    ImGui::PushItemWidth(50 * fontScale);
+    ImGui::DragInt("Chan 1", &state.currentOut, 1.0f, 0, state.currentMaxOut - 1, "%d", 1 << 4);
+
+    if (state.currentOut > state.currentMaxOut - 1) state.currentOut = state.currentMaxOut - 1;
+    if (state.currentOut < 1) state.currentOut = 1;
+
+    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    for (int i = 1; i < MAX_AUDIO_OUTS; i++) {
+      ImGui::SameLine();
+      int temp = state.currentOut + i;
+      std::string channel = "Chan " + std::to_string(i + 1);
+      ImGui::DragInt(channel.c_str(), &temp, 1.0f, 0, state.currentMaxOut, "%d", 1 << 4);
+    }
+    ImGui::PopStyleVar();
+    ImGui::PopItemFlag();
+
+    ImGui::Unindent(25 * fontScale);
+    ImGui::PopItemWidth();
+
     std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
     ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
                  static_cast<void *>(&samplingRates), samplingRates.size());
@@ -1237,10 +1452,12 @@ void ecInterface::drawAudioIO(AudioIO *io, bool trig) {
       io->framesPerBuffer(consts::BLOCK_SIZE);
       io->device(AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT));
       currentAudioDevice = state.devices.at(state.currentDevice);
+      granulator.setOutChannels(state.currentOut - 1, state.currentMaxOut);
       granulator.setIO(io);
       if (writeSampleRate) {
         jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
         jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
+        jsonWriteToConfig(state.currentOut - 1, consts::LEAD_CHANNEL_KEY);
       }
 
       granulator.resampleSoundFiles();
@@ -1387,8 +1604,18 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
 
   int selection = presetHandler->getCurrentPresetIndex();
   std::string currentPresetName = presetHandler->getCurrentPresetName();
-  if (currentPresetName.length() == 0) currentPresetName = "none";
-  ImGui::Text("Current Preset: %s", currentPresetName.c_str());
+  // JACK KILGORE CHANGE, remove map from display
+  int delim_index = 0;
+  if (currentPresetName.length() == 0)
+    currentPresetName = "none";
+  else
+    delim_index = (state.currentBank + "-").size();
+
+  if (currentPresetName.size() > delim_index &&
+      currentPresetName.substr(0, delim_index) == state.currentBank + "-")
+    ImGui::Text("Current Preset: %s", currentPresetName.substr(delim_index).c_str());
+  else
+    ImGui::Text("Current Preset: %s", currentPresetName.c_str());
   int counter = state.presetHandlerBank * (presetColumns * presetRows);
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Text, light ? (ImVec4)*ECblue : (ImVec4)*ECgreen);
@@ -1414,7 +1641,11 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
           if (saveName.size() == 0) {
             saveName = name;
           }
-          presetHandler->storePreset(counter, saveName.c_str());
+          // JACK KILGORE CHANGE --
+          // OLD : resetHandler->storePreset(counter, saveName.c_str());
+          // NEW : Adds preset map name to stored preset to allow presets w/ the same name over
+          //       different maps.
+          presetHandler->storePreset(counter, (state.currentBank + "-" + saveName).c_str());
           selection = counter;
           state.storeButtonState = false;
           ImGui::PopStyleColor();
@@ -1443,14 +1674,14 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
       state.presetHandlerBank = 4;
     }
   }
-  ImGui::SameLine();
+  ImGui::SameLine(0.0f, 2.0f);
   if (ImGui::Button("->")) {
     state.presetHandlerBank += 1;
     if (state.presetHandlerBank > 4) {
       state.presetHandlerBank = 0;
     }
   }
-  ImGui::SameLine(0.0f, 20.0f);
+  ImGui::SameLine(0.0f, 5.0f);
 
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)*ECgreen);
@@ -1465,10 +1696,62 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   }
   ImGui::SameLine();
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (70 * fontScale));
+
+  // BEGIN MIDI LOGIC
+  colPushCount = 0;
+  if (mIsLinkingParamAndMIDI && mCurrentLearningMIDIKey.getType() == consts::M_MORPH) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECgreen);
+    colPushCount = 2;
+  } else if (mCurrentLearningMIDIKey.getType() == consts::M_MORPH && (unlearnFlash % 20) > 10) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECred);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECred);
+    colPushCount += 2;
+  }
+
+  // Draw Morph Time Control
   float morphTime = presetHandler->getMorphTime();
-  if (ImGui::InputFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
+  if (ImGui::SliderFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
     presetHandler->setMorphTime(morphTime);
   }
+  ImGui::PopStyleColor(colPushCount);
+
+  // Press m while hovering over a parameter to start midi learn.
+  if (ImGui::IsItemHovered() &&
+      mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
+      !mLastKeyDown.key.shift() && mLastKeyDown.readyToTrig) {
+    mMIDILearn.mParamAdd = true;
+  }
+  if (ImGui::IsItemHovered() &&
+      mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
+      mLastKeyDown.key.shift() && mLastKeyDown.readyToTrig) {
+    mMIDILearn.mParamDel = true;
+  }
+
+  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
+    ImGui::OpenPopup("rightClickMorph");
+  }
+  if (ImGui::BeginPopup("rightClickMorph")) {
+    if (ImGui::Selectable("MIDI Learn")) {
+      mMIDILearn.mParamAdd = true;
+    }
+    if (ImGui::Selectable("MIDI Unlearn")) {
+      mMIDILearn.mParamDel = true;
+    }
+    ImGui::Separator();
+    ImGui::EndPopup();
+  }
+  if (mMIDILearn.mParamAdd) {
+    mCurrentLearningMIDIKey.setKeysIndex(0, consts::M_MORPH);
+    mIsLinkingParamAndMIDI = true;
+  }
+  if (mMIDILearn.mParamDel) {
+    mCurrentLearningMIDIKey.setKeysIndex(0, consts::M_MORPH);
+    unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+    unlearnFlash = 60;
+  }
+  // END MIDI LOGIC
+
   ImGui::PopItemWidth();
   if (state.storeButtonState) {
     char buf1[64];
@@ -1522,6 +1805,10 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         file.close();
         state.newMap = false;
         stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();  // optimize
+        // JACK KILGORE CHANGE : when new map is made, automatically switch to it.
+        state.currentBank = state.newMapText;
+        presetHandler->setCurrentPresetMap(state.newMapText);
+        currentPresetMap = presetHandler->readPresetMap(state.newMapText);
       }
       ImGui::SameLine();
       if (ImGui::Button("Cancel")) {
@@ -1569,6 +1856,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::MIDI_PRESET_NAMES_KEY) == config.end())
       config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
+    if (config.find(consts::SAMPLE_PRESET_NAMES_KEY) == config.end())
+      config[consts::SAMPLE_PRESET_NAMES_KEY] = json::array();
+
     if (config.find(consts::SOUND_OUTPUT_PATH_KEY) == config.end())
       config[consts::SOUND_OUTPUT_PATH_KEY] =
         al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
@@ -1597,8 +1887,13 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::DEFAULT_AUDIO_DEVICE_KEY) == config.end())
       config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
 
+    if (config.find(consts::LEAD_CHANNEL_KEY) == config.end())
+      config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
+
+    config[consts::SAMPLE_PRESET_NAMES_KEY] = json::array();
 
     config[consts::SOUND_OUTPUT_PATH_KEY] =
       al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
@@ -1618,6 +1913,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::IS_FIRST_LAUNCH_KEY] = consts::IS_FIRST_LAUNCH;
 
     config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
+
+    config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
   }
 
   std::ofstream file((userPath + configFile).c_str());
@@ -1646,7 +1943,8 @@ bool ecInterface::jsonWriteToConfig(T value, std::string key) {
   }
 }
 
-bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &presetNames) {
+bool ecInterface::jsonWriteMapToConfig(std::unordered_set<std::string> &presetNames,
+                                       std::string key) {
   json config;
 
   std::ifstream ifs(userPath + configFile);
@@ -1656,7 +1954,7 @@ bool ecInterface::jsonWriteMIDIPresetNames(std::unordered_set<std::string> &pres
   for (auto iter = presetNames.begin(); iter != presetNames.end(); iter++) {
     preset_names.push_back(*iter);
   }
-  config[consts::MIDI_PRESET_NAMES_KEY] = preset_names;
+  config[key] = preset_names;
 
   std::ofstream file((userPath + configFile).c_str());
   if (file.is_open()) {
@@ -1683,6 +1981,12 @@ void ecInterface::setMIDIPresetNames(json preset_names) {
   }
 }
 
+void ecInterface::setSoundFilePresetNames(json preset_names) {
+  for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
+    SoundFilePresetNames.insert(iter->get<std::string>());
+  }
+}
+
 void ecInterface::setSoundOutputPath(std::string sound_output_path) {
   soundOutput = al::File::conformPathToOS(sound_output_path);
 }
@@ -1690,7 +1994,8 @@ void ecInterface::setSoundOutputPath(std::string sound_output_path) {
 void ecInterface::setAudioSettings(float sample_rate) {
   globalSamplingRate = sample_rate;
 
-  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::AUDIO_OUTS, consts::DEVICE_NUM);
+  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS,
+                 consts::DEVICE_NUM);
   granulator.setGlobalSamplingRate(sample_rate);
 }
 
@@ -1740,7 +2045,7 @@ void ecInterface::writeJSONMIDIPreset(std::string name, bool allowOverwrite) {
   }
 
   MIDIPresetNames.insert(filename);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  jsonWriteMapToConfig(MIDIPresetNames, consts::MIDI_PRESET_NAMES_KEY);
   json midi_config = json::array();
 
   json temp;
@@ -1772,6 +2077,82 @@ void ecInterface::loadJSONMIDIPreset(std::string midi_preset_name) {
 
 void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
   MIDIPresetNames.erase(midi_preset_name);
-  jsonWriteMIDIPresetNames(MIDIPresetNames);
+  jsonWriteMapToConfig(MIDIPresetNames, consts::MIDI_PRESET_NAMES_KEY);
   std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
 }
+
+void ecInterface::writeJSONSoundFilePreset(std::string name, bool allowOverwrite) {
+  if (name == "") return;
+
+  std::string filename = name;
+  if (!allowOverwrite) {
+    int counter = 1;
+    while (File::exists(userPath + samplePresetsPath + filename + ".json") && counter < 9999) {
+      filename = name + "_" + std::to_string(counter++);
+    }
+  }
+
+  SoundFilePresetNames.insert(filename);
+  jsonWriteMapToConfig(SoundFilePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
+  json sound_file_config = json::array();
+
+  for (int index = 0; index < granulator.soundClipFileName.size(); index++) {
+    sound_file_config.push_back(granulator.soundClipFileName[index]);
+  }
+
+  std::ofstream file((userPath + samplePresetsPath + filename + ".json").c_str());
+  if (file.is_open()) file << sound_file_config;
+}
+
+// JSON Sound File Load
+std::vector<std::string> ecInterface::loadJSONSoundFilePreset(std::string sound_file_preset_name) {
+  std::ifstream ifs(userPath + samplePresetsPath + sound_file_preset_name + ".json");
+
+  json sound_file_config;
+
+  if (ifs.is_open())
+    sound_file_config = json::parse(ifs);
+  else
+    return {};
+
+  // Lock so the audio thread doesn't misread buffer while clearing files.
+  std::unique_lock<std::mutex> lk(mLock);
+  // granulator.clearSoundFiles();
+  int counter = 0;
+  int size = granulator.soundClipFileName.size();
+  for (int index = 0; index < size; index++) {
+    if (std::find(sound_file_config.begin(), sound_file_config.end(),
+                  granulator.soundClipFileName[index - counter]) == sound_file_config.end()) {
+      audioThumbnails.erase(audioThumbnails.begin() + (index - counter));
+      granulator.removeSoundFile(index - counter);
+      counter++;
+    }
+  }
+
+  std::string temp_path;
+  std::vector<std::string> failed_loads;
+  for (int index = 0; index < sound_file_config.size(); index++) {
+    temp_path = al::File::conformPathToOS(sound_file_config[index]);
+    if (std::find(granulator.soundClipFileName.begin(), granulator.soundClipFileName.end(),
+                  temp_path) != granulator.soundClipFileName.end()) {
+      continue;
+    }
+    if (al::File::exists(temp_path)) {
+      granulator.loadSoundFileRT(sound_file_config[index]);
+      createAudioThumbnail(granulator.soundClip[granulator.soundClip.size() - 1]->data,
+                           granulator.soundClip[granulator.soundClip.size() - 1]->size);
+    } else {
+      failed_loads.push_back(temp_path);
+    }
+  }
+  granulator.mModClip = 0;
+  return failed_loads;
+}
+
+void ecInterface::deleteJSONSoundFilePreset(std::string sound_file_preset_name) {
+  SoundFilePresetNames.erase(sound_file_preset_name);
+  jsonWriteMapToConfig(SoundFilePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
+  std::remove((userPath + samplePresetsPath + sound_file_preset_name + ".json").c_str());
+}
+
+void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
