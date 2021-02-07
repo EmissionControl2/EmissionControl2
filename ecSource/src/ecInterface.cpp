@@ -223,6 +223,7 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDILoadWindow = false;
   bool isMIDIDeleteWindow = false;
   bool isMIDIDevicesWindow = false;
+  bool isMIDIHelpWindow = false;
 
   bool isSoundFilePresetWriteWindow = false;
   bool isSoundFilePresetLoadWindow = false;
@@ -495,6 +496,9 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Delete MIDI Learn Preset", "")) {
         isMIDIDeleteWindow = true;
       }
+      if (ImGui::MenuItem("MIDI Learn Help", "")) {
+        isMIDIHelpWindow = true;
+      }
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("View")) {
@@ -727,6 +731,21 @@ void ecInterface::onDraw(Graphics &g) {
   if (!isMIDIWriteOpen && isWriteJSON) {
     writeJSONMIDIPreset(mCurrentMIDIPresetName, allowMIDIPresetOverwrite);
     isWriteJSON = false;
+  }
+
+  // MIDI Learn Help Window
+  if (isMIDIHelpWindow) {
+    ImGui::OpenPopup("MIDI Learn Help");
+  }
+  bool isMIDIHelpOpen = true;
+  ImGui::SetNextWindowSize(ImVec2(500 * fontScale, 400 * adjustScaleY));
+  if (ImGui::BeginPopupModal("MIDI Learn Help", &isMIDIHelpOpen, ImGuiWindowFlags_NoResize)) {
+    for (int i = 0; i < MIDIHelpLines.size(); i++) {
+      ImGui::SetCursorPosX((250 * fontScale) -
+                           (ImGui::CalcTextSize(MIDIHelpLines[i].c_str()).x / 2));
+      ImGui::TextUnformatted(MIDIHelpLines[i].c_str());
+    }
+    ImGui::EndPopup();
   }
 
   // PopUp Font scale window

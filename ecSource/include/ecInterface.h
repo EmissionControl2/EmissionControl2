@@ -219,6 +219,22 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     "Copyright 2020 Curtis Roads, Jack Kilgore, Rodney Duplessis",
     "This program comes with absolutely no warranty.",
     "See the GNU General Public License, version 3 or later for details."};
+  std::vector<std::string> MIDIHelpLines = {
+    "MIDI Learn ",
+    "MIDI Learn allows you to control a parameter in EC2",
+    "with a MIDI fader or knob on your MIDI controller.",
+    " ",
+    "After you have set up your MIDI Device in EC2, you can MIDI Learn",
+    "by hovering over a parameter and pressing \"m\" on your keyboard.",
+    "Then, simply move the control on your device that you want to pair.",
+    "To unlearn, hover over a parameter and press \"shift+m\" on your keyboard.",
+    " ",
+    "The parameters that are MIDI Learnable are:",
+    " ",
+    "All of the sliders in GRANULATION CONTROLS",
+    "All of the sliders in MODULATION CONTROLS",
+    "All of the sliders in LFO CONTROLS",
+    "The Morph Time slider in PRESETS"};
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath,
     samplePresetsPath;
   nfdchar_t *outPath = NULL;
