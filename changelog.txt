@@ -1,0 +1,10 @@
+Version 1.1 Changelog:
+
+- Fixed edge-case causing crash on record
+- Added user configurable output channels
+- Added sound file presets
+- Fixed bug causing conflicts between saved preset maps
+- Added preference menu
+- Added option to disable clipping (hard-limiting) of sound output
+- Added option to change scan begin behavior
+- Added MIDI control to Morph Time
