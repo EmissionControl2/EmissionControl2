@@ -24,6 +24,9 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
+/**** External LIB ****/
+#include "imgui_internal.h"
+
 /**** CSTD LIB ****/
 #include <string>
 
@@ -580,7 +583,9 @@ class LFOstruct {
     polarity->setElements({"BI", "UNI+", "UNI-"});
   }
 
-  void drawLFOControl(MIDILearnBool *isMIDILearn, KeyDown *k) {
+
+  // Returns x offset for drawLFODuty
+  int drawLFOControl(MIDILearnBool *isMIDILearn, KeyDown *k) {
     ImGuiIO &io = ImGui::GetIO();
     ImGui::Text("LFO%i", mLFONumber + 1);
     ImGui::SameLine();
@@ -592,18 +597,54 @@ class LFOstruct {
     al::ParameterGUI::drawMenu(polarity);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    int sliderPos = ImGui::GetCursorPosX();
+    int x =  ImGui::GetCursorPosX();
     frequency->drawRangeSlider(isMIDILearn, k);
-    if (*shape == 1) {
-      ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
-      ImGui::Text("Duty");
-      ImGui::SameLine();
-      ImGui::SetCursorPosX(sliderPos);
-      ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * io.FontGlobalScale) + 8);
-      al::ParameterGUI::drawParameter(duty);
-      ImGui::PopItemWidth();
-    }
+    return x;
   }
+
+  void drawLFODuty(MIDILearnBool *isMIDILearn, KeyDown *k, int x_offset) {
+    if (*shape != 1) 
+      return;
+
+    ImGuiIO &io = ImGui::GetIO();
+    int sliderPos = x_offset;//ImGui::GetCursorPosX();
+
+    ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
+    ImGui::Text("Duty");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(sliderPos);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (35 * io.FontGlobalScale) + 8);
+    al::ParameterGUI::drawParameter(duty);
+    // MIDI LEARN Functionality
+    isMIDILearn->mParamAdd = false;
+    isMIDILearn->mParamDel = false;
+
+    // Press m while hovering over a parameter to start midi learn.
+    if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
+        !k->key.shift() && k->readyToTrig) {
+      isMIDILearn->mParamAdd = true;
+    }
+
+    // Press shift-m while hovering over a parameter to midi unlearn.
+    if (ImGui::IsItemHovered() && k->key.key() == static_cast<int>(consts::KEYBOARD_MIDI_UNLEARN) &&
+        k->key.shift() && k->readyToTrig) {
+      isMIDILearn->mParamDel = true;
+    }
+
+    if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
+      ImGui::OpenPopup(("rightClickSlider" + duty->getName()).c_str());
+    }
+    if (ImGui::BeginPopup(("rightClickSlider" + duty->getName()).c_str())) {
+      if (ImGui::Selectable("MIDI Learn")) {
+        isMIDILearn->mParamAdd = true;
+      }
+      if (ImGui::Selectable("MIDI Unlearn")) {
+        isMIDILearn->mParamDel = true;
+      }
+      ImGui::EndPopup();
+    }
+    ImGui::PopItemWidth();
+}
 
   // destructor
   ~LFOstruct() {

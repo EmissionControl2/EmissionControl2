@@ -972,6 +972,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_LFOS; index++) {
+    bool no_learn = false;
+    // THIS WILL DRAW THE MAIN LFO
     colPushCount = 0;
     if (mCurrentLearningMIDIKey.getType() == consts::M_LFO &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
@@ -990,19 +992,57 @@ void ecInterface::onDraw(Graphics &g) {
     // This allows mLasyKeyDown.readyToTrig to be set to false.
     if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
 
-    granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn, &mLastKeyDown);
+    int x_offset = granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
       mIsLinkingParamAndMIDI = true;
+      no_learn = true;
     }
     if (mMIDILearn.mParamDel) {
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
       unlinkParamAndMIDI(mCurrentLearningMIDIKey);
       unlearnFlash = 60;
+      no_learn = true;
     }
     ImGui::PopStyleColor(colPushCount);
+
+    // THIS WILL DRAW THE DUTY CYCLE
+    colPushCount = 0;
+    if (mCurrentLearningMIDIKey.getType() == consts::M_DUTY &&
+        mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECgreen);
+      colPushCount += 2;
+    } else if (mCurrentLearningMIDIKey.getType() == consts::M_DUTY &&
+               mCurrentLearningMIDIKey.getKeysIndex() == index && (unlearnFlash % 20) > 10) {
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECred);
+      ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)*ECred);
+      colPushCount += 2;
+    }
+
+    // WARNING, hacky as fuck.
+    // This is to tell the drawRangeSlider that this is the last parameter to check.
+    // This allows mLasyKeyDown.readyToTrig to be set to false.
+    if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
+    
+    // Will only draw this if a square.
+    granulator.LFOParameters[index]->drawLFODuty(&mMIDILearn, &mLastKeyDown,x_offset);
+    if (mMIDILearn.mParamAdd && !no_learn) {
+      // This inits. the onMidiMessage loop to listen for midi input.
+      // This first MIDI input to come through will be linked.
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_DUTY);
+      mIsLinkingParamAndMIDI = true;
+    }
+    if (mMIDILearn.mParamDel && !no_learn) {
+      mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_DUTY);
+      unlinkParamAndMIDI(mCurrentLearningMIDIKey);
+      unlearnFlash = 60;
+    }
+    ImGui::PopStyleColor(colPushCount);
+
+
   }
 
   ImGui::PopFont();

@@ -7,8 +7,6 @@
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
 
-/**** External LIB ****/
-#include "imgui_internal.h"
 
 /**** CSTD LIB ****/
 #include <iostream>
