@@ -81,7 +81,6 @@ float ecModulator::operator()() {
     }
   } else if (mModWaveform == consts::SQUARE) {
     if (mPolarity == consts::BI) {
-      // std::cout << mWidth << std::endl;
       result = mLFO.tri();
       if (result >= -2 * (mWidth - 0.5))
         result = 1.0;
@@ -203,6 +202,7 @@ void ecModulator::setWidth(float width) {
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
 float ecModulator::sampleAndHoldUniform(float low, float high) {
+  double yes, no;
   mLFO.nextPhase();
   lastPhase = currentPhase;
   currentPhase = mLFO.phaseI();
@@ -296,6 +296,23 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mParameter);
   presetHandler.registerParameter(*mLowRange);
   presetHandler.registerParameter(*mHighRange);
+}
+
+// current API passing by value, not possible.
+void ecParameter::removeFromPresetHandler(al::PresetHandler &presetHandler) {
+  // auto preset_vec = presetHandler.parameters();
+  // auto index = preset_vec.end();
+  // for(int i = 0; i < preset_vec.size(); i++) {
+  //   if(preset_vec[i]->getName() == this->mParameter->getName()) {
+  //     index = preset_vec.begin() + i;
+  //     std::cout << "here\n";
+  //   }
+  // }
+
+  // if(index == preset_vec.end())
+  //   return;
+
+  // preset_vec.erase(index,index + 3);  
 }
 
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {

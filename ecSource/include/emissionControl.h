@@ -483,6 +483,7 @@ class ecParameter {
    * @param[in] presetHandler : A reference to a preset handler.
    */
   void addToPresetHandler(al::PresetHandler &presetHandler);
+  void removeFromPresetHandler(al::PresetHandler &presetHandler);
 
   void setLog(bool isLog) { mIsLog = isLog; }
 
