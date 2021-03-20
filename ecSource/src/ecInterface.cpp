@@ -1674,8 +1674,15 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
 
-      if (ImGui::Selectable(name.c_str(), is_selected, 0,
-                            ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f))) {
+      const bool selectableSelected = ImGui::Selectable(name.c_str(), is_selected, 0,
+                            ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
+      if( ImGui::IsItemHovered() && ! nothingStored) // tooltip showing preset name
+      {
+        const std::string currentlyhoveringPresetName = presetHandler->getPresetName(counter);
+        ImGui::SetTooltip("%s", currentlyhoveringPresetName.c_str());
+      }
+
+      if (selectableSelected) {
         if (state.storeButtonState) {
           std::string saveName = state.enteredText;
           if (saveName.size() == 0) {
