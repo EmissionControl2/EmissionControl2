@@ -406,10 +406,10 @@ class ecParameter {
    *
    */
   void setParam(float value) {
-    if (value < mMin)
-      mParameter->set(mMin);
-    else if (value > mMax)
-      mParameter->set(mMax);
+    if (value < mLowRange->get())
+      mParameter->set(mLowRange->get());
+    else if (value > mHighRange->get())
+      mParameter->set(mHighRange->get());
     else
       mParameter->set(value);
   }
@@ -437,8 +437,7 @@ class ecParameter {
    *
    */
   void setCurrentMin(float min) {
-    mMin = min;
-    mLowRange->set(mMin);
+    mLowRange->set(min);
   }
 
   /**
@@ -446,8 +445,7 @@ class ecParameter {
    *
    */
   void setCurrentMax(float max) {
-    mMax = max;
-    mHighRange->set(mMax);
+    mHighRange->set(max);
   }
 
   void setAbsoluteMinMax(float min, float max) {
@@ -467,14 +465,14 @@ class ecParameter {
    *
    * @return Max value.
    */
-  float getCurrentMin() const { return mMin; }
+  float getCurrentMin() const { return mLowRange->get(); }
 
   /**
    * @brief Get current max value.
    *
    * @return Max value.
    */
-  float getCurrentMax() const { return mMax; }
+  float getCurrentMax() const { return mHighRange->get(); }
 
   /**
    * @brief Registers all parameters within ecParameter to a preset
@@ -519,7 +517,6 @@ class ecParameter {
   std::string mSliderText;
   consts::sliderType mSliderType;
   std::shared_ptr<ecModulator> mModSource;
-  float mMax, mMin;
   bool mIndependentMod;
   bool mIsLog;
   // Draw flags
