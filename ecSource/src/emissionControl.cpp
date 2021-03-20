@@ -224,8 +224,8 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, flo
   mParameter->displayName("##" + parameterName);
   mLowRange = new Parameter{("##" + parameterName + "Low").c_str(), defaultMin, absMin, absMax};
   mHighRange = new Parameter{("##" + parameterName + "High").c_str(), defaultMax, absMin, absMax};
-  mMin = defaultMin;
-  mMax = defaultMax;
+  mLowRange->set(defaultMin);
+  mHighRange->set(defaultMax);
   mSliderType = slideType;
   mIsLog = isLog;
   mSliderText = sliderText;
@@ -245,8 +245,8 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, std
     new Parameter{("##" + parameterName + "Low").c_str(), Group, defaultMin, absMin, absMax};
   mHighRange =
     new Parameter{("##" + parameterName + "High").c_str(), Group, defaultMax, absMin, absMax};
-  mMin = defaultMin;
-  mMax = defaultMax;
+  mLowRange->set(defaultMin);
+  mHighRange->set(defaultMax);
   mSliderType = slideType;
   mIsLog = isLog;
   mSliderText = sliderText;

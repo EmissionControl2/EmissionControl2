@@ -145,7 +145,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    * @param[in] value: A value between 0 and 1. Percentage of parameter range.
    * @param[in] index: Index in ECParameters structure.
    */
-  void updateECParamMIDI(float val, int index) {
+  inline void updateECParamMIDI(float val, int index) {
     float result = util::outputValInRange(val, granulator.ECParameters[index]->getCurrentMin(),
                                           granulator.ECParameters[index]->getCurrentMax(),
                                           granulator.ECParameters[index]->isLog(), 3);
@@ -158,7 +158,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    * @param[in] value: A value between 0 and 1. Percentage of parameter range.
    * @param[in] index: Index in ECModParameters structure.
    */
-  void updateECModParamMIDI(float val, int index) {
+  inline void updateECModParamMIDI(float val, int index) {
     float result =
       util::outputValInRange(val, granulator.ECModParameters[index]->param.getCurrentMin(),
                              granulator.ECModParameters[index]->param.getCurrentMax(),
@@ -172,7 +172,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    * @param[in] value: A value between 0 and 1. Percentage of parameter range.
    * @param[in] index: Index in LFOParameters structure.
    */
-  void updateLFOParamMIDI(float val, int index) {
+  inline void updateLFOParamMIDI(float val, int index) {
     float result =
       util::outputValInRange(val, granulator.LFOParameters[index]->frequency->getCurrentMin(),
                              granulator.LFOParameters[index]->frequency->getCurrentMax(),
@@ -187,11 +187,11 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    * @param[in] value: A value between 0 and 1. Percentage of parameter range.
    * @param[in] index: Index in LFOParameters structure.
    */
-  void updateLFODutyParamMIDI(float val, int index) {
+  inline void updateLFODutyParamMIDI(float val, int index) {
     granulator.LFOParameters[index]->duty->set(val);
   }
 
-  void updatePresetMorphParamMIDI(float val) {
+  inline void updatePresetMorphParamMIDI(float val) {
     // Hard code to be logarithmic in scale.
     float result = util::outputValInRange(val, 0.0, 20.0, true, 3);
     mPresets->setMorphTime(result);
