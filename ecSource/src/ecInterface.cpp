@@ -109,6 +109,7 @@ void ecInterface::onInit() {
     file.open(path, std::ios::out);
     file.close();
   }
+  mPresets->setMaxMorphTime(consts::MAX_MORPH_TIME);
 
   for (int i = 0; i < granulator.soundClip.size(); i++)
     createAudioThumbnail(granulator.soundClip[i]->data, granulator.soundClip[i]->size);
@@ -1758,9 +1759,28 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
 
   // Draw Morph Time Control
   float morphTime = presetHandler->getMorphTime();
-  if (ImGui::SliderFloat("Morph Time", &morphTime, 0.0f, 20.0f)) {
+  char morphTime_str[64];
+  // Shown format to the user.
+  sprintf(morphTime_str, "%.2f s", morphTime);
+
+  // Offset by 1.0 because the log scale feels nicer this way.
+  morphTime = morphTime+1.;
+  bool is_text_input = false;
+  if (ImGui::SliderFloat("Morph Time", &morphTime, 1.0f, consts::MAX_MORPH_TIME+1.,
+    morphTime_str,ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_NoRoundToFormat)) {
+
+    // Map back to the true value.
+    morphTime = morphTime-1.;
     presetHandler->setMorphTime(morphTime);
+    is_text_input = (ImGui::IsItemActive() && ImGui::TempInputIsActive(ImGui::GetActiveID()));
   }
+  // If user used the text input, don't remap, just use the users inputted val.
+  // Omg this is hacky what are you doing jack.
+  if(ImGui::IsItemDeactivatedAfterEdit()) {
+    if(is_text_input)
+      presetHandler->setMorphTime(morphTime);
+  }
+
   ImGui::PopStyleColor(colPushCount);
 
   // Press m while hovering over a parameter to start midi learn.
@@ -1852,7 +1872,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         file.close();
         state.newMap = false;
         stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();  // optimize
-        // JACK KILGORE CHANGE : when new map is made, automatically switch to it.
+        // CHANGE : when new map is made, automatically switch to it.
         state.currentBank = state.newMapText;
         presetHandler->setCurrentPresetMap(state.newMapText);
         currentPresetMap = presetHandler->readPresetMap(state.newMapText);

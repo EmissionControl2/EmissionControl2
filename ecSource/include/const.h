@@ -39,6 +39,7 @@ const int NUM_PARAMS = 15;
 const int NUM_LFOS = 6;
 const int MAX_GRAIN_DISPLAY = 100;
 const int MAX_MIDI_IN = 5;
+const float MAX_MORPH_TIME = 50.0f;
 
 enum streamType { synchronous, asynchronous, sequenced, derived };
 enum waveform { SINE, SQUARE, ASCEND, DESCEND, NOISE };

@@ -193,8 +193,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   inline void updatePresetMorphParamMIDI(float val) {
     // Hard code to be logarithmic in scale.
-    float result = util::outputValInRange(val, 0.0, 20.0, true, 3);
-    mPresets->setMorphTime(result);
+    // Offset by 1.0 because it FEEEELS nice.
+    float result = util::outputValInRange(val, 1.0, consts::MAX_MORPH_TIME+1.0, true, 3);
+    mPresets->setMorphTime(result-1.0);
   }
 
   std::string opener = "open ";
