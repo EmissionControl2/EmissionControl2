@@ -4,7 +4,9 @@ Version 1.1 Changelog:
 - Added user configurable output channels
 - Added sound file presets
 - Fixed bug causing conflicts between saved preset maps
-- Added preference menu
+- Added control preference menu
 - Added option to disable clipping (hard-limiting) of sound output
 - Added option to change scan begin behavior
 - Added MIDI control to Morph Time
+- Improved int parameter snapping.
+
