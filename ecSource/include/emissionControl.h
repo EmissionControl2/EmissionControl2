@@ -481,7 +481,7 @@ class ecParameter {
    * @param[in] presetHandler : A reference to a preset handler.
    */
   void addToPresetHandler(al::PresetHandler &presetHandler);
-  void removeFromPresetHandler(al::PresetHandler &presetHandler);
+  void skipParamPresetHandler(al::PresetHandler &presetHandler, bool skip);
 
   void setLog(bool isLog) { mIsLog = isLog; }
 
@@ -537,7 +537,6 @@ struct ecModParameter {
   }
 
   void addToPresetHandler(al::PresetHandler &presetHandler) {
-    // std::cout << "HERE" << std::endl;
     param.addToPresetHandler(presetHandler);
     presetHandler.registerParameter(lfoMenu);
   }

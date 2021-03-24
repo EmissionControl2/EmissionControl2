@@ -299,20 +299,10 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
 }
 
 // current API passing by value, not possible.
-void ecParameter::removeFromPresetHandler(al::PresetHandler &presetHandler) {
-  // auto preset_vec = presetHandler.parameters();
-  // auto index = preset_vec.end();
-  // for(int i = 0; i < preset_vec.size(); i++) {
-  //   if(preset_vec[i]->getName() == this->mParameter->getName()) {
-  //     index = preset_vec.begin() + i;
-  //     std::cout << "here\n";
-  //   }
-  // }
-
-  // if(index == preset_vec.end())
-  //   return;
-
-  // preset_vec.erase(index,index + 3);  
+void ecParameter::skipParamPresetHandler(al::PresetHandler &presetHandler, bool skip) {
+  presetHandler.skipParameter(mParameter->getFullAddress(), skip);
+  presetHandler.skipParameter(mLowRange->getFullAddress(), skip);
+  presetHandler.skipParameter(mHighRange->getFullAddress(), skip); 
 }
 
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {

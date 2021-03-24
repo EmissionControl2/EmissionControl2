@@ -104,7 +104,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
               writeSampleRate = false, isStereo = true, isHardClip = true,
-              isSoftResetScanBegin = true;
+              isHardResetScanBegin = false, isOmitSoundFileParam = false;
   float background = 0.21;
   ecSynth granulator;
   std::vector<std::string> SamplePaths;
@@ -348,14 +348,16 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setFirstLaunch(bool is_first_launch) { isFirstLaunch = is_first_launch; }
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
   void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
-  void setOutChannelsFailSafe(int lead_channel, int max_possible_channels);
-  void setCurrentEnv(std::string path_to_env);
+  void setHardClip(bool hard) { isHardClip = hard; }
+  void setHardResetScanBegin(bool hard) {isHardResetScanBegin = hard; granulator.setHardScanBegin(hard);}
+  void setOmitSoundFileParam(bool omit) { isOmitSoundFileParam = omit; }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
 
+  // Sound File Preset Json files
   void writeJSONSoundFilePreset(std::string name, bool allowOverwrite);
   std::vector<std::string> loadJSONSoundFilePreset(std::string sound_file_preset_name);
   void deleteJSONSoundFilePreset(std::string sound_file_preset_name);

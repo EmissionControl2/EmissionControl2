@@ -62,6 +62,10 @@ const std::string FULLSCREEN_KEY = "FULLSCREEN";
 const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH";
 const std::string DEFAULT_AUDIO_DEVICE_KEY = "DEFAULT_AUDIO_DEVICE";
 const std::string LEAD_CHANNEL_KEY = "LEAD_CHANNEL";
+const std::string CLIP_AUDIO_KEY = "CLIP_AUDIO";
+const std::string OMIT_SOUNDFILE_PARAM_KEY = "OMIT_SOUNDFILE_PARAM";
+const std::string HARD_RESET_SCANBEGIN_KEY = "HARD_RESET_SCANBEGIN";
+
 
 const int SAMPLE_RATE = 48000;
 const int BLOCK_SIZE = 1024;
@@ -75,6 +79,9 @@ const bool FULLSCREEN = false;
 const bool IS_FIRST_LAUNCH = true;
 const std::string DEFAULT_AUDIO_DEVICE = "";
 const size_t DEFAULT_LEAD_CHANNEL = 0;
+const bool DEFAULT_CLIP_AUDIO = true;
+const bool DEFAULT_OMIT_SOUNDFILE_PARAM = false;
+const bool DEFAULT_HARD_RESET_SCANBEGIN = false;
 
 /**
  *  DEFAULT USER PATHS

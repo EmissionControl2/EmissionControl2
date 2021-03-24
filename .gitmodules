@@ -1,6 +1,7 @@
 [submodule "ecSource/external/allolib"]
 path = ecSource/external/allolib
 url = https://github.com/AlloSphere-Research-Group/allolib.git
+branch = devel
 [submodule "ecSource/external/libsamplerate"]
 path = ecSource/external/libsamplerate
 url = https://github.com/erikd/libsamplerate.git

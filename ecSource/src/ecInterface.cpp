@@ -85,6 +85,10 @@ void ecInterface::onInit() {
   setWindowDimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
   setFirstLaunch(config.at(consts::IS_FIRST_LAUNCH_KEY));
   setAudioDevice(config.at(consts::DEFAULT_AUDIO_DEVICE_KEY));
+  setHardClip(config.at(consts::CLIP_AUDIO_KEY));
+  setOmitSoundFileParam(config.at(OMIT_SOUNDFILE_PARAM_KEY));
+  setHardResetScanBegin(config.at(consts::HARD_RESET_SCANBEGIN_KEY));
+
   setInitFullscreen(false);
 
 // Load in all files in at specified directory.
@@ -154,6 +158,10 @@ void ecInterface::onCreate() {
     *mPresets << *granulator.LFOParameters[i]->shape << *granulator.LFOParameters[i]->duty
               << *granulator.LFOParameters[i]->polarity;
   }
+
+  // Decide if we should omit the sound file parameter.
+  granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+
 
   ImFontConfig fontConfig;
   fontConfig.OversampleH = 4;
@@ -305,12 +313,6 @@ void ecInterface::onDraw(Graphics &g) {
   // draw menu bar ----------------------------------------------------
   // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
-    if (ImGui::BeginMenu("Preferences")) {
-      if (ImGui::Checkbox("Soft Reset Scan Begin", &isSoftResetScanBegin)) {
-        granulator.setSoftScanBegin(isSoftResetScanBegin);
-      }
-      ImGui::EndMenu();
-    }
 
     if (ImGui::BeginMenu("Audio")) {
       if (ImGui::MenuItem("Audio Output", "")) {
@@ -327,6 +329,7 @@ void ecInterface::onDraw(Graphics &g) {
       }
       if (ImGui::Checkbox("Clip Audio", &isHardClip)) {
         audioIO().clipOut(isHardClip);
+        jsonWriteToConfig(isHardClip, consts::CLIP_AUDIO_KEY);
       }
       ImGui::EndMenu();
     }
@@ -473,6 +476,21 @@ void ecInterface::onDraw(Graphics &g) {
     }
     // END DELETE SOUND FILE PRESET
     // END SOUND FILE PRESETS
+
+
+    if (ImGui::BeginMenu("Control Preferences")) {
+
+      if (ImGui::Checkbox("Omit 'Sound File' from Presets", &isOmitSoundFileParam)) {
+        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        jsonWriteToConfig(isOmitSoundFileParam, consts::OMIT_SOUNDFILE_PARAM_KEY);
+      }
+
+      if (ImGui::Checkbox("Hard Reset 'Scan Begin'", &isHardResetScanBegin)) {
+        granulator.setHardScanBegin(isHardResetScanBegin);
+        jsonWriteToConfig(isHardResetScanBegin, consts::HARD_RESET_SCANBEGIN_KEY);
+      }
+      ImGui::EndMenu();
+    }
 
     if (ImGui::BeginMenu("MIDI")) {
       if (ImGui::MenuItem("MIDI Devices", "")) {
@@ -1098,7 +1116,7 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PopStyleColor();
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
       if (ImGui::IsItemHovered())
-        ImGui::SetTooltip("Scan Head: %i% \nScan Range: %i%", int(scanHead * 100),
+        ImGui::SetTooltip("Scan Head: %i\nScan Range: %i", int(scanHead * 100),
                           int(scanWidth * 100));
       ImGui::PopStyleVar();
 
@@ -1440,7 +1458,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     text += "Device: " + state.devices.at(state.currentDevice);
     text += "\nSampling Rate: " + std::to_string(int(io->fps()));
     text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
-    text += "\nOutput Channels:" + std::to_string(io->channelsOut());
+    text += "\nOutput Channels: " + std::to_string(state.currentOut) + ", " + std::to_string(state.currentOut + 1);
     ImGui::Text("%s", text.c_str());
     if (ImGui::Button("Stop")) {
       isPaused = true;
@@ -1957,6 +1975,15 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::LEAD_CHANNEL_KEY) == config.end())
       config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
 
+    if (config.find(consts::CLIP_AUDIO_KEY) == config.end())
+      config[consts::CLIP_AUDIO_KEY] = consts::DEFAULT_CLIP_AUDIO;
+    
+    if (config.find(consts::OMIT_SOUNDFILE_PARAM_KEY) == config.end())
+      config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
+    
+    if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
+      config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -1982,6 +2009,12 @@ bool ecInterface::initJsonConfig() {
     config[consts::DEFAULT_AUDIO_DEVICE_KEY] = consts::DEFAULT_AUDIO_DEVICE;
 
     config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
+
+    config[consts::CLIP_AUDIO_KEY] = consts::DEFAULT_CLIP_AUDIO;
+
+    config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
+
+    config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
   }
 
   std::ofstream file((userPath + configFile).c_str());
@@ -2221,5 +2254,3 @@ void ecInterface::deleteJSONSoundFilePreset(std::string sound_file_preset_name) 
   jsonWriteMapToConfig(SoundFilePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
   std::remove((userPath + samplePresetsPath + sound_file_preset_name + ".json").c_str());
 }
-
-void setOutChannelsFailSafe(int lead_channel, int max_possible_channels) {}
