@@ -202,7 +202,6 @@ void ecModulator::setWidth(float width) {
 void ecModulator::setPhase(float phase) { mLFO.phase(phase); }
 
 float ecModulator::sampleAndHoldUniform(float low, float high) {
-  double yes, no;
   mLFO.nextPhase();
   lastPhase = currentPhase;
   currentPhase = mLFO.phaseI();
@@ -298,7 +297,6 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
   presetHandler.registerParameter(*mHighRange);
 }
 
-// current API passing by value, not possible.
 void ecParameter::skipParamPresetHandler(al::PresetHandler &presetHandler, bool skip) {
   presetHandler.skipParameter(mParameter->getFullAddress(), skip);
   presetHandler.skipParameter(mLowRange->getFullAddress(), skip);
@@ -310,7 +308,7 @@ void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
   int valueSlideri, valueLowi, valueHighi;
   bool changed = false, isInt = isIntVal();
   ImGuiIO &io = ImGui::GetIO();
-  ImGuiItemFlags slider_flags = NULL;
+  ImGuiItemFlags slider_flags = (ImGuiItemFlags)NULL;
 
   // Draw left most range box.
   slider_flags = ImGuiSliderFlags_ClampOnInput;

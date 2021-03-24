@@ -541,6 +541,11 @@ struct ecModParameter {
     presetHandler.registerParameter(lfoMenu);
   }
 
+  void skipParamPresetHandler(al::PresetHandler &presetHandler, bool skip) {
+    param.skipParamPresetHandler(presetHandler, skip);
+    presetHandler.skipParameter(lfoMenu.getFullAddress(), skip);
+  }
+
   void drawModulationControl(MIDILearnBool *isMIDILearn, KeyDown *k) {
     ImGui::PushItemWidth(70 * ImGui::GetIO().FontGlobalScale);
     al::ParameterGUI::drawMenu(&lfoMenu);

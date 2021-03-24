@@ -161,6 +161,7 @@ void ecInterface::onCreate() {
 
   // Decide if we should omit the sound file parameter.
   granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+  granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
 
 
   ImFontConfig fontConfig;
@@ -477,21 +478,6 @@ void ecInterface::onDraw(Graphics &g) {
     // END DELETE SOUND FILE PRESET
     // END SOUND FILE PRESETS
 
-
-    if (ImGui::BeginMenu("Control Preferences")) {
-
-      if (ImGui::Checkbox("Omit 'Sound File' from Presets", &isOmitSoundFileParam)) {
-        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-        jsonWriteToConfig(isOmitSoundFileParam, consts::OMIT_SOUNDFILE_PARAM_KEY);
-      }
-
-      if (ImGui::Checkbox("Hard Reset 'Scan Begin'", &isHardResetScanBegin)) {
-        granulator.setHardScanBegin(isHardResetScanBegin);
-        jsonWriteToConfig(isHardResetScanBegin, consts::HARD_RESET_SCANBEGIN_KEY);
-      }
-      ImGui::EndMenu();
-    }
-
     if (ImGui::BeginMenu("MIDI")) {
       if (ImGui::MenuItem("MIDI Devices", "")) {
         MIDIMessageHandler::clearBindings();
@@ -524,6 +510,22 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Control Preferences")) {
+
+      if (ImGui::Checkbox("Omit 'Sound File' from Presets", &isOmitSoundFileParam)) {
+        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        jsonWriteToConfig(isOmitSoundFileParam, consts::OMIT_SOUNDFILE_PARAM_KEY);
+      }
+
+      if (ImGui::Checkbox("Hard Reset 'Scan Begin'", &isHardResetScanBegin)) {
+        granulator.setHardScanBegin(isHardResetScanBegin);
+        jsonWriteToConfig(isHardResetScanBegin, consts::HARD_RESET_SCANBEGIN_KEY);
+      }
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("View")) {
       if (ImGui::MenuItem("Toggle Light/Dark Mode", "")) {
         if (light) {
@@ -769,7 +771,7 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::TextUnformatted(MIDIHelpLines[i].c_str());
     }
     ImGui::EndPopup();
-  }
+  } 
 
   // PopUp Font scale window
   if (fontScaleWindow) {
