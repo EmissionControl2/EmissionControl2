@@ -188,17 +188,20 @@ void ecSynth::onProcess(al::AudioIOData &io) {
         grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
 
       width = ECModParameters[consts::STREAMS]->getWidthParam();
-      if (width > 0)  // Modulate the amount of streams playing.
+      if (width > 0) { // Modulate the amount of streams playing.
+        float str_mod_val = ECParameters[consts::STREAMS]->getModParam(width);
+        str_mod_val = str_mod_val - (int)str_mod_val > 0.5 ? ceil(str_mod_val) : floor(str_mod_val);
         grainScheduler.setPolyStream(
-          consts::synchronous, static_cast<int>(ECParameters[consts::STREAMS]->getModParam(width)));
-      else
+          consts::synchronous, str_mod_val);
+      } else {
         grainScheduler.setPolyStream(consts::synchronous,
                                      static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
+      }
 
       mPrevModClip = mModClip;
-      mModClip = static_cast<int>(ECParameters[consts::SOUND_FILE]->getModParam(
-                   ECModParameters[consts::SOUND_FILE]->getWidthParam())) -
-                 1;
+      float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(ECModParameters[consts::SOUND_FILE]->getWidthParam());
+      sf_mod_val = sf_mod_val - (int)sf_mod_val > 0.5 ? ceil(sf_mod_val) : floor(sf_mod_val);
+      mModClip = sf_mod_val - 1;
     }
     controlRateCounter++;
 
