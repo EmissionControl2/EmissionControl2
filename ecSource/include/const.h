@@ -88,8 +88,6 @@ const bool DEFAULT_HARD_RESET_SCANBEGIN = false;
 
 #ifdef __APPLE__
 const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2/";
-const std::string ENV_PATH = PERSISTENT_DATA_PATH + "envs/";
-const std::string DEFAULT_ENV_PATH = ENV_PATH + "default/";
 const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "soundOutput/";
 const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "presets/";
@@ -106,13 +104,13 @@ const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
 #ifdef _WIN32
-const std::string PERSISTENT_DATA_PATH = "/EmissionControl2";
-const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "/samples/";
-const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "/soundOutput/";
-const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "/presets/";
-const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "/midi_presets/";
+const std::string PERSISTENT_DATA_PATH = "/EmissionControl2/";
+const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "samples/";
+const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "soundOutput/";
+const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "midi_presets/";
 const std::string DEFAULT_SAMPLE_PRESETS_PATH = PERSISTENT_DATA_PATH + "sample_presets/";
-const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "/configs/";
+const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "configs/";
 const std::string DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_PATH + "config.json";
 #endif
 }  // namespace consts
