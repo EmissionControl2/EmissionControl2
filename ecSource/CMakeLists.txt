@@ -12,6 +12,9 @@ add_subdirectory(external/allolib)
 add_subdirectory(external/libsamplerate)
 add_subdirectory(external/al_ext)
 
+if (NOT TARGET al_soundfile)
+    message(FATAL_ERROR "al_soundfile not built. Likely libsndfile not found")
+endif()
 # OSX library needed for native file dialog.
 
 if(APPLE)
