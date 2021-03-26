@@ -297,6 +297,8 @@ void ecInterface::onDraw(Graphics &g) {
             createAudioThumbnail(granulator.soundClip.back()->data,
                                  granulator.soundClip.back()->size);
             readyToTrigNoSoundFilePopup = true;
+          } else {
+            std::cerr << "Failed to load: " << path << std::endl;
           }
         }
         NFD_PathSet_Free(&pathSet);
@@ -351,6 +353,8 @@ void ecInterface::onDraw(Graphics &g) {
             if (success)
               createAudioThumbnail(granulator.soundClip.back()->data,
                                    granulator.soundClip.back()->size);
+            else 
+              std::cerr << "Failed to load: " << path << std::endl;
           }
           NFD_PathSet_Free(&pathSet);
         }
