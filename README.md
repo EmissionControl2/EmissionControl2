@@ -143,11 +143,11 @@ Install libsndfile: Aim your browser at http://www.mega-nerd.com/libsndfile/#Dow
 `.\ecSource\scripts\configure.sh`
 
 - The above step will initially fail. This reason for this is that NFD is using an old version of Visual Studio (2010). To fix this problem, do the following.
-     - In file explorer go to `EmissionControl2\ecSource\external\nativefiledialog\build\`
+     - In file explorer go to the folder `EmissionControl2\ecSource\external\nativefiledialog\build\vs2010\`
      - Open `NativeFileDialog.sln` in Visual Studio.
      - Double click on `Solution 'NativeFileDialog' (5 of 5 projects)` in the vertical window on the right side.
      - Agree to updating this project to the newest toolchain.
-     - Run `.\ecSource\scripts\configure.sh` again
+     - Run `.\ecSource\scripts\configure.sh` again from the Emission Control 2 Visual Studio Project.
      - Note that the following will only have to be done once per git clone.
      - Sidenote: If you have a better, more stable way, let me know -- jack
 
