@@ -22,7 +22,6 @@ fi
     chmod 644 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
     cmake --build ./build/debug $THREADS
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-    echo "BUILD WINDOWS TODO"
     cmake --build ./build/debug $THREADS
   fi
 )

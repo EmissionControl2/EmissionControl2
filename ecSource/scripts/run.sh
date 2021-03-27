@@ -22,7 +22,6 @@ fi
     chmod 644 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
     cmake --build ./build/release $THREADS
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-    echo "BUILD WINDOWS TODO"
     cmake --build ./build/release $THREADS
   fi
 )
@@ -42,7 +41,6 @@ if [ ${result} == 0 ]; then
       open EmissionControl2.app
     fi
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-    echo "RUN WINDOWS TODO"
     ./EmissionControl2.exe -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=0
   fi
 fi

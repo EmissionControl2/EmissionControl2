@@ -108,7 +108,42 @@ You must have cmake installed (version 3.10 or later), and Xcode (hopefully we c
 
 `./scripts/build.sh`
 
-### Windows
-- Check the releases page to see if the pre-compiled installer works for you: https://github.com/EmissionControl2/EmissionControl2/releases/latest
+- EmissionControl2 is located in `EmissionControl2/ecSource/bin/`
 
-- If you want to compile it from scratch, stay tuned. We will put the instructions up soon.
+### Windows (Visual Studio)
+
+For installation through Visual Studio (taken from the allolib repo: https://github.com/AlloSphere-Research-Group/allolib):
+
+    Install Visual Studio 2017 Community Edition from https://visualstudio.microsoft.com/downloads/
+
+    During installation options:
+
+    a. Install "Desktop development with C++" workload
+
+    b. Install Individual components: C++/CLI support, Git for Windows, Visual C++ Tools for Cmake
+
+Install libsndfile: Aim your browser at http://www.mega-nerd.com/libsndfile/#Download. Download and install the 64-bit version: libsndfile-1.0.xx-w64-setup.exe.
+    - Install this at the default location.
+
+#### Compile Emission Control
+- Note that you need Visual Studio installed for the below scripts to work.
+
+- Clone the repo using the git bash terminal:
+
+`git clone https://github.com/EmissionControl2/EmissionControl2.git`
+
+- Open Visual Studio pointed at the directory `EmissionControl2\`
+
+- In Visual Studio, open the Developer Power Shell.
+
+- From there, you can run the bash scripts:
+
+- `.\ecSource\scripts\configure.sh`
+- `.\ecSource\scripts\build.sh`
+
+- When first running the above scripts, Visual Studio will ask what program would you like to open this file with. Choose `Git Bash`.
+
+
+
+
+

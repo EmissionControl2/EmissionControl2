@@ -9,5 +9,6 @@ imgui.ini
 !externalResources/samples/*.wav
 *.o
 .vscode/
+.vs/
 sc/
 valgrind-output.txt
