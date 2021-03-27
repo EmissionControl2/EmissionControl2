@@ -24,6 +24,7 @@ RELEASENAME="emissioncontrol2-""$VERSION""-amd64"
 BUILDLOCATION=$(cd ../deployment && pwd)
 
 echo "Packaging $RELEASENAME..."
+echo "Don't forget to compile this on an older version of Debian for compatibility..."
 
 # make directory structure
 
@@ -103,9 +104,12 @@ License: GPL-3+
  License version 3 can be found in the file
  '/usr/share/common-licenses/GPL-3'" >>"$BUILDDIR/usr/share/doc/emissioncontrol2/copyright"
 DATE="$(date +'%a, %d %b %Y %H:%M:%S %Z')"
-echo "emissioncontrol2 ($VERSION) stable; urgency=high
+echo "emissioncontrol2 (1.1) stable; urgency=medium
+ * New upstream release
+  -- Rodney DuPlessis <rodney@rodneyduplessis.com>  Sat, 27 Mar 2021 12:52:00 -0500
+emissioncontrol2 (1.0) stable; urgency=high
   * Initial Release
- -- Rodney DuPlessis <rodney@rodneyduplessis.com>  $DATE" >>"$BUILDDIR/usr/share/doc/emissioncontrol2/changelog.Debian"
+ -- Rodney DuPlessis <rodney@rodneyduplessis.com>  Thu, 1 Oct 2020 20:48:30 -0800" >>"$BUILDDIR/usr/share/doc/emissioncontrol2/changelog.Debian"
 gzip -9 -n "$BUILDDIR/usr/share/doc/emissioncontrol2/changelog.Debian"
 echo "Packaging .deb at $BUILDLOCATION..."
 
