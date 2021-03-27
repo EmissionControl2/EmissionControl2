@@ -104,7 +104,7 @@ const std::string DEFAULT_SOUND_OUTPUT_PATH = "";
 #endif
 
 #ifdef _WIN32
-const std::string PERSISTENT_DATA_PATH = "/EmissionControl2/";
+const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2/";
 const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "soundOutput/";
 const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "presets/";

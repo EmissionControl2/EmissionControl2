@@ -9,4 +9,8 @@ Version 1.1 Changelog:
 - Added option to change scan begin behavior
 - Added MIDI control to Morph Time
 - Improved int parameter snapping.
+- Windows compilation instructions.
+- BREAKING CHANGE FOR WINDOWS: Moved configuration folder from ~/EmissionControl2 -> ~/Music/EmissionControl2
+  - Reasoning: Aligns with OSX Semantics.
+  - Fix: Simply copy your folder to the new location if you want to save your presets and settings.
 

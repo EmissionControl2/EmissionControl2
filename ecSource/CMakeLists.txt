@@ -15,6 +15,15 @@ add_subdirectory(external/al_ext)
 if (NOT TARGET al_soundfile)
     message(FATAL_ERROR "al_soundfile not built. Likely libsndfile not found")
 endif()
+
+# Hacky (and fragile way) to move libsndfile-1.dll to bin/Resources
+if(WIN32)
+    get_filename_component(sndfile_dir ${SNDFILE_LIBRARY} DIRECTORY)
+    set(${sndfile_dir}/../bin/libsndfile-1.dll)
+    message("WINDOWS: Attempting to copy sndfile dll to bin/")
+    file(COPY ${sndfile_dir}/../bin/libsndfile-1.dll
+            DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+endif()
 # OSX library needed for native file dialog.
 
 if(APPLE)
@@ -156,6 +165,7 @@ endif()
 
 # Link windows libraries.
 if(WIN32)
+  target_link_libraries(ecLib PUBLIC ${GTK3_LIBRARIES})
 endif()
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
