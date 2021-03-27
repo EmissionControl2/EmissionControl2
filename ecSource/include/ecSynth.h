@@ -263,7 +263,9 @@ class ecSynth : public al::SynthVoice {
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
   std::string getCurrentAudioFileName() {
-    std::string filename = soundClipFileName[mModClip];
+    float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(ECModParameters[consts::SOUND_FILE]->getWidthParam());
+    sf_mod_val = sf_mod_val - (int)sf_mod_val > 0.5 ? ceil(sf_mod_val) : floor(sf_mod_val);
+    std::string filename = soundClipFileName[sf_mod_val - 1];
     filename = filename.substr(filename.find_last_of("/") + 1);
     return filename;
   }
