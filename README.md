@@ -136,12 +136,25 @@ Install libsndfile: Aim your browser at http://www.mega-nerd.com/libsndfile/#Dow
 
 - In Visual Studio, open the Developer Power Shell.
 
-- From there, you can run the bash scripts:
+- When first running the sh scripts, Visual Studio will ask what program would you like to open this file with. Choose `Git Bash`.
 
-- `.\ecSource\scripts\configure.sh`
-- `.\ecSource\scripts\build.sh`
+- Configure the project:
 
-- When first running the above scripts, Visual Studio will ask what program would you like to open this file with. Choose `Git Bash`.
+`.\ecSource\scripts\configure.sh`
+
+- The above step will initially fail. This reason for this is that NFD is using an old version of Visual Studio (2010). To fix this problem, do the following.
+     - In file explorer go to `EmissionControl2\ecSource\external\nativefiledialog\build\`
+     - Open `NativeFileDialog.sln` in Visual Studio.
+     - Double click on `Solution 'NativeFileDialog' (5 of 5 projects)` in the vertical window on the right side.
+     - Agree to updating this project to the newest toolchain.
+     - Run `.\ecSource\scripts\configure.sh` again
+     - Note that the following will only have to be done once per git clone.
+     - Sidenote: If you have a better, more stable way, let me know -- jack
+
+
+- Compile the project
+`.\ecSource\scripts\build.sh`
+
 
 
 
