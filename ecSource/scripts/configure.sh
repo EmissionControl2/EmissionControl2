@@ -50,10 +50,10 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
       cd gmake_linux
       make config=release_x64
     elif [[ "$OSTYPE" == "darwin"* ]]; then # note: can't get make file to work, relies on xcode bleh
-      cd gmake_macosx
-      make config=release_x64 CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
-      #cd xcode4
-      #xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
+      #cd gmake_macosx
+      #make config=release_x64 CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
+      cd xcode4
+      xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
     elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
       #DEPENDENT ON VISUAL STUDIO
       cd vs2010/

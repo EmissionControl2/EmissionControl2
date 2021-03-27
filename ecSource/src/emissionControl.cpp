@@ -670,8 +670,8 @@ void Grain::onProcess(al::AudioIOData &io) {
       if (!bypassFilter) currentSample = filterSample(currentSample, cascadeFilter, 0);
       io.out(0, io.frame()) += currentSample * envVal * mLeft;
 
-      before = source->get((iSourceIndex + 1) * 2);
-      after = source->get((iSourceIndex + 1) * 2 + 2);
+      before = source->get(iSourceIndex * 2 + 1);
+      after = source->get((iSourceIndex * 2 + 3));
       dec = (sourceIndex + 1) - (iSourceIndex + 1);
       currentSample = before * (1 - dec) + after * dec;
       if (!bypassFilter) currentSample = filterSample(currentSample, cascadeFilter, 0);
