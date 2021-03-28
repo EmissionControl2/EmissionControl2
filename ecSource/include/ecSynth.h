@@ -266,7 +266,11 @@ class ecSynth : public al::SynthVoice {
     float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(ECModParameters[consts::SOUND_FILE]->getWidthParam());
     sf_mod_val = sf_mod_val - (int)sf_mod_val > 0.5 ? ceil(sf_mod_val) : floor(sf_mod_val);
     std::string filename = soundClipFileName[sf_mod_val - 1];
+#ifdef _WIN32
+    filename = filename.substr(filename.find_last_of("\\") + 1);
+#else
     filename = filename.substr(filename.find_last_of("/") + 1);
+#endif
     return filename;
   }
 
