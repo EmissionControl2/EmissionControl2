@@ -18,11 +18,11 @@ fi
 
 (
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake --build ./build/release --target ALL_BUILD --config Release $THREADS
+    cmake --build ./build/release --config Release $THREADS
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     chmod 644 bin/EmissionControl2.app/Contents/Resources/libsndfile/*
-    cmake --build ./build/release --target ALL_BUILD --config Release $THREADS
+    cmake --build ./build/release --config Release $THREADS
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-    cmake --build ./build/release --target ALL_BUILD --config Release $THREADS
+    cmake --build ./build/release --config Release $THREADS
   fi
 )
