@@ -54,7 +54,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
       export MACOSX_DEPLOYMENT_TARGET=10.10
       make config=release_x64
       #cd xcode4
-      #xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release CFLAGS=-mmacosx-version-min=10.8 CXXFLAGS=-mmacosx-version-min=10.8
+      #xcodebuild -scheme nfd build -project nfd.xcodeproj/ -configuration Release CFLAGS=-mmacosx-version-min=10.10 CXXFLAGS=-mmacosx-version-min=10.10
     elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
       #DEPENDENT ON VISUAL STUDIO
       cd vs2010/
