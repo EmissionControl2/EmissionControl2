@@ -165,7 +165,7 @@ endif()
 
 # Link windows libraries.
 if(WIN32)
-  target_link_libraries(ecLib PUBLIC ${GTK3_LIBRARIES})
+  target_link_libraries(ecLib PUBLIC comctl32)
 endif()
 
 target_link_libraries(${APP_NAME} PUBLIC ecLib ${LIBRARIES})
@@ -183,7 +183,7 @@ set_target_properties(${APP_NAME} PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin
- 	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_LIST_DIR}/bin
+  RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_LIST_DIR}/bin
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
 )
 
