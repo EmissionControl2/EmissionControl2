@@ -102,8 +102,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<std::string> failed_paths;
   std::string currentAudioDevice;
 
-  bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
-              writeSampleRate = false, isStereo = true, isHardClip = true,
+  bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, 
+              isPaused = false, isStereo = true, isHardClip = true,
               isHardResetScanBegin = false, isOmitSoundFileParam = false;
   float background = 0.21;
   ecSynth granulator;

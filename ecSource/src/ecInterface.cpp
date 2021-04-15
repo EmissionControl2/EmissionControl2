@@ -318,7 +318,7 @@ void ecInterface::onDraw(Graphics &g) {
   if (ImGui::BeginMainMenuBar()) {
 
     if (ImGui::BeginMenu("Audio")) {
-      if (ImGui::MenuItem("Audio Output", "")) {
+      if (ImGui::MenuItem("Audio Settings", "")) {
         displayIO = true;
       }
       if (ImGui::MenuItem("Sound Recording Folder", "")) {
@@ -385,7 +385,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                         ImVec2(windowWidth, windowHeight));
     if (ImGui::BeginPopupModal("Save Sound File Preset", &isSoundFilePresetWriteOpen)) {
-      ImGui::InputText("Enter Preset Name", mCurrentSoundFilePresetName, 50,
+      ImGui::Text("Enter Preset Name:");
+      ImGui::InputText("", mCurrentSoundFilePresetName, 50,
                        ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
 
       if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
@@ -738,7 +739,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
-    ImGui::InputText("Enter Preset Name", mCurrentMIDIPresetName, 50,
+    ImGui::Text("Enter Preset Name:");
+    ImGui::InputText("", mCurrentMIDIPresetName, 50,
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
 
     if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
@@ -1482,7 +1484,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       state.currentMaxOut =
         AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT).channelsOutMax();
     }
-    std::string chan_label = "Select Outs: (Up to " + std::to_string(state.currentMaxOut) + " )";
+    std::string chan_label = "Select Stereo Outs:";
     ImGui::Text(chan_label.c_str(), "%s");
     // ImGui::SameLine();
     // ImGui::Checkbox("Mono/Stereo", &isStereo);
@@ -1519,11 +1521,9 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       currentAudioDevice = state.devices.at(state.currentDevice);
       granulator.setOutChannels(state.currentOut - 1, state.currentMaxOut);
       granulator.setIO(io);
-      if (writeSampleRate) {
-        jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
-        jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
-        jsonWriteToConfig(state.currentOut - 1, consts::LEAD_CHANNEL_KEY);
-      }
+      jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+      jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
+      jsonWriteToConfig(state.currentOut - 1, consts::LEAD_CHANNEL_KEY);
 
       granulator.resampleSoundFiles();
 
@@ -1531,8 +1531,6 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       io->start();
       isPaused = false;
     }
-    ImGui::SameLine();
-    ImGui::Checkbox("Set as Default", &writeSampleRate);
   }
   ImGui::PopID();
 }
@@ -1551,9 +1549,9 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
   SoundfileRecorderState &state = stateMap[recorder];
   ImGui::PushID(std::to_string((unsigned long)recorder).c_str());
   ImGui::Text("Output File Name:");
-  static char buf1[64] = "test.wav";
+  static char buf1[251] = "test.wav"; // wiggle room if we need to append a .wav
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
-  ImGui::InputText("##Record Name", buf1, 63);
+  ImGui::InputText("##Record Name", buf1, 250);
   ImGui::PopItemWidth();
 
   if (state.recordButton) {
@@ -1577,18 +1575,34 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
       } else {
         ringBufferSize = bufferSize * numChannels * 4;
       }
-      std::string filename = buf1;
+
+      std::string extension = File::extension(buf1);
+      std::string filename;
+      std::string base_buf = std::string(buf1);
+      gam::SoundFile::Format format;
+      if(extension == ".wav") {
+        format = gam::SoundFile::WAV;
+        filename = base_buf;
+      } else if (extension == ".aiff" || extension == ".aif") {
+        format = gam::SoundFile::AIFF;
+        filename = base_buf;
+      } else {
+        format = gam::SoundFile::WAV;
+        base_buf = base_buf + ".wav";
+        filename = base_buf;
+      }
+    
       if (!state.overwriteButton) {
         int counter = 1;
         while (File::exists(directory + filename) && counter < 9999) {
-          filename = buf1;
+          filename = base_buf;
           int lastDot = filename.find_last_of(".");
           filename = filename.substr(0, lastDot) + "_" + std::to_string(counter++) +
                      filename.substr(lastDot);
         }
       }
       if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize,
-                           gam::SoundFile::WAV, gam::SoundFile::FLOAT)) {
+                           format, gam::SoundFile::FLOAT)) {
         std::cerr << "Error opening file for record" << std::endl;
       }
     } else {
