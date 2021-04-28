@@ -104,7 +104,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, 
               isPaused = false, isStereo = true, isHardClip = true,
-              isHardResetScanBegin = false, isOmitSoundFileParam = false;
+              isHardResetScanBegin = false;
   float background = 0.21;
   ecSynth granulator;
   std::vector<std::string> SamplePaths;
@@ -217,7 +217,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     "and for handling the Windows port of the software",
     "Supported by a Faculty Research Grant from the UCSB Academic Senate",
     " ",
-    "Copyright 2020 Curtis Roads, Jack Kilgore, Rodney Duplessis",
+    "Copyright 2020, 2021 Curtis Roads, Jack Kilgore, Rodney Duplessis",
     "This program comes with absolutely no warranty.",
     "See the GNU General Public License, version 3 or later for details."};
   std::vector<std::string> MIDIHelpLines = {
@@ -350,7 +350,6 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
   void setHardClip(bool hard) { isHardClip = hard; }
   void setHardResetScanBegin(bool hard) {isHardResetScanBegin = hard; granulator.setHardScanBegin(hard);}
-  void setOmitSoundFileParam(bool omit) { isOmitSoundFileParam = omit; }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
