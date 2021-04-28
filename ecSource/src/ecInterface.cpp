@@ -86,6 +86,7 @@ void ecInterface::onInit() {
   setFirstLaunch(config.at(consts::IS_FIRST_LAUNCH_KEY));
   setAudioDevice(config.at(consts::DEFAULT_AUDIO_DEVICE_KEY));
   setHardClip(config.at(consts::CLIP_AUDIO_KEY));
+  setOmitSoundFileParam(config.at(OMIT_SOUNDFILE_PARAM_KEY));
   setHardResetScanBegin(config.at(consts::HARD_RESET_SCANBEGIN_KEY));
 
   setInitFullscreen(false);
@@ -157,6 +158,10 @@ void ecInterface::onCreate() {
     *mPresets << *granulator.LFOParameters[i]->shape << *granulator.LFOParameters[i]->duty
               << *granulator.LFOParameters[i]->polarity;
   }
+
+  // Decide if we should omit the sound file parameter.
+  granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+  granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
 
 
   ImFontConfig fontConfig;
@@ -512,6 +517,12 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     if (ImGui::BeginMenu("Control Preferences")) {
+
+      if (ImGui::Checkbox("Omit 'Sound File' from Presets", &isOmitSoundFileParam)) {
+        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        jsonWriteToConfig(isOmitSoundFileParam, consts::OMIT_SOUNDFILE_PARAM_KEY);
+      }
 
       if (ImGui::Checkbox("Hard Reset 'Scan Begin'", &isHardResetScanBegin)) {
         granulator.setHardScanBegin(isHardResetScanBegin);
@@ -1987,6 +1998,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::CLIP_AUDIO_KEY) == config.end())
       config[consts::CLIP_AUDIO_KEY] = consts::DEFAULT_CLIP_AUDIO;
     
+    if (config.find(consts::OMIT_SOUNDFILE_PARAM_KEY) == config.end())
+      config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
+    
     if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
       config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
 
@@ -2017,6 +2031,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::LEAD_CHANNEL_KEY] = consts::DEFAULT_LEAD_CHANNEL;
 
     config[consts::CLIP_AUDIO_KEY] = consts::DEFAULT_CLIP_AUDIO;
+
+    config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
 
     config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
   }

@@ -63,7 +63,7 @@ const std::string IS_FIRST_LAUNCH_KEY = "FIRST_LAUNCH";
 const std::string DEFAULT_AUDIO_DEVICE_KEY = "DEFAULT_AUDIO_DEVICE";
 const std::string LEAD_CHANNEL_KEY = "LEAD_CHANNEL";
 const std::string CLIP_AUDIO_KEY = "CLIP_AUDIO";
-const std::string OMIT_SOUNDFILE_PARAM_KEY = "OMIT_SOUNDFILE_PARAM"; // dead
+const std::string OMIT_SOUNDFILE_PARAM_KEY = "OMIT_SOUNDFILE_PARAM"; 
 const std::string HARD_RESET_SCANBEGIN_KEY = "HARD_RESET_SCANBEGIN";
 
 const int SAMPLE_RATE = 48000;
