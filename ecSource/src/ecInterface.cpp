@@ -160,9 +160,10 @@ void ecInterface::onCreate() {
   }
 
   // Decide if we should omit the sound file parameter.
-  granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-  granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-
+  granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets,
+                                                                      isOmitSoundFileParam);
+  granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets,
+                                                                         isOmitSoundFileParam);
 
   ImFontConfig fontConfig;
   fontConfig.OversampleH = 4;
@@ -316,7 +317,6 @@ void ecInterface::onDraw(Graphics &g) {
   // draw menu bar ----------------------------------------------------
   // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
-
     if (ImGui::BeginMenu("Audio")) {
       if (ImGui::MenuItem("Audio Settings", "")) {
         displayIO = true;
@@ -353,7 +353,7 @@ void ecInterface::onDraw(Graphics &g) {
             if (success)
               createAudioThumbnail(granulator.soundClip.back()->data,
                                    granulator.soundClip.back()->size);
-            else 
+            else
               std::cerr << "Failed to load: " << path << std::endl;
           }
           NFD_PathSet_Free(&pathSet);
@@ -517,17 +517,30 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     if (ImGui::BeginMenu("Control Preferences")) {
-
       if (ImGui::Checkbox("Omit 'Sound File' from Presets", &isOmitSoundFileParam)) {
-        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-        granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets,
+                                                                            isOmitSoundFileParam);
+        granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(
+          *mPresets, isOmitSoundFileParam);
         jsonWriteToConfig(isOmitSoundFileParam, consts::OMIT_SOUNDFILE_PARAM_KEY);
       }
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      if (ImGui::IsItemHovered())
+        ImGui::SetTooltip(
+          "If turned on, loading a preset will not affect the sound files you have loaded");
+      ImGui::PopStyleVar();
 
       if (ImGui::Checkbox("Hard Reset 'Scan Begin'", &isHardResetScanBegin)) {
         granulator.setHardScanBegin(isHardResetScanBegin);
         jsonWriteToConfig(isHardResetScanBegin, consts::HARD_RESET_SCANBEGIN_KEY);
       }
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      if (ImGui::IsItemHovered())
+        ImGui::SetTooltip(
+          "If turned on, the playhead will snap to the scan begin position whenever the scan begin "
+          "position is changed");
+      ImGui::PopStyleVar();
+
       ImGui::EndMenu();
     }
 
@@ -777,7 +790,7 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::TextUnformatted(MIDIHelpLines[i].c_str());
     }
     ImGui::EndPopup();
-  } 
+  }
 
   // PopUp Font scale window
   if (fontScaleWindow) {
@@ -1053,9 +1066,9 @@ void ecInterface::onDraw(Graphics &g) {
     // This is to tell the drawRangeSlider that this is the last parameter to check.
     // This allows mLasyKeyDown.readyToTrig to be set to false.
     if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
-    
+
     // Will only draw this if a square.
-    granulator.LFOParameters[index]->drawLFODuty(&mMIDILearn, &mLastKeyDown,x_offset);
+    granulator.LFOParameters[index]->drawLFODuty(&mMIDILearn, &mLastKeyDown, x_offset);
     if (mMIDILearn.mParamAdd && !no_learn) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
@@ -1068,8 +1081,6 @@ void ecInterface::onDraw(Graphics &g) {
       unlearnFlash = 60;
     }
     ImGui::PopStyleColor(colPushCount);
-
-
   }
 
   ImGui::PopFont();
@@ -1466,7 +1477,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     text += "Device: " + state.devices.at(state.currentDevice);
     text += "\nSampling Rate: " + std::to_string(int(io->fps()));
     text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
-    text += "\nOutput Channels: " + std::to_string(state.currentOut) + ", " + std::to_string(state.currentOut + 1);
+    text += "\nOutput Channels: " + std::to_string(state.currentOut) + ", " +
+            std::to_string(state.currentOut + 1);
     ImGui::Text("%s", text.c_str());
     if (ImGui::Button("Stop")) {
       isPaused = true;
@@ -1549,7 +1561,7 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
   SoundfileRecorderState &state = stateMap[recorder];
   ImGui::PushID(std::to_string((unsigned long)recorder).c_str());
   ImGui::Text("Output File Name:");
-  static char buf1[251] = "test.wav"; // wiggle room if we need to append a .wav
+  static char buf1[251] = "test.wav";  // wiggle room if we need to append a .wav
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
   ImGui::InputText("##Record Name", buf1, 250);
   ImGui::PopItemWidth();
@@ -1580,7 +1592,7 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
       std::string filename;
       std::string base_buf = std::string(buf1);
       gam::SoundFile::Format format;
-      if(extension == ".wav") {
+      if (extension == ".wav") {
         format = gam::SoundFile::WAV;
         filename = base_buf;
       } else if (extension == ".aiff" || extension == ".aif") {
@@ -1591,7 +1603,7 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
         base_buf = base_buf + ".wav";
         filename = base_buf;
       }
-    
+
       if (!state.overwriteButton) {
         int counter = 1;
         while (File::exists(directory + filename) && counter < 9999) {
@@ -1601,8 +1613,8 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
                      filename.substr(lastDot);
         }
       }
-      if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize,
-                           format, gam::SoundFile::FLOAT)) {
+      if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize, format,
+                           gam::SoundFile::FLOAT)) {
         std::cerr << "Error opening file for record" << std::endl;
       }
     } else {
@@ -1713,9 +1725,9 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
 
-      const bool selectableSelected = ImGui::Selectable(name.c_str(), is_selected, 0,
-                            ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
-      if( ImGui::IsItemHovered() && ! nothingStored) // tooltip showing preset name
+      const bool selectableSelected = ImGui::Selectable(
+        name.c_str(), is_selected, 0, ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
+      if (ImGui::IsItemHovered() && !nothingStored)  // tooltip showing preset name
       {
         const std::string currentlyhoveringPresetName = presetHandler->getPresetName(counter);
         ImGui::SetTooltip("%s", currentlyhoveringPresetName.c_str());
@@ -1802,21 +1814,19 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   sprintf(morphTime_str, "%.2f s", morphTime);
 
   // Offset by 1.0 because the log scale feels nicer this way.
-  morphTime = morphTime+1.;
+  morphTime = morphTime + 1.;
   bool is_text_input = false;
-  if (ImGui::SliderFloat("Morph Time", &morphTime, 1.0f, consts::MAX_MORPH_TIME+1.,
-    morphTime_str,ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_NoRoundToFormat)) {
-
+  if (ImGui::SliderFloat("Morph Time", &morphTime, 1.0f, consts::MAX_MORPH_TIME + 1., morphTime_str,
+                         ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_NoRoundToFormat)) {
     // Map back to the true value.
-    morphTime = morphTime-1.;
+    morphTime = morphTime - 1.;
     presetHandler->setMorphTime(morphTime);
     is_text_input = (ImGui::IsItemActive() && ImGui::TempInputIsActive(ImGui::GetActiveID()));
   }
   // If user used the text input, don't remap, just use the users inputted val.
   // Omg this is hacky what are you doing jack.
-  if(ImGui::IsItemDeactivatedAfterEdit()) {
-    if(is_text_input)
-      presetHandler->setMorphTime(morphTime);
+  if (ImGui::IsItemDeactivatedAfterEdit()) {
+    if (is_text_input) presetHandler->setMorphTime(morphTime);
   }
 
   ImGui::PopStyleColor(colPushCount);
@@ -1997,10 +2007,10 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::CLIP_AUDIO_KEY) == config.end())
       config[consts::CLIP_AUDIO_KEY] = consts::DEFAULT_CLIP_AUDIO;
-    
+
     if (config.find(consts::OMIT_SOUNDFILE_PARAM_KEY) == config.end())
       config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
-    
+
     if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
       config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
 
