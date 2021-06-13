@@ -1955,7 +1955,7 @@ bool ecInterface::onMouseDown(const Mouse &m) {
 }
 
 void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
-  m.print();
+  // m.print();
   for (int i = 0; i < consts::NUM_PARAMS; i++) {
     if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
       float val;
