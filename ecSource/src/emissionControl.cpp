@@ -7,7 +7,6 @@
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
 
-
 /**** CSTD LIB ****/
 #include <iostream>
 
@@ -300,7 +299,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
 void ecParameter::skipParamPresetHandler(al::PresetHandler &presetHandler, bool skip) {
   presetHandler.skipParameter(mParameter->getFullAddress(), skip);
   presetHandler.skipParameter(mLowRange->getFullAddress(), skip);
-  presetHandler.skipParameter(mHighRange->getFullAddress(), skip); 
+  presetHandler.skipParameter(mHighRange->getFullAddress(), skip);
 }
 
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {

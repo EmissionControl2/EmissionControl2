@@ -62,6 +62,11 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   virtual void onExit() override;
 
+  /**
+   * @brief OSC Input handling
+   */
+  virtual void onMessage(al::osc::Message &m) override;
+
   // struct pulled from al_ParameterGUI.hpp for custom preset draw function
   struct PresetHandlerState {
     std::string currentBank;
@@ -129,6 +134,21 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<bool> SelectedMIDIDevices;
   int unlearnFlash = 0;
 
+  /*
+  OSC
+  */
+  int oscPort = 16447;             // osc port
+  char oscAddr[10] = "127.0.0.1";  // ip address
+  al::osc::Recv oscServer;         // create and osc server (listener)
+
+  void resetOSC() {
+    oscServer.open(oscPort, oscAddr, 0.02);
+    oscServer.handler(oscDomain()->handler());
+    oscServer.start();
+    std::cout << "OSC IP Address: " << oscAddr << std::endl;
+    std::cout << "OSC Port: " << oscPort << std::endl;
+  }
+
   void clearActiveMIDI() {
     ActiveMIDI.clear();
     mIsLinkingParamAndMIDI = false;
@@ -194,8 +214,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   inline void updatePresetMorphParamMIDI(float val) {
     // Hard code to be logarithmic in scale.
     // Offset by 1.0 because it FEEEELS nice.
-    float result = util::outputValInRange(val, 1.0, consts::MAX_MORPH_TIME+1.0, true, 3);
-    mPresets->setMorphTime(result-1.0);
+    float result = util::outputValInRange(val, 1.0, consts::MAX_MORPH_TIME + 1.0, true, 3);
+    mPresets->setMorphTime(result - 1.0);
   }
 
   std::string opener = "open ";
@@ -349,7 +369,10 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setInitFullscreen(bool fullscreen) { isFullScreen = fullscreen; }
   void setAudioDevice(std::string audio_device) { currentAudioDevice = audio_device; }
   void setHardClip(bool hard) { isHardClip = hard; }
-  void setHardResetScanBegin(bool hard) {isHardResetScanBegin = hard; granulator.setHardScanBegin(hard);}
+  void setHardResetScanBegin(bool hard) {
+    isHardResetScanBegin = hard;
+    granulator.setHardScanBegin(hard);
+  }
   void setOmitSoundFileParam(bool omit) { isOmitSoundFileParam = omit; }
 
   // MIDI Preset Json files

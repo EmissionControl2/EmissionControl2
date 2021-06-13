@@ -148,6 +148,8 @@ void ecInterface::onCreate() {
   // Set if fullscreen or not.
   fullScreen(isFullScreen);
 
+  resetOSC();
+
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     granulator.ECParameters[index]->addToPresetHandler(*mPresets);
     granulator.ECModParameters[index]->addToPresetHandler(*mPresets);
@@ -160,9 +162,10 @@ void ecInterface::onCreate() {
   }
 
   // Decide if we should omit the sound file parameter.
-  granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-  granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-
+  granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets,
+                                                                      isOmitSoundFileParam);
+  granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets,
+                                                                         isOmitSoundFileParam);
 
   ImFontConfig fontConfig;
   fontConfig.OversampleH = 4;
@@ -238,6 +241,9 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDIDeleteWindow = false;
   bool isMIDIDevicesWindow = false;
   bool isMIDIHelpWindow = false;
+
+  // Initialize OSC windows to false
+  bool isOSCConfigWindow = false;
 
   bool isSoundFilePresetWriteWindow = false;
   bool isSoundFilePresetLoadWindow = false;
@@ -316,7 +322,6 @@ void ecInterface::onDraw(Graphics &g) {
   // draw menu bar ----------------------------------------------------
   // static bool show_app_main_menu_bar = true;
   if (ImGui::BeginMainMenuBar()) {
-
     if (ImGui::BeginMenu("Audio")) {
       if (ImGui::MenuItem("Audio Output", "")) {
         displayIO = true;
@@ -353,7 +358,7 @@ void ecInterface::onDraw(Graphics &g) {
             if (success)
               createAudioThumbnail(granulator.soundClip.back()->data,
                                    granulator.soundClip.back()->size);
-            else 
+            else
               std::cerr << "Failed to load: " << path << std::endl;
           }
           NFD_PathSet_Free(&pathSet);
@@ -482,7 +487,7 @@ void ecInterface::onDraw(Graphics &g) {
     // END DELETE SOUND FILE PRESET
     // END SOUND FILE PRESETS
 
-    if (ImGui::BeginMenu("MIDI")) {
+    if (ImGui::BeginMenu("MIDI/OSC")) {
       if (ImGui::MenuItem("MIDI Devices", "")) {
         MIDIMessageHandler::clearBindings();
         for (int index = 0; index < midiIn.size(); index++) {
@@ -512,14 +517,20 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("MIDI Learn Help", "")) {
         isMIDIHelpWindow = true;
       }
+      ImGui::Separator();
+      if (ImGui::MenuItem("OSC Config", "")) {
+        isOSCConfigWindow = true;
+      }
+
       ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Control Preferences")) {
-
       if (ImGui::Checkbox("Omit 'Sound File' from Presets", &isOmitSoundFileParam)) {
-        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
-        granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets, isOmitSoundFileParam);
+        granulator.ECParameters[consts::SOUND_FILE]->skipParamPresetHandler(*mPresets,
+                                                                            isOmitSoundFileParam);
+        granulator.ECModParameters[consts::SOUND_FILE]->skipParamPresetHandler(
+          *mPresets, isOmitSoundFileParam);
         jsonWriteToConfig(isOmitSoundFileParam, consts::OMIT_SOUNDFILE_PARAM_KEY);
       }
 
@@ -775,7 +786,36 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::TextUnformatted(MIDIHelpLines[i].c_str());
     }
     ImGui::EndPopup();
-  } 
+  }
+
+  // OSC Config Window
+  if (isOSCConfigWindow) {
+    ImGui::OpenPopup("OSC Configuration");
+  }
+  bool isOSCConfigOpen = true;
+  ImGui::SetNextWindowSizeConstraints(ImVec2(500 * fontScale, 400 * adjustScaleY),
+                                      ImVec2(windowWidth, windowHeight));
+  if (ImGui::BeginPopupModal("OSC Configuration", &isOSCConfigOpen)) {
+    if (ImGui::InputText("IP Address", oscAddr, 10, ImGuiInputTextFlags_EnterReturnsTrue))
+      resetOSC();
+    if (ImGui::InputInt("Port", &oscPort, ImGuiInputTextFlags_EnterReturnsTrue)) resetOSC();
+    ImGui::Separator();
+
+    for (int i = 0; i < consts::NUM_PARAMS; i++) {
+      ImGui::InputText((granulator.ECParameters[i]->getDisplayName()).c_str(),
+                       granulator.ECParameters[i]->mOscArgument, 20,
+                       ImGuiInputTextFlags_EnterReturnsTrue);
+      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+      ImGui::InputFloat(("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
+                        &granulator.ECParameters[i]->mOscMin, 2);
+      ImGui::SameLine();
+      ImGui::InputFloat(("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
+                        &granulator.ECParameters[i]->mOscMax, 2);
+      ImGui::PopItemWidth();
+      ImGui::Spacing();
+    }
+    ImGui::EndPopup();
+  }
 
   // PopUp Font scale window
   if (fontScaleWindow) {
@@ -1051,9 +1091,9 @@ void ecInterface::onDraw(Graphics &g) {
     // This is to tell the drawRangeSlider that this is the last parameter to check.
     // This allows mLasyKeyDown.readyToTrig to be set to false.
     if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
-    
+
     // Will only draw this if a square.
-    granulator.LFOParameters[index]->drawLFODuty(&mMIDILearn, &mLastKeyDown,x_offset);
+    granulator.LFOParameters[index]->drawLFODuty(&mMIDILearn, &mLastKeyDown, x_offset);
     if (mMIDILearn.mParamAdd && !no_learn) {
       // This inits. the onMidiMessage loop to listen for midi input.
       // This first MIDI input to come through will be linked.
@@ -1066,8 +1106,6 @@ void ecInterface::onDraw(Graphics &g) {
       unlearnFlash = 60;
     }
     ImGui::PopStyleColor(colPushCount);
-
-
   }
 
   ImGui::PopFont();
@@ -1464,7 +1502,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     text += "Device: " + state.devices.at(state.currentDevice);
     text += "\nSampling Rate: " + std::to_string(int(io->fps()));
     text += "\nBuffer Size: " + std::to_string(io->framesPerBuffer());
-    text += "\nOutput Channels: " + std::to_string(state.currentOut) + ", " + std::to_string(state.currentOut + 1);
+    text += "\nOutput Channels: " + std::to_string(state.currentOut) + ", " +
+            std::to_string(state.currentOut + 1);
     ImGui::Text("%s", text.c_str());
     if (ImGui::Button("Stop")) {
       isPaused = true;
@@ -1699,9 +1738,9 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
       }
 
-      const bool selectableSelected = ImGui::Selectable(name.c_str(), is_selected, 0,
-                            ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
-      if( ImGui::IsItemHovered() && ! nothingStored) // tooltip showing preset name
+      const bool selectableSelected = ImGui::Selectable(
+        name.c_str(), is_selected, 0, ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
+      if (ImGui::IsItemHovered() && !nothingStored)  // tooltip showing preset name
       {
         const std::string currentlyhoveringPresetName = presetHandler->getPresetName(counter);
         ImGui::SetTooltip("%s", currentlyhoveringPresetName.c_str());
@@ -1788,21 +1827,19 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   sprintf(morphTime_str, "%.2f s", morphTime);
 
   // Offset by 1.0 because the log scale feels nicer this way.
-  morphTime = morphTime+1.;
+  morphTime = morphTime + 1.;
   bool is_text_input = false;
-  if (ImGui::SliderFloat("Morph Time", &morphTime, 1.0f, consts::MAX_MORPH_TIME+1.,
-    morphTime_str,ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_NoRoundToFormat)) {
-
+  if (ImGui::SliderFloat("Morph Time", &morphTime, 1.0f, consts::MAX_MORPH_TIME + 1., morphTime_str,
+                         ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_NoRoundToFormat)) {
     // Map back to the true value.
-    morphTime = morphTime-1.;
+    morphTime = morphTime - 1.;
     presetHandler->setMorphTime(morphTime);
     is_text_input = (ImGui::IsItemActive() && ImGui::TempInputIsActive(ImGui::GetActiveID()));
   }
   // If user used the text input, don't remap, just use the users inputted val.
   // Omg this is hacky what are you doing jack.
-  if(ImGui::IsItemDeactivatedAfterEdit()) {
-    if(is_text_input)
-      presetHandler->setMorphTime(morphTime);
+  if (ImGui::IsItemDeactivatedAfterEdit()) {
+    if (is_text_input) presetHandler->setMorphTime(morphTime);
   }
 
   ImGui::PopStyleColor(colPushCount);
@@ -1917,6 +1954,21 @@ bool ecInterface::onMouseDown(const Mouse &m) {
   return true;
 }
 
+void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
+  m.print();
+  for (int i = 0; i < consts::NUM_PARAMS; i++) {
+    if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
+      float val;
+      m >> val;
+      val = (val - granulator.ECParameters[i]->mOscMin) /
+            (granulator.ECParameters[i]->mOscMax - granulator.ECParameters[i]->mOscMin);
+      val = util::outputValInRange(val, granulator.ECParameters[i]->getCurrentMin(),
+                                   granulator.ECParameters[i]->getCurrentMax(), false);
+      granulator.ECParameters[i]->setParam(val);
+    }
+  }
+}
+
 void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
   // cap thumbnail length to 1000 samples
   int thumbnailLength = lengthInSamples > 1000 ? 1000 : lengthInSamples;
@@ -1983,10 +2035,10 @@ bool ecInterface::initJsonConfig() {
 
     if (config.find(consts::CLIP_AUDIO_KEY) == config.end())
       config[consts::CLIP_AUDIO_KEY] = consts::DEFAULT_CLIP_AUDIO;
-    
+
     if (config.find(consts::OMIT_SOUNDFILE_PARAM_KEY) == config.end())
       config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
-    
+
     if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
       config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
 

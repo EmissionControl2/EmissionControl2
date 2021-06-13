@@ -321,6 +321,9 @@ class ecParameter {
   al::Parameter *mParameter = nullptr;
   al::Parameter *mLowRange = nullptr;   // Parameter designed to bound low mParameter.
   al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
+  char mOscArgument[20] = "NULL";
+  float mOscMin = 0;
+  float mOscMax = 0;
 
   /**
    * @brief ecParameter Constructor.
@@ -436,17 +439,13 @@ class ecParameter {
    * @brief Set current min value of range slider.
    *
    */
-  void setCurrentMin(float min) {
-    mLowRange->set(min);
-  }
+  void setCurrentMin(float min) { mLowRange->set(min); }
 
   /**
    * @brief Set current max value of range slider.
    *
    */
-  void setCurrentMax(float max) {
-    mHighRange->set(max);
-  }
+  void setCurrentMax(float max) { mHighRange->set(max); }
 
   void setAbsoluteMinMax(float min, float max) {
     mLowRange->min(min);
@@ -487,7 +486,7 @@ class ecParameter {
 
   bool isLog() const { return mIsLog; }
 
-  bool isIntVal() const { return mSliderType > 2 ;}
+  bool isIntVal() const { return mSliderType > 2; }
 
   /**
    * @brief Set the text to be displayed on the slider
@@ -585,7 +584,6 @@ class LFOstruct {
     polarity->setElements({"BI", "UNI+", "UNI-"});
   }
 
-
   // Returns x offset for drawLFODuty
   int drawLFOControl(MIDILearnBool *isMIDILearn, KeyDown *k) {
     ImGuiIO &io = ImGui::GetIO();
@@ -599,17 +597,16 @@ class LFOstruct {
     al::ParameterGUI::drawMenu(polarity);
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    int x =  ImGui::GetCursorPosX();
+    int x = ImGui::GetCursorPosX();
     frequency->drawRangeSlider(isMIDILearn, k);
     return x;
   }
 
   void drawLFODuty(MIDILearnBool *isMIDILearn, KeyDown *k, int x_offset) {
-    if (*shape != 1) 
-      return;
+    if (*shape != 1) return;
 
     ImGuiIO &io = ImGui::GetIO();
-    int sliderPos = x_offset;//ImGui::GetCursorPosX();
+    int sliderPos = x_offset;  // ImGui::GetCursorPosX();
 
     ImGui::SetCursorPosX(sliderPos - (35 * io.FontGlobalScale));
     ImGui::Text("Duty");
@@ -646,7 +643,7 @@ class LFOstruct {
       ImGui::EndPopup();
     }
     ImGui::PopItemWidth();
-}
+  }
 
   // destructor
   ~LFOstruct() {
