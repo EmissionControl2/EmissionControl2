@@ -807,10 +807,10 @@ void ecInterface::onDraw(Graphics &g) {
                        ImGuiInputTextFlags_EnterReturnsTrue);
       ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
       ImGui::InputFloat(("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
-                        &granulator.ECParameters[i]->mOscMin, 2);
+                        &granulator.ECParameters[i]->mOscMin, 0.1);
       ImGui::SameLine();
       ImGui::InputFloat(("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
-                        &granulator.ECParameters[i]->mOscMax, 2);
+                        &granulator.ECParameters[i]->mOscMax, 0.1);
       ImGui::PopItemWidth();
       ImGui::Spacing();
     }
