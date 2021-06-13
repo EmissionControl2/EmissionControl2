@@ -321,7 +321,7 @@ class ecParameter {
   al::Parameter *mParameter = nullptr;
   al::Parameter *mLowRange = nullptr;   // Parameter designed to bound low mParameter.
   al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
-  char mOscArgument[20] = "NULL";
+  char mOscArgument[20] = "ENTER OSC ADDRESS";
   float mOscMin = 0;
   float mOscMax = 0;
 
