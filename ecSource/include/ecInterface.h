@@ -137,6 +137,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   /*
   OSC
   */
+  bool isOSCOn = 0;
   int oscPort = 16447;             // osc port
   char oscAddr[10] = "127.0.0.1";  // ip address
   al::osc::Recv oscServer;         // create and osc server (listener)

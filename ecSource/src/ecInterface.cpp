@@ -518,6 +518,7 @@ void ecInterface::onDraw(Graphics &g) {
         isMIDIHelpWindow = true;
       }
       ImGui::Separator();
+      ImGui::Checkbox("OSC On", &isOSCOn);
       if (ImGui::MenuItem("OSC Config", "")) {
         isOSCConfigWindow = true;
       }
@@ -1956,17 +1957,18 @@ bool ecInterface::onMouseDown(const Mouse &m) {
 
 void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
   // m.print();
-  for (int i = 0; i < consts::NUM_PARAMS; i++) {
-    if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
-      float val;
-      m >> val;
-      val = (val - granulator.ECParameters[i]->mOscMin) /
-            (granulator.ECParameters[i]->mOscMax - granulator.ECParameters[i]->mOscMin);
-      val = util::outputValInRange(val, granulator.ECParameters[i]->getCurrentMin(),
-                                   granulator.ECParameters[i]->getCurrentMax(), false);
-      granulator.ECParameters[i]->setParam(val);
+  if (isOSCOn)
+    for (int i = 0; i < consts::NUM_PARAMS; i++) {
+      if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
+        float val;
+        m >> val;
+        val = (val - granulator.ECParameters[i]->mOscMin) /
+              (granulator.ECParameters[i]->mOscMax - granulator.ECParameters[i]->mOscMin);
+        val = util::outputValInRange(val, granulator.ECParameters[i]->getCurrentMin(),
+                                     granulator.ECParameters[i]->getCurrentMax(), false);
+        granulator.ECParameters[i]->setParam(val);
+      }
     }
-  }
 }
 
 void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
