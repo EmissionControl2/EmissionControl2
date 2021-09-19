@@ -188,18 +188,18 @@ void ecSynth::onProcess(al::AudioIOData &io) {
         grainScheduler.setIntermittence(ECParameters[consts::INTERM]->getParam());
 
       width = ECModParameters[consts::STREAMS]->getWidthParam();
-      if (width > 0) { // Modulate the amount of streams playing.
+      if (width > 0) {  // Modulate the amount of streams playing.
         float str_mod_val = ECParameters[consts::STREAMS]->getModParam(width);
         str_mod_val = str_mod_val - (int)str_mod_val > 0.5 ? ceil(str_mod_val) : floor(str_mod_val);
-        grainScheduler.setPolyStream(
-          consts::synchronous, str_mod_val);
+        grainScheduler.setPolyStream(consts::synchronous, str_mod_val);
       } else {
         grainScheduler.setPolyStream(consts::synchronous,
                                      static_cast<int>(ECParameters[consts::STREAMS]->getParam()));
       }
 
       mPrevModClip = mModClip;
-      float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(ECModParameters[consts::SOUND_FILE]->getWidthParam());
+      float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(
+        ECModParameters[consts::SOUND_FILE]->getWidthParam());
       sf_mod_val = sf_mod_val - (int)sf_mod_val > 0.5 ? ceil(sf_mod_val) : floor(sf_mod_val);
       mModClip = sf_mod_val - 1;
     }
@@ -284,7 +284,7 @@ void ecSynth::onTriggerOff() {}
 
 bool ecSynth::loadSoundFileRT(std::string fileName) {
   std::string format_path = al::File::conformPathToOS(fileName);
-  if (std::find(soundClipFileName.begin(), soundClipFileName.end(),format_path) !=
+  if (std::find(soundClipFileName.begin(), soundClipFileName.end(), format_path) !=
       soundClipFileName.end())
     return false;
   bool temp = util::load(format_path, soundClip, mGlobalSamplingRate, true,

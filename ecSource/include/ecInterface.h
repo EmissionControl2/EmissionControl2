@@ -270,8 +270,6 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   float fontScale = 1.0;
   float adjustScaleY = 1.0;
 
-  double globalSamplingRate = consts::SAMPLE_RATE;
-
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove |
                            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
   ImGuiWindowFlags graphFlags = flags;
@@ -282,16 +280,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int grainAccum = 0;
   int grainsPerSecond = 0;
   float oscFrame = 1;
-  int oscSize = int(oscFrame * globalSamplingRate);
-  double lastSamplingRate = globalSamplingRate;
 
   std::vector<float> blackLine = std::vector<float>(2, 0);
-
-  int VUdataSize = globalSamplingRate / 30;
-  int lastVUdataSize = VUdataSize;
-
-  std::vector<float> VUdataLeft = std::vector<float>(VUdataSize, 0);
-  std::vector<float> VUdataRight = std::vector<float>(VUdataSize, 0);
 
   std::vector<std::unique_ptr<std::vector<float>>> audioThumbnails;
 

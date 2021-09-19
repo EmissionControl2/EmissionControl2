@@ -139,7 +139,7 @@ void ecInterface::onInit() {
   audioIO().clipOut(isHardClip);
 
   audioIO().print();
-  std::cout << "Frame Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
+  std::cout << "Sample Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
 
 void ecInterface::onCreate() {
@@ -200,7 +200,7 @@ void ecInterface::onCreate() {
 
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
-  audioIO().stop();
+  audioIO().close();
 }
 
 void ecInterface::onExit() {
@@ -603,16 +603,14 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::Button("ENGINE START")) {
         if (granulator.getNumberOfAudioFiles() != 0) {
           isPaused = false;
-          audioIO().open();
           audioIO().start();
           readyToTrigNoSoundFilePopup = true;
         }
       }
     } else if (audioIO().isRunning()) {
       if (ImGui::Button("ENGINE STOP")) {
-        isPaused = true;
-        audioIO().stop();
         audioIO().close();
+        isPaused = true;
       }
     }
     ImGui::PopStyleColor(3);
@@ -1252,23 +1250,19 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::Text("Time Frame (s):");
     ImGui::SameLine();
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
-    if (ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f")) {
-      if (oscFrame <= 3.0 || globalSamplingRate != lastSamplingRate) {
-        oscSize = (int)(oscFrame * globalSamplingRate);
-        lastSamplingRate = globalSamplingRate;
-      }
-    }
+    ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f");
 
     // Draw left channel oscilloscope
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, light ? (ImVec4)*ECblue : (ImVec4)*ECblue);
-    int offset = granulator.oscBufferL.getTail() - oscSize;
+    int offset = granulator.oscBufferL.getTail() - oscFrame * granulator.getGlobalSamplingRate();
     if (offset < 0) offset += granulator.oscBufferL.getMaxSize();
     util::Plot_RingBufferGetterData data_l(granulator.oscBufferL.data(), sizeof(float), offset,
                                            granulator.oscBufferL.getMaxSize());
-    ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l, oscSize, 0.0,
-                     nullptr, -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
+    ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l,
+                     oscFrame * granulator.getGlobalSamplingRate(), 0.0, nullptr, -1, 1,
+                     ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
@@ -1280,8 +1274,9 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::SetCursorPosY(graphPosY + 1);
     util::Plot_RingBufferGetterData data_r(granulator.oscBufferR.data(), sizeof(float), offset,
                                            granulator.oscBufferR.getMaxSize());
-    ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r, oscSize, 0.0,
-                     nullptr, -1, 1, ImVec2(0, ImGui::GetContentRegionAvail().y));
+    ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r,
+                     oscFrame * granulator.getGlobalSamplingRate(), 0.0, nullptr, -1, 1,
+                     ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::SetCursorPosY(graphPosY + 1);
@@ -1306,10 +1301,9 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ImGui::PushFont(bodyFont);
     // Size of VU meter data arrays in samples
-    VUdataSize = globalSamplingRate / 30;
 
-    float VUleft = granulator.vuBufferL.getRMS(VUdataSize);
-    float VUright = granulator.vuBufferR.getRMS(VUdataSize);
+    float VUleft = granulator.vuBufferL.getRMS(granulator.getGlobalSamplingRate() / 30);
+    float VUright = granulator.vuBufferR.getRMS(granulator.getGlobalSamplingRate() / 30);
 
     // Set meter colors to green
     ImVec4 VUleftCol = (ImVec4)*ECgreen;
@@ -1508,7 +1502,6 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     ImGui::Text("%s", text.c_str());
     if (ImGui::Button("Stop")) {
       isPaused = true;
-      io->stop();
       io->close();
       state.currentSr = getSampleRateIndex();
     }
@@ -1521,6 +1514,8 @@ void ecInterface::drawAudioIO(AudioIO *io) {
                      static_cast<void *>(&state.devices), state.devices.size())) {
       state.currentMaxOut =
         AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT).channelsOutMax();
+      io->device(AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT));
+      currentAudioDevice = state.devices.at(state.currentDevice);
     }
     std::string chan_label = "Select Outs: (Up to " + std::to_string(state.currentMaxOut) + " )";
     ImGui::Text(chan_label.c_str(), "%s");
@@ -1528,11 +1523,11 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     // ImGui::Checkbox("Mono/Stereo", &isStereo);
     ImGui::Indent(25 * fontScale);
     ImGui::PushItemWidth(50 * fontScale);
-    ImGui::DragInt("Chan 1", &state.currentOut, 1.0f, 0, state.currentMaxOut - 1, "%d", 1 << 4);
-
-    if (state.currentOut > state.currentMaxOut - 1) state.currentOut = state.currentMaxOut - 1;
-    if (state.currentOut < 1) state.currentOut = 1;
-
+    if (ImGui::DragInt("Chan 1", &state.currentOut, 1.0f, 0, state.currentMaxOut - 1, "%d",
+                       1 << 4)) {
+      if (state.currentOut > state.currentMaxOut - 1) state.currentOut = state.currentMaxOut - 1;
+      if (state.currentOut < 1) state.currentOut = 1;
+    }
     ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
     for (int i = 1; i < MAX_AUDIO_OUTS; i++) {
@@ -1548,26 +1543,25 @@ void ecInterface::drawAudioIO(AudioIO *io) {
     ImGui::PopItemWidth();
 
     std::vector<std::string> samplingRates{"44100", "48000", "88200", "96000"};
-    ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
-                 static_cast<void *>(&samplingRates), samplingRates.size());
+    if (ImGui::Combo("Sampling Rate", &state.currentSr, ParameterGUI::vector_getter,
+                     static_cast<void *>(&samplingRates), samplingRates.size())) {
+      granulator.setGlobalSamplingRate(std::stof(samplingRates[state.currentSr]));
+      io->framesPerSecond(granulator.getGlobalSamplingRate());
+    }
     ImGui::PopItemWidth();
     if (ImGui::Button("Start")) {
-      globalSamplingRate = std::stof(samplingRates[state.currentSr]);
-      io->framesPerSecond(globalSamplingRate);
       io->framesPerBuffer(consts::BLOCK_SIZE);
-      io->device(AudioDevice(state.devices.at(state.currentDevice), AudioDevice::OUTPUT));
-      currentAudioDevice = state.devices.at(state.currentDevice);
       granulator.setOutChannels(state.currentOut - 1, state.currentMaxOut);
+      io->channelsIn(0);
       granulator.setIO(io);
       if (writeSampleRate) {
-        jsonWriteToConfig(globalSamplingRate, consts::SAMPLE_RATE_KEY);
+        jsonWriteToConfig(granulator.getGlobalSamplingRate(), consts::SAMPLE_RATE_KEY);
         jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
         jsonWriteToConfig(state.currentOut - 1, consts::LEAD_CHANNEL_KEY);
       }
 
       granulator.resampleSoundFiles();
 
-      io->open();
       io->start();
       isPaused = false;
     }
@@ -1671,7 +1665,7 @@ void ecInterface::setGUIParams() {
 }
 
 int ecInterface::getSampleRateIndex() {
-  unsigned s_r = (unsigned)globalSamplingRate;
+  unsigned s_r = (unsigned)granulator.getGlobalSamplingRate();
   switch (s_r) {
     case 44100:
       return 0;
@@ -2152,11 +2146,10 @@ void ecInterface::setSoundOutputPath(std::string sound_output_path) {
 }
 
 void ecInterface::setAudioSettings(float sample_rate) {
-  globalSamplingRate = sample_rate;
-
-  configureAudio(globalSamplingRate, consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS,
-                 consts::DEVICE_NUM);
   granulator.setGlobalSamplingRate(sample_rate);
+
+  configureAudio(granulator.getGlobalSamplingRate(), consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS,
+                 consts::DEVICE_NUM);
 }
 
 void ecInterface::setColorSchemeMode(bool is_light) {

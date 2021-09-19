@@ -154,6 +154,7 @@ class ecSynth : public al::SynthVoice {
   }
 
   void setGlobalSamplingRate(float sampling_rate) { mGlobalSamplingRate = sampling_rate; }
+  double getGlobalSamplingRate() { return mGlobalSamplingRate; }
 
   /**
    * @brief Initilialize the synth.
@@ -263,7 +264,8 @@ class ecSynth : public al::SynthVoice {
   int getNumberOfAudioFiles() const { return soundClip.size(); }
 
   std::string getCurrentAudioFileName() {
-    float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(ECModParameters[consts::SOUND_FILE]->getWidthParam());
+    float sf_mod_val = ECParameters[consts::SOUND_FILE]->getModParam(
+      ECModParameters[consts::SOUND_FILE]->getWidthParam());
     sf_mod_val = sf_mod_val - (int)sf_mod_val > 0.5 ? ceil(sf_mod_val) : floor(sf_mod_val);
     std::string filename = soundClipFileName[sf_mod_val - 1];
 #ifdef _WIN32
@@ -277,7 +279,7 @@ class ecSynth : public al::SynthVoice {
   float getCurrentIndex() const { return mCurrentIndex; }
 
   int getLeadChannel() const { return AudioChanIndex[0]; }
-  
+
   void setOutChannels(int lead_channel, int max_possible_channels) {
     AudioChanIndex[0] = lead_channel;
     if (max_possible_channels == 1) {
@@ -292,7 +294,7 @@ class ecSynth : public al::SynthVoice {
     }
   }
 
-  void setHardScanBegin(bool hard) { isHardScanBegin = hard;}
+  void setHardScanBegin(bool hard) { isHardScanBegin = hard; }
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;
