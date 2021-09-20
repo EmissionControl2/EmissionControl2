@@ -1,4 +1,5 @@
 deployment/*
+.ccls-cache/
 bin/
 build/
 .DS_STORE
