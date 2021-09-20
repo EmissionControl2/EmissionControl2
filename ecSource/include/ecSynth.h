@@ -30,7 +30,7 @@ class ecSynth : public al::SynthVoice {
    */
   unsigned int oscBufferSize = 96001 * 3;  // max size of scope window plus a
                                            // few samples because I'm paranoid -
-                                           // Rodney
+                                           // RD
   util::RingBuffer oscBufferL{oscBufferSize};
   util::RingBuffer oscBufferR{oscBufferSize};
 

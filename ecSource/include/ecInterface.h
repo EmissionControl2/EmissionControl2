@@ -279,7 +279,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int highestStreamCount = 2;
   int grainAccum = 0;
   int grainsPerSecond = 0;
-  float oscFrame = 1;
+  float oscFrame = 1.0f;
+  int offset = -1;
 
   std::vector<float> blackLine = std::vector<float>(2, 0);
 

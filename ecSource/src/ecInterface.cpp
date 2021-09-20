@@ -133,7 +133,7 @@ void ecInterface::onInit() {
     // + 1});
   }
   audioIO().channelsIn(0);
-  gam::sampleRate(audioIO().framesPerSecond());
+  gam::sampleRate(granulator.getGlobalSamplingRate());
   granulator.initialize(&audioIO());
   audioIO().append(mRecorder);
   audioIO().clipOut(isHardClip);
@@ -200,7 +200,7 @@ void ecInterface::onCreate() {
 
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
-  audioIO().close();
+  audioIO().stop();
 }
 
 void ecInterface::onExit() {
@@ -242,7 +242,7 @@ void ecInterface::onDraw(Graphics &g) {
   bool isMIDIDevicesWindow = false;
   bool isMIDIHelpWindow = false;
 
-  // Initialize OSC windows to false
+  // Initialize OSC window to false
   bool isOSCConfigWindow = false;
 
   bool isSoundFilePresetWriteWindow = false;
@@ -602,14 +602,17 @@ void ecInterface::onDraw(Graphics &g) {
     if (!audioIO().isRunning()) {
       if (ImGui::Button("ENGINE START")) {
         if (granulator.getNumberOfAudioFiles() != 0) {
+          if (!audioIO().start()) {
+            audioIO().close();
+            audioIO().start();
+          }
           isPaused = false;
-          audioIO().start();
           readyToTrigNoSoundFilePopup = true;
         }
       }
-    } else if (audioIO().isRunning()) {
+    } else {
       if (ImGui::Button("ENGINE STOP")) {
-        audioIO().close();
+        audioIO().stop();
         isPaused = true;
       }
     }
@@ -1256,12 +1259,12 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, light ? (ImVec4)*ECblue : (ImVec4)*ECblue);
-    int offset = granulator.oscBufferL.getTail() - oscFrame * granulator.getGlobalSamplingRate();
+    offset = granulator.oscBufferL.getTail() - (oscFrame * granulator.getGlobalSamplingRate());
     if (offset < 0) offset += granulator.oscBufferL.getMaxSize();
     util::Plot_RingBufferGetterData data_l(granulator.oscBufferL.data(), sizeof(float), offset,
                                            granulator.oscBufferL.getMaxSize());
     ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l,
-                     oscFrame * granulator.getGlobalSamplingRate(), 0.0, nullptr, -1, 1,
+                     int(oscFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1, 1,
                      ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(graphPosY);
@@ -1275,7 +1278,7 @@ void ecInterface::onDraw(Graphics &g) {
     util::Plot_RingBufferGetterData data_r(granulator.oscBufferR.data(), sizeof(float), offset,
                                            granulator.oscBufferR.getMaxSize());
     ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r,
-                     oscFrame * granulator.getGlobalSamplingRate(), 0.0, nullptr, -1, 1,
+                     int(oscFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1, 1,
                      ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
@@ -1665,7 +1668,7 @@ void ecInterface::setGUIParams() {
 }
 
 int ecInterface::getSampleRateIndex() {
-  unsigned s_r = (unsigned)granulator.getGlobalSamplingRate();
+  unsigned s_r = (int)granulator.getGlobalSamplingRate();
   switch (s_r) {
     case 44100:
       return 0;
@@ -2147,9 +2150,7 @@ void ecInterface::setSoundOutputPath(std::string sound_output_path) {
 
 void ecInterface::setAudioSettings(float sample_rate) {
   granulator.setGlobalSamplingRate(sample_rate);
-
-  configureAudio(granulator.getGlobalSamplingRate(), consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS,
-                 consts::DEVICE_NUM);
+  configureAudio(sample_rate, consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS, consts::DEVICE_NUM);
 }
 
 void ecInterface::setColorSchemeMode(bool is_light) {
