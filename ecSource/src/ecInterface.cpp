@@ -25,12 +25,15 @@ void ecInterface::onInit() {
   configFile = consts::DEFAULT_CONFIG_FILE;
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
+  oscPresetsPath = consts::DEFAULT_OSC_PRESETS_PATH;
+
   samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
 
   execDir = util::getContentPath_OSX(execDir);
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_OSC_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
@@ -47,13 +50,15 @@ void ecInterface::onInit() {
 
   configFile = configPath + "/config/config.json";
   presetsPath = configPath + "/presets";
-  midiPresetsPath = configPath + "/midi_presets";
-  samplePresetsPath = configPath + "/sample_presets";
+  midiPresetsPath = configPath + "/midi_presets/";
+  oscPresetsPath = configPath + "/osc_presets/";
+  samplePresetsPath = configPath + "/sample_presets/";
 
   // create config directories if needed
   al::Dir::make(userPath + configPath + "/config");
   al::Dir::make(userPath + presetsPath);
   al::Dir::make(userPath + midiPresetsPath);
+  al::Dir::make(userPath + oscPresetsPath);
   al::Dir::make(userPath + samplePresetsPath);
   opener = "xdg-open ";
 #endif
@@ -62,11 +67,13 @@ void ecInterface::onInit() {
   configFile = consts::DEFAULT_CONFIG_FILE;
   presetsPath = consts::DEFAULT_PRESETS_PATH;
   midiPresetsPath = consts::DEFAULT_MIDI_PRESETS_PATH;
+  oscPresetsPath = consts::DEFAULT_OSC_PRESETS_PATH;
   samplePresetsPath = consts::DEFAULT_SAMPLE_PRESETS_PATH;
 
   al::Dir::make(userPath + consts::PERSISTENT_DATA_PATH);
   al::Dir::make(userPath + consts::DEFAULT_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_MIDI_PRESETS_PATH);
+  al::Dir::make(userPath + consts::DEFAULT_OSC_PRESETS_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
   al::Dir::make(userPath + consts::DEFAULT_CONFIG_PATH);
   al::Dir::make(userPath + consts::DEFAULT_SAMPLE_PATH);
@@ -77,6 +84,7 @@ void ecInterface::onInit() {
   initJsonConfig();
   json config = jsonReadConfig();
   setMIDIPresetNames(config.at(consts::MIDI_PRESET_NAMES_KEY));
+  setOSCPresetNames(config.at(consts::OSC_PRESET_NAMES_KEY));
   setSoundFilePresetNames(config.at(consts::SAMPLE_PRESET_NAMES_KEY));
   setSoundOutputPath(config.at(consts::SOUND_OUTPUT_PATH_KEY));
   setAudioSettings(config.at(consts::SAMPLE_RATE_KEY));
@@ -244,6 +252,9 @@ void ecInterface::onDraw(Graphics &g) {
 
   // Initialize OSC window to false
   bool isOSCConfigWindow = false;
+  bool isOSCWriteWindow = false;
+  bool isOSCLoadWindow = false;
+  bool isOSCDeleteWindow = false;
 
   bool isSoundFilePresetWriteWindow = false;
   bool isSoundFilePresetLoadWindow = false;
@@ -694,7 +705,6 @@ void ecInterface::onDraw(Graphics &g) {
   if (isMIDILoadWindow) {
     ImGui::OpenPopup("Load MIDI Preset");
   }
-
   // MIDI Load Preset Window
   bool isMIDILoadOpen = true;
   bool isLoadJSON = false;
@@ -795,18 +805,40 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::OpenPopup("OSC Configuration");
   }
   bool isOSCConfigOpen = true;
-  ImGui::SetNextWindowSizeConstraints(ImVec2(500 * fontScale, 400 * adjustScaleY),
+  ImGui::SetNextWindowSizeConstraints(ImVec2(600 * fontScale, 400 * adjustScaleY),
                                       ImVec2(windowWidth, windowHeight));
   if (ImGui::BeginPopupModal("OSC Configuration", &isOSCConfigOpen)) {
-    if (ImGui::InputText("IP Address", oscAddr, 10, ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::Button("Save")) {
+      isOSCWriteWindow = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
+      isOSCLoadWindow = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Delete Preset")) {
+      isOSCDeleteWindow = true;
+    }
+    ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+    if (InputText("IP Address", &oscAddr, ImGuiInputTextFlags_EnterReturnsTrue, oscAddrCallback,
+                  oscAddrCallbackUserData))
       resetOSC();
     if (ImGui::InputInt("Port", &oscPort, ImGuiInputTextFlags_EnterReturnsTrue)) resetOSC();
+    ImGui::Dummy(ImVec2(0.0f, 20.0f));
     ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("GRANULATION CONTROLS");
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     for (int i = 0; i < consts::NUM_PARAMS; i++) {
-      ImGui::InputText((granulator.ECParameters[i]->getDisplayName()).c_str(),
-                       granulator.ECParameters[i]->mOscArgument, 20,
-                       ImGuiInputTextFlags_EnterReturnsTrue);
+      InputText((granulator.ECParameters[i]->getDisplayName()).c_str(),
+                &granulator.ECParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
+                granulator.ECParameters[i]->inputTextCallback,
+                granulator.ECParameters[i]->CallbackUserData);
       ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
       ImGui::InputFloat(("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
                         &granulator.ECParameters[i]->mOscMin, 0.1);
@@ -814,8 +846,132 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::InputFloat(("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
                         &granulator.ECParameters[i]->mOscMax, 0.1);
       ImGui::PopItemWidth();
-      ImGui::Spacing();
+      ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("MODULATION CONTROLS");
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    for (int i = 0; i < consts::NUM_PARAMS; i++) {
+      InputText((granulator.ECParameters[i]->getDisplayName() + " MOD").c_str(),
+                &granulator.ECModParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
+                granulator.ECModParameters[i]->inputTextCallback,
+                granulator.ECModParameters[i]->CallbackUserData);
+      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+      ImGui::InputFloat(
+        ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
+        &granulator.ECModParameters[i]->mOscMin, 0.1);
+      ImGui::SameLine();
+      ImGui::InputFloat(
+        ("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
+        &granulator.ECModParameters[i]->mOscMax, 0.1);
+      ImGui::PopItemWidth();
+      ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    }
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Text("LFO CONTROLS");
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    for (int i = 0; i < consts::NUM_LFOS; i++) {
+      InputText(("LFO" + toString(i + 1)).c_str(), &granulator.LFOParameters[i]->mOscArgument,
+                ImGuiInputTextFlags_EnterReturnsTrue,
+                granulator.LFOParameters[i]->inputTextCallback,
+                granulator.LFOParameters[i]->CallbackUserData);
+      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+      ImGui::InputFloat(("Range Min##osc_" + toString("LFO") + toString(i + 1)).c_str(),
+                        &granulator.LFOParameters[i]->mOscMin, 0.1);
+      ImGui::SameLine();
+      ImGui::InputFloat(("Range Max##osc_" + toString("LFO") + toString(i + 1)).c_str(),
+                        &granulator.LFOParameters[i]->mOscMax, 0.1);
+      ImGui::PopItemWidth();
+      ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    }
+
+    // OSC Write Window
+    if (isOSCWriteWindow) {
+      ImGui::OpenPopup("Save OSC Preset");
+    }
+    bool isOSCWriteOpen = true;
+    bool isOSCWriteJSON = false;
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Save OSC Preset", &isOSCWriteOpen)) {
+      ImGui::InputText("Enter Preset Name", mCurrentOSCPresetName, 50,
+                       ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
+
+      if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+      ImGui::SameLine();
+
+      if (ImGui::Button("Save")) {
+        ImGui::CloseCurrentPopup();
+        isOSCWriteOpen = false;
+        isOSCWriteJSON = true;
+      }
+
+      ImGui::SameLine();
+
+      ImGui::Checkbox("Overwrite", &allowOSCPresetOverwrite);
+
+      ImGui::EndPopup();
+    }
+    if (!isOSCWriteOpen && isOSCWriteJSON) {
+      writeJSONOSCPreset(mCurrentOSCPresetName, allowOSCPresetOverwrite);
+      isOSCWriteJSON = false;
+    }
+
+    // OSC Load Preset Window
+    if (isOSCLoadWindow) {
+      ImGui::OpenPopup("Load OSC Preset");
+    }
+    bool isOSCLoadOpen = true;
+    bool isOSCLoadJSON = false;
+    std::string osc_preset_name = "";
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Load OSC Preset", &isOSCLoadOpen)) {
+      for (auto iter = OSCPresetNames.begin(); iter != OSCPresetNames.end(); iter++) {
+        if (ImGui::Selectable(iter->c_str())) {
+          isOSCLoadOpen = false;
+          isLoadJSON = true;
+          osc_preset_name = *iter;
+        }
+      }
+      ImGui::EndPopup();
+    }
+    if (!isOSCLoadOpen && isOSCLoadJSON) {
+      loadJSONOSCPreset(osc_preset_name);
+      isOSCLoadJSON = false;
+    }
+
+    // OSC Delete Preset Window
+    if (isOSCDeleteWindow) {
+      ImGui::OpenPopup("Delete OSC Preset");
+    }
+    bool isOSCDeleteOpen = true;
+    bool isOSCDeleteJSON = false;
+    osc_preset_name = "";
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300 * fontScale, (sliderheight * 5)),
+                                        ImVec2(windowWidth, windowHeight));
+    if (ImGui::BeginPopupModal("Delete OSC Preset", &isOSCDeleteOpen)) {
+      for (auto iter = OSCPresetNames.begin(); iter != OSCPresetNames.end(); iter++) {
+        if (ImGui::Selectable(iter->c_str())) {
+          isOSCDeleteOpen = false;
+          isOSCDeleteJSON = true;
+          osc_preset_name = *iter;
+        }
+      }
+      ImGui::EndPopup();
+    }
+    if (!isOSCDeleteOpen && isOSCDeleteJSON) {
+      deleteJSONOSCPreset(osc_preset_name);
+      isOSCDeleteJSON = false;
+    }
+
     ImGui::EndPopup();
   }
 
@@ -1253,19 +1409,20 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::Text("Time Frame (s):");
     ImGui::SameLine();
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - (100 * fontScale));
-    ImGui::SliderFloat("##Scope frame", &oscFrame, 0.001, 3.0, "%.3f");
+    ImGui::SliderFloat("##Scope frame", &oscilloscopeFrame, 0.001, 3.0, "%.3f");
 
     // Draw left channel oscilloscope
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, light ? (ImVec4)*ECblue : (ImVec4)*ECblue);
-    offset = granulator.oscBufferL.getTail() - (oscFrame * granulator.getGlobalSamplingRate());
+    int offset =
+      granulator.oscBufferL.getTail() - (oscilloscopeFrame * granulator.getGlobalSamplingRate());
     if (offset < 0) offset += granulator.oscBufferL.getMaxSize();
     util::Plot_RingBufferGetterData data_l(granulator.oscBufferL.data(), sizeof(float), offset,
                                            granulator.oscBufferL.getMaxSize());
     ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l,
-                     int(oscFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y));
+                     int(oscilloscopeFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1,
+                     1, ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
@@ -1278,8 +1435,8 @@ void ecInterface::onDraw(Graphics &g) {
     util::Plot_RingBufferGetterData data_r(granulator.oscBufferR.data(), sizeof(float), offset,
                                            granulator.oscBufferR.getMaxSize());
     ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r,
-                     int(oscFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y));
+                     int(oscilloscopeFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1,
+                     1, ImVec2(0, ImGui::GetContentRegionAvail().y));
     // Draw a black line across the center of the scope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::SetCursorPosY(graphPosY + 1);
@@ -1998,6 +2155,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::MIDI_PRESET_NAMES_KEY) == config.end())
       config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
+    if (config.find(consts::OSC_PRESET_NAMES_KEY) == config.end())
+      config[consts::OSC_PRESET_NAMES_KEY] = json::array();
+
     if (config.find(consts::SAMPLE_PRESET_NAMES_KEY) == config.end())
       config[consts::SAMPLE_PRESET_NAMES_KEY] = json::array();
 
@@ -2043,6 +2203,8 @@ bool ecInterface::initJsonConfig() {
 
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
+
+    config[consts::OSC_PRESET_NAMES_KEY] = json::array();
 
     config[consts::SAMPLE_PRESET_NAMES_KEY] = json::array();
 
@@ -2135,6 +2297,12 @@ json ecInterface::jsonReadConfig() {
 void ecInterface::setMIDIPresetNames(json preset_names) {
   for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
     MIDIPresetNames.insert(iter->get<std::string>());
+  }
+}
+
+void ecInterface::setOSCPresetNames(json preset_names) {
+  for (auto iter = preset_names.begin(); iter != preset_names.end(); iter++) {
+    OSCPresetNames.insert(iter->get<std::string>());
   }
 }
 
@@ -2235,6 +2403,88 @@ void ecInterface::deleteJSONMIDIPreset(std::string midi_preset_name) {
   std::remove((userPath + midiPresetsPath + midi_preset_name + ".json").c_str());
 }
 
+// OSC Preset Jsons
+void ecInterface::writeJSONOSCPreset(std::string name, bool allowOverwrite) {
+  if (name == "") return;
+
+  std::string filename = name;
+  if (!allowOverwrite) {
+    int counter = 1;
+    while (File::exists(userPath + oscPresetsPath + filename + ".json") && counter < 9999) {
+      filename = name + "_" + std::to_string(counter++);
+    }
+  }
+
+  OSCPresetNames.insert(filename);
+  jsonWriteMapToConfig(OSCPresetNames, consts::OSC_PRESET_NAMES_KEY);
+  json osc_config = json::array();
+  osc_config.push_back(oscAddr);
+  osc_config.push_back(oscPort);
+
+  json temp;
+  for (int i = 0; i < NUM_PARAMS; i++) {
+    temp["MAX"] = granulator.ECParameters[i]->mOscMax;
+    temp["MIN"] = granulator.ECParameters[i]->mOscMin;
+    temp["OSC_ARG"] = granulator.ECParameters[i]->mOscArgument;
+    temp["OSC_TARGET"] = granulator.ECParameters[i]->getDisplayName();
+    osc_config.push_back(temp);
+  }
+  for (int i = 0; i < NUM_PARAMS; i++) {
+    temp["MAX"] = granulator.ECModParameters[i]->mOscMax;
+    temp["MIN"] = granulator.ECModParameters[i]->mOscMin;
+    temp["OSC_ARG"] = granulator.ECModParameters[i]->mOscArgument;
+    temp["OSC_TARGET"] = toString(granulator.ECParameters[i]->getDisplayName() + "_Mod");
+
+    osc_config.push_back(temp);
+  }
+  for (int i = 0; i < NUM_LFOS; i++) {
+    temp["MAX"] = granulator.LFOParameters[i]->mOscMax;
+    temp["MIN"] = granulator.LFOParameters[i]->mOscMin;
+    temp["OSC_ARG"] = granulator.LFOParameters[i]->mOscArgument;
+    temp["OSC_TARGET"] = toString("LFO" + toString(i + 1));
+
+    osc_config.push_back(temp);
+  }
+
+  std::ofstream file((userPath + oscPresetsPath + filename + ".json").c_str());
+  if (file.is_open()) file << osc_config;
+}
+
+void ecInterface::loadJSONOSCPreset(std::string osc_preset_name) {
+  std::ifstream ifs(userPath + oscPresetsPath + osc_preset_name + ".json");
+
+  json osc_config;
+
+  if (ifs.is_open())
+    osc_config = json::parse(ifs);
+  else
+    return;
+
+  oscAddr = osc_config[0];
+  oscPort = osc_config[1];
+  for (int i = 0; i < NUM_PARAMS; i++) {
+    granulator.ECParameters[i]->mOscArgument = osc_config[i + 2].at("OSC_ARG");
+    granulator.ECParameters[i]->mOscMin = osc_config[i + 2].at("MIN");
+    granulator.ECParameters[i]->mOscMax = osc_config[i + 2].at("MAX");
+  }
+  for (int i = 0; i < NUM_PARAMS; i++) {
+    granulator.ECModParameters[i]->mOscArgument = osc_config[i + 2 + NUM_PARAMS].at("OSC_ARG");
+    granulator.ECModParameters[i]->mOscMin = osc_config[i + 2 + NUM_PARAMS].at("MIN");
+    granulator.ECModParameters[i]->mOscMax = osc_config[i + 2 + NUM_PARAMS].at("MAX");
+  }
+  for (int i = 0; i < NUM_LFOS; i++) {
+    granulator.LFOParameters[i]->mOscArgument = osc_config[i + 2 + NUM_PARAMS * 2].at("OSC_ARG");
+    granulator.LFOParameters[i]->mOscMin = osc_config[i + 2 + NUM_PARAMS * 2].at("MIN");
+    granulator.LFOParameters[i]->mOscMax = osc_config[i + 2 + NUM_PARAMS * 2].at("MAX");
+  }
+}
+
+void ecInterface::deleteJSONOSCPreset(std::string osc_preset_name) {
+  OSCPresetNames.erase(osc_preset_name);
+  jsonWriteMapToConfig(OSCPresetNames, consts::OSC_PRESET_NAMES_KEY);
+  std::remove((userPath + oscPresetsPath + osc_preset_name + ".json").c_str());
+}
+
 void ecInterface::writeJSONSoundFilePreset(std::string name, bool allowOverwrite) {
   if (name == "") return;
 
@@ -2307,4 +2557,41 @@ void ecInterface::deleteJSONSoundFilePreset(std::string sound_file_preset_name) 
   SoundFilePresetNames.erase(sound_file_preset_name);
   jsonWriteMapToConfig(SoundFilePresetNames, consts::SAMPLE_PRESET_NAMES_KEY);
   std::remove((userPath + samplePresetsPath + sound_file_preset_name + ".json").c_str());
+}
+
+struct InputTextCallback_UserData {
+  std::string *Str;
+  ImGuiInputTextCallback ChainCallback;
+  void *ChainCallbackUserData;
+};
+
+static int InputTextCallback(ImGuiInputTextCallbackData *data) {
+  InputTextCallback_UserData *user_data = (InputTextCallback_UserData *)data->UserData;
+  if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
+    // Resize string callback
+    // If for some reason we refuse the new length (BufTextLen) and/or capacity (BufSize) we need to
+    // set them back to what we want.
+    std::string *str = user_data->Str;
+    IM_ASSERT(data->Buf == str->c_str());
+    str->resize(data->BufTextLen);
+    data->Buf = (char *)str->c_str();
+  } else if (user_data->ChainCallback) {
+    // Forward to user callback, if any
+    data->UserData = user_data->ChainCallbackUserData;
+    return user_data->ChainCallback(data);
+  }
+  return 0;
+};
+
+bool ecInterface::InputText(const char *label, std::string *str, ImGuiInputTextFlags flags,
+                            ImGuiInputTextCallback callback, void *user_data) {
+  IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
+  flags |= ImGuiInputTextFlags_CallbackResize;
+
+  InputTextCallback_UserData cb_user_data;
+  cb_user_data.Str = str;
+  cb_user_data.ChainCallback = callback;
+  cb_user_data.ChainCallbackUserData = user_data;
+  return ImGui::InputText(label, (char *)str->c_str(), str->capacity() + 1, flags,
+                          InputTextCallback, &cb_user_data);
 }

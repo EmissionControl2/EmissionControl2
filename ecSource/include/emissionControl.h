@@ -321,7 +321,11 @@ class ecParameter {
   al::Parameter *mParameter = nullptr;
   al::Parameter *mLowRange = nullptr;   // Parameter designed to bound low mParameter.
   al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
-  char mOscArgument[20] = "ENTER OSC ADDRESS";
+
+  // variables for OSC control
+  std::string mOscArgument = "ENTER OSC ADDRESS";
+  ImGuiInputTextCallback inputTextCallback;
+  void *CallbackUserData;
   float mOscMin = 0;
   float mOscMax = 0;
 
@@ -527,6 +531,13 @@ struct ecModParameter {
     : param(parameterName, displayName, "", 0, 0, 1, 0, 1, consts::MOD, false),
       lfoMenu("##lfo" + parameterName) {}
 
+  // variables for OSC control
+  std::string mOscArgument = "ENTER OSC ADDRESS";
+  ImGuiInputTextCallback inputTextCallback;
+  void *CallbackUserData;
+  float mOscMin = 0;
+  float mOscMax = 0;
+
   void setMenuElements(std::vector<std::string> elements) { lfoMenu.setElements(elements); }
 
   float getWidthParam() { return param.getParam(); }
@@ -565,6 +576,13 @@ class LFOstruct {
   ecParameter *frequency = nullptr;
   al::Parameter *duty = nullptr;
   int mLFONumber;
+
+  // variables for OSC control
+  std::string mOscArgument = "ENTER OSC ADDRESS";
+  ImGuiInputTextCallback inputTextCallback;
+  void *CallbackUserData;
+  float mOscMin = 0;
+  float mOscMax = 0;
 
   // constructor
   LFOstruct(int lfoNumber) {

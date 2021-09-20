@@ -124,12 +124,15 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
   char mCurrentMIDIPresetName[128] = "midi_preset";
+  char mCurrentOSCPresetName[128] = "osc_preset";
   char mCurrentSoundFilePresetName[128] = "sound_file_preset";
   bool allowMIDIPresetOverwrite = false;
+  bool allowOSCPresetOverwrite = false;
   bool allowSoundFilePresetOverwrite = false;
   MIDILearnBool mMIDILearn;
   MIDIKey mCurrentLearningMIDIKey;
   std::unordered_set<std::string> MIDIPresetNames;
+  std::unordered_set<std::string> OSCPresetNames;
   std::unordered_set<std::string> SoundFilePresetNames;
   std::vector<bool> SelectedMIDIDevices;
   int unlearnFlash = 0;
@@ -138,12 +141,14 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   OSC
   */
   bool isOSCOn = 0;
-  int oscPort = 16447;             // osc port
-  char oscAddr[10] = "127.0.0.1";  // ip address
-  al::osc::Recv oscServer;         // create and osc server (listener)
+  int oscPort = 16447;                // osc port
+  std::string oscAddr = "127.0.0.1";  // ip address
+  ImGuiInputTextCallback oscAddrCallback;
+  void *oscAddrCallbackUserData;
+  al::osc::Recv oscServer;  // create and osc server (listener)
 
   void resetOSC() {
-    oscServer.open(oscPort, oscAddr, 0.02);
+    oscServer.open(oscPort, oscAddr.c_str(), 0.02);
     oscServer.handler(oscDomain()->handler());
     oscServer.start();
     std::cout << "OSC IP Address: " << oscAddr << std::endl;
@@ -258,7 +263,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     "All of the sliders in LFO CONTROLS",
     "The Morph Time slider in PRESETS"};
   std::string soundOutput, execDir, execPath, userPath, configFile, presetsPath, midiPresetsPath,
-    samplePresetsPath;
+    oscPresetsPath, samplePresetsPath;
   nfdchar_t *outPath = NULL;
   nfdpathset_t pathSet;
   nfdresult_t result;
@@ -279,8 +284,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   int highestStreamCount = 2;
   int grainAccum = 0;
   int grainsPerSecond = 0;
-  float oscFrame = 1.0f;
-  int offset = -1;
+  float oscilloscopeFrame = 1.0f;
 
   std::vector<float> blackLine = std::vector<float>(2, 0);
 
@@ -351,6 +355,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
    */
   json jsonReadConfig();
   void setMIDIPresetNames(json preset_names);
+  void setOSCPresetNames(json preset_names);
   void setSoundFilePresetNames(json preset_names);
   void setSoundOutputPath(std::string sound_output_path);
   void setAudioSettings(float sample_rate);
@@ -372,6 +377,11 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void loadJSONMIDIPreset(std::string midi_preset_name);
   void deleteJSONMIDIPreset(std::string midi_preset_name);
 
+  // OSC Preset Json files
+  void writeJSONOSCPreset(std::string name, bool allowOverwrite);
+  void loadJSONOSCPreset(std::string osc_preset_name);
+  void deleteJSONOSCPreset(std::string osc_preset_name);
+
   // Sound File Preset Json files
   void writeJSONSoundFilePreset(std::string name, bool allowOverwrite);
   std::vector<std::string> loadJSONSoundFilePreset(std::string sound_file_preset_name);
@@ -379,6 +389,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   // make a new audioThumbnail when a new sound file is loaded.
   void createAudioThumbnail(float *soundFile, int lengthInSamples);
+
+  IMGUI_API bool InputText(const char *label, std::string *str, ImGuiInputTextFlags flags = 0,
+                           ImGuiInputTextCallback callback = NULL, void *user_data = NULL);
 };
 
 #endif
