@@ -147,6 +147,12 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void *oscAddrCallbackUserData;
   al::osc::Recv oscServer;  // create and osc server (listener)
 
+  std::string morphTimeOSCArg = "ENTER OSC ADDRESS";
+  ImGuiInputTextCallback morphTimeOSCCallback;
+  void *morphTimeOSCCallbackUserData;
+  float morphTimeOscMin = 0;
+  float morphTimeOscMax = 0;
+
   void resetOSC() {
     oscServer.open(oscPort, oscAddr.c_str(), 0.02);
     oscServer.handler(oscDomain()->handler());

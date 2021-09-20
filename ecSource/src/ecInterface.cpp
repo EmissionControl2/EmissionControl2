@@ -890,6 +890,17 @@ void ecInterface::onDraw(Graphics &g) {
       ImGui::PopItemWidth();
       ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    InputText("Morph Time", &morphTimeOSCArg, ImGuiInputTextFlags_EnterReturnsTrue,
+              morphTimeOSCCallback, morphTimeOSCCallbackUserData);
+    ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+    ImGui::InputFloat("Range Min##osc_MorphTime", &morphTimeOscMin, 0.1);
+    ImGui::SameLine();
+    ImGui::InputFloat("Range Max##osc_MorphTime", &morphTimeOscMax, 0.1);
+    ImGui::PopItemWidth();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     // OSC Write Window
     if (isOSCWriteWindow) {
@@ -2122,6 +2133,32 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
                                      granulator.ECParameters[i]->getCurrentMax(), false);
         granulator.ECParameters[i]->setParam(val);
       }
+      if (m.addressPattern() == granulator.ECModParameters[i]->mOscArgument) {
+        float val;
+        m >> val;
+        val = (val - granulator.ECModParameters[i]->param.getParam()) /
+              (granulator.ECModParameters[i]->mOscMax - granulator.ECModParameters[i]->mOscMin);
+        val = util::outputValInRange(val, granulator.ECModParameters[i]->param.getCurrentMin(),
+                                     granulator.ECModParameters[i]->param.getCurrentMax(), false);
+        granulator.ECModParameters[i]->param.setParam(val);
+      }
+      if (m.addressPattern() == granulator.LFOParameters[i]->mOscArgument) {
+        float val;
+        m >> val;
+        val = (val - granulator.LFOParameters[i]->frequency->getParam()) /
+              (granulator.LFOParameters[i]->mOscMax - granulator.LFOParameters[i]->mOscMin);
+        val =
+          util::outputValInRange(val, granulator.LFOParameters[i]->frequency->getCurrentMin(),
+                                 granulator.LFOParameters[i]->frequency->getCurrentMax(), false);
+        granulator.LFOParameters[i]->frequency->setParam(val);
+      }
+      if (m.addressPattern() == morphTimeOSCArg) {
+        float val;
+        m >> val;
+        val = (val - mPresets->getMorphTime()) / (morphTimeOscMax - morphTimeOscMin);
+        val = util::outputValInRange(val, 0, MAX_MORPH_TIME, false);
+        mPresets->setMorphTime(val);
+      }
     }
 }
 
@@ -2445,6 +2482,10 @@ void ecInterface::writeJSONOSCPreset(std::string name, bool allowOverwrite) {
 
     osc_config.push_back(temp);
   }
+  temp["MAX"] = morphTimeOscMax;
+  temp["MIN"] = morphTimeOscMin;
+  temp["OSC_ARG"] = morphTimeOSCArg;
+  temp["OSC_TARGET"] = "MORPH_TIME";
 
   std::ofstream file((userPath + oscPresetsPath + filename + ".json").c_str());
   if (file.is_open()) file << osc_config;
@@ -2477,6 +2518,9 @@ void ecInterface::loadJSONOSCPreset(std::string osc_preset_name) {
     granulator.LFOParameters[i]->mOscMin = osc_config[i + 2 + NUM_PARAMS * 2].at("MIN");
     granulator.LFOParameters[i]->mOscMax = osc_config[i + 2 + NUM_PARAMS * 2].at("MAX");
   }
+  morphTimeOSCArg = osc_config.at("OSC_ARG");
+  morphTimeOscMin = osc_config.at("MIN");
+  morphTimeOscMax = osc_config.at("MAX");
 }
 
 void ecInterface::deleteJSONOSCPreset(std::string osc_preset_name) {
@@ -2569,8 +2613,8 @@ static int InputTextCallback(ImGuiInputTextCallbackData *data) {
   InputTextCallback_UserData *user_data = (InputTextCallback_UserData *)data->UserData;
   if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
     // Resize string callback
-    // If for some reason we refuse the new length (BufTextLen) and/or capacity (BufSize) we need to
-    // set them back to what we want.
+    // If for some reason we refuse the new length (BufTextLen) and/or capacity (BufSize) we need
+    // to set them back to what we want.
     std::string *str = user_data->Str;
     IM_ASSERT(data->Buf == str->c_str());
     str->resize(data->BufTextLen);
