@@ -2022,7 +2022,7 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     mMIDILearn.mParamDel = true;
   }
 
-  if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))) {
+  if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
     ImGui::OpenPopup("rightClickMorph");
   }
   if (ImGui::BeginPopup("rightClickMorph")) {
@@ -2132,6 +2132,7 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
         val = util::outputValInRange(val, granulator.ECParameters[i]->getCurrentMin(),
                                      granulator.ECParameters[i]->getCurrentMax(), false);
         granulator.ECParameters[i]->setParam(val);
+        return;
       }
       if (m.addressPattern() == granulator.ECModParameters[i]->mOscArgument) {
         float val;
@@ -2141,25 +2142,29 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
         val = util::outputValInRange(val, granulator.ECModParameters[i]->param.getCurrentMin(),
                                      granulator.ECModParameters[i]->param.getCurrentMax(), false);
         granulator.ECModParameters[i]->param.setParam(val);
-      }
-      if (m.addressPattern() == granulator.LFOParameters[i]->mOscArgument) {
-        float val;
-        m >> val;
-        val = (val - granulator.LFOParameters[i]->frequency->getParam()) /
-              (granulator.LFOParameters[i]->mOscMax - granulator.LFOParameters[i]->mOscMin);
-        val =
-          util::outputValInRange(val, granulator.LFOParameters[i]->frequency->getCurrentMin(),
-                                 granulator.LFOParameters[i]->frequency->getCurrentMax(), false);
-        granulator.LFOParameters[i]->frequency->setParam(val);
-      }
-      if (m.addressPattern() == morphTimeOSCArg) {
-        float val;
-        m >> val;
-        val = (val - mPresets->getMorphTime()) / (morphTimeOscMax - morphTimeOscMin);
-        val = util::outputValInRange(val, 0, MAX_MORPH_TIME, false);
-        mPresets->setMorphTime(val);
+        return;
       }
     }
+  for (int i = 0; i < consts::NUM_LFOS; i++) {
+    if (m.addressPattern() == granulator.LFOParameters[i]->mOscArgument) {
+      float val;
+      m >> val;
+      val = (val - granulator.LFOParameters[i]->frequency->getParam()) /
+            (granulator.LFOParameters[i]->mOscMax - granulator.LFOParameters[i]->mOscMin);
+      val = util::outputValInRange(val, granulator.LFOParameters[i]->frequency->getCurrentMin(),
+                                   granulator.LFOParameters[i]->frequency->getCurrentMax(), false);
+      granulator.LFOParameters[i]->frequency->setParam(val);
+      return;
+    }
+  }
+  if (m.addressPattern() == morphTimeOSCArg) {
+    float val;
+    m >> val;
+    val = (val - mPresets->getMorphTime()) / (morphTimeOscMax - morphTimeOscMin);
+    val = util::outputValInRange(val, 0, MAX_MORPH_TIME, false);
+    mPresets->setMorphTime(val);
+    return;
+  }
 }
 
 void ecInterface::createAudioThumbnail(float *soundfile, int lengthInSamples) {
