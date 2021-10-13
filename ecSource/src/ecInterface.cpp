@@ -156,8 +156,6 @@ void ecInterface::onCreate() {
   // Set if fullscreen or not.
   fullScreen(isFullScreen);
 
-  resetOSC();
-
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     granulator.ECParameters[index]->addToPresetHandler(*mPresets);
     granulator.ECModParameters[index]->addToPresetHandler(*mPresets);
@@ -209,6 +207,8 @@ void ecInterface::onCreate() {
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
   audioIO().stop();
+  oscServer = new osc::Recv(oscPort, oscAddr.c_str(), 0.02);
+  resetOSC();
 }
 
 void ecInterface::onExit() {
@@ -827,7 +827,18 @@ void ecInterface::onDraw(Graphics &g) {
     if (InputText("IP Address", &oscAddr, ImGuiInputTextFlags_EnterReturnsTrue, oscAddrCallback,
                   oscAddrCallbackUserData))
       resetOSC();
-    if (ImGui::InputInt("Port", &oscPort, ImGuiInputTextFlags_EnterReturnsTrue)) resetOSC();
+    if (ImGui::InputInt("Port", &oscPort, 1, 1, ImGuiInputTextFlags_EnterReturnsTrue)) resetOSC();
+    if (ImGui::InputFloat("Timeout", &oscTimeout, 0.01, 0.01, "%.2f",
+                          ImGuiInputTextFlags_EnterReturnsTrue)) {
+      if (oscTimeout < 0.01) {
+        oscTimeout = 0.01;
+      } else {
+        resetOSC();
+      }
+    }
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip("How often the server checks for new data on the on the port");
+    if (ImGui::Button("Reconnect OSC")) resetOSC();
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -839,6 +850,7 @@ void ecInterface::onDraw(Graphics &g) {
                 &granulator.ECParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.ECParameters[i]->inputTextCallback,
                 granulator.ECParameters[i]->CallbackUserData);
+      if (ImGui::IsItemHovered()) ImGui::SetTooltip("Enter OSC Address");
       ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
       ImGui::InputFloat(("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
                         &granulator.ECParameters[i]->mOscMin, 0.1);
@@ -855,10 +867,11 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     for (int i = 0; i < consts::NUM_PARAMS; i++) {
-      InputText((granulator.ECParameters[i]->getDisplayName() + " MOD").c_str(),
+      InputText((granulator.ECParameters[i]->getDisplayName() + " Mod").c_str(),
                 &granulator.ECModParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.ECModParameters[i]->inputTextCallback,
                 granulator.ECModParameters[i]->CallbackUserData);
+      if (ImGui::IsItemHovered()) ImGui::SetTooltip("Enter OSC Address");
       ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
       ImGui::InputFloat(
         ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
@@ -877,10 +890,11 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     for (int i = 0; i < consts::NUM_LFOS; i++) {
-      InputText(("LFO" + toString(i + 1)).c_str(), &granulator.LFOParameters[i]->mOscArgument,
+      InputText(("LFO " + toString(i + 1)).c_str(), &granulator.LFOParameters[i]->mOscArgument,
                 ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.LFOParameters[i]->inputTextCallback,
                 granulator.LFOParameters[i]->CallbackUserData);
+      if (ImGui::IsItemHovered()) ImGui::SetTooltip("Enter OSC Address");
       ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
       ImGui::InputFloat(("Range Min##osc_" + toString("LFO") + toString(i + 1)).c_str(),
                         &granulator.LFOParameters[i]->mOscMin, 0.1);
@@ -948,7 +962,7 @@ void ecInterface::onDraw(Graphics &g) {
       for (auto iter = OSCPresetNames.begin(); iter != OSCPresetNames.end(); iter++) {
         if (ImGui::Selectable(iter->c_str())) {
           isOSCLoadOpen = false;
-          isLoadJSON = true;
+          isOSCLoadJSON = true;
           osc_preset_name = *iter;
         }
       }
@@ -2456,37 +2470,39 @@ void ecInterface::writeJSONOSCPreset(std::string name, bool allowOverwrite) {
   OSCPresetNames.insert(filename);
   jsonWriteMapToConfig(OSCPresetNames, consts::OSC_PRESET_NAMES_KEY);
   json osc_config = json::array();
-  osc_config.push_back(oscAddr);
-  osc_config.push_back(oscPort);
 
   json temp;
+  json package;
+
+  temp["ADDRESS"] = oscAddr;
+  temp["PORT"] = oscPort;
+  temp["TIMEOUT"] = oscTimeout;
+  package["OSC_SETUP"] = temp;
+  temp.clear();
   for (int i = 0; i < NUM_PARAMS; i++) {
     temp["MAX"] = granulator.ECParameters[i]->mOscMax;
     temp["MIN"] = granulator.ECParameters[i]->mOscMin;
     temp["OSC_ARG"] = granulator.ECParameters[i]->mOscArgument;
-    temp["OSC_TARGET"] = granulator.ECParameters[i]->getDisplayName();
-    osc_config.push_back(temp);
+    package[granulator.ECParameters[i]->getDisplayName()] = temp;
   }
   for (int i = 0; i < NUM_PARAMS; i++) {
     temp["MAX"] = granulator.ECModParameters[i]->mOscMax;
     temp["MIN"] = granulator.ECModParameters[i]->mOscMin;
     temp["OSC_ARG"] = granulator.ECModParameters[i]->mOscArgument;
-    temp["OSC_TARGET"] = toString(granulator.ECParameters[i]->getDisplayName() + "_Mod");
-
-    osc_config.push_back(temp);
+    package[granulator.ECParameters[i]->getDisplayName() + "_MOD"] = temp;
   }
   for (int i = 0; i < NUM_LFOS; i++) {
     temp["MAX"] = granulator.LFOParameters[i]->mOscMax;
     temp["MIN"] = granulator.LFOParameters[i]->mOscMin;
     temp["OSC_ARG"] = granulator.LFOParameters[i]->mOscArgument;
-    temp["OSC_TARGET"] = toString("LFO" + toString(i + 1));
-
-    osc_config.push_back(temp);
+    package[toString("LFO" + toString(i + 1))] = temp;
   }
   temp["MAX"] = morphTimeOscMax;
   temp["MIN"] = morphTimeOscMin;
   temp["OSC_ARG"] = morphTimeOSCArg;
-  temp["OSC_TARGET"] = "MORPH_TIME";
+  package["MORPH_TIME"] = temp;
+
+  osc_config.push_back(package);
 
   std::ofstream file((userPath + oscPresetsPath + filename + ".json").c_str());
   if (file.is_open()) file << osc_config;
@@ -2501,27 +2517,28 @@ void ecInterface::loadJSONOSCPreset(std::string osc_preset_name) {
     osc_config = json::parse(ifs);
   else
     return;
+  oscAddr = osc_config[0].at("OSC_SETUP").at("ADDRESS");
+  oscPort = osc_config[0].at("OSC_SETUP").at("PORT");
+  oscTimeout = osc_config[0].at("OSC_SETUP").at("TIMEOUT");
 
-  oscAddr = osc_config[0];
-  oscPort = osc_config[1];
   for (int i = 0; i < NUM_PARAMS; i++) {
-    granulator.ECParameters[i]->mOscArgument = osc_config[i + 2].at("OSC_ARG");
-    granulator.ECParameters[i]->mOscMin = osc_config[i + 2].at("MIN");
-    granulator.ECParameters[i]->mOscMax = osc_config[i + 2].at("MAX");
-  }
-  for (int i = 0; i < NUM_PARAMS; i++) {
-    granulator.ECModParameters[i]->mOscArgument = osc_config[i + 2 + NUM_PARAMS].at("OSC_ARG");
-    granulator.ECModParameters[i]->mOscMin = osc_config[i + 2 + NUM_PARAMS].at("MIN");
-    granulator.ECModParameters[i]->mOscMax = osc_config[i + 2 + NUM_PARAMS].at("MAX");
+    std::string name = granulator.ECParameters[i]->getDisplayName();
+    granulator.ECParameters[i]->mOscArgument = osc_config[0].at(name).at("OSC_ARG");
+    granulator.ECParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
+    granulator.ECParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
+    granulator.ECModParameters[i]->mOscArgument = osc_config[0].at(name + "_MOD").at("OSC_ARG");
+    granulator.ECModParameters[i]->mOscMin = osc_config[0].at(name + "_MOD").at("MIN");
+    granulator.ECModParameters[i]->mOscMax = osc_config[0].at(name + "_MOD").at("MAX");
   }
   for (int i = 0; i < NUM_LFOS; i++) {
-    granulator.LFOParameters[i]->mOscArgument = osc_config[i + 2 + NUM_PARAMS * 2].at("OSC_ARG");
-    granulator.LFOParameters[i]->mOscMin = osc_config[i + 2 + NUM_PARAMS * 2].at("MIN");
-    granulator.LFOParameters[i]->mOscMax = osc_config[i + 2 + NUM_PARAMS * 2].at("MAX");
+    std::string name = toString("LFO" + toString(i + 1));
+    granulator.LFOParameters[i]->mOscArgument = osc_config[0].at(name).at("OSC_ARG");
+    granulator.LFOParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
+    granulator.LFOParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
   }
-  morphTimeOSCArg = osc_config.at("OSC_ARG");
-  morphTimeOscMin = osc_config.at("MIN");
-  morphTimeOscMax = osc_config.at("MAX");
+  morphTimeOSCArg = osc_config[0].at("MORPH_TIME").at("OSC_ARG");
+  morphTimeOscMin = osc_config[0].at("MORPH_TIME").at("MIN");
+  morphTimeOscMax = osc_config[0].at("MORPH_TIME").at("MAX");
 }
 
 void ecInterface::deleteJSONOSCPreset(std::string osc_preset_name) {

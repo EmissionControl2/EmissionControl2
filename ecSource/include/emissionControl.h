@@ -323,7 +323,7 @@ class ecParameter {
   al::Parameter *mHighRange = nullptr;  // Parameter designed to bound high mParameter.
 
   // variables for OSC control
-  std::string mOscArgument = "ENTER OSC ADDRESS";
+  std::string mOscArgument = "";
   ImGuiInputTextCallback inputTextCallback;
   void *CallbackUserData;
   float mOscMin = 0;
@@ -532,7 +532,7 @@ struct ecModParameter {
       lfoMenu("##lfo" + parameterName) {}
 
   // variables for OSC control
-  std::string mOscArgument = "ENTER OSC ADDRESS";
+  std::string mOscArgument = "";
   ImGuiInputTextCallback inputTextCallback;
   void *CallbackUserData;
   float mOscMin = 0;
@@ -578,7 +578,7 @@ class LFOstruct {
   int mLFONumber;
 
   // variables for OSC control
-  std::string mOscArgument = "ENTER OSC ADDRESS";
+  std::string mOscArgument = "";
   ImGuiInputTextCallback inputTextCallback;
   void *CallbackUserData;
   float mOscMin = 0;

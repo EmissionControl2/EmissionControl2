@@ -143,22 +143,24 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   bool isOSCOn = 0;
   int oscPort = 16447;                // osc port
   std::string oscAddr = "127.0.0.1";  // ip address
+  float oscTimeout = 0.02;
   ImGuiInputTextCallback oscAddrCallback;
   void *oscAddrCallbackUserData;
-  al::osc::Recv oscServer;  // create and osc server (listener)
-
-  std::string morphTimeOSCArg = "ENTER OSC ADDRESS";
+  al::osc::Recv *oscServer;  // create an osc server (listener)
+  std::string morphTimeOSCArg = "";
   ImGuiInputTextCallback morphTimeOSCCallback;
   void *morphTimeOSCCallbackUserData;
   float morphTimeOscMin = 0;
   float morphTimeOscMax = 0;
 
   void resetOSC() {
-    oscServer.open(oscPort, oscAddr.c_str(), 0.02);
-    oscServer.handler(oscDomain()->handler());
-    oscServer.start();
+    oscServer->stop();
+    oscServer->open(oscPort, oscAddr.c_str(), oscTimeout);
+    oscServer->handler(oscDomain()->handler());
+    oscServer->start();
     std::cout << "OSC IP Address: " << oscAddr << std::endl;
     std::cout << "OSC Port: " << oscPort << std::endl;
+    std::cout << "OSC Timeout: " << oscTimeout << std::endl;
   }
 
   void clearActiveMIDI() {
