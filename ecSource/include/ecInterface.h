@@ -140,13 +140,16 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   /*
   OSC
   */
-  bool isOSCOn = 0;
-  int oscPort = 16447;                // osc port
-  std::string oscAddr = "127.0.0.1";  // ip address
+  bool isOSCOn = false;
+  int oscPort = 16447;                        // osc port
+  std::string oscAddr = "127.0.0.1";          // ip address
+  int previousOscPort = 16447;                // osc port
+  std::string previousOscAddr = "127.0.0.1";  // ip address
   float oscTimeout = 0.02;
   ImGuiInputTextCallback oscAddrCallback;
   void *oscAddrCallbackUserData;
-  al::osc::Recv *oscServer;  // create an osc server (listener)
+  std::unique_ptr<al::osc::Recv> oscServer;  // create an osc server (listener)
+  bool isOscWarningWindow = false;
   std::string morphTimeOSCArg = "";
   ImGuiInputTextCallback morphTimeOSCCallback;
   void *morphTimeOSCCallbackUserData;
@@ -154,13 +157,26 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   float morphTimeOscMax = 0;
 
   void resetOSC() {
-    oscServer->stop();
-    oscServer->open(oscPort, oscAddr.c_str(), oscTimeout);
-    oscServer->handler(oscDomain()->handler());
-    oscServer->start();
-    std::cout << "OSC IP Address: " << oscAddr << std::endl;
-    std::cout << "OSC Port: " << oscPort << std::endl;
-    std::cout << "OSC Timeout: " << oscTimeout << std::endl;
+    if (oscServer != nullptr) oscServer->stop();
+    oscServer.reset();
+    oscServer = std::make_unique<al::osc::Recv>(oscPort, oscAddr.c_str(), 0.02);
+    if (oscServer->isOpen()) {
+      oscServer->handler(oscDomain()->handler());
+      oscServer->start();
+      std::cout << "OSC IP Address: " << oscAddr << std::endl;
+      std::cout << "OSC Port: " << oscPort << std::endl;
+      std::cout << "OSC Timeout: " << oscTimeout << std::endl;
+      previousOscAddr = oscAddr;
+      previousOscPort = oscPort;
+    } else {
+      std::cerr << "Could not bind to UDP socket. Is there a server already bound to that port?"
+                << std::endl;
+      oscAddr = previousOscAddr;
+      oscPort = previousOscPort;
+      oscServer.reset();
+      oscServer = std::make_unique<al::osc::Recv>(oscPort, oscAddr.c_str(), 0.02);
+      isOscWarningWindow = true;
+    }
   }
 
   void clearActiveMIDI() {
