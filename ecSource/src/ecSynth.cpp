@@ -297,6 +297,8 @@ bool ecSynth::loadSoundFileRT(std::string fileName) {
     ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);
     ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
     ECParameters[consts::SOUND_FILE]->mHighRange->set(mClipNum);
+    if (ECParameters[consts::SOUND_FILE]->mOscCustomRange == 0) 
+      ECParameters[consts::SOUND_FILE]->mOscMax = mClipNum;
   }
 
   return temp;
@@ -357,6 +359,8 @@ bool ecSynth::removeSoundFile(int index) {
   ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);
   ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
   ECParameters[consts::SOUND_FILE]->mHighRange->set(mClipNum);  // stylistic choice, might take out
+  if (ECParameters[consts::SOUND_FILE]->mOscCustomRange == 0) 
+      ECParameters[consts::SOUND_FILE]->mOscMax = mClipNum;
 
   if (static_cast<int>(ECParameters[consts::SOUND_FILE]->mParameter->get()) >= index)
     ECParameters[consts::SOUND_FILE]->mParameter->set(
@@ -378,6 +382,8 @@ void ecSynth::clearSoundFiles() {
   ECParameters[consts::SOUND_FILE]->mLowRange->max(mClipNum);
   ECParameters[consts::SOUND_FILE]->mHighRange->max(mClipNum);
   ECParameters[consts::SOUND_FILE]->mHighRange->set(mClipNum);  // stylistic choice, might take out
+  if (ECParameters[consts::SOUND_FILE]->mOscCustomRange == 0) 
+      ECParameters[consts::SOUND_FILE]->mOscMax = mClipNum;
 }
 
 void ecSynth::resampleSoundFiles() {

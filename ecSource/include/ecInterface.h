@@ -150,11 +150,34 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void *oscAddrCallbackUserData;
   std::unique_ptr<al::osc::Recv> oscServer;  // create an osc server (listener)
   bool isOscWarningWindow = false;
-  std::string morphTimeOSCArg = "";
+
+  std::string morphTimeOSCArg = "/morphTime";
   ImGuiInputTextCallback morphTimeOSCCallback;
   void *morphTimeOSCCallbackUserData;
   float morphTimeOscMin = 0;
-  float morphTimeOscMax = 0;
+  float morphTimeOscMax = MAX_MORPH_TIME;
+  bool morphTimeOscCustomRange = 0;
+
+  std::string presetOSCArg = "/preset";
+  ImGuiInputTextCallback presetOSCCallback;
+  void *presetOSCCallbackUserData;
+
+  std::string fileNameOSCArg = "/fileName";
+  ImGuiInputTextCallback fileNameOSCCallback;
+  void *fileNameOSCCallbackUserData;
+
+  std::string outputFolderOSCArg = "/outputFolder";
+  ImGuiInputTextCallback outputFolderOSCCallback;
+  void *outputFolderOSCCallbackUserData;
+
+  std::string recordOSCArg = "/record";
+  ImGuiInputTextCallback recordOSCCallback;
+  void *recordOSCCallbackUserData;
+
+  std::string buf1 = "test.wav";
+  ImGuiInputTextCallback buf1Callback;
+  void *buf1CallbackUserData;
+  std::string recordFilename;
 
   void resetOSC() {
     if (oscServer != nullptr) oscServer->stop();

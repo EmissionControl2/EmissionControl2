@@ -328,6 +328,7 @@ class ecParameter {
   void *CallbackUserData;
   float mOscMin = 0;
   float mOscMax = 0;
+  bool mOscCustomRange = 0;
 
   /**
    * @brief ecParameter Constructor.
@@ -443,13 +444,19 @@ class ecParameter {
    * @brief Set current min value of range slider.
    *
    */
-  void setCurrentMin(float min) { mLowRange->set(min); }
+  void setCurrentMin(float min) { 
+    mLowRange->set(min); 
+    if (mOscCustomRange == 0) mOscMin = min;
+  }
 
   /**
    * @brief Set current max value of range slider.
    *
    */
-  void setCurrentMax(float max) { mHighRange->set(max); }
+  void setCurrentMax(float max) { 
+    mHighRange->set(max);
+    if (mOscCustomRange == 0) mOscMax = max;
+  }
 
   void setAbsoluteMinMax(float min, float max) {
     mLowRange->min(min);
@@ -536,7 +543,8 @@ struct ecModParameter {
   ImGuiInputTextCallback inputTextCallback;
   void *CallbackUserData;
   float mOscMin = 0;
-  float mOscMax = 0;
+  float mOscMax = 1;
+  bool mOscCustomRange = 0;
 
   void setMenuElements(std::vector<std::string> elements) { lfoMenu.setElements(elements); }
 
@@ -562,6 +570,10 @@ struct ecModParameter {
     ImGui::PopItemWidth();
     ImGui::SameLine();
     param.drawRangeSlider(isMIDILearn, k);
+    if (mOscCustomRange == 0) {
+      mOscMin = param.getCurrentMin();
+      mOscMax = param.getCurrentMax();
+    }
   }
 
   ecParameter param;
@@ -581,9 +593,10 @@ class LFOstruct {
   std::string mOscArgument = "";
   ImGuiInputTextCallback inputTextCallback;
   void *CallbackUserData;
-  float mOscMin = 0;
-  float mOscMax = 0;
-
+  float mOscMin = 0.010;
+  float mOscMax = 30.000;
+  bool mOscCustomRange = 0;
+  
   // constructor
   LFOstruct(int lfoNumber) {
     mLFONumber = lfoNumber;
@@ -617,6 +630,10 @@ class LFOstruct {
     ImGui::SameLine();
     int x = ImGui::GetCursorPosX();
     frequency->drawRangeSlider(isMIDILearn, k);
+    if (mOscCustomRange == 0) {
+      mOscMin = frequency->getCurrentMin();
+      mOscMax = frequency->getCurrentMax();
+    }
     return x;
   }
 

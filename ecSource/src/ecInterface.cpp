@@ -840,8 +840,11 @@ void ecInterface::onDraw(Graphics &g) {
         resetOSC();
       }
     }
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("How often the server checks for new data on the on the port");
+    if (ImGui::IsItemHovered()) {
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      ImGui::SetTooltip("How often (in seconds) the server checks for new data on the on the port");
+      ImGui::PopStyleVar();
+    }
     if (ImGui::Button("Reconnect OSC")) resetOSC();
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
     ImGui::Separator();
@@ -854,14 +857,55 @@ void ecInterface::onDraw(Graphics &g) {
                 &granulator.ECParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.ECParameters[i]->inputTextCallback,
                 granulator.ECParameters[i]->CallbackUserData);
-      if (ImGui::IsItemHovered()) ImGui::SetTooltip("Enter OSC Address");
-      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
-      ImGui::InputFloat(("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
-                        &granulator.ECParameters[i]->mOscMin, 0.1);
-      ImGui::SameLine();
-      ImGui::InputFloat(("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
-                        &granulator.ECParameters[i]->mOscMax, 0.1);
-      ImGui::PopItemWidth();
+      if (ImGui::IsItemHovered()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+        ImGui::SetTooltip("Enter OSC address to listen to");
+        ImGui::PopStyleVar();
+      }
+      if (!granulator.ECParameters[i]->mOscCustomRange) {
+        if (ImGui::Button(
+              ("Custom Value Mapping##osc_" + granulator.ECParameters[i]->getDisplayName())
+                .c_str())) {
+          granulator.ECParameters[i]->mOscCustomRange = true;
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Click to customize the mapping of OSC values to parameter values");
+          ImGui::PopStyleVar();
+        }
+      } else {
+        if (ImGui::Button(
+              ("Default Value Mapping##osc_" + granulator.ECParameters[i]->getDisplayName())
+                .c_str())) {
+          granulator.ECParameters[i]->mOscCustomRange = false;
+        }
+        ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip(
+            "Click to return to a one-to-one mapping of OSC values to parameter values");
+          ImGui::PopStyleVar();
+        }
+        ImGui::InputFloat(
+          ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
+          &granulator.ECParameters[i]->mOscMin, 0.1);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Minimum expected value to be received via OSC.");
+          ImGui::PopStyleVar();
+        }
+
+        ImGui::SameLine();
+        ImGui::InputFloat(
+          ("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
+          &granulator.ECParameters[i]->mOscMax, 0.1);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Maximum expected value to be received via OSC.");
+          ImGui::PopStyleVar();
+        }
+        ImGui::PopItemWidth();
+      }
       ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -875,16 +919,55 @@ void ecInterface::onDraw(Graphics &g) {
                 &granulator.ECModParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.ECModParameters[i]->inputTextCallback,
                 granulator.ECModParameters[i]->CallbackUserData);
-      if (ImGui::IsItemHovered()) ImGui::SetTooltip("Enter OSC Address");
-      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
-      ImGui::InputFloat(
-        ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
-        &granulator.ECModParameters[i]->mOscMin, 0.1);
-      ImGui::SameLine();
-      ImGui::InputFloat(
-        ("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
-        &granulator.ECModParameters[i]->mOscMax, 0.1);
-      ImGui::PopItemWidth();
+      if (ImGui::IsItemHovered()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+        ImGui::SetTooltip("Enter OSC address to listen to");
+        ImGui::PopStyleVar();
+      }
+      if (!granulator.ECModParameters[i]->mOscCustomRange) {
+        if (ImGui::Button(
+              ("Custom Value Mapping##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD")
+                .c_str())) {
+          granulator.ECModParameters[i]->mOscCustomRange = true;
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Click to customize the mapping of OSC values to parameter values");
+          ImGui::PopStyleVar();
+        }
+      } else {
+        if (ImGui::Button(("Default Value Mapping##osc_" +
+                           granulator.ECParameters[i]->getDisplayName() + "_MOD")
+                            .c_str())) {
+          granulator.ECModParameters[i]->mOscCustomRange = false;
+        }
+        ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip(
+            "Click to return to a one-to-one mapping of OSC values to parameter "
+            "values");
+          ImGui::PopStyleVar();
+        }
+        ImGui::InputFloat(
+          ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
+          &granulator.ECModParameters[i]->mOscMin, 0.1);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Minimum expected value to be received via OSC.");
+          ImGui::PopStyleVar();
+        }
+        ImGui::SameLine();
+        ImGui::InputFloat(
+          ("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
+          &granulator.ECModParameters[i]->mOscMax, 0.1);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Maximum expected value to be received via OSC.");
+          ImGui::PopStyleVar();
+        }
+        ImGui::PopItemWidth();
+      }
       ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -898,14 +981,58 @@ void ecInterface::onDraw(Graphics &g) {
                 ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.LFOParameters[i]->inputTextCallback,
                 granulator.LFOParameters[i]->CallbackUserData);
-      if (ImGui::IsItemHovered()) ImGui::SetTooltip("Enter OSC Address");
-      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
-      ImGui::InputFloat(("Range Min##osc_" + toString("LFO") + toString(i + 1)).c_str(),
-                        &granulator.LFOParameters[i]->mOscMin, 0.1);
-      ImGui::SameLine();
-      ImGui::InputFloat(("Range Max##osc_" + toString("LFO") + toString(i + 1)).c_str(),
-                        &granulator.LFOParameters[i]->mOscMax, 0.1);
-      ImGui::PopItemWidth();
+      if (ImGui::IsItemHovered()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+        ImGui::SetTooltip("Enter OSC address to listen to");
+        ImGui::PopStyleVar();
+      }
+
+      if (!granulator.LFOParameters[i]->mOscCustomRange) {
+        if (ImGui::Button(
+              ("Custom Value Mapping##osc_" + toString("LFO") + toString(i + 1)).c_str())) {
+          granulator.LFOParameters[i]->mOscCustomRange = true;
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip(
+            "Click to customize the mapping of OSC values to parameter "
+            "values");
+          ImGui::PopStyleVar();
+        }
+      } else {
+        if (ImGui::Button(
+              ("Default Value Mapping##osc_" + toString("LFO") + toString(i + 1)).c_str())) {
+          granulator.LFOParameters[i]->mOscCustomRange = false;
+          granulator.LFOParameters[i]->mOscMin =
+            granulator.LFOParameters[i]->frequency->getCurrentMin();
+          granulator.LFOParameters[i]->mOscMax =
+            granulator.LFOParameters[i]->frequency->getCurrentMax();
+        }
+        ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip(
+            "Click to return to a one-to-one mapping of OSC values to "
+            "parameter values");
+          ImGui::PopStyleVar();
+        }
+        ImGui::InputFloat(("Range Min##osc_" + toString("LFO") + toString(i + 1)).c_str(),
+                          &granulator.LFOParameters[i]->mOscMin, 0.1);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Minimum expected value to be received via OSC.");
+          ImGui::PopStyleVar();
+        }
+        ImGui::SameLine();
+        ImGui::InputFloat(("Range Max##osc_" + toString("LFO") + toString(i + 1)).c_str(),
+                          &granulator.LFOParameters[i]->mOscMax, 0.1);
+        if (ImGui::IsItemHovered()) {
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("Maximum expected value to be received via OSC.");
+          ImGui::PopStyleVar();
+        }
+        ImGui::PopItemWidth();
+      }
       ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -913,12 +1040,86 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
     InputText("Morph Time", &morphTimeOSCArg, ImGuiInputTextFlags_EnterReturnsTrue,
               morphTimeOSCCallback, morphTimeOSCCallbackUserData);
-    ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
-    ImGui::InputFloat("Range Min##osc_MorphTime", &morphTimeOscMin, 0.1);
-    ImGui::SameLine();
-    ImGui::InputFloat("Range Max##osc_MorphTime", &morphTimeOscMax, 0.1);
-    ImGui::PopItemWidth();
+    if (ImGui::IsItemHovered()) {
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      ImGui::SetTooltip("Enter OSC address to listen to");
+      ImGui::PopStyleVar();
+    }
+
+    if (!morphTimeOscCustomRange) {
+      if (ImGui::Button("Custom Value Mapping##osc_MorphTime")) {
+        morphTimeOscCustomRange = true;
+      }
+      if (ImGui::IsItemHovered()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+        ImGui::SetTooltip(
+          "Click to customize the mapping of OSC values to "
+          "parameter values");
+        ImGui::PopStyleVar();
+      }
+    } else {
+      if (ImGui::Button("Default Value Mapping##osc_MorphTime")) {
+        morphTimeOscCustomRange = false;
+        morphTimeOscMin = 0;
+        morphTimeOscMax = 50;
+      }
+      ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
+      ImGui::InputFloat("Range Min##osc_MorphTime", &morphTimeOscMin, 0.1);
+      if (ImGui::IsItemHovered()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+        ImGui::SetTooltip("Minimum expected value to be received via OSC.");
+        ImGui::PopStyleVar();
+      }
+      ImGui::SameLine();
+      ImGui::InputFloat("Range Max##osc_MorphTime", &morphTimeOscMax, 0.1);
+      if (ImGui::IsItemHovered()) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+        ImGui::SetTooltip("Maximum expected value to be received via OSC.");
+        ImGui::PopStyleVar();
+      }
+      ImGui::PopItemWidth();
+    }
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    InputText("Preset", &presetOSCArg, ImGuiInputTextFlags_EnterReturnsTrue, presetOSCCallback,
+              presetOSCCallbackUserData);
+    if (ImGui::IsItemHovered()) {
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      ImGui::SetTooltip(
+        "Send an integer to this address to load a preset "
+        "(e.g. \"/preset 8\" to load preset 8)");
+      ImGui::PopStyleVar();
+    }
+    InputText("Record", &recordOSCArg, ImGuiInputTextFlags_EnterReturnsTrue, recordOSCCallback,
+              recordOSCCallbackUserData);
+    if (ImGui::IsItemHovered()) {
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      ImGui::SetTooltip(
+        "Send a 1 to this address to start recording or a "
+        "0 to stop recording");
+      ImGui::PopStyleVar();
+    }
+    InputText("File Name", &fileNameOSCArg, ImGuiInputTextFlags_EnterReturnsTrue,
+              fileNameOSCCallback, fileNameOSCCallbackUserData);
+    if (ImGui::IsItemHovered()) {
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      ImGui::SetTooltip(
+        "Send a string to this address to change the "
+        "name for the next recorded sound file");
+      ImGui::PopStyleVar();
+    }
+    InputText("Output Folder", &outputFolderOSCArg, ImGuiInputTextFlags_EnterReturnsTrue,
+              outputFolderOSCCallback, outputFolderOSCCallbackUserData);
+    if (ImGui::IsItemHovered()) {
+      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+      ImGui::SetTooltip(
+        "Send a string to this address to change the "
+        "output folder for recorded sound files");
+      ImGui::PopStyleVar();
+    }
 
     // OSC Write Window
     if (isOSCWriteWindow) {
@@ -1008,7 +1209,9 @@ void ecInterface::onDraw(Graphics &g) {
     if (ImGui::BeginPopupModal("OSC Error", &isOSCWarningOpen)) {
       isOscWarningWindow = false;
       ImGui::TextColored(ImVec4(*ECred), "Warning");
-      ImGui::Text("Could not bind to UDP socket. Is there a server already bound to that port?");
+      ImGui::Text(
+        "Could not bind to UDP socket. Is there a "
+        "server already bound to that port?");
       ImGui::EndPopup();
     }
 
@@ -1030,10 +1233,12 @@ void ecInterface::onDraw(Graphics &g) {
   }
   if (!fontScaleOpen) jsonWriteToConfig(fontScale, consts::FONT_SCALE_KEY);
 
-  // PopUp Audio IO window --------------------------------------------
-  // This enables starting and stopping audio as well as selecting
-  // Audio device and its parameters
-  // if statement opens Audio IO popup if chosen from menu
+  // PopUp Audio IO window
+  // -------------------------------------------- This
+  // enables starting and stopping audio as well as
+  // selecting Audio device and its parameters if
+  // statement opens Audio IO popup if chosen from
+  // menu
   if (displayIO) {
     ImGui::OpenPopup("Audio Settings");
   }
@@ -1066,7 +1271,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::EndPopup();
   }
 
-  // Draw Granulator Controls -----------------------------------------
+  // Draw Granulator Controls
+  // -----------------------------------------
   if (granulator.getNumberOfAudioFiles() != 0) {
     // Set Dynamic Slider Text
     granulator.ECParameters[consts::SOUND_FILE]->setSliderText(
@@ -1081,7 +1287,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     colPushCount = 0;
-    // set alternating slider background shade (green if midi learning)
+    // set alternating slider background shade (green
+    // if midi learning)
     if (mCurrentLearningMIDIKey.getType() == consts::M_PARAM &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
@@ -1119,8 +1326,9 @@ void ecInterface::onDraw(Graphics &g) {
     }
     granulator.ECParameters[index]->drawRangeSlider(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
-      // This inits. the onMidiMessage loop to listen for midi input.
-      // This first MIDI input to come through will be linked.
+      // This inits. the onMidiMessage loop to listen
+      // for midi input. This first MIDI input to come
+      // through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_PARAM);
       mIsLinkingParamAndMIDI = true;
     }
@@ -1134,7 +1342,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw modulation window -------------------------------------------
+  // Draw modulation window
+  // -------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    MODULATION CONTROLS", windowWidth / 2, menuBarHeight,
                            windowWidth / 2, firstRowHeight, flags);
@@ -1142,7 +1351,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PushFont(bodyFont);
   for (int index = 0; index < consts::NUM_PARAMS; index++) {
     colPushCount = 0;
-    // set alternating slider background shade (green if midi learning)
+    // set alternating slider background shade (green
+    // if midi learning)
     if (mCurrentLearningMIDIKey.getType() == consts::M_MOD &&
         mCurrentLearningMIDIKey.getKeysIndex() == index && mIsLinkingParamAndMIDI) {
       ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)*ECgreen);
@@ -1180,8 +1390,9 @@ void ecInterface::onDraw(Graphics &g) {
     }
     granulator.ECModParameters[index]->drawModulationControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
-      // This inits. the onMidiMessage loop to listen for midi input.
-      // This first MIDI input to come through will be linked.
+      // This inits. the onMidiMessage loop to listen
+      // for midi input. This first MIDI input to come
+      // through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_MOD);
       mIsLinkingParamAndMIDI = true;
     }
@@ -1197,7 +1408,8 @@ void ecInterface::onDraw(Graphics &g) {
 
   ParameterGUI::endPanel();
 
-  // Draw preset window -----------------------------------------------
+  // Draw preset window
+  // -----------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    PRESETS", 0, NextWindowYPosition, windowWidth / 4, secondRowHeight,
                            flags);
@@ -1207,7 +1419,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw recorder window ---------------------------------------------
+  // Draw recorder window
+  // ---------------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    RECORDER", windowWidth / 4, NextWindowYPosition, windowWidth / 4,
                            secondRowHeight, flags);
@@ -1227,7 +1440,8 @@ void ecInterface::onDraw(Graphics &g) {
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
-  // Draw LFO parameters window ---------------------------------------
+  // Draw LFO parameters window
+  // ---------------------------------------
   ImGui::PushFont(titleFont);
   ParameterGUI::beginPanel("    LFO CONTROLS", windowWidth / 2, NextWindowYPosition,
                            windowWidth / 2, secondRowHeight, flags);
@@ -1250,14 +1464,16 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     // WARNING, hacky as fuck.
-    // This is to tell the drawRangeSlider that this is the last parameter to check.
-    // This allows mLasyKeyDown.readyToTrig to be set to false.
+    // This is to tell the drawRangeSlider that this
+    // is the last parameter to check. This allows
+    // mLasyKeyDown.readyToTrig to be set to false.
     if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
 
     int x_offset = granulator.LFOParameters[index]->drawLFOControl(&mMIDILearn, &mLastKeyDown);
     if (mMIDILearn.mParamAdd) {
-      // This inits. the onMidiMessage loop to listen for midi input.
-      // This first MIDI input to come through will be linked.
+      // This inits. the onMidiMessage loop to listen
+      // for midi input. This first MIDI input to come
+      // through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_LFO);
       mIsLinkingParamAndMIDI = true;
       no_learn = true;
@@ -1285,15 +1501,17 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     // WARNING, hacky as fuck.
-    // This is to tell the drawRangeSlider that this is the last parameter to check.
-    // This allows mLasyKeyDown.readyToTrig to be set to false.
+    // This is to tell the drawRangeSlider that this
+    // is the last parameter to check. This allows
+    // mLasyKeyDown.readyToTrig to be set to false.
     if (index == consts::NUM_LFOS - 1) mLastKeyDown.lastParamCheck = true;
 
     // Will only draw this if a square.
     granulator.LFOParameters[index]->drawLFODuty(&mMIDILearn, &mLastKeyDown, x_offset);
     if (mMIDILearn.mParamAdd && !no_learn) {
-      // This inits. the onMidiMessage loop to listen for midi input.
-      // This first MIDI input to come through will be linked.
+      // This inits. the onMidiMessage loop to listen
+      // for midi input. This first MIDI input to come
+      // through will be linked.
       mCurrentLearningMIDIKey.setKeysIndex(index, consts::M_DUTY);
       mIsLinkingParamAndMIDI = true;
     }
@@ -1318,7 +1536,8 @@ void ecInterface::onDraw(Graphics &g) {
     } else {
       graphFlags = flags;
     }
-    // Draw Scan Display ------------------------------------------------
+    // Draw Scan Display
+    // ------------------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("    SCAN DISPLAY", 0, NextWindowYPosition, windowWidth,
                              graphHeight / 3, graphFlags);
@@ -1408,7 +1627,8 @@ void ecInterface::onDraw(Graphics &g) {
 
     ParameterGUI::endPanel();
 
-    // Draw grain histogram window --------------------------------------
+    // Draw grain histogram window
+    // --------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("    ACTIVE GRAINS", 0, NextWindowYPosition, windowWidth / 4,
                              graphHeight * 2 / 3, graphFlags);
@@ -1438,7 +1658,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PopFont();
     ParameterGUI::endPanel();
 
-    // Draw Oscilloscope window -----------------------------------------
+    // Draw Oscilloscope window
+    // -----------------------------------------
     ImGui::PushFont(titleFont);
     ParameterGUI::beginPanel("    OSCILLOSCOPE", windowWidth / 4, NextWindowYPosition,
                              windowWidth * 11 / 16, graphHeight * 2 / 3, graphFlags);
@@ -1462,12 +1683,14 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PlotLines("##ScopeL", &util::Plot_RingBufferGetter, (void *)&data_l,
                      int(oscilloscopeFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1,
                      1, ImVec2(0, ImGui::GetContentRegionAvail().y));
-    // Draw a black line across the center of the scope
+    // Draw a black line across the center of the
+    // scope
     ImGui::SetCursorPosY(graphPosY);
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
-                     ImVec2(0, ImGui::GetContentRegionAvail().y), sizeof(float));  // before opt
+                     ImVec2(0, ImGui::GetContentRegionAvail().y),
+                     sizeof(float));  // before opt
     // Draw right channel oscilloscope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)*ECred);
     ImGui::SetCursorPosY(graphPosY + 1);
@@ -1476,7 +1699,8 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PlotLines("##ScopeR", &util::Plot_RingBufferGetter, (void *)&data_r,
                      int(oscilloscopeFrame * granulator.getGlobalSamplingRate()), 0.0, nullptr, -1,
                      1, ImVec2(0, ImGui::GetContentRegionAvail().y));
-    // Draw a black line across the center of the scope
+    // Draw a black line across the center of the
+    // scope
     ImGui::PushStyleColor(ImGuiCol_PlotLines, (ImVec4)ImColor(0, 0, 0, 255));
     ImGui::SetCursorPosY(graphPosY + 1);
     ImGui::PlotLines("##black_line", &blackLine[0], 2, 0, nullptr, -1, 1,
@@ -1557,28 +1781,35 @@ bool ecInterface::onKeyDown(Keyboard const &k) {
 }
 
 void ecInterface::initMIDI() {
-  /* This is the single stupidest code I have ever written.
+  /* This is the single stupidest code I have ever
+   written.
 
-   RtMIDI seems to access trash memory, instead of mBindings[index] for the first
+   RtMIDI seems to access trash memory, instead of
+   mBindings[index] for the first
       *consts::MAX_MIDI_IN* setCallback functions.
 
-   This is only seen when we have multiple midi input ports allowed.
+   This is only seen when we have multiple midi input
+   ports allowed.
 
-   To get around this you simply execute consts::MAX_MIDI_IN dummy bindTo calls and then
+   To get around this you simply execute
+   consts::MAX_MIDI_IN dummy bindTo calls and then
    immediately clear mBinding of this fake data.
 
-   This seems to properly init the pointers to mBindings memory when setCallback uses them.
+   This seems to properly init the pointers to
+   mBindings memory when setCallback uses them.
 
-   What the fuck. I hate this, I hate computers. I'm goingg outside.
+   What the fuck. I hate this, I hate computers. I'm
+   goingg outside.
   */
   for (int i = 0; i < consts::MAX_MIDI_IN; i++) MIDIMessageHandler::bindTo(midiIn[i], 0);
   MIDIMessageHandler::clearBindings();
   /* End of stupid as shit code. **/
 
   if (midiIn[0].getPortCount() > 0) {
-    // Bind ourself to the RtMidiIn[0] object, to have the onMidiMessage()
-    // callback called whenever a MIDI message is received
-    // Open the last device found
+    // Bind ourself to the RtMidiIn[0] object, to have
+    // the onMidiMessage() callback called whenever a
+    // MIDI message is received Open the last device
+    // found
     unsigned int port = 0;
     MIDIMessageHandler::bindTo(midiIn[0], port);
     midiIn[0].openPort(port);
@@ -1784,9 +2015,10 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
   SoundfileRecorderState &state = stateMap[recorder];
   ImGui::PushID(std::to_string((unsigned long)recorder).c_str());
   ImGui::Text("Output File Name:");
-  static char buf1[64] = "test.wav";
+
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
-  ImGui::InputText("##Record Name", buf1, 63);
+  InputText("##Record Name", &buf1, ImGuiInputTextFlags_EnterReturnsTrue, buf1Callback,
+            buf1CallbackUserData);
   ImGui::PopItemWidth();
 
   if (state.recordButton) {
@@ -1810,17 +2042,17 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
       } else {
         ringBufferSize = bufferSize * numChannels * 4;
       }
-      std::string filename = buf1;
+      recordFilename = buf1;
       if (!state.overwriteButton) {
         int counter = 1;
-        while (File::exists(directory + filename) && counter < 9999) {
-          filename = buf1;
-          int lastDot = filename.find_last_of(".");
-          filename = filename.substr(0, lastDot) + "_" + std::to_string(counter++) +
-                     filename.substr(lastDot);
+        while (File::exists(directory + recordFilename) && counter < 9999) {
+          recordFilename = buf1;
+          int lastDot = recordFilename.find_last_of(".");
+          recordFilename = recordFilename.substr(0, lastDot) + "_" + std::to_string(counter++) +
+                           recordFilename.substr(lastDot);
         }
       }
-      if (!recorder->start(directory + filename, frameRate, numChannels, ringBufferSize,
+      if (!recorder->start(directory + recordFilename, frameRate, numChannels, ringBufferSize,
                            gam::SoundFile::WAV, gam::SoundFile::FLOAT)) {
         std::cerr << "Error opening file for record" << std::endl;
       }
@@ -1879,7 +2111,8 @@ int ecInterface::getSampleRateIndex() {
   }
 }
 
-/**** Borrowed and modified from al_ParameterGUI.cpp****/
+/**** Borrowed and modified from
+ * al_ParameterGUI.cpp****/
 ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
                                                                   int presetColumns,
                                                                   int presetRows) {
@@ -1934,7 +2167,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
 
       const bool selectableSelected = ImGui::Selectable(
         name.c_str(), is_selected, 0, ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
-      if (ImGui::IsItemHovered() && !nothingStored)  // tooltip showing preset name
+      if (ImGui::IsItemHovered() && !nothingStored)  // tooltip showing preset
+                                                     // name
       {
         const std::string currentlyhoveringPresetName = presetHandler->getPresetName(counter);
         ImGui::SetTooltip("%s", currentlyhoveringPresetName.c_str());
@@ -1947,8 +2181,10 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
             saveName = name;
           }
           // JACK KILGORE CHANGE --
-          // OLD : resetHandler->storePreset(counter, saveName.c_str());
-          // NEW : Adds preset map name to stored preset to allow presets w/ the same name over
+          // OLD : resetHandler->storePreset(counter,
+          // saveName.c_str()); NEW : Adds preset map
+          // name to stored preset to allow presets w/
+          // the same name over
           //       different maps.
           presetHandler->storePreset(counter, (state.currentBank + "-" + saveName).c_str());
           selection = counter;
@@ -2020,7 +2256,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   // Shown format to the user.
   sprintf(morphTime_str, "%.2f s", morphTime);
 
-  // Offset by 1.0 because the log scale feels nicer this way.
+  // Offset by 1.0 because the log scale feels nicer
+  // this way.
   morphTime = morphTime + 1.;
   bool is_text_input = false;
   if (ImGui::SliderFloat("Morph Time", &morphTime, 1.0f, consts::MAX_MORPH_TIME + 1., morphTime_str,
@@ -2030,15 +2267,17 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     presetHandler->setMorphTime(morphTime);
     is_text_input = (ImGui::IsItemActive() && ImGui::TempInputIsActive(ImGui::GetActiveID()));
   }
-  // If user used the text input, don't remap, just use the users inputted val.
-  // Omg this is hacky what are you doing jack.
+  // If user used the text input, don't remap, just
+  // use the users inputted val. Omg this is hacky
+  // what are you doing jack.
   if (ImGui::IsItemDeactivatedAfterEdit()) {
     if (is_text_input) presetHandler->setMorphTime(morphTime);
   }
 
   ImGui::PopStyleColor(colPushCount);
 
-  // Press m while hovering over a parameter to start midi learn.
+  // Press m while hovering over a parameter to start
+  // midi learn.
   if (ImGui::IsItemHovered() &&
       mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_MIDI_LEARN) &&
       !mLastKeyDown.key.shift() && mLastKeyDown.readyToTrig) {
@@ -2076,19 +2315,23 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
 
   ImGui::PopItemWidth();
   if (state.storeButtonState) {
-    char buf1[64];
-    strncpy(buf1, state.enteredText.c_str(), 63);
+    char buf2[64];
+    strncpy(buf2, state.enteredText.c_str(), 63);
     ImGui::Text("Store preset as:");
     ImGui::SameLine();
-    if (ImGui::InputText("preset", buf1, 64)) {
-      state.enteredText = buf1;
+    if (ImGui::InputText("preset", buf2, 64)) {
+      state.enteredText = buf2;
     }
     ImGui::Text("Click on a preset number to store.");
   } else {
-    // std::vector<std::string> mapList = presetHandler->availablePresetMaps(); // before opt
+    // std::vector<std::string> mapList =
+    // presetHandler->availablePresetMaps(); // before
+    // opt
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x / 2);
     if (ImGui::BeginCombo("Preset Map", state.currentBank.data())) {
-      // stateMap[presetHandler].mapList = presetHandler->availablePresetMaps(); //before opt
+      // stateMap[presetHandler].mapList =
+      // presetHandler->availablePresetMaps();
+      // //before opt
       for (auto mapName : stateMap[presetHandler].mapList) {
         bool isSelected = (state.currentBank == mapName);
         if (ImGui::Selectable(mapName.data(), isSelected)) {
@@ -2127,7 +2370,8 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
         file.close();
         state.newMap = false;
         stateMap[presetHandler].mapList = presetHandler->availablePresetMaps();  // optimize
-        // CHANGE : when new map is made, automatically switch to it.
+        // CHANGE : when new map is made,
+        // automatically switch to it.
         state.currentBank = state.newMapText;
         presetHandler->setCurrentPresetMap(state.newMapText);
         currentPresetMap = presetHandler->readPresetMap(state.newMapText);
@@ -2151,8 +2395,13 @@ bool ecInterface::onMouseDown(const Mouse &m) {
 void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
   // m.print();
   if (isOSCOn) {
+    std::string messageString;
     float val;
-    m >> val;
+    if (m.typeTags()[0] == 's') {
+      m >> messageString;
+    } else {
+      m >> val;
+    }
     for (int i = 0; i < consts::NUM_PARAMS; i++) {
       if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
         float scaledVal =
@@ -2187,6 +2436,26 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
       float scaledVal = (val - mPresets->getMorphTime()) / (morphTimeOscMax - morphTimeOscMin);
       scaledVal = util::outputValInRange(scaledVal, 0, MAX_MORPH_TIME, false);
       mPresets->setMorphTime(scaledVal);
+    }
+    if (m.addressPattern() == presetOSCArg) {
+      mPresets->morphTo(mPresets->getPresetName(int(val)), mPresets->getMorphTime());
+    }
+    if (m.addressPattern() == fileNameOSCArg) {
+      buf1 = messageString;
+    }
+    if (m.addressPattern() == outputFolderOSCArg) {
+      soundOutput = messageString;
+    }
+    if (m.addressPattern() == recordOSCArg) {
+      if (val != 0) {
+        recordFilename = buf1;
+        std::cout << soundOutput << recordFilename << std::endl;
+        mRecorder.start(soundOutput + recordFilename, audioIO().framesPerSecond(),
+                        audioIO().channelsOut() <= 1 ? 1 : 2, 8192, gam::SoundFile::WAV,
+                        gam::SoundFile::FLOAT);
+      } else {
+        mRecorder.stop();
+      }
     }
   }
 }
@@ -2496,25 +2765,41 @@ void ecInterface::writeJSONOSCPreset(std::string name, bool allowOverwrite) {
   for (int i = 0; i < NUM_PARAMS; i++) {
     temp["MAX"] = granulator.ECParameters[i]->mOscMax;
     temp["MIN"] = granulator.ECParameters[i]->mOscMin;
+    temp["MAPPING"] = granulator.ECParameters[i]->mOscCustomRange;
     temp["OSC_ARG"] = granulator.ECParameters[i]->mOscArgument;
     package[granulator.ECParameters[i]->getDisplayName()] = temp;
   }
   for (int i = 0; i < NUM_PARAMS; i++) {
     temp["MAX"] = granulator.ECModParameters[i]->mOscMax;
     temp["MIN"] = granulator.ECModParameters[i]->mOscMin;
+    temp["MAPPING"] = granulator.ECModParameters[i]->mOscCustomRange;
     temp["OSC_ARG"] = granulator.ECModParameters[i]->mOscArgument;
     package[granulator.ECParameters[i]->getDisplayName() + "_MOD"] = temp;
   }
   for (int i = 0; i < NUM_LFOS; i++) {
     temp["MAX"] = granulator.LFOParameters[i]->mOscMax;
     temp["MIN"] = granulator.LFOParameters[i]->mOscMin;
+    temp["MAPPING"] = granulator.LFOParameters[i]->mOscCustomRange;
     temp["OSC_ARG"] = granulator.LFOParameters[i]->mOscArgument;
     package[toString("LFO" + toString(i + 1))] = temp;
   }
   temp["MAX"] = morphTimeOscMax;
   temp["MIN"] = morphTimeOscMin;
+  temp["MAPPING"] = morphTimeOscCustomRange;
   temp["OSC_ARG"] = morphTimeOSCArg;
   package["MORPH_TIME"] = temp;
+
+  temp["OSC_ARG"] = presetOSCArg;
+  package["PRESET"] = temp;
+
+  temp["OSC_ARG"] = recordOSCArg;
+  package["RECORD"] = temp;
+
+  temp["OSC_ARG"] = fileNameOSCArg;
+  package["FILE_NAME"] = temp;
+
+  temp["OSC_ARG"] = outputFolderOSCArg;
+  package["OUTPUT_FOLDER"] = temp;
 
   osc_config.push_back(package);
 
@@ -2538,21 +2823,55 @@ void ecInterface::loadJSONOSCPreset(std::string osc_preset_name) {
   for (int i = 0; i < NUM_PARAMS; i++) {
     std::string name = granulator.ECParameters[i]->getDisplayName();
     granulator.ECParameters[i]->mOscArgument = osc_config[0].at(name).at("OSC_ARG");
-    granulator.ECParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
-    granulator.ECParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
-    granulator.ECModParameters[i]->mOscArgument = osc_config[0].at(name + "_MOD").at("OSC_ARG");
-    granulator.ECModParameters[i]->mOscMin = osc_config[0].at(name + "_MOD").at("MIN");
-    granulator.ECModParameters[i]->mOscMax = osc_config[0].at(name + "_MOD").at("MAX");
+    granulator.ECParameters[i]->mOscCustomRange = osc_config[0].at(name).at("MAPPING");
+    if (granulator.ECParameters[i]
+          ->mOscCustomRange) {  // if custom mapping is on, load mapping min/max
+      granulator.ECParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
+      granulator.ECParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
+    } else {  // if custom mapping is off, set osc min/max to current parameter min/max
+      granulator.ECParameters[i]->mOscMin = granulator.ECParameters[i]->getCurrentMin();
+      granulator.ECParameters[i]->mOscMax = granulator.ECParameters[i]->getCurrentMax();
+    }
+    name = name + "_MOD";
+    granulator.ECModParameters[i]->mOscArgument = osc_config[0].at(name).at("OSC_ARG");
+    granulator.ECModParameters[i]->mOscCustomRange = osc_config[0].at(name).at("MAPPING");
+    if (granulator.ECModParameters[i]
+          ->mOscCustomRange) {  // if custom mapping is on, load mapping min/max
+      granulator.ECModParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
+      granulator.ECModParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
+    } else {  // if custom mapping is off, set osc min/max to current parameter min/max
+      granulator.ECModParameters[i]->mOscMin = granulator.ECModParameters[i]->param.getCurrentMin();
+      granulator.ECModParameters[i]->mOscMax = granulator.ECModParameters[i]->param.getCurrentMax();
+    }
   }
   for (int i = 0; i < NUM_LFOS; i++) {
     std::string name = toString("LFO" + toString(i + 1));
     granulator.LFOParameters[i]->mOscArgument = osc_config[0].at(name).at("OSC_ARG");
-    granulator.LFOParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
-    granulator.LFOParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
+    granulator.LFOParameters[i]->mOscCustomRange = osc_config[0].at(name).at("MAPPING");
+    if (granulator.LFOParameters[i]->mOscCustomRange) {
+      granulator.LFOParameters[i]->mOscMin = osc_config[0].at(name).at("MIN");
+      granulator.LFOParameters[i]->mOscMax = osc_config[0].at(name).at("MAX");
+    } else {
+      granulator.LFOParameters[i]->mOscMin =
+        granulator.LFOParameters[i]->frequency->getCurrentMin();
+      granulator.LFOParameters[i]->mOscMax =
+        granulator.LFOParameters[i]->frequency->getCurrentMax();
+    }
   }
   morphTimeOSCArg = osc_config[0].at("MORPH_TIME").at("OSC_ARG");
-  morphTimeOscMin = osc_config[0].at("MORPH_TIME").at("MIN");
-  morphTimeOscMax = osc_config[0].at("MORPH_TIME").at("MAX");
+  morphTimeOscCustomRange = osc_config[0].at("MORPH_TIME").at("MAPPING");
+  if (morphTimeOscCustomRange) {
+    morphTimeOscMin = osc_config[0].at("MORPH_TIME").at("MIN");
+    morphTimeOscMax = osc_config[0].at("MORPH_TIME").at("MAX");
+  } else {
+    morphTimeOscMin = 0;
+    morphTimeOscMax = 50;
+  }
+
+  presetOSCArg = osc_config[0].at("PRESET").at("OSC_ARG");
+  recordOSCArg = osc_config[0].at("RECORD").at("OSC_ARG");
+  fileNameOSCArg = osc_config[0].at("FILE_NAME").at("OSC_ARG");
+  outputFolderOSCArg = osc_config[0].at("OUTPUT_FOLDER").at("OSC_ARG");
 }
 
 void ecInterface::deleteJSONOSCPreset(std::string osc_preset_name) {
@@ -2595,7 +2914,8 @@ std::vector<std::string> ecInterface::loadJSONSoundFilePreset(std::string sound_
   else
     return {};
 
-  // Lock so the audio thread doesn't misread buffer while clearing files.
+  // Lock so the audio thread doesn't misread buffer
+  // while clearing files.
   std::unique_lock<std::mutex> lk(mLock);
   // granulator.clearSoundFiles();
   int counter = 0;
@@ -2645,7 +2965,8 @@ static int InputTextCallback(ImGuiInputTextCallbackData *data) {
   InputTextCallback_UserData *user_data = (InputTextCallback_UserData *)data->UserData;
   if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
     // Resize string callback
-    // If for some reason we refuse the new length (BufTextLen) and/or capacity (BufSize) we need
+    // If for some reason we refuse the new length
+    // (BufTextLen) and/or capacity (BufSize) we need
     // to set them back to what we want.
     std::string *str = user_data->Str;
     IM_ASSERT(data->Buf == str->c_str());
