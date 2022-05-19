@@ -9,6 +9,7 @@
 
 /**** Emission Control LIB ****/
 #include "ecSynth.h"
+#include "fonts.hpp"
 
 /**** AlloLib LIB ****/
 #include "al/app/al_App.hpp"
@@ -318,7 +319,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::string previousFile = "No file selected";
   ImFont *bodyFont;
   ImFont *titleFont;
-  ImFont *ferrariFont;
+  ImFont *engineFont;
   float fontScale = 1.0;
   float adjustScaleY = 1.0;
 

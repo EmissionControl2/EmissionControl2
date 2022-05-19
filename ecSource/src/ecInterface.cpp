@@ -177,32 +177,12 @@ void ecInterface::onCreate() {
   fontConfig.OversampleH = 4;
   fontConfig.OversampleV = 4;
 
-#ifdef __APPLE__
-  bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f, &fontConfig);
-  titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f, &fontConfig);
-  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f, &fontConfig);
-#endif
-
-#ifdef __linux__
-  bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 16.0f, &fontConfig);
-  titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/Roboto-Medium.ttf", 20.0f, &fontConfig);
-  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    "/usr/share/emissioncontrol2/fonts/ferrari.ttf", 16.0f, &fontConfig);
-#endif
-
-#ifdef _WIN32
-  bodyFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 16.0f, &fontConfig);
-  titleFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/Roboto-Medium.ttf").c_str(), 20.0f, &fontConfig);
-  ferrariFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-    (execDir + "Resources/fonts/ferrari.ttf").c_str(), 16.0f, &fontConfig);
-#endif
+  bodyFont = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
+    &RobotoMedium_compressed_data, RobotoMedium_compressed_size, 16, &fontConfig);
+  titleFont = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
+    &RobotoMedium_compressed_data, RobotoMedium_compressed_size, 20, &fontConfig);
+  engineFont = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(
+    &engine_compressed_data, engine_compressed_size, 16, &fontConfig);
 
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
@@ -611,7 +591,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(*ECred));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8, 0.5, 0.5, 1.0));
-    ImGui::PushFont(ferrariFont);
+    ImGui::PushFont(engineFont);
     // ImGui::SetCursorPosX(width() - 106 * fontScale);
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20);
     if (!audioIO().isRunning()) {
@@ -864,8 +844,7 @@ void ecInterface::onDraw(Graphics &g) {
       }
       if (!granulator.ECParameters[i]->mOscCustomRange) {
         if (ImGui::Button(
-              ("Custom Value Mapping##osc_" + granulator.ECParameters[i]->getDisplayName())
-                .c_str())) {
+              ("Custom Mapping##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str())) {
           granulator.ECParameters[i]->mOscCustomRange = true;
         }
         if (ImGui::IsItemHovered()) {
@@ -926,7 +905,7 @@ void ecInterface::onDraw(Graphics &g) {
       }
       if (!granulator.ECModParameters[i]->mOscCustomRange) {
         if (ImGui::Button(
-              ("Custom Value Mapping##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD")
+              ("Custom Mapping##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD")
                 .c_str())) {
           granulator.ECModParameters[i]->mOscCustomRange = true;
         }
@@ -988,8 +967,7 @@ void ecInterface::onDraw(Graphics &g) {
       }
 
       if (!granulator.LFOParameters[i]->mOscCustomRange) {
-        if (ImGui::Button(
-              ("Custom Value Mapping##osc_" + toString("LFO") + toString(i + 1)).c_str())) {
+        if (ImGui::Button(("Custom Mapping##osc_" + toString("LFO") + toString(i + 1)).c_str())) {
           granulator.LFOParameters[i]->mOscCustomRange = true;
         }
         if (ImGui::IsItemHovered()) {
@@ -1047,7 +1025,7 @@ void ecInterface::onDraw(Graphics &g) {
     }
 
     if (!morphTimeOscCustomRange) {
-      if (ImGui::Button("Custom Value Mapping##osc_MorphTime")) {
+      if (ImGui::Button("Custom Mapping##osc_MorphTime")) {
         morphTimeOscCustomRange = true;
       }
       if (ImGui::IsItemHovered()) {
@@ -1256,7 +1234,7 @@ void ecInterface::onDraw(Graphics &g) {
   bool aboutOpen = true;
   ImGui::SetNextWindowSize(ImVec2(500 * fontScale, 400 * adjustScaleY));
   if (ImGui::BeginPopupModal("About", &aboutOpen, ImGuiWindowFlags_NoResize)) {
-    ImGui::PushFont(ferrariFont);
+    ImGui::PushFont(titleFont);
     ImGui::SetCursorPosX((250 * fontScale) - (ImGui::CalcTextSize("EmissionControl2").x / 2));
     ImGui::Text("EmissionControl2");
     ImGui::PopFont();
