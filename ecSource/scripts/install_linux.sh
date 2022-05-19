@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installs resources to your system! Needs to be run with sudo.
-# The only files that absolutely need to be installed are fonts and samples, as these paths are hardcoded in EC2. (/usr/share/emissioncontrol2)
+# The only files that absolutely need to be installed are samples, as this path is hardcoded in EC2. (/usr/share/emissioncontrol2)
 # The rest are just good to have installed too.
 
 if [ $(whoami) != root ]; then
@@ -30,14 +30,6 @@ if [ ! -d "/usr/share/emissioncontrol2" ]; then
     mkdir /usr/share/emissioncontrol2
 else
     echo "/usr/share/emissioncontrol2 already exists..."
-fi
-
-# install fonts
-if [ ! -d "/usr/share/emissioncontrol2/fonts" ]; then
-    echo "Installing fonts to /usr/share/emissioncontrol2/fonts..."
-    cp -r "bin/Resources/fonts" "/usr/share/emissioncontrol2/"
-else
-    echo "fonts already installed..."
 fi
 
 #install samples.

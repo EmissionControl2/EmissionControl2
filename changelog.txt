@@ -15,3 +15,9 @@ Version 1.1 Changelog:
   - Reasoning: Aligns with OSX Semantics.
   - Fix: Simply copy your folder to the new location if you want to save your presets and settings.
 
+Version 1.2 Changelog:
+
+- Added OSC support (see manual for documentation)
+- Updated manual with OSC documentation
+- BREAKING CHANGE FOR LINUX: fixed an issue with the saving of presets
+  - Fix: run the script 'linux_preset_migrate.sh'

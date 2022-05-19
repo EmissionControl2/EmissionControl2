@@ -7,7 +7,6 @@
 /**** Emission Control LIB ****/
 #include "emissionControl.h"
 
-
 /**** CSTD LIB ****/
 #include <iostream>
 
@@ -225,6 +224,10 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, flo
   mHighRange = new Parameter{("##" + parameterName + "High").c_str(), defaultMax, absMin, absMax};
   mLowRange->set(defaultMin);
   mHighRange->set(defaultMax);
+  if (mOscCustomRange == 0) {
+    mOscMin = defaultMin;
+    mOscMax = defaultMax;
+  }
   mSliderType = slideType;
   mIsLog = isLog;
   mSliderText = sliderText;
@@ -246,6 +249,10 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, std
     new Parameter{("##" + parameterName + "High").c_str(), Group, defaultMax, absMin, absMax};
   mLowRange->set(defaultMin);
   mHighRange->set(defaultMax);
+  if (mOscCustomRange == 0) {
+    mOscMin = defaultMin;
+    mOscMax = defaultMax;
+  }
   mSliderType = slideType;
   mIsLog = isLog;
   mSliderText = sliderText;
@@ -300,7 +307,7 @@ void ecParameter::addToPresetHandler(al::PresetHandler &presetHandler) {
 void ecParameter::skipParamPresetHandler(al::PresetHandler &presetHandler, bool skip) {
   presetHandler.skipParameter(mParameter->getFullAddress(), skip);
   presetHandler.skipParameter(mLowRange->getFullAddress(), skip);
-  presetHandler.skipParameter(mHighRange->getFullAddress(), skip); 
+  presetHandler.skipParameter(mHighRange->getFullAddress(), skip);
 }
 
 void ecParameter::drawRangeSlider(MIDILearnBool *isMIDILearn, KeyDown *k) {
