@@ -2014,6 +2014,14 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
   if (recordButtonClicked) {
     state.recordButton = !state.recordButton;
     if (state.recordButton) {
+      // checking that file name is valid
+      if (buf1.empty()) {
+        buf1.append("EC2_Output.wav");
+      } else if (buf1.size() < 5) {
+        buf1.append(".wav");
+      } else if (buf1.substr(buf1.size() - 4, 4) != ".wav") {
+        buf1.append(".wav");
+      }
       uint32_t ringBufferSize;
       if (bufferSize == 0) {
         ringBufferSize = 8192;
