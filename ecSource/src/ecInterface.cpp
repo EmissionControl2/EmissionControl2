@@ -87,7 +87,7 @@ void ecInterface::onInit() {
   setOSCPresetNames(config.at(consts::OSC_PRESET_NAMES_KEY));
   setSoundFilePresetNames(config.at(consts::SAMPLE_PRESET_NAMES_KEY));
   setSoundOutputPath(config.at(consts::SOUND_OUTPUT_PATH_KEY));
-  setAudioSettings(config.at(consts::SAMPLE_RATE_KEY));
+  setAudioSettings(config.at(consts::SAMPLE_RATE_KEY), config.at(consts::BUFFER_SIZE_KEY));
   setColorSchemeMode(config.at(consts::LIGHT_MODE_KEY));
   setFontScale(config.at(consts::FONT_SCALE_KEY));
   setWindowDimensions(config.at(consts::WINDOW_WIDTH_KEY), config.at(consts::WINDOW_HEIGHT_KEY));
@@ -147,7 +147,7 @@ void ecInterface::onInit() {
   audioIO().clipOut(isHardClip);
 
   audioIO().print();
-  std::cout << "Sample Rate:  " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
+  std::cout << "Sample Rate: " + std::to_string((int)audioIO().framesPerSecond()) << std::endl;
 }
 
 void ecInterface::onCreate() {
@@ -1956,25 +1956,32 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       granulator.setGlobalSamplingRate(std::stof(samplingRates[state.currentSr]));
       io->framesPerSecond(granulator.getGlobalSamplingRate());
     }
+    std::vector<std::string> bufferSizes{"128", "256", "512", "1024", "2048"};
+    if (ImGui::Combo("Buffer Size", &state.currentBufSize, ParameterGUI::vector_getter,
+                     static_cast<void *>(&bufferSizes), bufferSizes.size())) {
+      granulator.setGlobalBufferSize(std::stof(bufferSizes[state.currentBufSize]));
+      io->framesPerBuffer(granulator.getGlobalBufferSize());
+    }
     ImGui::PopItemWidth();
     if (ImGui::Button("Start")) {
-      io->framesPerBuffer(consts::BLOCK_SIZE);
       granulator.setOutChannels(state.currentOut - 1, state.currentMaxOut);
       io->channelsIn(0);
       granulator.setIO(io);
-      if (writeSampleRate) {
+      if (saveDefaultAudio) {
         jsonWriteToConfig(granulator.getGlobalSamplingRate(), consts::SAMPLE_RATE_KEY);
+        jsonWriteToConfig(granulator.getGlobalBufferSize(), consts::BUFFER_SIZE_KEY);
         jsonWriteToConfig(currentAudioDevice, consts::DEFAULT_AUDIO_DEVICE_KEY);
         jsonWriteToConfig(state.currentOut - 1, consts::LEAD_CHANNEL_KEY);
       }
 
       granulator.resampleSoundFiles();
 
-      io->start();
-      isPaused = false;
+      if (io->start()) {
+        isPaused = false;
+      }
     }
     ImGui::SameLine();
-    ImGui::Checkbox("Set as Default", &writeSampleRate);
+    ImGui::Checkbox("Set as Default", &saveDefaultAudio);
   }
   ImGui::PopID();
 }
@@ -2489,6 +2496,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::SAMPLE_RATE_KEY) == config.end())
       config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
 
+    if (config.find(consts::BUFFER_SIZE_KEY) == config.end())
+      config[consts::BUFFER_SIZE_KEY] = consts::BUFFER_SIZE;
+
     if (config.find(consts::LIGHT_MODE_KEY) == config.end())
       config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
 
@@ -2533,6 +2543,8 @@ bool ecInterface::initJsonConfig() {
       al::File::conformPathToOS(userPath + consts::DEFAULT_SOUND_OUTPUT_PATH);
 
     config[consts::SAMPLE_RATE_KEY] = consts::SAMPLE_RATE;
+
+    config[consts::BUFFER_SIZE_KEY] = consts::BUFFER_SIZE;
 
     config[consts::LIGHT_MODE_KEY] = consts::LIGHT_MODE;
 
@@ -2637,9 +2649,9 @@ void ecInterface::setSoundOutputPath(std::string sound_output_path) {
   soundOutput = al::File::conformPathToOS(sound_output_path);
 }
 
-void ecInterface::setAudioSettings(float sample_rate) {
+void ecInterface::setAudioSettings(float sample_rate, int buffer_size) {
   granulator.setGlobalSamplingRate(sample_rate);
-  configureAudio(sample_rate, consts::BLOCK_SIZE, consts::MAX_AUDIO_OUTS, consts::DEVICE_NUM);
+  configureAudio(sample_rate, buffer_size, consts::MAX_AUDIO_OUTS, consts::DEVICE_NUM);
 }
 
 void ecInterface::setColorSchemeMode(bool is_light) {

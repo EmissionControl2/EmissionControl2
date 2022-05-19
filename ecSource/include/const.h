@@ -52,6 +52,8 @@ enum bound { MIN, MAX };
 
 const std::string SOUND_OUTPUT_PATH_KEY = "USER_SOUND_OUTPUT_PATH";
 const std::string SAMPLE_RATE_KEY = "SAMPLE_RATE";
+const std::string BUFFER_SIZE_KEY = "BUFFER_SIZE";
+
 const std::string LIGHT_MODE_KEY = "LIGHT_MODE";
 const std::string FONT_SCALE_KEY = "FONT_SCALE";
 const std::string MIDI_PRESET_NAMES_KEY = "MIDI_PRESET_NAMES";
@@ -68,7 +70,7 @@ const std::string OMIT_SOUNDFILE_PARAM_KEY = "OMIT_SOUNDFILE_PARAM";
 const std::string HARD_RESET_SCANBEGIN_KEY = "HARD_RESET_SCANBEGIN";
 
 const int SAMPLE_RATE = 48000;
-const int BLOCK_SIZE = 1024;
+const int BUFFER_SIZE = 1024;
 const int MAX_AUDIO_OUTS = 2;
 const int DEVICE_NUM = -1;
 const bool LIGHT_MODE = false;

@@ -109,7 +109,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   std::string currentAudioDevice;
 
   bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
-              writeSampleRate = false, isStereo = true, isHardClip = true,
+              saveDefaultAudio = false, isStereo = true, isHardClip = true,
               isHardResetScanBegin = false, isOmitSoundFileParam = false;
   float background = 0.21;
   ecSynth granulator;
@@ -406,7 +406,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   void setOSCPresetNames(json preset_names);
   void setSoundFilePresetNames(json preset_names);
   void setSoundOutputPath(std::string sound_output_path);
-  void setAudioSettings(float sample_rate);
+  void setAudioSettings(float sample_rate, int buffer_size);
   void setColorSchemeMode(bool is_light);
   void setFontScale(float font_scale);
   void setWindowDimensions(float width, float height);

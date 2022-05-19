@@ -156,6 +156,9 @@ class ecSynth : public al::SynthVoice {
   void setGlobalSamplingRate(float sampling_rate) { mGlobalSamplingRate = sampling_rate; }
   double getGlobalSamplingRate() { return mGlobalSamplingRate; }
 
+  void setGlobalBufferSize(float buffer_size) { mGlobalBufferSize = buffer_size; }
+  double getGlobalBufferSize() { return mGlobalBufferSize; }
+
   /**
    * @brief Initilialize the synth.
    */
@@ -298,6 +301,7 @@ class ecSynth : public al::SynthVoice {
 
  private:
   double mGlobalSamplingRate = consts::SAMPLE_RATE, mPrevSR = consts::SAMPLE_RATE;
+  double mGlobalBufferSize = consts::BUFFER_SIZE, mPrevBS = consts::BUFFER_SIZE;
 
   al::PolySynth grainSynth{};    /* Polyhpony and interface to audio
                                                callback */
