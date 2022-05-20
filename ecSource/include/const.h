@@ -7,8 +7,9 @@ namespace consts {
 
 const std::string VERSION_NUMBER = "1.11";
 
-const char KEYBOARD_MIDI_LEARN = 'm';    // Hover over param - m
-const char KEYBOARD_MIDI_UNLEARN = 'm';  // Hover over param - Shift - m
+const char KEYBOARD_MIDI_LEARN = 'm';     // Hover over param - m
+const char KEYBOARD_MIDI_UNLEARN = 'm';   // Hover over param - Shift - m
+const char KEYBOARD_TOGGLE_ENGINE = ' ';  // Press space bar to start/stop audio engine
 
 const char KEYBOARD_PARAM_LOG_TOGGLE = 'l';  // Hover over param - l
 

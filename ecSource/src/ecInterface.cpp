@@ -151,6 +151,8 @@ void ecInterface::onInit() {
 }
 
 void ecInterface::onCreate() {
+  audioIO().stop();
+
   al::imguiInit();
 
   // Set if fullscreen or not.
@@ -186,7 +188,7 @@ void ecInterface::onCreate() {
 
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
-  audioIO().stop();
+  // std::cout << "LOOKIE HERE: " << std::endl;
 }
 
 void ecInterface::onExit() {
@@ -199,6 +201,15 @@ void ecInterface::onExit() {
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
+  if (mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_TOGGLE_ENGINE) &&
+      mLastKeyDown.readyToTrig) {
+    if (audioIO().isRunning()) {
+      audioIO().stop();
+    } else {
+      audioIO().start();
+    }
+  }
+
   setGUIParams();
   framecounter++;
   if (unlearnFlash > 0) unlearnFlash--;
@@ -356,6 +367,13 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::MenuItem("Remove Current Sound File", "")) {
         audioThumbnails.erase(audioThumbnails.begin() + granulator.mModClip);
         granulator.removeCurrentSoundFile();
+      }
+      if (ImGui::MenuItem("Clear All Sound Files", "")) {
+        int clipsToRemove = granulator.mClipNum;
+        for (int i = 0; i < clipsToRemove; i++) {
+          audioThumbnails.erase(audioThumbnails.begin() + i);
+          granulator.removeSoundFile(i);
+        }
       }
       ImGui::Separator();
       if (ImGui::MenuItem("Save Sound File Preset", "")) {
@@ -1393,7 +1411,9 @@ void ecInterface::onDraw(Graphics &g) {
                            flags);
   ImGui::PopFont();
   ImGui::PushFont(bodyFont);
-  ecInterface::ECdrawPresetHandler(mPresets.get(), 12, 3);
+  int numColumns = 12;
+  if (ImGui::GetContentRegionAvail().x / fontScale < 300) numColumns = 6;
+  ecInterface::ECdrawPresetHandler(mPresets.get(), numColumns, 3);
   ImGui::PopFont();
   ParameterGUI::endPanel();
 
@@ -1703,8 +1723,10 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushFont(bodyFont);
     // Size of VU meter data arrays in samples
 
-    float VUleft = granulator.vuBufferL.getRMS(granulator.getGlobalSamplingRate() / 30);
-    float VUright = granulator.vuBufferR.getRMS(granulator.getGlobalSamplingRate() / 30);
+    float VUleft =
+      -20 * log10(granulator.vuBufferL.getRMS(granulator.getGlobalSamplingRate() / 20));
+    float VUright =
+      -20 * log10(granulator.vuBufferR.getRMS(granulator.getGlobalSamplingRate() / 20));
 
     // Set meter colors to green
     ImVec4 VUleftCol = (ImVec4)*ECgreen;
@@ -1724,20 +1746,20 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUleftCol);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ((ImVec4)ImColor(0, 0, 0, 180)));
     ImGui::PlotHistogram(
-      "##VUleft", &VUleft, 1, 0, nullptr, 0, 1,
+      "##VUleft", &VUleft, 1, 0, nullptr, 96, 0,
       ImVec2((ImGui::GetContentRegionAvail().x / 2) - 4, ImGui::GetContentRegionAvail().y),
       sizeof(float));
     ImGui::SameLine();
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("L Peak: %f", granulator.peakL);
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("L Peak: %f", 20 * log10(granulator.peakL));
     ImGui::PopStyleVar();
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, VUrightCol);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogramHovered, VUrightCol);
-    ImGui::PlotHistogram("##VUright", &VUright, 1, 0, nullptr, 0, 1,
+    ImGui::PlotHistogram("##VUright", &VUright, 1, 0, nullptr, 96, 0,
                          ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y),
                          sizeof(float));
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("R Peak: %f", granulator.peakR);
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("R Peak: %f", 20 * log10(granulator.peakR));
     ImGui::PopStyleVar();
     ImGui::PopStyleColor(5);
     ImGui::PopFont();
@@ -1912,6 +1934,7 @@ void ecInterface::drawAudioIO(AudioIO *io) {
       isPaused = true;
       io->close();
       state.currentSr = getSampleRateIndex();
+      state.currentBufSize = getBufSizeIndex();
     }
   } else {
     if (ImGui::Button("Update Devices")) {
@@ -2104,6 +2127,24 @@ int ecInterface::getSampleRateIndex() {
   }
 }
 
+int ecInterface::getBufSizeIndex() {
+  unsigned bufSize = (int)granulator.getGlobalBufferSize();
+  switch (bufSize) {
+    case 128:
+      return 0;
+    case 256:
+      return 1;
+    case 512:
+      return 2;
+    case 1024:
+      return 3;
+    case 2048:
+      return 4;
+    default:
+      return 0;
+  }
+}
+
 /**** Borrowed and modified from
  * al_ParameterGUI.cpp****/
 ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler *presetHandler,
@@ -2144,59 +2185,63 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   if (state.storeButtonState) {
     ImGui::PushStyleColor(ImGuiCol_Text, light ? (ImVec4)*ECblue : (ImVec4)*ECgreen);
   }
-  float presetWidth = (ImGui::GetContentRegionAvail().x / 12.0f) - 8.0f;
+  float presetWidth = (ImGui::GetContentRegionAvail().x / presetColumns) - 8.0f;
   for (int row = 0; row < presetRows; row++) {
     for (int column = 0; column < presetColumns; column++) {
-      std::string name = std::to_string(counter);
-      ImGui::PushID(counter);
+      if (counter < 180) {
+        std::string name = std::to_string(counter);
+        ImGui::PushID(counter);
 
-      bool nothingStored = currentPresetMap.find(counter) == currentPresetMap.end();
-      if (nothingStored) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.3);
+        bool nothingStored = currentPresetMap.find(counter) == currentPresetMap.end();
+        if (nothingStored) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.3);
 
-      bool is_selected = selection == counter;
-      if (is_selected) {
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
-      }
+        bool is_selected = selection == counter;
+        if (is_selected) {
+          ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        }
 
-      const bool selectableSelected = ImGui::Selectable(
-        name.c_str(), is_selected, 0, ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
-      if (ImGui::IsItemHovered() && !nothingStored)  // tooltip showing preset
-                                                     // name
-      {
-        const std::string currentlyhoveringPresetName = presetHandler->getPresetName(counter);
-        ImGui::SetTooltip("%s", currentlyhoveringPresetName.c_str());
-      }
+        const bool selectableSelected = ImGui::Selectable(
+          name.c_str(), is_selected, 0, ImVec2(presetWidth, ImGui::GetFontSize() * 1.2f));
+        if (ImGui::IsItemHovered() && !nothingStored)  // tooltip showing preset
+                                                       // name
+        {
+          const std::string currentlyhoveringPresetName = presetHandler->getPresetName(counter);
+          ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
+          ImGui::SetTooltip("%s", currentlyhoveringPresetName.c_str());
+          ImGui::PopStyleVar();
+        }
 
-      if (selectableSelected) {
-        if (state.storeButtonState) {
-          std::string saveName = state.enteredText;
-          if (saveName.size() == 0) {
-            saveName = name;
-          }
-          // JACK KILGORE CHANGE --
-          // OLD : resetHandler->storePreset(counter,
-          // saveName.c_str()); NEW : Adds preset map
-          // name to stored preset to allow presets w/
-          // the same name over
-          //       different maps.
-          presetHandler->storePreset(counter, (state.currentBank + "-" + saveName).c_str());
-          selection = counter;
-          state.storeButtonState = false;
-          ImGui::PopStyleColor();
-          state.enteredText.clear();
-          currentPresetMap = presetHandler->readPresetMap(state.currentBank);
-        } else {
-          if (presetHandler->recallPreset(counter) != "") {  // Preset is available
+        if (selectableSelected) {
+          if (state.storeButtonState) {
+            std::string saveName = state.enteredText;
+            if (saveName.size() == 0) {
+              saveName = name;
+            }
+            // JACK KILGORE CHANGE --
+            // OLD : resetHandler->storePreset(counter,
+            // saveName.c_str()); NEW : Adds preset map
+            // name to stored preset to allow presets w/
+            // the same name over
+            //       different maps.
+            presetHandler->storePreset(counter, (state.currentBank + "-" + saveName).c_str());
             selection = counter;
+            state.storeButtonState = false;
+            ImGui::PopStyleColor();
+            state.enteredText.clear();
+            currentPresetMap = presetHandler->readPresetMap(state.currentBank);
+          } else {
+            if (presetHandler->recallPreset(counter) != "") {  // Preset is available
+              selection = counter;
+            }
           }
         }
-      }
-      if (nothingStored) ImGui::PopStyleVar();
-      if (is_selected) ImGui::PopStyleColor(1);
+        if (nothingStored) ImGui::PopStyleVar();
+        if (is_selected) ImGui::PopStyleColor(1);
 
-      if (column < presetColumns - 1) ImGui::SameLine();
-      counter++;
-      ImGui::PopID();
+        if (column < presetColumns - 1) ImGui::SameLine();
+        counter++;
+        ImGui::PopID();
+      }
     }
   }
   if (state.storeButtonState) {
@@ -2205,13 +2250,13 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
   if (ImGui::Button("<-")) {
     state.presetHandlerBank -= 1;
     if (state.presetHandlerBank < 0) {
-      state.presetHandlerBank = 4;
+      state.presetHandlerBank = 179 / (presetColumns * presetRows);
     }
   }
   ImGui::SameLine(0.0f, 2.0f);
   if (ImGui::Button("->")) {
     state.presetHandlerBank += 1;
-    if (state.presetHandlerBank > 4) {
+    if (state.presetHandlerBank > 179 / (presetColumns * presetRows)) {
       state.presetHandlerBank = 0;
     }
   }

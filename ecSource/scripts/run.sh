@@ -31,7 +31,7 @@ if [ ${result} == 0 ]; then
   cd bin
 
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    ./EmissionControl2 -DRTAUDIO_API_JACK=1 -DRTAUDIO_API_ALSA=1 -DRTAUDIO_API_PULSE=1 -DRTMIDI_API_JACK=1
+    ./EmissionControl2
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     TERM=${2:-DEFAULT}
     chmod 444 EmissionControl2.app/Contents/Resources/libsndfile/*
@@ -41,6 +41,6 @@ if [ ${result} == 0 ]; then
       open EmissionControl2.app
     fi
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-    ./EmissionControl2.exe -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=0
+    ./EmissionControl2.exe
   fi
 fi

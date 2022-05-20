@@ -68,7 +68,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   mkdir -p release
   cd release
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
+    cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
@@ -82,7 +82,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   mkdir -p debug
   cd debug
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=1 -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
+    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then

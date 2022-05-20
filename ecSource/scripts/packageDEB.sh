@@ -25,6 +25,7 @@ BUILDLOCATION=$(cd ../deployment && pwd)
 
 echo "Packaging $RELEASENAME..."
 echo "Don't forget to compile this on an older version of Debian for compatibility..."
+echo "Also compile a version with just PulseAudio, for Pipewire compatibility."
 
 # make directory structure
 

@@ -382,6 +382,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   int getSampleRateIndex();
 
+  int getBufSizeIndex();
+
   /**** Configuration File Stuff****/
 
   bool initJsonConfig();

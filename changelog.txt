@@ -19,5 +19,13 @@ Version 1.2 Changelog:
 
 - Added OSC support (see manual for documentation)
 - Updated manual with OSC documentation
+- Added option to change buffer size
+- Improved look of presets panel when the window is small
+- Added keyboard shortcut for starting/stopping the sound engine (Spacebar)
+- Added "Clear All Sound Files" option in Sound Files menu
+- Improved the VU meter (now shows DBFS instead of linear amplitude)
+- Rolled fonts into binary
+- Fixed bug where recording didn't work if file name didn't end in ".wav" (Issue #100). Created checker that appends .wav if missing.
+- Various other small bugs squashed
 - BREAKING CHANGE FOR LINUX: fixed an issue with the saving of presets
   - Fix: run the script 'linux_preset_migrate.sh'
