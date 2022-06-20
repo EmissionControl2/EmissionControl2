@@ -4,7 +4,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10" CACHE STRING "Minimum OS X deployment ve
 
 # name of application. replace 'app' with desired app name
 set(APP_NAME EmissionControl2)
-project(${APP_NAME} VERSION 1.1
+project(${APP_NAME} VERSION 1.2
                     DESCRIPTION "Granular Scheduler for Arbitrary Sound Files"
                     LANGUAGES CXX)
 

@@ -26,3 +26,7 @@ fi
     cmake --build ./build/release --config Release $THREADS
   fi
 )
+
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
+    read
+fi

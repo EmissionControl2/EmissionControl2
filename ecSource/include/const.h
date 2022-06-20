@@ -113,6 +113,7 @@ const std::string PERSISTENT_DATA_PATH = "/Music/EmissionControl2/";
 const std::string DEFAULT_SAMPLE_PATH = PERSISTENT_DATA_PATH + "samples/";
 const std::string DEFAULT_SOUND_OUTPUT_PATH = PERSISTENT_DATA_PATH + "soundOutput/";
 const std::string DEFAULT_PRESETS_PATH = PERSISTENT_DATA_PATH + "presets/";
+const std::string DEFAULT_MIDI_PRESETS_PATH = PERSISTENT_DATA_PATH + "midi_presets/";
 const std::string DEFAULT_OSC_PRESETS_PATH = PERSISTENT_DATA_PATH + "osc_presets/";
 const std::string DEFAULT_SAMPLE_PRESETS_PATH = PERSISTENT_DATA_PATH + "sample_presets/";
 const std::string DEFAULT_CONFIG_PATH = PERSISTENT_DATA_PATH + "configs/";
