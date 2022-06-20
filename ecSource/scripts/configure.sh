@@ -18,6 +18,7 @@ rm -f external/al_ext/assets3d/CMakeLists.txt
 rm -f external/al_ext/openvr/CMakeLists.txt
 rm -f external/al_ext/spatialaudio/CMakeLists.txt
 rm -f external/al_ext/statedistribution/CMakeLists.txt
+
 (
   if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
     mkdir -p ./bin
@@ -62,13 +63,34 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   fi
 )
 
+JACKSUPPORT=1
+# Check flags to see if user wants to remove JACK support for pipewire compatibility
+PIPEWIRE=$1
+
+if [[ "$PIPEWIRE" == "" ]]; then
+  echo "
+
+  CONFIGURING EC2 WITH JACK SUPPORT. THERE MAY BE ISSUES ON SYSTEMS RUNNING PIPEWIRE!
+  To build without jack for pipewire compatibility, run run configure with the argument "pipewire" (i.e. ./configure.sh pipewire)
+
+  "
+elif [[ "$PIPEWIRE" == "pipewire" ]]; then
+  echo "
+
+  CONFIGURING EC2 WITHOUT JACK FOR PIPEWIRE COMPATIBILITY.
+
+  "
+  JACKSUPPORT=0
+fi
+
+# cmake configure for RELEASE
 (
   mkdir -p build
   cd build
   mkdir -p release
   cd release
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
+    cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=$JACKSUPPORT -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     cmake -DCMAKE_BUILD_TYPE=Release -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
@@ -76,13 +98,14 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   fi
 )
 
+# cmake configure for DEBUG
 (
   mkdir -p build
   cd build
   mkdir -p debug
   cd debug
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
+    cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=$JACKSUPPORT -DRTMIDI_API_JACK=1 -DRTAUDIO_API_PULSE=1 -DRTAUDIO_API_ALSA=1 ../..
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     cmake -DCMAKE_BUILD_TYPE=Debug -Wno-deprecated -DBUILD_EXAMPLES=0 -DRTAUDIO_API_JACK=0 -DRTMIDI_API_JACK=0 ../..
   elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
@@ -90,6 +113,7 @@ rm -f external/al_ext/statedistribution/CMakeLists.txt
   fi
 )
 
+# this is just here to make the git bash window pause and let me see the output before it closes.
 if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
     read
 fi

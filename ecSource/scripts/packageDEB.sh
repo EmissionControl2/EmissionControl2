@@ -105,8 +105,11 @@ License: GPL-3+
  License version 3 can be found in the file
  '/usr/share/common-licenses/GPL-3'" >>"$BUILDDIR/usr/share/doc/emissioncontrol2/copyright"
 DATE="$(date +'%a, %d %b %Y %H:%M:%S %Z')"
-echo "emissioncontrol2 (1.1) stable; urgency=medium
- * New upstream release
+echo "emissioncontrol2 (1.2) stable; urgency=medium
+  * New upstream release
+  -- Rodney DuPlessis <rodney@rodneyduplessis.com>  Sat, 2 Jun 2022 14:30:00 -0600
+emissioncontrol2 (1.1) stable; urgency=medium
+  * New upstream release
   -- Rodney DuPlessis <rodney@rodneyduplessis.com>  Sat, 27 Mar 2021 12:52:00 -0500
 emissioncontrol2 (1.0) stable; urgency=high
   * Initial Release

@@ -1,6 +1,6 @@
 # EmissionControl2
 
-EmissionControl2 (EC2) is a new standalone interactive real-time application for granular synthesis and sound file granulation. It is available for OSX, Linux, and Windows. 
+EmissionControl2 (EC2) is a standalone interactive real-time application for granular synthesis and sound file granulation. It is available for OSX, Linux, and Windows. 
 <br><br>
 
 # [DOWNLOAD EMISSIONCONTROL2](https://github.com/EmissionControl2/EmissionControl2/releases/latest)
@@ -10,18 +10,19 @@ EmissionControl2 (EC2) is a new standalone interactive real-time application for
 
 Features include:
 
+- Per-grain signal processing (envelope, waveform, amplitude, frequency, spatial position, filter center frequency and resonance)
 - Granulation of multiple sound files simultaneously
-- Multiple simultaneous grain streams
+- Up to 2048 simultaneous grains
 - Synchronous and asynchronous grain emission
 - Intermittency control
-- Per-grain signal processing (envelope, waveform, amplitude, frequency, spatial position, filter center frequency and resonance)
+- Modulation control of all parameters with six LFOs (bipolar or unipolar waveforms)
+- Real-time display of peak amplitude, active grains, waveform, scan range, scanner, and grain emission
+- Scalable graphical user interface (GUI) and font size
+- Easy mapping of parameters to any MIDI/OSC continuous controller
+- Algorithmic control of granular processes via OSC scripts
 - Unique filter design optimized for per-grain synthesis
-- Matrix modulation control of all granulation parameters with six LFOs
-- Real-time display of peak amplitude, grain counter, waveform, and scan range
-- Scalable GUI and font size
-- MIDI Learn enables mapping to any MIDI continuous controller.
-- Code is open source and available at GitHub
-- Maximal "Grain Integrity" (tm)
+- Unlimited user presets with smooth interpolation for gestural design
+- Open source code and free to download and use
 
 ## Videos
 ### Controlling EmissionControl2 (lecture tutorial)
@@ -46,7 +47,7 @@ To subscribe, send a blank email to: ~rondo/emissioncontrol2-discuss+subscribe@l
 To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.sr.ht
 
 ## Building
-### Debian
+### Debian Linux
 
 #### First, check the releases page to see if the pre-compiled installers work for you: https://github.com/EmissionControl2/EmissionControl2/releases/latest
 
@@ -56,15 +57,21 @@ To post to this list, send your post to: ~rondo/emissioncontrol2-discuss@lists.s
 
 `sudo apt install libgtk-3-dev libasound2-dev libsndfile1-dev libfftw3-dev libjack-dev`
  
-- git clone the repository and run some the scripts that automate the configure/build/install process.
+- git clone the repository and cd into the directory:
 
 `git clone https://github.com/EmissionControl2/EmissionControl2.git`
 
 `cd EmissionControl2/ecSource`
 
-`./scripts/configure.sh`
+- Run the configure script. You may add the argument "withjack" if you want JACK support. Note that compiling with JACK support can cause issues with Pipewire. If your system runs Pipewire, it is recommended to not compile with jack support.
+
+`./scripts/configure.sh` --or-- (for jack support) `./scripts/configure.sh withjack`
+
+- Run the build script:
 
 `./scripts/build.sh`
+
+- You can install ec2 by running the following script:
 
 `sudo ./scripts/install_linux.sh` (this will put the binary in /usr/bin and set up resources in the paths where EC2 expects them to be)
 
@@ -78,9 +85,15 @@ To undo the files installed with install_linux.sh script, I've included the `scr
 
 `cd EmissionControl2/ecSource`
 
-`./scripts/configure.sh`
+Run the configure script. You may add the argument "withjack" if you want JACK support. Note that compiling with JACK support can cause issues with Pipewire. If your system runs Pipewire, it is recommended to not compile with jack support.
+
+`./scripts/configure.sh` --or-- (for jack support) `./scripts/configure.sh withjack`
+
+- Run the build script:
 
 `./scripts/build.sh`
+
+- You can install ec2 by running the following script:
 
 `sudo ./scripts/install_linux.sh` (this will put the binary in /usr/bin and set up resources in the paths where EC2 expects them to be)
 
@@ -117,7 +130,7 @@ You'll also need a few libraries installed: libsndfile flac libogg libvorbis (If
 
 For installation through Visual Studio (taken from the allolib repo: https://github.com/AlloSphere-Research-Group/allolib):
 
-    Install Visual Studio 2017 Community Edition from https://visualstudio.microsoft.com/downloads/
+    Install Visual Studio 2017 [ec2 devs: 2019 seems to work as well] Community Edition from https://visualstudio.microsoft.com/downloads/
 
     During installation options:
 
