@@ -151,6 +151,8 @@ void ecInterface::onInit() {
 }
 
 void ecInterface::onCreate() {
+  audioIO().close();
+  audioIO().open();
   audioIO().stop();
 
   al::imguiInit();
@@ -615,10 +617,8 @@ void ecInterface::onDraw(Graphics &g) {
     if (!audioIO().isRunning()) {
       if (ImGui::Button("ENGINE START")) {
         if (granulator.getNumberOfAudioFiles() != 0) {
-          if (!audioIO().start()) {
-            audioIO().close();
-            audioIO().start();
-          }
+          audioIO().open();
+          audioIO().start();
           isPaused = false;
           readyToTrigNoSoundFilePopup = true;
         }
@@ -626,6 +626,7 @@ void ecInterface::onDraw(Graphics &g) {
     } else {
       if (ImGui::Button("ENGINE STOP")) {
         audioIO().stop();
+        audioIO().close();
         isPaused = true;
       }
     }
@@ -2442,38 +2443,43 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
     }
     for (int i = 0; i < consts::NUM_PARAMS; i++) {
       if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
-        float scaledVal =
-          (val - granulator.ECParameters[i]->mOscMin) /
-          (granulator.ECParameters[i]->mOscMax - granulator.ECParameters[i]->mOscMin);
-        scaledVal = util::outputValInRange(scaledVal, granulator.ECParameters[i]->getCurrentMin(),
-                                           granulator.ECParameters[i]->getCurrentMax(), false);
-        granulator.ECParameters[i]->setParam(scaledVal);
+        if (granulator.ECParameters[i]->mOscCustomRange) {
+          val = (val - granulator.ECParameters[i]->mOscMin) /
+                fabs(granulator.ECParameters[i]->mOscMax - granulator.ECParameters[i]->mOscMin);
+          val = util::outputValInRange(val, granulator.ECParameters[i]->getCurrentMin(),
+                                       granulator.ECParameters[i]->getCurrentMax(), false);
+        }
+        granulator.ECParameters[i]->setParam(val);
       }
       if (m.addressPattern() == granulator.ECModParameters[i]->mOscArgument) {
-        float scaledVal =
-          (val - granulator.ECModParameters[i]->param.getParam()) /
-          (granulator.ECModParameters[i]->mOscMax - granulator.ECModParameters[i]->mOscMin);
-        scaledVal =
-          util::outputValInRange(scaledVal, granulator.ECModParameters[i]->param.getCurrentMin(),
-                                 granulator.ECModParameters[i]->param.getCurrentMax(), false);
-        granulator.ECModParameters[i]->param.setParam(scaledVal);
+        if (granulator.ECModParameters[i]->mOscCustomRange) {
+          val =
+            (val - granulator.ECModParameters[i]->param.getParam()) /
+            fabs(granulator.ECModParameters[i]->mOscMax - granulator.ECModParameters[i]->mOscMin);
+          val = util::outputValInRange(val, granulator.ECModParameters[i]->param.getCurrentMin(),
+                                       granulator.ECModParameters[i]->param.getCurrentMax(), false);
+        }
+        granulator.ECModParameters[i]->param.setParam(val);
       }
     }
     for (int i = 0; i < consts::NUM_LFOS; i++) {
       if (m.addressPattern() == granulator.LFOParameters[i]->mOscArgument) {
-        float scaledVal =
-          (val - granulator.LFOParameters[i]->frequency->getParam()) /
-          (granulator.LFOParameters[i]->mOscMax - granulator.LFOParameters[i]->mOscMin);
-        scaledVal =
-          util::outputValInRange(scaledVal, granulator.LFOParameters[i]->frequency->getCurrentMin(),
-                                 granulator.LFOParameters[i]->frequency->getCurrentMax(), false);
-        granulator.LFOParameters[i]->frequency->setParam(scaledVal);
+        if (granulator.LFOParameters[i]->mOscCustomRange) {
+          val = (val - granulator.LFOParameters[i]->frequency->getParam()) /
+                fabs(granulator.LFOParameters[i]->mOscMax - granulator.LFOParameters[i]->mOscMin);
+          val =
+            util::outputValInRange(val, granulator.LFOParameters[i]->frequency->getCurrentMin(),
+                                   granulator.LFOParameters[i]->frequency->getCurrentMax(), false);
+        }
+        granulator.LFOParameters[i]->frequency->setParam(val);
       }
     }
     if (m.addressPattern() == morphTimeOSCArg) {
-      float scaledVal = (val - mPresets->getMorphTime()) / (morphTimeOscMax - morphTimeOscMin);
-      scaledVal = util::outputValInRange(scaledVal, 0, MAX_MORPH_TIME, false);
-      mPresets->setMorphTime(scaledVal);
+      if (morphTimeOscCustomRange) {
+        val = (val - mPresets->getMorphTime()) / fabs(morphTimeOscMax - morphTimeOscMin);
+        val = util::outputValInRange(val, 0, MAX_MORPH_TIME, false);
+      }
+      mPresets->setMorphTime(val);
     }
     if (m.addressPattern() == presetOSCArg) {
       mPresets->morphTo(mPresets->getPresetName(int(val)), mPresets->getMorphTime());

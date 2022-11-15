@@ -30,3 +30,8 @@ Version 1.2 Changelog:
 - Linux only: added an installer for a version of EC2 without JACK (for better Pipewire compatibility)
 - BREAKING CHANGE FOR LINUX: fixed an issue with the saving of presets
   - Fix: run the script 'linux_preset_migrate.sh' to automatically rename and move the affected presets
+
+Version 1.3 Changelog:
+
+- Added sensible default OSC address values that correspond to the parameter names (faster to get started, user can still change the OSC address for any parameter)
+- 

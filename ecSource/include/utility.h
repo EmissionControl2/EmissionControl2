@@ -414,10 +414,10 @@ std::string getContentPath_OSX(std::string s);
  * @param[in] min: Some maximum value.
  * @param[in] isLog : If logarithmic, returns a value scaled logarithmically between min and max.
  *                    Linear otherwise.
- * @parma[in] precision: Correpsonds to the amount of places after the decimal point in base 10.
+ * @param[in] precision: Corresponds to the amount of places after the decimal point in base 10.
  */
 float outputValInRange(float val, float min, float max, bool isLog = false,
-                       unsigned int precision = 3);
+                       unsigned int precision = 5);
 
 }  // namespace util
 

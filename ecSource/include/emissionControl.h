@@ -444,8 +444,8 @@ class ecParameter {
    * @brief Set current min value of range slider.
    *
    */
-  void setCurrentMin(float min) { 
-    mLowRange->set(min); 
+  void setCurrentMin(float min) {
+    mLowRange->set(min);
     if (mOscCustomRange == 0) mOscMin = min;
   }
 
@@ -453,7 +453,7 @@ class ecParameter {
    * @brief Set current max value of range slider.
    *
    */
-  void setCurrentMax(float max) { 
+  void setCurrentMax(float max) {
     mHighRange->set(max);
     if (mOscCustomRange == 0) mOscMax = max;
   }
@@ -536,7 +536,11 @@ class ecParameter {
 struct ecModParameter {
   ecModParameter(std::string parameterName, std::string displayName)
     : param(parameterName, displayName, "", 0, 0, 1, 0, 1, consts::MOD, false),
-      lfoMenu("##lfo" + parameterName) {}
+      lfoMenu("##lfo" + parameterName) {
+    std::string tempArgument = parameterName;
+    tempArgument.insert(tempArgument.begin(), '/');
+    mOscArgument = tempArgument;
+  }
 
   // variables for OSC control
   std::string mOscArgument = "";
@@ -596,7 +600,7 @@ class LFOstruct {
   float mOscMin = 0.010;
   float mOscMax = 30.000;
   bool mOscCustomRange = 0;
-  
+
   // constructor
   LFOstruct(int lfoNumber) {
     mLFONumber = lfoNumber;
@@ -604,6 +608,8 @@ class LFOstruct {
     std::string polarityName = "##Polarity" + std::to_string(lfoNumber);
     std::string freqName = "FreqLFOfrequency" + std::to_string(lfoNumber);
     std::string dutyName = "##LFOduty" + std::to_string(lfoNumber);
+
+    mOscArgument = "/lfo" + std::to_string(lfoNumber + 1);
 
     shape = new al::ParameterMenu(menuName);
     polarity = new al::ParameterMenu(polarityName);

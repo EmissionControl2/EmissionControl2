@@ -228,6 +228,9 @@ ecParameter::ecParameter(std::string parameterName, std::string displayName, flo
     mOscMin = defaultMin;
     mOscMax = defaultMax;
   }
+  std::string tempArgument = parameterName;
+  tempArgument.insert(tempArgument.begin(), '/');
+  mOscArgument = tempArgument;
   mSliderType = slideType;
   mIsLog = isLog;
   mSliderText = sliderText;

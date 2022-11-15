@@ -275,7 +275,7 @@ std::string util::getUserHomePath() {
 float util::outputValInRange(float val, float min, float max, bool isLog, unsigned int precision) {
   assert(val >= 0 && val <= 1);
   float logarithmic_zero_epsilon = powf(0.1f, precision);
-  float output_linear = min + (val * abs(max - min));
+  float output_linear = min + (val * std::fabs(max - min));
 
   // Edge case for if max and min are flipped.
   if (max < min) {
