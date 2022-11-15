@@ -2529,13 +2529,24 @@ bool ecInterface::onMouseDown(const Mouse &m) {
 void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
   // m.print();
   if (isOSCOn) {
-    std::string messageString;
-    float val;
+    float val = 0;
     if (m.typeTags()[0] == 's') {
-      m >> messageString;
-    } else {
-      m >> val;
+      m >> oscValString;
+      oscMessageType = "s";
+    } else if (m.typeTags()[0] == 'f') {
+      m >> oscValFloat;
+      oscMessageType = "f";
+      val = oscValFloat;
+    } else if (m.typeTags()[0] == 'i') {
+      m >> oscValInt;
+      oscMessageType = "i";
+      val = oscValInt;
+    } else if (m.typeTags()[0] == 'd') {
+      m >> oscValDouble;
+      oscMessageType = "d";
+      val = oscValDouble;
     }
+
     for (int i = 0; i < consts::NUM_PARAMS; i++) {
       if (m.addressPattern() == granulator.ECParameters[i]->mOscArgument) {
         if (granulator.ECParameters[i]->mOscCustomRange) {
@@ -2577,13 +2588,13 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
       mPresets->setMorphTime(val);
     }
     if (m.addressPattern() == presetOSCArg) {
-      mPresets->morphTo(mPresets->getPresetName(int(val)), mPresets->getMorphTime());
+      mPresets->recallPreset(mPresets->getPresetName(int(val)));
     }
     if (m.addressPattern() == fileNameOSCArg) {
-      buf1 = messageString;
+      buf1 = oscValString;
     }
     if (m.addressPattern() == outputFolderOSCArg) {
-      soundOutput = messageString;
+      soundOutput = oscValString;
     }
     if (m.addressPattern() == recordOSCArg) {
       if (val != 0) {

@@ -143,6 +143,12 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   /*
   OSC
   */
+  std::string oscValString;
+  float oscValFloat;
+  int oscValInt;
+  double oscValDouble;
+
+  std::string oscMessageType;
   bool isOSCOn = false;
   int oscPort = 16447;                        // osc port
   std::string oscAddr = "127.0.0.1";          // ip address

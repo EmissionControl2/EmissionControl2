@@ -37,3 +37,5 @@ Version 1.3 Changelog:
 - Fixed a rounding bug in outputValInRange
 - Fixed a bug in OSC input for mod controls, lfo controls, and morph time
 - Fixed bug where keyboard shortcuts (like pressing spacebar to start/stop the engine) were triggered while inputting text in a text field
+- Made OSC input more robust to different number types (ints and doubles are now accepted and get converted to float)
+- Fixed bug where preset name reset to none when set via OSC
