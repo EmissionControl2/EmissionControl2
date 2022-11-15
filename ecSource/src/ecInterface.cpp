@@ -2454,7 +2454,7 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
       if (m.addressPattern() == granulator.ECModParameters[i]->mOscArgument) {
         if (granulator.ECModParameters[i]->mOscCustomRange) {
           val =
-            (val - granulator.ECModParameters[i]->param.getParam()) /
+            (val - granulator.ECModParameters[i]->mOscMin) /
             fabs(granulator.ECModParameters[i]->mOscMax - granulator.ECModParameters[i]->mOscMin);
           val = util::outputValInRange(val, granulator.ECModParameters[i]->param.getCurrentMin(),
                                        granulator.ECModParameters[i]->param.getCurrentMax(), false);
@@ -2465,7 +2465,7 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
     for (int i = 0; i < consts::NUM_LFOS; i++) {
       if (m.addressPattern() == granulator.LFOParameters[i]->mOscArgument) {
         if (granulator.LFOParameters[i]->mOscCustomRange) {
-          val = (val - granulator.LFOParameters[i]->frequency->getParam()) /
+          val = (val - granulator.LFOParameters[i]->mOscMin) /
                 fabs(granulator.LFOParameters[i]->mOscMax - granulator.LFOParameters[i]->mOscMin);
           val =
             util::outputValInRange(val, granulator.LFOParameters[i]->frequency->getCurrentMin(),
@@ -2476,7 +2476,7 @@ void ecInterface::onMessage(al::osc::Message &m) {  // OSC input handling
     }
     if (m.addressPattern() == morphTimeOSCArg) {
       if (morphTimeOscCustomRange) {
-        val = (val - mPresets->getMorphTime()) / fabs(morphTimeOscMax - morphTimeOscMin);
+        val = (val - morphTimeOscMin) / fabs(morphTimeOscMax - morphTimeOscMin);
         val = util::outputValInRange(val, 0, MAX_MORPH_TIME, false);
       }
       mPresets->setMorphTime(val);
