@@ -204,7 +204,7 @@ void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
 
 void ecInterface::onDraw(Graphics &g) {
   if (mLastKeyDown.key.key() == static_cast<int>(consts::KEYBOARD_TOGGLE_ENGINE) &&
-      mLastKeyDown.readyToTrig) {
+      mLastKeyDown.readyToTrig && !captureKeyboardTextInput) {
     if (audioIO().isRunning()) {
       audioIO().stop();
     } else {
@@ -401,6 +401,11 @@ void ecInterface::onDraw(Graphics &g) {
     if (ImGui::BeginPopupModal("Save Sound File Preset", &isSoundFilePresetWriteOpen)) {
       ImGui::InputText("Enter Preset Name", mCurrentSoundFilePresetName, 50,
                        ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
+      if (ImGui::IsItemActivated()) {
+        captureKeyboardTextInput = true;
+      } else if (ImGui::IsItemDeactivated()) {
+        captureKeyboardTextInput = false;
+      }
 
       if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
 
@@ -766,6 +771,11 @@ void ecInterface::onDraw(Graphics &g) {
   if (ImGui::BeginPopupModal("Save MIDI Preset", &isMIDIWriteOpen)) {
     ImGui::InputText("Enter Preset Name", mCurrentMIDIPresetName, 50,
                      ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
+    if (ImGui::IsItemActivated()) {
+      captureKeyboardTextInput = true;
+    } else if (ImGui::IsItemDeactivated()) {
+      captureKeyboardTextInput = false;
+    }
 
     if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
 
@@ -828,9 +838,22 @@ void ecInterface::onDraw(Graphics &g) {
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
     if (InputText("IP Address", &oscAddr, ImGuiInputTextFlags_EnterReturnsTrue, oscAddrCallback,
-                  oscAddrCallbackUserData))
+                  oscAddrCallbackUserData)) {
       resetOSC();
-    if (ImGui::InputInt("Port", &oscPort, 1, 1, ImGuiInputTextFlags_EnterReturnsTrue)) resetOSC();
+    }
+    if (ImGui::IsItemActivated()) {
+      captureKeyboardTextInput = true;
+    } else if (ImGui::IsItemDeactivated()) {
+      captureKeyboardTextInput = false;
+    }
+    if (ImGui::InputInt("Port", &oscPort, 1, 1, ImGuiInputTextFlags_EnterReturnsTrue)) {
+      resetOSC();
+    }
+    if (ImGui::IsItemActivated()) {
+      captureKeyboardTextInput = true;
+    } else if (ImGui::IsItemDeactivated()) {
+      captureKeyboardTextInput = false;
+    }
     if (ImGui::InputFloat("Timeout", &oscTimeout, 0.01, 0.01, "%.2f",
                           ImGuiInputTextFlags_EnterReturnsTrue)) {
       if (oscTimeout < 0.01) {
@@ -838,6 +861,11 @@ void ecInterface::onDraw(Graphics &g) {
       } else {
         resetOSC();
       }
+    }
+    if (ImGui::IsItemActivated()) {
+      captureKeyboardTextInput = true;
+    } else if (ImGui::IsItemDeactivated()) {
+      captureKeyboardTextInput = false;
     }
     if (ImGui::IsItemHovered()) {
       ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
@@ -856,6 +884,11 @@ void ecInterface::onDraw(Graphics &g) {
                 &granulator.ECParameters[i]->mOscArgument, ImGuiInputTextFlags_EnterReturnsTrue,
                 granulator.ECParameters[i]->inputTextCallback,
                 granulator.ECParameters[i]->CallbackUserData);
+      if (ImGui::IsItemActivated()) {
+        captureKeyboardTextInput = true;
+      } else if (ImGui::IsItemDeactivated()) {
+        captureKeyboardTextInput = false;
+      }
       if (ImGui::IsItemHovered()) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
         ImGui::SetTooltip("Enter OSC address to listen to");
@@ -887,6 +920,11 @@ void ecInterface::onDraw(Graphics &g) {
         ImGui::InputFloat(
           ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
           &granulator.ECParameters[i]->mOscMin, 0.1);
+        if (ImGui::IsItemActivated()) {
+          captureKeyboardTextInput = true;
+        } else if (ImGui::IsItemDeactivated()) {
+          captureKeyboardTextInput = false;
+        }
         if (ImGui::IsItemHovered()) {
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
           ImGui::SetTooltip("Minimum expected value to be received via OSC.");
@@ -897,6 +935,11 @@ void ecInterface::onDraw(Graphics &g) {
         ImGui::InputFloat(
           ("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName()).c_str(),
           &granulator.ECParameters[i]->mOscMax, 0.1);
+        if (ImGui::IsItemActivated()) {
+          captureKeyboardTextInput = true;
+        } else if (ImGui::IsItemDeactivated()) {
+          captureKeyboardTextInput = false;
+        }
         if (ImGui::IsItemHovered()) {
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
           ImGui::SetTooltip("Maximum expected value to be received via OSC.");
@@ -950,6 +993,11 @@ void ecInterface::onDraw(Graphics &g) {
         ImGui::InputFloat(
           ("Range Min##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
           &granulator.ECModParameters[i]->mOscMin, 0.1);
+        if (ImGui::IsItemActivated()) {
+          captureKeyboardTextInput = true;
+        } else if (ImGui::IsItemDeactivated()) {
+          captureKeyboardTextInput = false;
+        }
         if (ImGui::IsItemHovered()) {
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
           ImGui::SetTooltip("Minimum expected value to be received via OSC.");
@@ -959,6 +1007,11 @@ void ecInterface::onDraw(Graphics &g) {
         ImGui::InputFloat(
           ("Range Max##osc_" + granulator.ECParameters[i]->getDisplayName() + "_MOD").c_str(),
           &granulator.ECModParameters[i]->mOscMax, 0.1);
+        if (ImGui::IsItemActivated()) {
+          captureKeyboardTextInput = true;
+        } else if (ImGui::IsItemDeactivated()) {
+          captureKeyboardTextInput = false;
+        }
         if (ImGui::IsItemHovered()) {
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
           ImGui::SetTooltip("Maximum expected value to be received via OSC.");
@@ -1015,6 +1068,11 @@ void ecInterface::onDraw(Graphics &g) {
         }
         ImGui::InputFloat(("Range Min##osc_" + toString("LFO") + toString(i + 1)).c_str(),
                           &granulator.LFOParameters[i]->mOscMin, 0.1);
+        if (ImGui::IsItemActivated()) {
+          captureKeyboardTextInput = true;
+        } else if (ImGui::IsItemDeactivated()) {
+          captureKeyboardTextInput = false;
+        }
         if (ImGui::IsItemHovered()) {
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
           ImGui::SetTooltip("Minimum expected value to be received via OSC.");
@@ -1023,6 +1081,11 @@ void ecInterface::onDraw(Graphics &g) {
         ImGui::SameLine();
         ImGui::InputFloat(("Range Max##osc_" + toString("LFO") + toString(i + 1)).c_str(),
                           &granulator.LFOParameters[i]->mOscMax, 0.1);
+        if (ImGui::IsItemActivated()) {
+          captureKeyboardTextInput = true;
+        } else if (ImGui::IsItemDeactivated()) {
+          captureKeyboardTextInput = false;
+        }
         if (ImGui::IsItemHovered()) {
           ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
           ImGui::SetTooltip("Maximum expected value to be received via OSC.");
@@ -1062,6 +1125,11 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth() * 0.25);
       ImGui::InputFloat("Range Min##osc_MorphTime", &morphTimeOscMin, 0.1);
+      if (ImGui::IsItemActivated()) {
+        captureKeyboardTextInput = true;
+      } else if (ImGui::IsItemDeactivated()) {
+        captureKeyboardTextInput = false;
+      }
       if (ImGui::IsItemHovered()) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
         ImGui::SetTooltip("Minimum expected value to be received via OSC.");
@@ -1069,6 +1137,11 @@ void ecInterface::onDraw(Graphics &g) {
       }
       ImGui::SameLine();
       ImGui::InputFloat("Range Max##osc_MorphTime", &morphTimeOscMax, 0.1);
+      if (ImGui::IsItemActivated()) {
+        captureKeyboardTextInput = true;
+      } else if (ImGui::IsItemDeactivated()) {
+        captureKeyboardTextInput = false;
+      }
       if (ImGui::IsItemHovered()) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.8);
         ImGui::SetTooltip("Maximum expected value to be received via OSC.");
@@ -1129,6 +1202,11 @@ void ecInterface::onDraw(Graphics &g) {
     if (ImGui::BeginPopupModal("Save OSC Preset", &isOSCWriteOpen)) {
       ImGui::InputText("Enter Preset Name", mCurrentOSCPresetName, 50,
                        ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_CharsNoBlank);
+      if (ImGui::IsItemActivated()) {
+        captureKeyboardTextInput = true;
+      } else if (ImGui::IsItemDeactivated()) {
+        captureKeyboardTextInput = false;
+      }
 
       if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
 
@@ -1775,9 +1853,11 @@ void ecInterface::onDraw(Graphics &g) {
 }
 
 bool ecInterface::onKeyDown(Keyboard const &k) {
-  mLastKeyDown.key = k;
-  mLastKeyDown.readyToTrig = true;
-  mLastKeyDown.lastParamCheck = false;
+  if (!captureKeyboardTextInput) {
+    mLastKeyDown.key = k;
+    mLastKeyDown.readyToTrig = true;
+    mLastKeyDown.lastParamCheck = false;
+  }
   return true;
 }
 
@@ -2028,6 +2108,11 @@ void ecInterface::drawRecorderWidget(al::OutputRecorder *recorder, double frameR
   ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
   InputText("##Record Name", &buf1, ImGuiInputTextFlags_EnterReturnsTrue, buf1Callback,
             buf1CallbackUserData);
+  if (ImGui::IsItemActivated()) {
+    captureKeyboardTextInput = true;
+  } else if (ImGui::IsItemDeactivated()) {
+    captureKeyboardTextInput = false;
+  }
   ImGui::PopItemWidth();
 
   if (state.recordButton) {
@@ -2361,6 +2446,11 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
     if (ImGui::InputText("preset", buf2, 64)) {
       state.enteredText = buf2;
     }
+    if (ImGui::IsItemActivated()) {
+      captureKeyboardTextInput = true;
+    } else if (ImGui::IsItemDeactivated()) {
+      captureKeyboardTextInput = false;
+    }
     ImGui::Text("Click on a preset number to store.");
   } else {
     // std::vector<std::string> mapList =
@@ -2397,6 +2487,11 @@ ecInterface::PresetHandlerState &ecInterface::ECdrawPresetHandler(PresetHandler 
       ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
       if (ImGui::InputText("", buf2, 64)) {
         state.newMapText = buf2;
+      }
+      if (ImGui::IsItemActivated()) {
+        captureKeyboardTextInput = true;
+      } else if (ImGui::IsItemDeactivated()) {
+        captureKeyboardTextInput = false;
       }
       ImGui::PopItemWidth();
       ImGui::SameLine();

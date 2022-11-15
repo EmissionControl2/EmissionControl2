@@ -121,6 +121,8 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   KeyDown mLastKeyDown;
 
+  bool captureKeyboardTextInput = false;
+
   std::array<RtMidiIn, consts::MAX_MIDI_IN> midiIn;
   std::vector<MIDIKey> ActiveMIDI;
   bool mIsLinkingParamAndMIDI = false;
