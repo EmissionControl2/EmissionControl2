@@ -1657,6 +1657,13 @@ void ecInterface::onDraw(Graphics &g) {
                           int(scanWidth * 100));
       ImGui::PopStyleVar();
 
+      // Move scanHead to mouse position if Histogram is clicked
+      if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+          float relativeMousePosX = (ImGui::GetMousePos()[0] - displayPosX) / plotWidth;
+          scanHead = relativeMousePosX;
+          granulator.ECParameters[consts::SCAN_BEGIN]->setParam(scanHead);
+      }
+
       ImDrawList *drawList = ImGui::GetWindowDrawList();
 
       // Draw Scan Width
