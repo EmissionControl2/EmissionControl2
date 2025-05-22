@@ -270,7 +270,7 @@ class ecModulator {
   /**
    * @brief Set the width of the modulator.
    *
-   * @param[in] Frequency in Hz.
+   * @param[in] The width as a number between 0 and 1.
    */
   void setWidth(float width);
 
