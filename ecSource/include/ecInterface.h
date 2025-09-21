@@ -110,7 +110,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
 
   bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
               saveDefaultAudio = false, isStereo = true, isHardClip = true,
-              isHardResetScanBegin = false, isOmitSoundFileParam = false;
+              isHardResetScanBegin = false, isOmitSoundFileParam = false, startEngineAtStartup = false;
   float background = 0.21;
   ecSynth granulator;
   std::vector<std::string> SamplePaths;
@@ -429,6 +429,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     granulator.setHardScanBegin(hard);
   }
   void setOmitSoundFileParam(bool omit) { isOmitSoundFileParam = omit; }
+  void setStartEngineAtStartup(bool start_engine_at_startup) {
+    startEngineAtStartup = start_engine_at_startup;
+  }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
