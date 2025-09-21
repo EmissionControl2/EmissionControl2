@@ -96,6 +96,8 @@ void ecInterface::onInit() {
   setHardClip(config.at(consts::CLIP_AUDIO_KEY));
   setOmitSoundFileParam(config.at(OMIT_SOUNDFILE_PARAM_KEY));
   setHardResetScanBegin(config.at(consts::HARD_RESET_SCANBEGIN_KEY));
+  setLastLoadedOSCPreset(config.at(consts::LAST_OSC_PRESET_KEY));
+  loadJSONOSCPreset(config.at(consts::LAST_OSC_PRESET_KEY));
 
   setInitFullscreen(false);
 
@@ -198,6 +200,7 @@ void ecInterface::onExit() {
   jsonWriteToConfig(windowHeight, consts::WINDOW_HEIGHT_KEY);
   jsonWriteToConfig(isFullScreen, consts::FULLSCREEN_KEY);
   jsonWriteToConfig(false, consts::IS_FIRST_LAUNCH_KEY);
+  jsonWriteToConfig(lastLoadedOSCPreset, consts::LAST_OSC_PRESET_KEY);
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -2689,6 +2692,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
       config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
 
+    if (config.find(consts::LAST_OSC_PRESET_KEY) == config.end())
+      config[consts::LAST_OSC_PRESET_KEY] = consts::DEFAULT_LAST_OSC_PRESET;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -2724,6 +2730,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
 
     config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
+
+    config[consts::LAST_OSC_PRESET_KEY] = consts::DEFAULT_LAST_OSC_PRESET;
   }
 
   std::ofstream file((userPath + configFile).c_str());
@@ -3027,12 +3035,14 @@ void ecInterface::loadJSONOSCPreset(std::string osc_preset_name) {
   recordOSCArg = osc_config[0].at("RECORD").at("OSC_ARG");
   fileNameOSCArg = osc_config[0].at("FILE_NAME").at("OSC_ARG");
   outputFolderOSCArg = osc_config[0].at("OUTPUT_FOLDER").at("OSC_ARG");
+  setLastLoadedOSCPreset(osc_preset_name);
 }
 
 void ecInterface::deleteJSONOSCPreset(std::string osc_preset_name) {
   OSCPresetNames.erase(osc_preset_name);
   jsonWriteMapToConfig(OSCPresetNames, consts::OSC_PRESET_NAMES_KEY);
   std::remove((userPath + oscPresetsPath + osc_preset_name + ".json").c_str());
+  setLastLoadedOSCPreset(""); 
 }
 
 void ecInterface::writeJSONSoundFilePreset(std::string name, bool allowOverwrite) {
