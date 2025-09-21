@@ -123,7 +123,7 @@ class ecSynth : public al::SynthVoice {
       std::unique_ptr<ecModParameter>(new ecModParameter{"modScanBegin", "9. Scan Begin"});
 
     ECParameters[SCAN_RANGE] = std::unique_ptr<ecParameter>(
-      new ecParameter{"ScanRange", "10. Scan Range", 0.5, -1, 1, -1, 1, PARAM});
+      new ecParameter{"ScanRange", "10. Scan Range", 1.0, -1, 1, -1, 1, PARAM});
     ECModParameters[SCAN_RANGE] =
       std::unique_ptr<ecModParameter>(new ecModParameter{"modScanRange", "10. Scan Range"});
 
