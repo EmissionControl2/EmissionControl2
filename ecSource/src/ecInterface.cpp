@@ -371,11 +371,8 @@ void ecInterface::onDraw(Graphics &g) {
         granulator.removeCurrentSoundFile();
       }
       if (ImGui::MenuItem("Clear All Sound Files", "")) {
-        int clipsToRemove = granulator.mClipNum;
-        for (int i = 0; i < clipsToRemove; i++) {
-          audioThumbnails.erase(audioThumbnails.begin() + i);
-          granulator.removeSoundFile(i);
-        }
+        audioThumbnails.clear();
+        granulator.clearSoundFiles();
       }
       ImGui::Separator();
       if (ImGui::MenuItem("Save Sound File Preset", "")) {
