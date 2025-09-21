@@ -69,6 +69,7 @@ const std::string LEAD_CHANNEL_KEY = "LEAD_CHANNEL";
 const std::string CLIP_AUDIO_KEY = "CLIP_AUDIO";
 const std::string OMIT_SOUNDFILE_PARAM_KEY = "OMIT_SOUNDFILE_PARAM";
 const std::string HARD_RESET_SCANBEGIN_KEY = "HARD_RESET_SCANBEGIN";
+const std::string OSC_STARTUP_STATE_KEY = "OSC_STARTUP_STATE";
 
 const int SAMPLE_RATE = 48000;
 const int BUFFER_SIZE = 1024;
@@ -85,6 +86,7 @@ const size_t DEFAULT_LEAD_CHANNEL = 0;
 const bool DEFAULT_CLIP_AUDIO = true;
 const bool DEFAULT_OMIT_SOUNDFILE_PARAM = false;
 const bool DEFAULT_HARD_RESET_SCANBEGIN = false;
+const bool DEFAULT_OSC_STARTUP_STATE = false;
 
 /**
  *  DEFAULT USER PATHS
