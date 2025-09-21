@@ -107,6 +107,7 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
   bool isFullScreen, isFirstLaunch;
   std::vector<std::string> failed_paths;
   std::string currentAudioDevice;
+  std::string lastLoadedOSCPreset;
 
   bool light, firstFrame = true, readyToTrigNoSoundFilePopup = true, isPaused = false,
               saveDefaultAudio = false, isStereo = true, isHardClip = true,
@@ -429,6 +430,9 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     granulator.setHardScanBegin(hard);
   }
   void setOmitSoundFileParam(bool omit) { isOmitSoundFileParam = omit; }
+  void setLastLoadedOSCPreset(std::string preset_name) {
+    lastLoadedOSCPreset = preset_name;
+  }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);
