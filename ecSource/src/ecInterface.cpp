@@ -96,6 +96,7 @@ void ecInterface::onInit() {
   setHardClip(config.at(consts::CLIP_AUDIO_KEY));
   setOmitSoundFileParam(config.at(OMIT_SOUNDFILE_PARAM_KEY));
   setHardResetScanBegin(config.at(consts::HARD_RESET_SCANBEGIN_KEY));
+  setStartEngineAtStartup(config.at(consts::START_ENGINE_AT_STARTUP_KEY));
 
   setInitFullscreen(false);
 
@@ -191,6 +192,14 @@ void ecInterface::onCreate() {
   currentPresetMap = mPresets->readPresetMap("default");
   setGUIParams();
   // std::cout << "LOOKIE HERE: " << std::endl;
+  if (startEngineAtStartup) {
+    if (granulator.getNumberOfAudioFiles() != 0) {
+      audioIO().open();
+      audioIO().start();
+      isPaused = false;
+      readyToTrigNoSoundFilePopup = true;
+    }
+  }
 }
 
 void ecInterface::onExit() {
@@ -198,6 +207,7 @@ void ecInterface::onExit() {
   jsonWriteToConfig(windowHeight, consts::WINDOW_HEIGHT_KEY);
   jsonWriteToConfig(isFullScreen, consts::FULLSCREEN_KEY);
   jsonWriteToConfig(false, consts::IS_FIRST_LAUNCH_KEY);
+  jsonWriteToConfig(startEngineAtStartup, consts::START_ENGINE_AT_STARTUP_KEY);
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -558,6 +568,11 @@ void ecInterface::onDraw(Graphics &g) {
       if (ImGui::Checkbox("Hard Reset 'Scan Begin'", &isHardResetScanBegin)) {
         granulator.setHardScanBegin(isHardResetScanBegin);
         jsonWriteToConfig(isHardResetScanBegin, consts::HARD_RESET_SCANBEGIN_KEY);
+      }
+
+      if (ImGui::Checkbox("Start Engine at Startup", &startEngineAtStartup)) {
+        setStartEngineAtStartup(startEngineAtStartup);
+        jsonWriteToConfig(startEngineAtStartup, consts::START_ENGINE_AT_STARTUP_KEY);
       }
       ImGui::EndMenu();
     }
@@ -2689,6 +2704,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
       config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
 
+    if (config.find(consts::START_ENGINE_AT_STARTUP_KEY) == config.end())
+      config[consts::START_ENGINE_AT_STARTUP_KEY] = consts::DEFAULT_START_ENGINE_AT_STARTUP;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -2724,6 +2742,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
 
     config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
+
+    config[consts::START_ENGINE_AT_STARTUP_KEY] = consts::DEFAULT_START_ENGINE_AT_STARTUP;
   }
 
   std::ofstream file((userPath + configFile).c_str());
