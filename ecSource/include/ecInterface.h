@@ -429,6 +429,12 @@ class ecInterface : public al::App, public al::MIDIMessageHandler {
     granulator.setHardScanBegin(hard);
   }
   void setOmitSoundFileParam(bool omit) { isOmitSoundFileParam = omit; }
+  void setOSCStartupState(bool osc_startup_state) {
+    isOSCOn = osc_startup_state;
+    if (isOSCOn) {
+      resetOSC();
+    }
+  }
 
   // MIDI Preset Json files
   void writeJSONMIDIPreset(std::string name, bool allowOverwrite);

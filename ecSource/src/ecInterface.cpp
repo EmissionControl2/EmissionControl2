@@ -96,6 +96,7 @@ void ecInterface::onInit() {
   setHardClip(config.at(consts::CLIP_AUDIO_KEY));
   setOmitSoundFileParam(config.at(OMIT_SOUNDFILE_PARAM_KEY));
   setHardResetScanBegin(config.at(consts::HARD_RESET_SCANBEGIN_KEY));
+  setOSCStartupState(config.at(consts::OSC_STARTUP_STATE_KEY));
 
   setInitFullscreen(false);
 
@@ -198,6 +199,7 @@ void ecInterface::onExit() {
   jsonWriteToConfig(windowHeight, consts::WINDOW_HEIGHT_KEY);
   jsonWriteToConfig(isFullScreen, consts::FULLSCREEN_KEY);
   jsonWriteToConfig(false, consts::IS_FIRST_LAUNCH_KEY);
+  jsonWriteToConfig(isOSCOn, consts::OSC_STARTUP_STATE_KEY);
 }
 
 void ecInterface::onSound(AudioIOData &io) { granulator.onProcess(io); }
@@ -2689,6 +2691,9 @@ bool ecInterface::initJsonConfig() {
     if (config.find(consts::HARD_RESET_SCANBEGIN_KEY) == config.end())
       config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
 
+    if (config.find(consts::OSC_STARTUP_STATE_KEY) == config.end())
+      config[consts::OSC_STARTUP_STATE_KEY] = consts::DEFAULT_OSC_STARTUP_STATE;
+
   } else {
     config[consts::MIDI_PRESET_NAMES_KEY] = json::array();
 
@@ -2724,6 +2729,8 @@ bool ecInterface::initJsonConfig() {
     config[consts::OMIT_SOUNDFILE_PARAM_KEY] = consts::DEFAULT_OMIT_SOUNDFILE_PARAM;
 
     config[consts::HARD_RESET_SCANBEGIN_KEY] = consts::DEFAULT_HARD_RESET_SCANBEGIN;
+
+    config[consts::OSC_STARTUP_STATE_KEY] = consts::DEFAULT_OSC_STARTUP_STATE;
   }
 
   std::ofstream file((userPath + configFile).c_str());
